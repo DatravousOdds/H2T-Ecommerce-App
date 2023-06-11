@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Head-To-Toe Sign Up</title>
+
+  <link rel="stylesheet" href="./css property/signup.css">
+</head>
+<body>
+  
+<img src="images/loader.gif" class="loader" alt="">
+
+<div class="alert-box">
+  <img src="images/error.png" class="alert-img" alt="">
+  <p class="alert-msg">Error message</p>
+</div>
+
+<div class="container" id="login-wrapper">
+ <a href="/"><img src="images/white logo.jpg" class="logo" alt=""></a> 
+  <div>
+    <input type="text" autocomplete="off" id="fname" placeholder="first name" required>
+    <input type="text" autocomplete="off" id="lname" placeholder="last name" required>
+    <input type="email" autocomplete="off" id="email" 
+    placeholder="email address" required>
+    <input type="password" autocomplete="off" id="password" placeholder="password" required>
+    <input type="checkbox" checked class="checkbox" id="terms-and-cond">
+    <label for="terms-and-cond">agree to our <a href="">terms and 
+      conditions</a></label>
+      <br>
+      <input type="checkbox" class="checkbox" id="notification">
+    <label for="notification">receive upcoming offers and events mails</a></label>
+    <button class="submit-btn">create account</button>
+  </div>
+  <span class="ar-account">already have an account?</span>
+  <a href="/public/login.html" class="link">Log in</a>
+  
+</div>
+
+
+
+
+<script src="js/token.js"></script>
+<script src="js/form.js"></script>
+</body>
+</html>

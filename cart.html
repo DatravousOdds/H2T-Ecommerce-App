@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/public/css property/style2.css" />
+  <link rel="stylesheet" href="/public/css property/cart.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/854f8a6196.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <title>Head-To-Toes : Home</title>
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+
+
+</head>
+
+<body>
+
+  <section id="header">
+  </section>
+
+  <div class="cart-section">
+    <div class="product-list">
+      <p class="section-heading">your cart</p>
+      <div class="cart">
+        <!-- cart product goes here -->
+        <!--<img src="images/empty-cart.png" class="empty-img" alt=""> -->
+        <!--<div class="sm-product">  
+                    <img src="images/gallery-1.jpg" class="sm-product-img"
+                     alt="">
+                     <div class="sm-text">
+                        <p class="sm-product-name">BRAND</p>
+                        <p class="sm-des">This is a short line about</p>
+                     </div>
+                     <div class="item-counter">
+                        <button class="counter-btn decrement">-</button>
+                        <p class="item-count">1</p>
+                        <button class="counter-btn increment">-</button>
+                     </div>
+                     <p class="sm-price">$20</p>
+                     <button class="sm-delete-btn"><img src="images/close.png" alt=""></button>
+                </div>-->
+      </div>
+      <p class="section-heading">your wishlist</p>
+      <div class="wishlist">
+        <!-- wishlist product goes here -->
+      </div>
+    </div>
+    <div class="checkout-section">
+      <div class="checkout-box">
+        <p class="text">your total bill,</p>
+        <h1 class="bill">$00</h1>
+        <a href="/checkout" class="checkout-btn">checkout</a>
+      </div>
+    </div>
+  </div>
+
+  <section id="newsletter" class="section-p1 section-m1">
+    <div class="newstext">
+      <!-- change later, look at plainning sheet -->
+      <h4>Sign Up for Newsletter</h4>
+      <!-- change later, look at plainning sheet -->
+      <p>Get E-mail updates about latest shop and <span>special offers</span></p>
+    </div>
+    <div class="form">
+      <input type="text" placeholder="  Your email address">
+      <button class="normal">Sign Up</button>
+    </div>
+  </section>
+
+  <footer></footer>
+
+  <script src="js/nav.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+    // sidebar
+    $(function () {
+      $('.nav-btn-dd').click(function () {
+        $('#menu').addClass('active')
+      })
+      $('.close-btn').click(function () {
+        $('#menu').removeClass('active')
+      })
+    })
+  </script>
+
+</body>
+
+</html>

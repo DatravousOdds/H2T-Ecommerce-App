@@ -1,0 +1,216 @@
+
+body{
+  margin: 0;
+  padding: 0;
+  background: url(loginpageBg.jpg);
+  background-size: cover;
+  background-position: center;
+  font-family: sans-serif;
+}
+.loginbox{
+  width: 320px;
+  height: 420px;
+  background: #000;
+  color: #fff;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  padding: 70px 30px;
+}
+/* find an Avatar and change this*/
+
+.user{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  position: absolute;
+  top: -50px;
+  left: calc(50% - 50px);
+
+}
+h1{
+  margin: 0;
+  padding: 0 0 20px;
+  text-align: center;
+  font-size: 22px;
+}
+
+.loginbox p{
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
+
+.loginbox input{
+  width: 100%;
+  margin-bottom: 20px;
+
+}
+
+.loginbox input[type="text"], input[type="password"]
+{
+  border: none;
+  border-bottom: 1px solid #fff;
+  background: transparent;
+  outline: none;
+  height: 40px;
+  color: #ff0000;
+  font-size: 16px;
+}
+.loginbox input[type="submit"]
+{
+  border: none;
+  outline: none;
+  height: 40px;
+  background: #ff0000;
+  color: #fff;
+  font-size: 18px;
+  border-radius: 20px;
+}
+.loginbox input[type="submit"]:hover
+{
+  cursor: pointer;
+  background: #ffc107;
+  color: #000;
+}
+.loginbox a{
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 20px;
+  color: darkgrey;
+
+}
+.loginbox a:hover
+{
+  color: #ffc107;
+
+}
+
+/* header start */
+
+#header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 80px;
+  /* change color later*/
+  background: #000000;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+  z-index: 999;
+  position: sticky;
+  top: 0;
+  left: 0;
+}
+
+
+#header .logo {
+    width: 100%;
+    height: 70px;
+}
+
+#navbar{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#navbar li{
+  list-style: none;
+  padding: 0 20px;
+  position: relative;
+
+}
+
+ #navbar li a{
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  /* change color later */
+  color: #fff;
+  transition: 0.3s ease;
+ }
+
+  #navbar li a:hover,
+  #navbar li a.active {
+    /* change color later */
+    color: #F30C1E;
+  }
+
+  #navbar li a.active::after, 
+  #navbar li a:hover::after {
+    content: "";
+    width: 30%;
+    height: 2px;
+    background: #F30C1E;
+    position: absolute;
+    bottom: -4px;
+    left: 20px;
+  }
+/* here display the sidebar */
+  #mobile{
+    display: none;
+    align-items: center;
+  }
+
+  #close{
+    display: none;
+  }
+
+  @media (max-width:799px) {
+    .loginbox { 
+      padding: 40px 40px;
+  }
+  #navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: fixed;
+    top: 0;
+    right: -300px;
+    height: 100vh;
+    width: 300px;
+    background-color: #070707;
+    box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
+    padding: 80px 0 0 10px;
+    transition: 0.3s;
+
+    }
+
+    #navbar.active {
+        right: 0px;
+    }
+
+    #navbar li{
+        margin-bottom: 25px;
+    }
+
+    #mobile {
+    display: flex;
+    align-items: center;
+
+    }
+
+    #mobile i{
+        color: #fff;
+        font-size: 24px;
+        padding-left: 20px;
+    }
+
+    #close {
+        display: initial;
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        color: #fff;
+        font-size: 24px;
+    }
+
+    #Ig-bag{
+        display: none;
+    }
+
+
+  

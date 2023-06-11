@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseller Dashboard</title>
+    <link rel="stylesheet" href="css property/signup.css">
+    <link rel="stylesheet" href="css property/seller.css">
+    <link rel="stylesheet" href="css property/style2.css">
+    <link rel="stylesheet" href="css property/search.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap" rel="stylesheet">
+    <title>Head-To-Toes Best Apparel At Calculated Prices</title>
+
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
+</head>
+
+<body>
+
+    <img src="images/loader.gif" class="loader" alt="">
+
+    <div class="alert-box">
+        <img src="images/error.png" class="alert-img" alt="">
+        <p class="alert-msg">Error message</p>
+    </div>
+
+    <a href="/public/index.html"><img src="images/H2T Logo copy Small.jpeg" class="logo" alt=""></a>
+
+    <!-- seller element -->
+    <div class="bcome-seller hide">
+        <p class="heading">want to become a seller?</p>
+        <p class="description">Lorem Ipsum Dolor Sit Amet, Consectetuer
+            Adipiscing Elit. Aenean Commodo Ligula Eget Dolor. Aenean
+            Massa. Cum Sociis Natoque Penatibus Et Magnis Dis Parturient
+            Montes, Nascetur Ridiculus Mus. Donec Quam Felis, Ultricies
+        </p>
+        <button class="btn" id="apply-btn">apply for reseller account</button>
+    </div>
+
+
+    <!-- apply form -->
+    <div class="apply hide">
+        <input type="text" id="b-name" placeholder="business name / company
+        name / shop name">
+        <textarea id="b-add" placeholder="address"></textarea>
+        <textarea id="about" placeholder="about"></textarea>
+        <input type="text" id="number" placeholder="number">
+        <input type="checkbox" checked class="checkbox" id="terms-and-cond">
+        <label for="terms-and-cond">agree to our <a href="">terms and
+                conditions</a></label>
+        <br>
+        <input type="checkbox" checked class="checkbox" id="realinfo">
+        <label for="realinfo">all information is real</a>
+        </label>
+        <button class="submit-btn" id="form-btn">apply</button>
+    </div>
+
+    <!-- product list -->
+    <div class="product-listing hide">
+        <div class="add-product">
+            <p class="add-product-title">add product</p>
+            <button class="btn" onclick="location.href = '/add-product'">add product</button>
+        </div>
+        <img src="images/no-products.png" class="no-product-image hide" alt="">
+        
+        <!-- delete alert -->
+        <div class="delete-alert">
+            <div class="alert">
+                <button class="close-btn"><img src="images/close.png" alt=""></button>
+                <img src="images/delete-warning.png" class="delete-svg" alt="">
+                <p class="text">are you sure you want to delete this product?</p>
+                <button class="delete-btn">delete</button>
+            </div>
+        </div>
+
+
+        <!--cards-->
+        <div class="product-container">
+            <!-- <div class="pro product-card">
+                <img src="images/Supreme Model .jpeg" alt="">
+                <button class="card-action-btn edit-btn"><img src="images/edit.png" alt=""></button>
+                <button class="card-action-btn open-btn"><img src="images/open.png" alt=""></button>
+                <button class="card-action-btn delete-popup-btn"><img src="images/delete.png" alt=""></button>
+                <div class="des">
+                    <span>Supreme</span>
+                    
+                    <h5>Supreme "Model Tee"</h5>
+                    <div class="star">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    
+                    <h4 class="price">$100</h4><span class="actual-price">$40</span>
+                </div>
+                <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
+            </div> -->
+        </div>
+    </div>
+
+    <script src="js/token.js"></script>
+    <script src="js/createproductPG.js"></script>
+    <script src="js/seller.js"></script>
+</body>
+
+</html>

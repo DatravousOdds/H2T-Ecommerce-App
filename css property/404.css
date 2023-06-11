@@ -1,0 +1,22 @@
+.four-0-four-image{
+    display: block;
+    margin: 60px auto;
+}
+
+.four_0_four_message{
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 1.8rem;
+    color: #383838;
+}
+
+.four_0_four_message_ptag {
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 1.3rem;
+    color: #383838;
+}
+
+.four-0-four-image a{
+    color: #383838;
+}
