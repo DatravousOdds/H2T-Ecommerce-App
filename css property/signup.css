@@ -10,7 +10,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #fafafa;
+  background: #fff;
   font-family: "roboto", sans-serif;
 }
 
@@ -23,17 +23,10 @@ body {
   display: none;
 }
 
-.logo {
-  height: 118px;
+.logo{
+  height: 80px;
   display: block;
-  /* font-size: 25rem; */
-  margin: 0 auto 17px;
-}
-
-.rights {
-  width: 100%;
-  text-align: center;
-  display: flex;
+  margin: 0 auto 50px;
 }
 
 input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
@@ -76,14 +69,14 @@ textarea{
 
 /* checkbox styles */
 
-.checkbox {
+.checkbox{
   -webkit-appearance: none;
   position: relative;
   width: 15px;
   height: 15px;
   border-radius: 2px;
   background: #fff;
-  border: 1px red solid;
+  border: 1px solid #383838;
   cursor: pointer;
 }
 
@@ -122,28 +115,11 @@ label a{
   color: red;
 }
 
-#login-wrapper {
-  border: solid 1px #e0e0e0;
-  border-radius: 4.5px;
-  padding: 1rem;
-  background-color: #fff;
-}
-
 .link{
   color: #383838;
   text-transform: capitalize;
   text-align: center;
-}
-
-.link:hover {
-  color: red;
-}
-
-.ar-account {
-  text-transform: capitalize;
-  display: inline;
-  text-align: center;
-  margin-left: 2rem;
+  display: block;
 }
 
 /* alert */
@@ -214,12 +190,11 @@ label a{
     display: none;
   }
   
-  .logo {
-    height: 118px;
+  .logo{
+    height: 80px;
     display: block;
-    /* font-size: 25rem; */
-    margin: 0 auto 17px;
-}
+    margin: 0 auto 50px;
+  }
   
   input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
   textarea{

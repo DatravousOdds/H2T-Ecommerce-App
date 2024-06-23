@@ -1,0 +1,493 @@
+:root {
+  --color-999: #222;
+  --color-red: #f30c1e;
+  --color-white: #ffffff;
+  --color-black: #070707;
+  --mar-1: 1.06rem;
+  --mar-2: auto 1rem;
+  --bRadius-1: 0.75rem;
+}
+
+*,
+*::before,
+::after {
+  border-color: var(--color-red);
+}
+
+:where(*, *::before, *::after) {
+  border-width: 0;
+  border-style: solid;
+  box-sizing: border-box;
+  word-wrap: break-word;
+}
+
+.css-smallGrid {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: repeat(5, 1fr);
+  list-style-type: none;
+  margin-bottom: 1.5rem;
+}
+
+.styleBadge-css:first-of-type {
+  margin-top: auto;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0px;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-inline-start: 1.5rem;
+  padding-inline-end: 1.5rem;
+}
+
+.sortContainer {
+  width: 100%;
+  /* display: none; */
+}
+
+.sortTitle {
+  line-height: 1.375;
+  letter-spacing: 0.004rem;
+  font-family: "SuisseIntl-Regular", sans-serif;
+}
+
+.srtPtages-TextRow {
+  display: flex;
+  flex-direction: row;
+  margin-left: 1.5rem;
+  margin-right: 0.25rem;
+}
+
+.prd-div-css1 {
+  display: block;
+  padding-bottom: 0.5rem;
+}
+
+.sortFilterArrow i {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  line-height: 1rem;
+  flex-shrink: 0;
+  color: currentColor;
+  vertical-align: middle;
+}
+
+.selectorContainer {
+  display: flex;
+  position: relative;
+  font-size: 0.875rem;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  width: 100%;
+  cursor: pointer;
+  margin-inline-start: 0.5rem;
+  margin-inline-end: 0.5rem;
+}
+
+.badgeContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.loadingProd {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.browseProductGrid {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.gridSblin {
+  grid-column: span 1 / span 1;
+  padding-left: 1rem;
+  /* display: none; */
+}
+
+.css-child0 {
+  list-style-type: none;
+  margin-bottom: 2rem;
+}
+
+.css-child1 {
+  list-style-type: none;
+  margin-bottom: 0px;
+}
+
+.h2headingcss {
+  letter-spacing: 1px;
+  line-height: 24px;
+  color: var(--color-red);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.css-child2 {
+  list-style-type: none;
+  margin-bottom: 2rem;
+}
+.css-child3 {
+  margin-bottom: 2rem;
+}
+
+.css-child4 {
+  margin-bottom: 0.5rem;
+}
+.css-lwrres button h2 {
+  font-family: "SuisseIntl-Regular", sans-serif;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-style: 16px;
+  margin-bottom: 7px;
+}
+
+.css-timezo {
+  margin-bottom: 7px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 24px;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.h2headingcss-1 {
+  color: #1a202c;
+}
+
+.css-lwrres button {
+  background: transparent;
+  border: none;
+}
+
+.productGrid-css {
+  grid-column: span 4 / span 4;
+  max-width: 100%;
+}
+
+.filterHeader-css {
+  /* display: none; */
+}
+
+.browseToggle-css {
+  padding-right: 0.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.smallHeader-css {
+  /* display: none; */
+  padding-bottom: 0.5rem;
+}
+.css-listTag {
+  display: flex;
+  align-items: center;
+}
+
+.css-navBar li:last-child * {
+  border-bottom-color: var(--color-red);
+  border-bottom-width: 1px;
+}
+
+.listItem-css {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cssRouter {
+  transition-property: background-color, border-color, color, fill, stroke,
+    opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  outline: transparent solid 2px;
+  outline-offset: 2px;
+  color: #5f5f5f;
+  text-decoration: none;
+  font-family: "SuisseIntl-Regular", sans-serif;
+  text-transform: capitalize;
+  font-size: 0.75rem;
+}
+
+.cssRouter a {
+  background-color: transparent;
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.directRouter {
+  margin-inline-start: 0.375rem;
+  margin-inline-end: 0.375rem;
+  color: #5f5f5f;
+  font-size: 0.875rem;
+}
+
+.checkBocContainer {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: top;
+  position: relative;
+  text-transform: none;
+  margin: 0px 0px 8px;
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+.css-control-input {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: top;
+  user-select: none;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  transition-property: box-shadow;
+  transition-duration: 200ms;
+  border-width: 1px;
+  border-style: solid;
+  border-image: initial;
+  border-radius: 0px;
+  border-color: #5f5f5f;
+  color: #fff;
+  background-color: #fff;
+}
+
+.css-control-input-0 {
+  margin-inline-start: 0.5rem;
+  user-select: none;
+  color: #242424;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.css-SelectorInputContainer button {
+  margin: auto auto 10px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 1px;
+  border-style: solid;
+  border-image: initial;
+  border-color: #a1a5a4;
+}
+
+.css-SelectorTypeInputLabel {
+  display: block;
+  font-size: 12px;
+  width: 38px;
+  font-family: "SuisseInt-Regular", sans-serif;
+  letter-spacing: 0px;
+  margin: 0px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.css-buttonInput {
+  display: inline-flex;
+  appearance: none;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  position: relative;
+  -webkit-margin-collapse: collapse;
+  flex-wrap: nowrap;
+  vertical-align: middle;
+  outline-offset: 2px;
+  line-height: 1.375;
+  font-weight: 600;
+  transition-property: background-color, border-color, color, fill, stroke,
+    opacity, box-shadow, transform;
+  transition-duration: 200ms;
+  font-size: 0.875rem;
+  font-style: normal;
+  padding-inline-start: 1rem;
+  padding-inline-end: 1rem;
+  height: 32px;
+  min-width: auto;
+  margin: 0px;
+  padding: 0px;
+  border-radius: 0px;
+  outline: transparent solid 2px;
+  color: #242424;
+  background-color: #fff;
+}
+
+.itemContainer {
+  border-radius: 3px;
+  min-width: 141px;
+  height: 100%;
+  position: relative;
+  margin-right: 0px;
+}
+
+.like-btn-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  justify-content: center;
+  position: relative;
+}
+
+.fav-btn {
+  display: inline-flex;
+  appearance: none;
+  outline: 2px solid transparent;
+  position: absolute;
+  vertical-align: middle;
+  padding-inline-end: 1rem;
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  height: 42px;
+  min-width: auto;
+  line-height: 1;
+  max-height: 2.5rem;
+  max-width: 2.5rem;
+  font-size: 1.25rem;
+  text-overflow: clip;
+  padding: 0.625rem;
+  padding-inline-start: 1rem;
+  align-items: center;
+}
+
+.prodGridItem {
+  width: 25%;
+  padding: 0 8px 16px;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid;
+  height: 100%;
+  border: 1px solid var(--color-red);
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 18px 18px 20px rgba(0, 0, 0, 0.2);
+  /* transition: 0.2s cubic-bezier(0.85, 0.2, 0.24, 0.6); */
+}
+
+.css-imageContainer {
+  border-radius: 4px;
+  min-width: 141px;
+  height: 100%;
+  position: relative;
+  margin-right: 0px;
+}
+
+.shoeListGrid-css {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+  list-style-type: none;
+  grid-row-gap: 0.25rem;
+  grid-column-gap: 1.5rem;
+  margin-right: 12px;
+  max-width: 100%;
+  margin-bottom: 2rem;
+}
+
+
+
+.productContainer-ccs1 {
+  width: 100%;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+  margin-top: 2.5rem;
+  padding-inline-start: 1rem;
+  padding-inline-end: 1rem;
+  max-width: 1170px;
+}
+
+.css-control-input[aria-checked="true"],
+.css-control-input[data-checked] {
+  background-color: #0f0f0f;
+  border: #0f0f0f;
+  color: #ffffff;
+}
+
+.css-charkaCheckBoxInput {
+  border: 0px;
+  clip: rect(0px, 0px, 0px, 0px);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  position: absolute;
+}
+
+.css-checkBtn {
+  animation: 200ms linear 0s 1 normal none running checkAnimation;
+  font-size: 0.625rem;
+  transition-property: transform;
+  transition-duration: 200ms;
+  width: 2.2rem;
+}
+
+@keyframes checkAnimation {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 16;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    transform: scale(1);
+  }
+}
+
+.css-size-type-1 {
+  width: 100%;
+  margin-bottom: 0px;
+}
+
+.css-size-type {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+
+.css-pTageRoute {
+  font-family: "SuisseIntl-Regular", sans-serif;
+  line-height: 1.375rem;
+  letter-spacing: 0.004rem;
+  text-transform: capitalize;
+  font-size: 0.75rem;
+}
+.css-glipgns {
+  display: inline-flex;
+  appearance: none;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  position: relative;
+  white-space: nowrap;
+  vertical-align: middle;
+  outline: transparent solid 2px;
+  outline-offset: 2px;
+  line-height: 1.375;
+  border-radius: 0px;
+  font-weight: 600;
+  font-style: normal;
+  padding-inline: 1rem;
+  height: 32px;
+  min-width: auto;
+  background-color: #edf2f7;
+  color: #1a202c;
+  padding: 0px;
+  margin: 0px;
+}

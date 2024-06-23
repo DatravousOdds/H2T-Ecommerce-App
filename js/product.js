@@ -1,16 +1,14 @@
-const prodImages = document.querySelectorAll(".image-sub img");
-console.log(prodImages);
-const ImagesSlide = document.querySelector(".img-slide");
-console.log(ImagesSlide);
+const prodImages = document.querySelectorAll(".product-images img");
+const prodImagesSlide = document.querySelector(".image-slider");
 
-let storedCurrentImg = 0; // default slider image
+let activeImgSlide = 0; // default slider image
 
 prodImages.forEach((item, i) => { // looping through each image thumb 
-    item.addEventListener('click', () => { // adding click event to each image thumb
-       prodImages[storedCurrentImg].classList.remove('active'); // removing active
-       item.classList.add('active'); // adding active class to the current or clicked
-       ImagesSlide.style.backgroundImage = `url('${item.src}')`; // setting up 
-       storedCurrentImg = i; // updating the image slider variable  to the track current
+    item.addEventListener('click', () => { // adding click event to each image thumbr
+       prodImages[activeImgSlide].classList.remove('active'); // removing active
+       item.classList.add('active'); // adding active class to the currrent or clicked
+       prodImagesSlide.style.backgroundImage = `url('${item.src}')`; // setting up 
+       activeImgSlide = i; // updating the image slider variable  to the track current
     });
 });
 
@@ -83,25 +81,25 @@ const setData = (data) => {
 }
 
 //fetch data
-// const fetchProductData = () => {
-//     fetch('/get-products', {
-//         method: 'post',
-//         headers: new Headers({'Content-Type': 'application/json'}),
-//         body: JSON.stringify({id: productId})
-//     })
-//     .then(res => res.json())
-//     .then(data => {
-//         setData(data);
-//         getProducts(data.tags[1]).then(data => createProductSlider(data, '.container-for-card-slider', 
-//         'similar products'))
-//     })
-//     .catch(err => {
-//         location.replace('/404');
-//     })
-// }
+const fetchProductData = () => {
+    fetch('/get-products', {
+        method: 'post',
+        headers: new Headers({'Content-Type': 'application/json'}),
+        body: JSON.stringify({id: productId})
+    })
+    .then(res => res.json())
+    .then(data => {
+        setData(data);
+        getProducts(data.tags[1]).then(data => createProductSlider(data, '.container-for-card-slider', 
+        'similar products'))
+    })
+    .catch(err => {
+        location.replace('/404');
+    })
+}
 
-// let productId = null;
-// if(location.pathname != '/products'){
-//     productId = decodeURI(location.pathname.split('/').pop());
-//     fetchProductData();
-// }
+let productId = null;
+if(location.pathname != '/products'){
+    productId = decodeURI(location.pathname.split('/').pop());
+    fetchProductData();
+}

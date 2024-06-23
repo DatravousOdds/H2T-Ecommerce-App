@@ -35,8 +35,7 @@ const sendData = (path, data) => {
         body: JSON.stringify(data)
     }).then((res) => res.json())
     .then(response => {
-        // processData(response);
-        console.log(response);
+        processData(response);
     })
 }
 
@@ -73,7 +72,7 @@ const showAlert = (msg) => {
         alertMsg.style.color = `#0ab50a`
     } else{ // means it is an error
         alertImg.src = `images/error.png`;
-        alertMsg.style.color = `red`;
+        alertMsg.style.color = `null`;
     }
     alertBox.classList.add('show');
     setTimeout(() => {

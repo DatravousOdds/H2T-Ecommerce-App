@@ -1,23 +1,25 @@
-// setupSliderEffect = () => {
+setupSliderEffect = () => {
 
-const prodcontainers = [...document.querySelectorAll('.pro-container')];
-const nextBtn = [...document.querySelectorAll('.nxt-btn.btn-hover')];
-const preBtn = [...document.querySelectorAll('.pre-btn.btn-hover')];
 
-prodcontainers.forEach((item, i) => {
-  let containerDimensions = item.getBoundingClientRect();
-  let containerWidth = containerDimensions.width;
+    const prodcontainers = [...document.querySelectorAll('.pro-container')];
+    const nextBTn = [...document.querySelectorAll('nxt-btn')];
+    const preBTn = [...document.querySelectorAll('pre-btn')];
 
-  nextBtn[i].addEventListener("click", () => {
-    item.scrollLeft += containerWidth;
-  });
+    prodcontainers.forEach((item, i) => {
+        let containerDimenstions = item.getBoundingClientRect();
+        let containerWidth = containerDimenstions.width;
 
-  preBtn[i].addEventListener("click", () => {
-    item.scrollLeft -= containerWidth;
-  });
-});
+        nextBTn[i].addEventListener('click', () => {
+            item.scrollLeft += containerWidth;
+        })
 
-//fetch prod cards
+        preBTn[i].addEventListener('click', () => {
+            item.scrollLeft -= containerWidth;
+        })
+    })
+
+}
+//fetch prod cards 
 // const getProducts = (tag) => {
 //     return fetch('/get-products', {
 //         method: "post",
@@ -32,28 +34,28 @@ prodcontainers.forEach((item, i) => {
 
 // create product slider
 const createProductSlider = (data, parent, title) => {
-  let slideContainer = document.querySelector(`${parent}`);
+    let slideContainer = document.querySelector(`${parent}`);
 
-  slideContainer.innerHTML += `<section id="product1" class="section-p1">
+    slideContainer.innerHTML += `<section id="product1" class="section-p1">
       <h2>${title}</h2>
       ${createProductCards(data)}
       </section>
 
     
-    `;
+    `
 
-  setupSliderEffect();
-};
+    setupSliderEffect();
+}
 
 const createProductCards = (data, parent) => {
-  //here parent is for search product
-  let start = '<div class="pro-container" id="shop">';
-  let middle = ""; // this will contain card HTML
-  let end = "</div>";
+    //here parent is for search product
+    let start = '<div class="pro-container" id="shop">';
+    let middle = ''; // this will contain card HTML
+    let end  = '</div>';
 
-  for (let i = 0; i < data.length; i++) {
-    if (data[i].id != decodeURI(location.pathname.split("/").pop())) {
-      middle += ` <div class="pro product-card product-image">
+    for(let i = 0; i < data.length; i++){
+        if(data[i].id != decodeURI(location.pathname.split('/').pop())){
+            middle += ` <div class="pro product-card product-image">
                     
         <img src="${data[i].images[0]}" alt="">
         <div class="des" onclick="location.href = '/product/${data[i].id}'">
@@ -72,34 +74,34 @@ const createProductCards = (data, parent) => {
         </div>
     <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
     </div>
-        `;
+        `
+        }
     }
-  }
 
-  if (parent) {
-    let cardContainer = document.querySelector(parent);
-    cardContainer.innerHTML = start + middle + end;
-  } else {
-    return start + middle + end;
-  }
-};
+    if(parent){
+        let cardContainer = document.querySelector(parent);
+        cardContainer.innerHTML = start + middle + end;
+    }else{
+        return start + middle + end; 
+    }
+}
 
 const add_product_to_cart_or_wishlist = (type, product) => {
-  let data = JSON.parse(localStorage.getItem(type));
-  if (data == null) {
-    data = [];
-  }
+    let data = JSON.parse(localStorage.getItem(type));
+    if(data == null){
+        data = [];
+    }
 
-  product = {
-    item: 1,
-    name: product.name,
-    sellPrice: product.sellPrice,
-    size: size || null,
-    shortDes: product.shortDes,
-    image: product.images[0],
-  };
+    product = {
+        item: 1,
+        name: product.name,
+        sellPrice: product.sellPrice,
+        size: size || null,
+        shortDes: product.shortDes,
+        image: product.images[0]
+    }
 
-  data.push(product);
-  localStorage.setItem(type, JSON.stringify(data));
-  return "added";
-};
+    data.push(product);
+    localStorage.setItem(type, JSON.stringify(data));
+    return 'added';
+}

@@ -15,42 +15,9 @@
     font-weight: 700;
 }
 
-.pro-container{
+.product-container{
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     height: auto;
     grid-row-gap: 40px;
-}
-
- .pro {
-    width: 23%;
-    min-width: 250px;
-    padding: 10px 12px;
-    border: 1px solid rgba(255, 17, 17, 0.966);
-    border-radius: 4px;
-    cursor: pointer;
-    box-shadow: 18px 18px 20px rgba(0, 0, 0, 0.2);
-    margin: 15px 0;
-    transition: 0.2s cubic-bezier(0.85, 0.2, 0.24, 0.68);
-    position: relative;
-}
-
-.pro:hover {
-    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.06);
-  }
-
- .pro {
-    color: #000;
-    font-size: 0.75rem;
-    /* display: flex; */
-    /* justify-content: center; */
-    font-weight: 600;
-    letter-spacing: 0.9px;
-    margin-right: 1rem;
-    white-space: nowrap;
-}
-
-.pro {
-    text-align: start;
-    /* padding: 10px 0; */
 }

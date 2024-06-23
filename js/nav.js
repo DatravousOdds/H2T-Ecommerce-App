@@ -4,44 +4,43 @@ const newNav = () => {
   nav.innerHTML = `
 
     
-  <nav>
-      <div class="nav-items">
-        <!-- Search bar -->
-        <div class="search_box">
-          <form class="search-bar">
-            <input type="text" placeholder="Search here...." class="input_box">
-            <button type="submit" class="triggerSearch reg-btn"><i class="fa fa-search icon"></i></button>
-          </form>
+  <nav class="navbar justify-content-between">
+  <div class="nav-items">
+    <!-- Search bar -->
+    <div class="search_box form-inline">
+      <form class="form-inline">
+        <input type="text" placeholder="Search here...." class="input_box">
+        <button type="submit" class="triggerSearch reg-btn"><i class="fa fa-search icon"></i></button>
+      </form>
+    </div>
+    <!-- end of search bar -->
+    <div id="ss-icon">
+      <div class="icon-container">
+        <div>
+          <a href="cart.html" class="sh"><i class="fa-solid  fa-cart-shopping"></i></a>
         </div>
-        <!-- end of search bar -->
-        <div id="ss-icon">
-          <div class="icon-container">
-            <div>
-              <a href="cart.html" class="sh"><i class="fa-solid  fa-cart-shopping"></i></a>
-            </div>
-            <div>
-              <button class="nav-btn-dd btn-1 nav-icon " type="button"><i
-                  class="fa-sharp fa-solid fa-bars"></i></button>
-            </div>
-          </div>
+        <div>
+          <button class="nav-btn-dd btn-1 nav-icon " type="button"><i
+              class="fa-sharp fa-solid fa-bars"></i></button>
         </div>
       </div>
-      <a href="/"><img src="../images/logoh2t_home.png" class="logo-img" width="80px" height="50px" /></a>
-      <div id="menu">
-        <button class="close-btn"><i class="fa-solid fa-x"></i></button>
-        <ul class="list">
-          <li class="sub-header"><a href="#" class="sh sub-btn">Electronics</a></li>
-          <li class="sub-header"><a href="/mens" class="sh sub-btn">Mens</a></li>
-          <li class="sub-header"><a href="/women" class="sh sub-btn">Women</a></li>
-          <li class="sub-header"><a href="#" class="sh sub-btn">Accessories</a></li>
-          <li class="sub-header"><a href="/seller" class="sh sub-btn">Sell</a></li>
-          <li id="login"><button class="login-btn"><a class='center-text' href="#">Login</a></button></li>
-          <li id="signup"><button class="signup-btn"><a class='center-text' href=/signup>Signup</a></button></li>
-          <li><a href="cart.html" class="sh"><i class="fa-solid fa-cart-shopping"></i></a></li>
-          <li id="user_profile" class=""><a href="/profile"><i class="fa-regular fa-user user_profile"></i></a></li>
-        </ul>
-      </div>
-    </nav>
+    </div>
+  </div>
+  <a href="/"><img src="../images/logoh2t_home.png" class="logo-img" width="80px" height="50px" /></a>
+  <div id="menu">
+    <button class="close-btn"><i class="fa-solid fa-x"></i></button>
+    <ul class="list">
+      <li class="sub-header"><a href="/mens" class="sh sub-btn">Mens</a></li>
+      <li class="sub-header"><a href="/women" class="sh sub-btn">Womens</a></li>
+      <li class="sub-header"><a href="#" class="sh sub-btn">Accessories</a></li>
+      <li class="sub-header"><a href="/seller" class="sh sub-btn">Sell</a>
+      <li><button class="login-btn"><a class='center-text' href="#">Login</a></button></li>
+      <li><button class="signup-btn"><a class='center-text' href=/signup>Signup</a></button></li>
+      <li><a href="cart.html" class="sh"><i class="fa-solid fa-cart-shopping"></i></a></li>
+      <li id="user_profile" class="hide"><a href="/profile"><i class="fa-regular fa-user user_profile"></i></a></liv>
+    </ul>
+  </div>
+</nav>
 `;
 };
 

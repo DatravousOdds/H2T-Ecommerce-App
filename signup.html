@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Head-To-Toe Sign Up</title>
-
+  <title>Clothing : Create Account</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="./css property/signup.css">
 </head>
 <body>
@@ -17,28 +17,24 @@
   <p class="alert-msg">Error message</p>
 </div>
 
-<div class="container" id="login-wrapper">
+<div class="container">
  <a href="/"><img src="images/white logo.jpg" class="logo" alt=""></a> 
   <div>
-    <input type="text" autocomplete="off" id="fname" placeholder="first name" required>
-    <input type="text" autocomplete="off" id="lname" placeholder="last name" required>
-    <input type="email" autocomplete="off" id="email" 
-    placeholder="email address" required>
-    <input type="password" autocomplete="off" id="password" placeholder="password" required>
+    <input type="text" autocomplete="off" id="name" placeholder="name">
+    <input type="email" autocomplete="off" id="email" placeholder="email">
+    <input type="password" autocomplete="off" id="password" 
+    placeholder="password">
+    <input type="text" autocomplete="off" id="number" placeholder="number">
     <input type="checkbox" checked class="checkbox" id="terms-and-cond">
     <label for="terms-and-cond">agree to our <a href="">terms and 
       conditions</a></label>
       <br>
       <input type="checkbox" class="checkbox" id="notification">
-    <label for="notification">receive upcoming offers and events mails</a></label>
+    <label for="notification">recieve upcoming offers and events mails</a></label>
     <button class="submit-btn">create account</button>
   </div>
-  <span class="ar-account">already have an account?</span>
-  <a href="/public/login.html" class="link">Log in</a>
-  
+  <a href="/public/login.html" class="link">already have an account? Log in here</a>
 </div>
-
-
 
 
 <script src="js/token.js"></script>
