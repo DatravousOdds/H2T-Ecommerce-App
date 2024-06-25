@@ -1646,10 +1646,10 @@ footer .rights {
     line-height: 2em;
   }
 
-  #menu ul li a:hover {
+  /* #menu ul li a:hover {
     color: var(--color-red);
     background: transparent;
-  }
+  } */
 
   /* button.close-btn {
     font-size: 24px;
@@ -1859,6 +1859,8 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
+
+  
   .icon-container {
     display: none;
     align-items: center;
@@ -1883,8 +1885,8 @@ footer .rights {
     background: none;
     position: absolute;
     top: 1rem;
-    left: -10rem;
-    right: 0;
+    /* left: -10rem; */
+    right: 12rem;
     margin-right: 10px;
     cursor: pointer;
     transition: 0.8s;
@@ -1985,8 +1987,13 @@ footer .rights {
     border-radius: 2px;
     background-color: transparent;
     margin-left: 0px;
+    font-size:0.875rem;
     transition: 0.5s ease-in-out;
   }
+
+
+
+
 
   #menu ul li a {
     margin-left: 0px;
