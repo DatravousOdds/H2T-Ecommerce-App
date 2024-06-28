@@ -466,9 +466,10 @@ nav .search_box span:hover::after {
 
 /* home page */
 #hero .hero-text {
-  background-image: url(/images/hbanner-2.jpg);
+  background-image: url(/images/shirt-bg.jpg);
   height: 100vh;
   width: 100%;
+  opacity: 0.88;
   background-size: cover;
   background-position: top 25% right 0;
   padding: 0 80px;
@@ -478,6 +479,11 @@ nav .search_box span:hover::after {
   align-items: center;
   justify-content: center;
   filter: blur();
+}
+
+.hero-text-container {
+  display: flex;
+  gap: 1.5rem;
 }
 
 #hero h4 {
@@ -1862,8 +1868,6 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
-
-  
   .icon-container {
     display: none;
     align-items: center;
@@ -1990,13 +1994,9 @@ footer .rights {
     border-radius: 2px;
     background-color: transparent;
     margin-left: 0px;
-    font-size:0.875rem;
+    font-size: 0.875rem;
     transition: 0.5s ease-in-out;
   }
-
-
-
-
 
   #menu ul li a {
     margin-left: 0px;
@@ -2040,7 +2040,6 @@ footer .rights {
     width: 100%;
   }
 }
-
 
 /* Screen for smartphones */
 @media (max-width: 430px) {
