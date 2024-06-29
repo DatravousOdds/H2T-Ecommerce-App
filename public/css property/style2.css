@@ -9,7 +9,12 @@
   --btnHover: rgba(255, 0, 0, 0.7);
   --btnPadding: 5px 5px;
   --textUpperCase: uppercase;
-  --smallScreenfontSz: 0.98rem;
+  --smallScreenFontSz: 0.98rem;
+  --fontSize-1: 1.25rem;
+  --rightTextAlign: left;
+  --paraFontSize: 1rem;
+  --paraFontSize-1: 0.125rem;
+  
 }
 
 * {
@@ -27,7 +32,7 @@ body {
 
 /* Utility Classes */
 .uppercase {
-  text-transform: capitalize;
+  text-transform: var(--textUpperCase);
 }
 
 ::-webkit-scrollbar {
@@ -81,11 +86,13 @@ h6 {
 }
 
 p {
-  font-size: 16px;
+  font-size: var(--paraFontSize);
   /* change color later*/
   color: var(--color-999);
   margin: 15px 0 20px 0;
 }
+
+
 
 .section-p1 {
   padding: 40px 80px;
@@ -329,14 +336,14 @@ nav .search_box {
   background: #212529;
   height: 100%;
   padding: 0 10px;
-  font-size: 20px;
+  font-size: var(--fontSize-1);
   /* width: 350px; */
   color: var(--color-white);
 }
 
 nav .search_box span {
   color: var(--color-red);
-  font-size: 20px;
+  font-size: var(--fontSize-1);
   background: #212529;
   height: 100%;
   padding: 8px;
@@ -469,7 +476,7 @@ nav .search_box span:hover::after {
   background-image: url(/images/shirt-bg.jpg);
   height: 100vh;
   width: 100%;
-  opacity: 0.88;
+  opacity: 0.85;
   background-size: cover;
   background-position: top 25% right 0;
   padding: 0 80px;
@@ -477,12 +484,58 @@ nav .search_box span:hover::after {
   flex-wrap: wrap;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  filter: blur();
+  justify-content: flex-start;
+  padding-top: 10rem;
+  
+}
+
+/* hero section */
+
+.hero-text-container .main-headline h1{
+  width: 55%;
+  min-width: 400px;
+}
+.sub-headline {
+  flex-shrink: 2;
+  display: flex;
+  align-items: flex-end;
+  width: 3.1rem;
+  min-width: 300px;
+  text-align: left;
+}
+
+.sub-headline .sub-h h3{
+  color: white;
+  font-size: 1rem;
+  overflow-wrap: break-word;
+ 
+}
+
+.m-hL {
+  text-align: var(--rightTextAlign);
+}
+
+.m-hL a {
+  border-radius:2px; 
+  text-transform: uppercase; 
+  padding: 1rem; 
+  text-decoration: none; 
+  color: white; 
+  font-weight:600;
+  background-color: transparent; 
+  border: 2px solid white; 
+  font-size: 0.90rem;
+  transition: 0.2s ease-in-out;
+}
+
+.m-hL a:hover {
+  background-color: var(--color-red);
+  border: none;
 }
 
 .hero-text-container {
   display: flex;
+  justify-content: space-between;
   gap: 1.5rem;
 }
 
@@ -495,7 +548,7 @@ nav .search_box span:hover::after {
 #hero h1 {
   /* change color later */
   color: var(--color-red);
-  font-size: 6.25rem;
+  font-size: 5rem;
   margin-bottom: var(--mar-1);
 }
 
@@ -506,7 +559,7 @@ nav .search_box span:hover::after {
 }
 
 #hero p {
-  font-size: 2rem;
+  font-size: var(--paraFontSize-1);
   color: var(--color-white);
   margin-bottom: var(--mar-1);
 }
@@ -542,22 +595,26 @@ nav .search_box span:hover::after {
 }
 
 #feature .fe-box {
-  width: 180px;
+  width: 250px;
   text-align: center;
   padding: 25px 15px;
-  box-shadow: 20px 20px 34px rgba(0, 0, 0, 0.03);
-  border: 1px solid #f30c1e;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  box-shadow: 0px 0px 20px 3px rgba(0, 0, 0, 0.2);
   margin: 15px 0;
+  transition: 0.5s;
 }
 
 #feature .fe-box:hover {
-  box-shadow: 10px 10px 54px rgba(70, 62, 221, 0.1);
+  /* box-shadow: 10px 10px 54px rgba(70, 62, 221, 0.1); */
+  transform: scale(1.2);
 }
 
-#feature .fe-box img {
-  width: 100%;
-  margin-bottom: 10px;
+
+
+#feature .fe-box i {
+  font-size: 8rem;
+  padding: 1rem;
 }
 
 #feature .fe-box h6 {
