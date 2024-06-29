@@ -422,16 +422,32 @@ nav .search_box span:hover::after {
   color: green;
 }
 
-/* wishlist */
-.discount {
-  position: absolute;
-  background-color: #f4f3f1;
-  padding: 5px;
-  border-radius: 5px;
-  color: var(--color-999);
-  right: 10px;
+/* discount */
+.discount p{
+  color: var(--color-red);
+  font-weight: 800;
+  margin: auto;
+ 
+}
+
+.liked{
+  /* background-color: #EFA9A9;
+  color: #DC2A2A; */
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 10px 10px;
+  border-radius: 0.25rem;
+  position: relative;
+  border-radius: 17px;
   top: 10px;
-  text-transform: capitalize;
+  left: 16rem;
+  z-index: 3;
+  width: 50px;
+}
+
+.liked i{
+  font-size: 1.5rem;
+  color: black;
 }
 
 .fa-eye {
@@ -635,9 +651,12 @@ nav .search_box span:hover::after {
 .pro-brand {
   text-transform: capitalize;
   font-size: 1.5em;
-  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap:break-word;
   /* text-align: left; */
-  border: 2px solid red;
+  /* border: 2px solid red; */
+  
 }
 
 .short-desc {
@@ -670,10 +689,12 @@ nav .search_box span:hover::after {
 
 .product-image {
   width: 100%;
+  z-index: 1;
   /* height: 60%; */
   overflow: hidden;
-  border: 2px solid black;
+  /* border: 2px solid black; */
   border-radius: 1rem;
+  position: relative;
   /* display: flex; */
 }
 
@@ -695,17 +716,29 @@ nav .search_box span:hover::after {
   object-fit: contain;
 }
 
-
+.pro-brand-txt {
+  max-width: 100%;
+  word-wrap: break-word;
+  letter-spacing: 0.004rem;
+  display: inline;
+  font-size: 1.3rem;
+  overflow-wrap: break-word;
+}
 
 #product1 .pro img {
   border-radius: 20px;
 }
 
 #product1 .pro .des {
+  display: flex;
+  flex-direction: column;
+  /* flex-wrap: wrap; */
   width: 100%;
+  position: relative;
   /* height: 100%; */
+  word-wrap: break-word;
   overflow-wrap: break-word;
-  padding-top: 10px;
+  /* padding-top: 10px; */
   /* border: 2px solid red; */
 }
 
@@ -721,13 +754,12 @@ nav .search_box span:hover::after {
   border: 3px solid transparent;
   border-radius: 9px;
   cursor: pointer;
-  box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.2); */
   margin: 15px 0;
   transition: 0.5s;
-
   position: relative;
   margin-right: 1rem;
-  white-space: nowrap;
+ 
 }
 
 #product1 .pro h5 {
@@ -749,10 +781,7 @@ nav .search_box span:hover::after {
   max-width: 2.5rem;
 }
 
-#product1 .pro i {
-  font-size: 12px;
-  color: rgb(243, 181, 25);
-}
+
 
 #product1 .pro h4 {
   padding-top: 7px;
@@ -1063,7 +1092,7 @@ footer .rights {
 
 .p_rice {
   font-weight: 900;
-  font-size: 20px;
+  font-size: 1.9rem;
 }
 
 .ap_price {
