@@ -450,7 +450,6 @@ nav .search_box span:hover::after {
 .liked i {
   font-size: 1.5rem;
   color: black;
-  
 }
 
 .liked:hover {
@@ -1763,11 +1762,11 @@ footer .rights {
   #banner {
     width: 98%;
   }
-
+ 
   #banner3 {
     flex-direction: column;
     width: 100%;
-    padding: 10px;
+    padding: 17px;
   }
 
   #sm-banner .banner-box {
@@ -2044,6 +2043,29 @@ footer .rights {
 }
 
 @media (max-width: 477px) {
+
+  #product1 .pro-container {
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    margin-left: 2rem;
+    
+  }
+
+  
+  #hero .m-hL h1 {
+    font-size: 2.6rem;
+  }
+
+  #hero .hero-text-container {
+    flex-direction: column;
+    gap: 3rem;
+    padding: 1rem;
+  }
+
+  #hero .hero-text {
+    padding: 4rem 1px;
+  }
   footer .install img {
     margin: 0px 0 15px 0;
     width: 100%;
@@ -2054,12 +2076,16 @@ footer .rights {
   }
 
   #feature {
-    justify-content: space-between;
+    justify-content: center;
   }
 
   #feature .fe-box {
-    width: 155px;
+    width: 95%;
     margin: 0 0 0.93rem 0;
+  }
+
+  #feature .fe-box:hover {
+    transform: scale(1.0);
   }
 
   #product1 .pro {
