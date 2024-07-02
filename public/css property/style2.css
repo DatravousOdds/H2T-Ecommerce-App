@@ -478,7 +478,7 @@ nav .search_box span:hover::after {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 10rem;
+  padding-top: 6rem;
 }
 
 /* hero section */
@@ -491,8 +491,8 @@ nav .search_box span:hover::after {
   flex-shrink: 2;
   display: flex;
   align-items: flex-end;
-  width: 3.1rem;
-  min-width: 300px;
+  width: 100%;
+  min-width: 200px;
   text-align: left;
 }
 
@@ -1625,7 +1625,7 @@ footer .rights {
   }
 
   #menu ul {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -1673,6 +1673,10 @@ footer .rights {
     right: 0;
     transition: 0.5s;
   } */
+
+  #menu ul {
+    font-size: 0.8rem;
+  }
 
   #menu ul li a {
     color: #fff;
@@ -1893,6 +1897,30 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
+
+  #hero .hero-text-container {
+    flex-direction: column;
+  }
+
+  #product1 .pro-container {
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    margin-left: 2rem;
+  }
+
+  #hero .hero-text {
+    padding: 9rem 19px;
+  }
+
+  #hero h1 {
+    font-size: 4rem;
+  }
+
+  .hero-text-container .main-headline h1 {
+    font-size: 5rem;
+  }
+
   .icon-container {
     display: none;
     align-items: center;
@@ -1918,7 +1946,7 @@ footer .rights {
     position: absolute;
     top: 1rem;
     /* left: -10rem; */
-    right: 12rem;
+    /* right: 12rem; */
     margin-right: 10px;
     cursor: pointer;
     transition: 0.8s;
@@ -1934,9 +1962,11 @@ footer .rights {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 250px;
+    width: 100%;
     height: 100vh;
     background: rgba(0, 0, 0, 0.9);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
     box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
     color: #fff;
     padding: 40px;
@@ -1970,7 +2000,7 @@ footer .rights {
     justify-content: flex-start;
     flex-direction: column;
     align-items: flex-start;
-    font-size: 18px;
+    font-size: 1.5rem;
     flex-wrap: wrap;
   }
   .section-p1 {
@@ -2027,11 +2057,11 @@ footer .rights {
     margin-left: 0px;
   }
 
-  #product1 .pro-container {
+  /* #product1 .pro-container {
     justify-content: space-between;
     padding-top: 20px;
     flex-wrap: wrap;
-  }
+  } */
 
   #product1 .pro-container {
     justify-content: center;
@@ -2043,6 +2073,15 @@ footer .rights {
 }
 
 @media (max-width: 477px) {
+
+  #menu {
+    width: 100%;
+    height: 100%;
+  }
+
+  button.close-btn {
+    right: 23rem;
+  }
 
   #product1 .pro-container {
     flex-wrap: nowrap;
