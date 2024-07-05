@@ -430,7 +430,6 @@ nav .search_box span:hover::after {
   font-weight: 800;
   margin: auto;
 }
-
 .liked {
   /* background-color: #EFA9A9;
   color: #DC2A2A; */
@@ -1517,20 +1516,29 @@ footer .rights {
 #prodetails {
   display: flex;
   margin-top: 20px;
+  /* border: 2px solid red; */
 }
 
 #prodetails .single-pro-image {
-  width: 40%;
+  width: 80%;
   margin-right: 50px;
+  /* border: 2px solid red; */
+  /* border-radius: 12px; */
+}
+
+#prodetails .single-pro-image img {
+  border-radius: 12px;
 }
 
 #prodetails .s_prod_details {
   width: 100%;
+  /* border: 2px solid red; */
 }
 
 .s-img-group {
   display: flex;
   justify-content: space-between;
+  padding-top: 1rem;
 }
 
 .s-img-col {
@@ -1539,7 +1547,7 @@ footer .rights {
 }
 
 #prodetails .s_prod_details {
-  width: 50%;
+  width: 90%;
   padding-top: 30px;
 }
 
