@@ -30,8 +30,8 @@ const newNav = () => {
   <div id="menu">
     <button class="close-btn"><i class="fa-solid fa-x"></i></button>
     <ul class="list">
-      <li class="sub-header"><a href="/mens" class="sh sub-btn">Mens</a></li>
-      <li class="sub-header"><a href="/women" class="sh sub-btn">Womens</a></li>
+      <li class="sub-header"><a href="/mens" class="sh sub-btn">Men</a></li>
+      <li class="sub-header"><a href="/women" class="sh sub-btn">Women</a></li>
       <li class="sub-header"><a href="#" class="sh sub-btn">Accessories</a></li>
       <li class="sub-header"><a href="/seller" class="sh sub-btn">Sell</a>
       <li><button class="login-btn"><a class='center-text' href="#">Login</a></button></li>
