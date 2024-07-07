@@ -36,6 +36,7 @@ const newNav = () => {
       <li class="sub-header"><a href="/seller" class="sh sub-btn">Sell</a>
       <li><button class="login-btn"><a class='center-text' href="#">Login</a></button></li>
       <li><button class="signup-btn"><a class='center-text' href=/signup>Signup</a></button></li>
+      <li><a href="#"><i class="fa-regular fa-bell"></i></a></li>
       <li><a href="cart.html" class="sh"><i class="fa-solid fa-cart-shopping"></i></a></li>
       <li id="user_profile" class="hide"><a href="/profile"><i class="fa-regular fa-user user_profile"></i></a></liv>
     </ul>

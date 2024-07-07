@@ -158,6 +158,10 @@
   transition: 0.5s ease-in-out;
 }
 
+.icon {
+  font-size: 1.6rem;
+}
+
 .pro-container {
   overflow-y: hidden !important;
 }

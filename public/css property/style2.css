@@ -213,6 +213,14 @@ nav ul li a {
   line-height: 2em;
   padding: 0.5em 0.62rem;
   text-decoration: none;
+  transition: 0.2s ease-in-out;
+  /* border: 1px solid red; */
+}
+
+nav ul li a:hover {
+  color: var(--color-white) !important;
+  /* border: 1px solid red; */
+  transform: scale(1.2);
 }
 
 .user_profile i {
@@ -239,29 +247,7 @@ nav ul li a {
   display: none;
 }
 
-/* nav ul li a:hover {
-  color: var(--color-white);
-  background-color: var(--color-red);
-} */
 
-/* nav ul li ul.dropdown {
-  min-width: 42rem;
-  background-color: var(--color-black);
-  display: none;
-  position: absolute;
-  z-index: 999;
-  columns: 2;
-  left: -33.75rem;
-} */
-
-/* nav ul li:hover ul.dropdown {
-  display: block;
-
-} */
-
-/* nav ul li ul.dropdown li {
-  display: flex;
-} */
 
 .logo-img {
   float: left;
@@ -284,10 +270,6 @@ nav ul li a {
   color: var(--color-red);
   transition: 0.5s ease-in-out;
 }
-
-/* nav button.check-c {
-  display: none;
-} */
 
 /* end of header */
 
@@ -1045,8 +1027,9 @@ footer .lgo {
 }
 
 footer h4 {
-  font-size: 14px;
-  padding-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  /* padding-bottom: 20px; */
 }
 
 footer p {

@@ -1,9 +1,8 @@
 const createFooter = () => {
-    let footer = document.querySelector('footer');
+  let footer = document.querySelector("footer");
 
-    footer.innerHTML = `
+  footer.innerHTML = `
     <div class="col">
-      <img class='lgo' src="images/white logo.jpg" alt="">
       <h4>Contact</h4>
       <p><strong>Address:</strong></p>
       <p><strong>Phone:</strong></p>
@@ -21,35 +20,33 @@ const createFooter = () => {
     </div>
     <!-- gird-container-3 -->
     <div class="col">
-      <h4>About</h4>
-      <a href="#">About us</a>
-      <a href="#">Help</a>
-      <a href="#">Terms & Conditions</a>
-      <a href="#">Privacy Policy</a>
-      <a href="/contact">Contact Us</a>
-      <a href="#">Your Order</a>
+      <h4>About Us</h4>
+      <a href="#">Head-To-Toe, Inc.</a>
+      <a href="#">Policies</a>
+      <a href="#">Investors</a>
+      <a href="#">Careers</a>
+      <a href="#">Impact</a>
     </div>
     <!-- gird-container-4 -->
     <div class="col">
-      <h4>My Account</h4>
-      <a href="#">Air Jordan</a>
-      <a href="#">Air Jordan Release Dates</a>
-      <a href="#">Women Jordans</a>
-      <a href="#">Air Jordan 11</a>
-      <a href="#">Air Jordan 4</a>
-      <a href="#">Jordan 1 Mid</a>
+      <h4>Help</h4>
+      <a href="#">Help Center</a>
+      <a href="#">Privacy Settings</a>
+      
+    </div>
+
+    <div class="col">
+      <h4>Sell</h4>
+      <a href="#">Sell on H2T</a>
+      <a href="#">Teams</a>
+      <a href="#">Forums</a>
+      <a href="#">Affiliates & Creators</a>
     </div>
 
 
     <!-- gird-container-5 -->
     <div class="col install">
-      <h4>Download Our App</h4>
-      <p>From App Store or Google Play</p>
-      <div class="row">
-        <!-- Insert Apple and Google Images below -->
-        <a href="#"><img src="images/app.jpg" alt=""></a>
-        <a href="#"><img src="images/play.jpg" alt=""></a>
-      </div>
+      
       <p>Secure payment Gateways </p>
       <!-- Find payment Gateways image and paste below -->
       <img src="images/pay.jpg" alt="">
@@ -59,6 +56,6 @@ const createFooter = () => {
       <p>&copy; 2023, Head-To-Toe etc - Ecommerce website. All rights Reserved.</p>
     </div>
 `;
-}
+};
 
 createFooter();
