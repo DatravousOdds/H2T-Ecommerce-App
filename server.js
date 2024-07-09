@@ -417,10 +417,9 @@ app.use((req, res) => {
     res.redirect('/404');
 })
 
-const port = 3000;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
     console.log(`listening on port ${port}.......`);
 })
 
-console.log("Hello");
