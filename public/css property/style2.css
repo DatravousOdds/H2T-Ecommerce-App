@@ -101,6 +101,21 @@ p {
   margin: 40px 0;
 }
 
+/* Reviews */
+.sm-reviews-section {
+  padding: 10px 30px;
+}
+
+.sm-pagination-reviews {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 30px;
+  /* justify-content: center; */
+  
+
+}
+
+
 button.normal {
   font-size: 14px;
   font-weight: 600;
@@ -1421,6 +1436,7 @@ footer .rights {
   justify-content: space-between;
 }
 
+
 #coupon {
   width: 50%;
   margin-bottom: 30px;
@@ -1647,6 +1663,14 @@ footer .rights {
 
 /*  Applies styles to screens < 767px */
 @media (max-width: 920px) {
+
+  /* .bg-pagination-reviews {
+    display: none;
+  }
+
+  .pagination-reviews {
+    display: flex;
+  } */
   /* .nav-items {
     width: 95vw;
     justify-content: space-between;
@@ -1904,13 +1928,7 @@ footer .rights {
 
 @media (max-width: 799px) {
 
-  .sm-reviews-section {
-    display: none;
-  }
-
-  .pagination-reviews {
-    display: none;
-  }
+  
 
   #hero .hero-text-container {
     flex-direction: column;
@@ -2088,9 +2106,14 @@ footer .rights {
 
 @media (max-width: 477px) {
 
-  .review-section {
-    display:none;
-  }
+
+
+ 
+
+
+
+
+  
   #menu {
     width: 100%;
     height: 100%;
