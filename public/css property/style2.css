@@ -1534,6 +1534,10 @@ footer .rights {
   /* border-radius: 12px; */
 }
 
+.detail-text {
+  display: none;
+}
+
 #prodetails .single-pro-image img {
   border-radius: 12px;
 }
