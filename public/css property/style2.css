@@ -1522,6 +1522,7 @@ footer .rights {
 }
 
 #prodetails .single-pro-image {
+  flex: 0 0 60%;
   width: 45%;
   margin-right: 50px;
   /* border: 2px solid red; */
@@ -1535,7 +1536,7 @@ footer .rights {
 .detail-text {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.9s ease-in-out;
+  transition: max-height 0.5s ease;
 }
 
 .detail-text.expanded {
@@ -1569,7 +1570,7 @@ footer .rights {
 
 #prodetails .s_prod_details h4 {
   /* padding: 40px 0 20px 0; */
-  font-size: 24px;
+  font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -1578,7 +1579,6 @@ footer .rights {
 #prodetails .s_prod_details h1 {
   font-size: 12px;
 }
-
 
 #prodetails .s_prod_details h2 {
   font-size: 26px;

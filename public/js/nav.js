@@ -32,12 +32,12 @@ const newNav = () => {
     <ul class="list">
       <li class="sub-header"><a href="/mens" class="sh sub-btn">Men</a></li>
       <li class="sub-header"><a href="/women" class="sh sub-btn">Women</a></li>
-      <li class="sub-header"><a href="#" class="sh sub-btn">Accessories</a></li>
+      <li class="sub-header"><a href="/accessories" class="sh sub-btn">Accessories</a></li>
       <li class="sub-header"><a href="/seller" class="sh sub-btn">Sell</a>
-      <li><button class="login-btn"><a class='center-text' href="#">Login</a></button></li>
+      <li><button class="login-btn"><a class='center-text' href="/login">Login</a></button></li>
       <li><button class="signup-btn"><a class='center-text' href=/signup>Signup</a></button></li>
       <li><a href="#"><i class="fa-regular fa-bell"></i></a></li>
-      <li><a href="cart.html" class="sh"><i class="fa-solid fa-cart-shopping"></i></a></li>
+      <li><a href="/cart" class="sh"><i class="fa-solid fa-cart-shopping"></i></a></li>
       <li id="user_profile" class="hide"><a href="/profile"><i class="fa-regular fa-user user_profile"></i></a></liv>
     </ul>
   </div>
@@ -48,12 +48,12 @@ const newNav = () => {
 newNav();
 
 // nav popup
-const userIcon = document.querySelector('#user_profile');
-console.log(userIcon)
+const userIcon = document.querySelector("#user_profile");
+console.log(userIcon);
 const loginBtn = document.querySelector(".login-btn");
-console.log(loginBtn)
+console.log(loginBtn);
 const signupBtn = document.querySelector(".signup-btn");
-console.log(signupBtn)
+console.log(signupBtn);
 
 // loginBtn.addEventListener("click", () => {
 //   userIcon.classList.toggle("hide");
@@ -65,7 +65,7 @@ console.log(signupBtn)
 //   if (user != null) {
 //     // already logged in
 //     userIcon.classList.remove("hide")
-    
+
 //     loginBtn.addEventListener("click", () => {
 //       sessionStorage.clear();
 //       location.reload();
@@ -87,8 +87,6 @@ console.log(signupBtn)
 //     location.href = `/search/${searchBox.value}`;
 //   }
 // });
-
-
 
 // sidebar
 // const sideBar = document.getElementById("bar");
