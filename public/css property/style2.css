@@ -103,7 +103,7 @@ p {
 
 /* Reviews */
 .sm-reviews-section {
-  padding: 10px 30px;
+  padding: 0px 80px;
 }
 
 .sm-pagination-reviews {
@@ -111,10 +111,7 @@ p {
   flex-direction: row;
   padding: 10px 30px;
   /* justify-content: center; */
-  
-
 }
-
 
 button.normal {
   font-size: 14px;
@@ -261,8 +258,6 @@ nav ul li a:hover {
 .hide {
   display: none;
 }
-
-
 
 .logo-img {
   float: left;
@@ -684,7 +679,7 @@ nav .search_box span:hover::after {
   margin-left: 5rem;
   margin-right: 5rem;
   gap: 1rem;
-  
+
   /* overflow-y: hidden; */
   overflow-x: auto;
   /* white-space: nowrap;
@@ -1436,7 +1431,6 @@ footer .rights {
   justify-content: space-between;
 }
 
-
 #coupon {
   width: 50%;
   margin-bottom: 30px;
@@ -1534,8 +1528,18 @@ footer .rights {
   /* border-radius: 12px; */
 }
 
-.detail-text {
+/* .detail-text {
   display: none;
+} */
+
+.detail-text {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.9s ease-in-out;
+}
+
+.detail-text.expanded {
+  max-height: 1000px;
 }
 
 #prodetails .single-pro-image img {
@@ -1566,13 +1570,16 @@ footer .rights {
 #prodetails .s_prod_details h4 {
   /* padding: 40px 0 20px 0; */
   font-size: 24px;
-  line-height: 26px;
+  line-height: 1.5rem;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
 #prodetails .s_prod_details h1 {
   font-size: 12px;
 }
+
+
 #prodetails .s_prod_details h2 {
   font-size: 26px;
 }
@@ -1667,7 +1674,6 @@ footer .rights {
 
 /*  Applies styles to screens < 767px */
 @media (max-width: 920px) {
-
   /* .bg-pagination-reviews {
     display: none;
   }
@@ -1926,14 +1932,11 @@ footer .rights {
 
   footer h4:hover::before {
     width: 100%;
-    visibility: visible; 
+    visibility: visible;
   }
 }
 
 @media (max-width: 799px) {
-
-  
-
   #hero .hero-text-container {
     flex-direction: column;
   }
@@ -2109,15 +2112,6 @@ footer .rights {
 }
 
 @media (max-width: 477px) {
-
-
-
- 
-
-
-
-
-  
   #menu {
     width: 100%;
     height: 100%;
