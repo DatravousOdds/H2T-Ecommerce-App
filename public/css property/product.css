@@ -32,7 +32,7 @@
   /* text-decoration: none; */
   list-style: none;
   color: black;
-  font-size: .875rem;
+  font-size: 0.875rem;
   cursor: pointer;
 }
 
@@ -172,7 +172,7 @@
 }
 
 .icon {
-  font-size: 1.6rem;
+  font-size: 1.2rem;
 }
 
 .pro-container {
@@ -386,4 +386,20 @@
   left: 0;
   align-items: center;
   flex-direction: unset;
+}
+
+/* Media Queries */
+
+@media (max-width: 992px) {
+  #prodetails {
+    flex-direction: column;
+  }
+
+  #prodetails .single-pro-image {
+    width: 100%;
+  }
+
+  #prodetails .s_prod_details {
+    width: 100%;
+  }
 }
