@@ -68,6 +68,14 @@
   height: 100vh;
 }
 
+
+.test-product {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
 #product-container {
   flex-grow: 6;
   height: 100vh;
