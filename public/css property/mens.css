@@ -68,7 +68,7 @@
 }
 .filter-container {
   display: flex;
-  border: 2px solid blue;
+  /* border: 2px solid blue; */
   width: 100%;
   justify-content: space-between;
   font-size: 1rem;
@@ -86,6 +86,31 @@
   align-items: center;
 
   padding: 5px;
+}
+
+.btn {
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sort-content a {
+  background-color: #f9f9f9;
+  text-decoration: none;
+  color: black;
+  display: block;
+}
+
+.sort-content {
+  display: none;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  position: absolute;
+}
+
+.sort-data:hover .sort-content {
+  display: block;
 }
 
 .filter-container .filter-opt .sort-data {
