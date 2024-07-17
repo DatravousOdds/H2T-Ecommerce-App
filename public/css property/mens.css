@@ -109,9 +109,9 @@
   position: absolute;
 }
 
-.sort-data:hover .sort-content {
+/* .sort-data:hover .sort-content {
   display: block;
-}
+} */
 
 .filter-container .filter-opt .sort-data {
   border-radius: 4px;
@@ -147,6 +147,10 @@
 
 .men-wrapper {
   display: flex;
+}
+
+.show {
+  display: block;
 }
 
 @media (max-width: 1400px) {
