@@ -1,3 +1,5 @@
+const sortBtn = document.getElementById("sort-btn");
+
 const toggleDropdown = () => {
   document.querySelector(".sort-content").classList.toggle("show");
 };
@@ -14,3 +16,5 @@ window.onclick = (event) => {
     }
   }
 };
+
+sortBtn.addEventListener("click", toggleDropdown);
