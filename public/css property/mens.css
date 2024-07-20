@@ -92,6 +92,10 @@
   transition: 0.2s ease-in-out;
 }
 
+.sort-text {
+  font-weight: 500;
+}
+
 .rotate-down {
   transform: rotate(180deg);
    
@@ -174,7 +178,7 @@
 
 .show {
   display: block;
-  font-weight: 700;
+  font-weight: 500;
   border-radius: 12px;
 }
 
