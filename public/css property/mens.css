@@ -92,25 +92,30 @@
   transition: 0.2s ease-in-out;
 }
 
-.sort-text {
+.sort-text, .amount-text {
   font-weight: 500;
 }
 
 .rotate-down {
   transform: rotate(180deg);
-   
 }
 
-#sort-btn {
+#sort-btn, #pg-amount-btn {
   border: transparent;
   font-weight: 700;
 }
 
+
+
 .btn {
-  
   font-weight: 700;
   cursor: pointer;
-  
+}
+
+.pg-btn {
+  border: transparent;
+  font-weight: 700;
+  background-color: transparent;
 }
 .sort-content a {
   background-color: #f9f9f9;
@@ -118,8 +123,6 @@
   color: black;
   display: block;
 }
-
-
 
 .sort-content a:hover {
   background-color: #ddd;
@@ -130,6 +133,7 @@
   background-color: #f9f9f9;
   min-width: 160px;
   overflow: auto;
+  border-radius: 8px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   z-index: 1;

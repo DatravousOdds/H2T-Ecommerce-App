@@ -1,11 +1,16 @@
 const sortSelect = document.getElementById("sort-select");
+const pgSelect = document.getElementById("pg-amount-select");
 const sortIcon = document.getElementById("sort-icon");
+const pgIcon = document.getElementById("pg-icon");
+const pgContainer = document.getElementById("pg-container");
+const sortOption = document.querySelectorAll("#sort-container .sort-content a");
+const pgOption = document.querySelectorAll("#pg-container .sort-content a");
+const sortContainer = document.getElementById("sort-container");
 
-const sortBtn = document.getElementById("sort-btn");
-
-const toggleDropdown = () => {
-  document.querySelector(".sort-content").classList.toggle("show");
-  sortIcon.classList.toggle("rotate-down");
+// toggles dropdown menu params: container, icon
+const toggleDropdown = (container, icon) => {
+  container.querySelector(".sort-content").classList.toggle("show");
+  icon.classList.toggle("rotate-down");
 };
 
 // Close the dropdown menu if the user clicks outside of it
@@ -22,15 +27,26 @@ window.onclick = (event) => {
   }
 };
 
-sortBtn.addEventListener("click", (event) => {
+sortContainer.addEventListener("click", (event) => {
   event.stopPropagation();
-  toggleDropdown();
+  toggleDropdown(sortContainer, sortIcon);
 });
-const sortOption = document.querySelectorAll(".sort-content a");
-// console.log(sortOption);
+
+pgContainer.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleDropdown(pgContainer, pgIcon);
+});
+
 sortOption.forEach((link) => {
   link.addEventListener("click", function (e) {
     e.preventDefault();
     sortSelect.textContent = this.textContent;
+  });
+});
+
+pgOption.forEach((link) => {
+  link.addEventListener("click", function (e) {
+    e.preventDefault();
+    pgSelect.textContent = this.textContent;
   });
 });
