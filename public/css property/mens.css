@@ -17,6 +17,8 @@
 .filter-option {
   width: 200px;
   height: 100px;
+  display: flex;
+  flex-direction: column;
 }
 /* Shop Page */
 
@@ -92,7 +94,8 @@
   transition: 0.2s ease-in-out;
 }
 
-.sort-text, .amount-text {
+.sort-text,
+.amount-text {
   font-weight: 500;
 }
 
@@ -100,12 +103,16 @@
   transform: rotate(180deg);
 }
 
-#sort-btn, #pg-amount-btn {
+#sort-btn,
+#pg-amount-btn {
   border: transparent;
   font-weight: 700;
 }
 
-
+.heading {
+  display: flex;
+  justify-content: space-between;
+}
 
 .btn {
   font-weight: 700;
