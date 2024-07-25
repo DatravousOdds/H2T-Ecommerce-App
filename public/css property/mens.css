@@ -24,7 +24,6 @@
 .filter-container label {
   cursor: pointer;
   display: flex;
-  font-weight: 500;
 }
 
 .filter-container input[type="checkbox"] {
@@ -42,13 +41,12 @@
   border: 0.05em solid black;
 }
 
-.filter-container label:hover::before,
-.filter-container input[type="checkbox"]:hover + label::before {
+.filter-container label:hover::before + label::before {
   background-color: #252525;
 }
 
 .filter-container input[type="checkbox"]:focus + label::before {
-  box-shadow: 0 0 20px black;
+  box-shadow: 0 0 4px black;
 }
 
 .filter-container input[type="checkbox"]:checked + label::before {
@@ -60,8 +58,6 @@
   color: #fff;
 }
 
-
-
 .filter-option {
   width: 200px;
   height: 100%;
@@ -72,6 +68,27 @@
 .filter-list a {
   list-style-type: none;
 }
+
+.filter {
+  padding-bottom: 1rem;
+}
+
+.filter button {
+  text-transform: uppercase;
+}
+
+.shoe-filter-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  grid-auto-rows: minmax(50px, auto);
+}
+
+.shoe-filter-container .shoe-filter {
+  padding-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
 /* Shop Page */
 
 #page-header {
