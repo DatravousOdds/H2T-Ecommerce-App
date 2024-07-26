@@ -60,7 +60,7 @@
 
 .filter-option {
   width: 200px;
-  height: 100%;
+  /* height: 100%; */
   display: flex;
   flex-direction: column;
 }
@@ -140,6 +140,13 @@
   font-weight: 600;
 }
 
+/* Show class for dropdown */
+.filter-container.show {
+  height: auto;
+  transition: height 0.3s ease-out;
+  display: none !important;
+}
+
 #filter-section {
   flex-grow: 0;
   display: flex;
@@ -150,8 +157,11 @@
   height: 100vh;
 }
 .filter-container {
-  display: flex;
+  /* display: flex; */
   /* border: 2px solid blue; */
+  overflow: hidden;
+  height: auto;
+  transition: height 0.3s ease-out;
   width: 100%;
   justify-content: space-between;
   font-size: 1rem;
