@@ -1,4 +1,4 @@
-console.log("Hello toggle details");
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".detail-subheader").forEach(function (expandBtn) {
     expandBtn.addEventListener("click", function () {

@@ -50,11 +50,23 @@ pgOption.forEach((link) => {
     pgSelect.textContent = this.textContent;
   });
 });
-
-
 /** Filter by functions **/
 
-const filterOptions = document.querySelectorAll("#filter-section .filter-option");
-filterOptions.forEach(function(expandBtn) {
-  expandBtn.addEventListener('click')
-})
+document
+  .querySelectorAll(".filter-option .expand-details")
+  .forEach(function (expandDetails) {
+    expandDetails.addEventListener("click", function () {
+      let dropDownFilterOptions = this.nextElementSibling;
+      if (dropDownFilterOptions) {
+        dropDownFilterOptions.classList.toggle("show");
+        let icon = this.querySelector("i");
+        if (icon.classList.contains("fa-plus")) {
+          icon.classList.remove("fa-plus");
+          icon.classList.add("fa-minus"); // change to a minus icon
+        } else {
+          icon.classList.remove("fa-minus");
+          icon.classList.add("fa-plus"); // change back to plus icon
+        }
+      }
+    });
+  });
