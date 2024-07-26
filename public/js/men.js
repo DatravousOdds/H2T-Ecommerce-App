@@ -50,3 +50,11 @@ pgOption.forEach((link) => {
     pgSelect.textContent = this.textContent;
   });
 });
+
+
+/** Filter by functions **/
+
+const filterOptions = document.querySelectorAll("#filter-section .filter-option");
+filterOptions.forEach(function(expandBtn) {
+  expandBtn.addEventListener('click')
+})
