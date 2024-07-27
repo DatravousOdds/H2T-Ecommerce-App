@@ -110,14 +110,26 @@
   color: #fff;
 }
 
+/* Pagination */
+
 #pagination {
   text-align: center;
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
 }
 
+#pagination #pagination-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 10px;
+  text-align: center;
+}
 #pagination a {
   text-decoration: none;
   background-color: #f30c1e;
-  padding: 15px 20px;
+  padding: 12px 20px;
   border-radius: 4px;
   color: #fff;
   font-weight: 600;
