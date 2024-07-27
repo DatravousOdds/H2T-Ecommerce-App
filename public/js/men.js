@@ -50,6 +50,20 @@ pgOption.forEach((link) => {
     pgSelect.textContent = this.textContent;
   });
 });
+
+
+/* selected item function */
+const selectedItem = (element) => {
+  const items = document.querySelectorAll('.sort-content a');
+  console.log(items);
+  items.forEach(item => {
+    item.classList.remove('selected');
+});
+
+  element.classList.add('selected');
+}
+
+
 /** Filter by functions **/
 
 document

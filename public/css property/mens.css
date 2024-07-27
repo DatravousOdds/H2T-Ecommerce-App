@@ -133,6 +133,13 @@
   border-radius: 4px;
   color: #fff;
   font-weight: 600;
+  transition: 0.2s ease-in;
+}
+
+#pagination a:hover {
+  background-color: #fff;
+  color: #000;
+  border: 3px solid red;
 }
 
 #pagination a i {
@@ -197,6 +204,10 @@
   transition: 0.2s ease-in-out;
 }
 
+.amount-text {
+  padding-right: 0.5rem;
+}
+
 .sort-text,
 .amount-text {
   font-weight: 500;
@@ -232,6 +243,7 @@
   text-decoration: none;
   color: black;
   display: block;
+  padding-left: 10px;
 }
 
 .sort-content a:hover {
@@ -241,6 +253,7 @@
 .sort-content {
   display: none;
   background-color: #f9f9f9;
+  text-align: left;
   min-width: 160px;
   overflow: auto;
   border-radius: 8px;
@@ -248,6 +261,12 @@
   border-radius: 12px;
   z-index: 1;
   position: absolute;
+}
+
+/* for selected item */
+.selected {
+  font-weight: 700;
+  color: red;
 }
 
 .breadcrumbs .breadcrumbs-routes {
