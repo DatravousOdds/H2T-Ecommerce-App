@@ -238,6 +238,19 @@
   position: absolute;
 }
 
+.breadcrumbs .breadcrumbs-routes {
+  display: flex;
+}
+.breadcrumbs-routes li {
+  padding-right: 10px;
+  list-style: none;
+}
+
+.breadcrumbs-routes li a {
+  text-decoration: none;
+  color: #000;
+}
+
 /* .sort-data:hover .sort-content {
   display: block;
 } */
