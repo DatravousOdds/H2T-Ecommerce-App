@@ -351,8 +351,6 @@
   border-radius: 12px;
 }
 
-
-
 @media (max-width: 1400px) {
 }
 
@@ -406,6 +404,10 @@
 
   .image-custom {
     height: 188px;
+  }
+
+  #product-container .filter-container {
+    width: 70% !important;
   }
 }
 @media (max-width: 768px) {
