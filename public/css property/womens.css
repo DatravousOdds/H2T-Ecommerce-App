@@ -103,16 +103,11 @@
   text-align: center;
   flex-direction: column;
   padding: 14px;
-  background-color: #F4F3F1;
-}
-
-#page-header h2 {
-  text-transform: uppercase;
 }
 
 #page-header h2,
 #page-header p {
-  color: #000;
+  color: #fff;
 }
 
 /* Pagination */
@@ -226,6 +221,7 @@
 #pg-amount-btn {
   border: transparent;
   font-weight: 700;
+  background-color: transparent;
 }
 
 .heading {
