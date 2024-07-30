@@ -641,7 +641,7 @@ nav .search_box span:hover::after {
 
 .pro-brand {
   text-transform: capitalize;
-  font-size: 1.5em;
+  font-size: .9rem;
   max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -1097,8 +1097,8 @@ footer .rights {
 }
 
 #product1 .des .pro-price .p_rice {
-  font-weight: 900;
-  font-size: 1.9rem;
+  font-weight: 700;
+  font-size: 1.5rem;
 }
 
 .ap_price {
