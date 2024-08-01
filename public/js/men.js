@@ -32,10 +32,10 @@ sortContainer.addEventListener("click", (event) => {
   toggleDropdown(sortContainer, sortIcon);
 });
 
-pgContainer.addEventListener("click", (event) => {
-  event.stopPropagation();
-  toggleDropdown(pgContainer, pgIcon);
-});
+// pgContainer.addEventListener("click", (event) => {
+//   event.stopPropagation();
+//   toggleDropdown(pgContainer, pgIcon);
+// });
 
 sortOption.forEach((link) => {
   link.addEventListener("click", function (e) {

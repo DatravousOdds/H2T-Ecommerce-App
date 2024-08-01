@@ -1,4 +1,13 @@
 :root {
+  --body-text-font-sm: 1rem;
+  --body-text-font-md: 1.125rem;
+  --line-height-1: 1.5;
+  --line-heigh1-2: 1.75;
+
+  /* Buttons */
+  --btn-font-size: 14px;
+  --btn-font-size-md: 1rem;
+
   --bs-breakpoint-xs: 0;
   --bs-breakpoint-sm: 576px;
   --bs-breakpoint-md: 768px;
@@ -103,7 +112,7 @@
   text-align: center;
   flex-direction: column;
   padding: 14px;
-  background-color: #F4F3F1;
+  background-color: #f4f3f1;
 }
 
 #page-header h2 {
@@ -156,6 +165,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
 }
 
 .filter-btn {
@@ -174,7 +184,7 @@
 #filter-section {
   flex-grow: 0;
   display: flex;
-  gap: 10px;
+  gap: 15px;
   flex-direction: column;
   justify-content: flex-start;
   height: 100vh;
@@ -182,7 +192,8 @@
 
 .filter-container .pg-results {
   /* border: 2px solid orange; */
-  font-weight: 700;
+  font-weight: 500;
+  font-size: var(--btn-font-size);
   display: flex;
   align-items: center;
 }
@@ -201,7 +212,7 @@
   padding: 0px 21px;
   height: auto;
   transition: height 0.3s ease-out;
-  width: 100%;
+  width: 95%;
   justify-content: space-between;
   font-size: 1rem;
 }
@@ -225,7 +236,8 @@
 #sort-btn,
 #pg-amount-btn {
   border: transparent;
-  font-weight: 700;
+  font-weight: 500;
+  font-size: var(--btn-font-size);
 }
 
 .heading {
@@ -245,6 +257,7 @@
 }
 .sort-content a {
   background-color: #f9f9f9;
+  font-weight: 500;
   text-decoration: none;
   color: black;
   display: block;
@@ -256,21 +269,20 @@
 }
 
 .sort-content {
+  border: 2px solid black;
   display: none;
   background-color: #f9f9f9;
   text-align: left;
   min-width: 160px;
   overflow: auto;
-  border-radius: 8px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  z-index: 1;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  z-index: 2;
   position: absolute;
 }
 
 /* for selected item */
 .selected {
-  font-weight: 700;
+  font-weight: 700 !important;
   color: red;
 }
 
@@ -327,9 +339,9 @@
 }
 
 #prod-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
   gap: 10px;
 }
 
@@ -352,8 +364,6 @@
 
 .show {
   display: block;
-  font-weight: 500;
-  border-radius: 12px;
 }
 
 @media (max-width: 1400px) {
@@ -386,6 +396,12 @@
   }
 }
 @media (max-width: 992px) {
+  .sort-content {
+    right: 12px;
+  }
+  #filter-section {
+    gap: 20px;
+  }
   #prod-cards {
     row-gap: 0.7rem;
     column-gap: 0.7rem;
