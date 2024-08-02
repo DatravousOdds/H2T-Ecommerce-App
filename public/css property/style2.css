@@ -10,7 +10,7 @@
   --btnPadding: 5px 5px;
   --textUpperCase: uppercase;
   --smallScreenFontSz: 0.98rem;
-  --fontSize-1: 1.25rem;
+  --fontSize-1: 1rem;
   --rightTextAlign: left;
   --paraFontSize: 1rem;
   --paraFontSize-1: 0.125rem;
@@ -173,6 +173,7 @@ button.nav-btn-dd {
   border-radius: 8px;
   padding: var(--btnPadding);
   font-weight: 600;
+  font-size: 16px;
   text-transform: var(--textUpperCase);
   background-color: var(--color-red);
   transition: 0.6s ease-in-out;
@@ -185,6 +186,7 @@ button.nav-btn-dd {
 .signup-btn {
   border: 1px solid rgb(255, 0, 0);
   border-radius: 8px;
+  font-size: 16px;
   padding: var(--btnPadding);
   text-transform: var(--textUpperCase);
   background-color: transparent;
@@ -223,6 +225,7 @@ nav ul li a {
   color: var(--color-white);
   display: block;
   line-height: 2em;
+  font-size: 14px;
   padding: 0.5em 0.62rem;
   text-decoration: none;
   transition: 0.2s ease-in-out;
@@ -501,13 +504,13 @@ nav .search_box span:hover::after {
 .m-hL a {
   border-radius: 2px;
   text-transform: uppercase;
-  padding: 1rem;
+  padding: 16px 32px;
   text-decoration: none;
   color: white;
   font-weight: 600;
   background-color: transparent;
-  border: 2px solid white;
-  font-size: 0.9rem;
+  border: 1px solid white;
+  font-size: 12px;
   transition: 0.2s ease-in-out;
 }
 
@@ -1061,7 +1064,7 @@ footer p {
 }
 
 footer a {
-  font-size: 13px;
+  font-size: 12px;
   text-decoration: none;
   color: #222;
   margin-bottom: 10px;
@@ -1100,7 +1103,7 @@ footer .rights {
 
 #product1 .des .pro-price .p_rice {
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 20px;
 }
 
 .ap_price {
@@ -1885,7 +1888,7 @@ footer .rights {
   }
 
   footer h4 {
-    font-size: 1.2rem;
+    font-size: 14px;
     position: relative;
     padding: 0;
   }
@@ -2060,7 +2063,7 @@ footer .rights {
     border-radius: 2px;
     background-color: transparent;
     margin-left: 0px;
-    font-size: 0.875rem;
+    font-size: 16px;
     transition: 0.5s ease-in-out;
   }
 
