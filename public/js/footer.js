@@ -3,10 +3,14 @@ const createFooter = () => {
 
   footer.innerHTML = `
     <div class="col">
-      <h4>Contact</h4>
-      <p><strong>Address:</strong></p>
-      <p><strong>Phone:</strong></p>
-      <p><strong>Hours:</strong></p>
+      <div class="col">
+      <h4>New Releases</h4>
+      <a href="#">AJ1 Retro Low OG SP Travis Scott Canary</a>
+      <a href="#">Nike KD 4 'NERF'</a>
+      <a href="#">Kobe IV Protro 'Gold Medal'</a>
+      <a href="#">Women's Nike Air Max Sunder</a>
+      <a href="#">Women's Nike Shox R4</a>
+    </div>
       <div class="follow">
         <h4>Follow Us</h4>
         <div class="icon">
@@ -32,6 +36,7 @@ const createFooter = () => {
       <h4>Help</h4>
       <a href="#">Help Center</a>
       <a href="#">Privacy Settings</a>
+      <a href="/contact">Contact Us</a>
       
     </div>
 
