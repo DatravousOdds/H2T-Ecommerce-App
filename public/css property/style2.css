@@ -1865,9 +1865,9 @@ footer .rights {
     display: flex;
     flex-wrap: wrap;
     /* border: 1px solid red; */
-    justify-content: space-around;
+    justify-content: space-between;
     /* align-items: center; */
-    padding: 0;
+    padding: 0px 25px;
     margin: 0;
     height: 90%;
   }

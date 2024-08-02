@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/public/css property/style2.css" />
-  <link rel="stylesheet" href="/public/css property/cart.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap" rel="stylesheet" />
-  <script src="https://kit.fontawesome.com/854f8a6196.js" crossorigin="anonymous"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <title>Head-To-Toes : Home</title>
-  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
-
-
-</head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css property/style2.css" />
+    <link rel="stylesheet" href="css property/cart.css" />
+    <link rel="icon" type="image/png" href="./images/H2T LogoB Small.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/854f8a6196.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    />
+    <title>Head-To-Toes : Cart</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+  </head>
 
 <body>
 
   <section id="header">
+    <nav></nav>
   </section>
 
   <div class="cart-section">
@@ -44,15 +64,28 @@
                      <button class="sm-delete-btn"><img src="images/close.png" alt=""></button>
                 </div>-->
       </div>
-      <p class="section-heading">your wishlist</p>
+      <p class="section-heading">your favorites</p>
       <div class="wishlist">
         <!-- wishlist product goes here -->
       </div>
     </div>
     <div class="checkout-section">
       <div class="checkout-box">
-        <p class="text">your total bill,</p>
-        <h1 class="bill">$00</h1>
+        <h1 class="text">Detail Summary</h1>
+        <div id="subtotal-cart" class="subtotal wrapper">
+          <div>Subtotal</div>
+          <span>-</span>
+        </div>
+        <div id="shipping" class="subtotal wrapper">
+          <div>Estimated Shipping & Handling </div>
+          <span>Free</span>
+        </div>
+        <div id="tax" class="subtotal wrapper">
+          <div>Estimated Tax</div>
+          <span>-</span>
+        </div>
+        
+        
         <a href="/checkout" class="checkout-btn">checkout</a>
       </div>
     </div>
@@ -77,17 +110,7 @@
   <script src="js/footer.js"></script>
   <script src="js/home.js"></script>
   <script src="js/cart.js"></script>
-  <script>
-    // sidebar
-    $(function () {
-      $('.nav-btn-dd').click(function () {
-        $('#menu').addClass('active')
-      })
-      $('.close-btn').click(function () {
-        $('#menu').removeClass('active')
-      })
-    })
-  </script>
+ 
 
 </body>
 
