@@ -1,0 +1,58 @@
+#contact-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+#contact-form {
+  /* border: 2px solid red; */
+}
+.faqs-title {
+  text-align: center;
+}
+#faqs {
+  border: 2px solid rebeccapurple;
+  width: 100px;
+  height: 100px;
+}
+
+.faqs-detail-styles {
+  display: flex;
+  justify-content: space-between;
+}
+
+.faqs-styles {
+  flex-direction: column !important;
+}
+
+#form-details form button {
+  width: 100% !important;
+  background-color: #f30c1e;
+  color: #fff;
+}
+
+#contact-info .info-container {
+  width: 400px;
+  height: 250px;
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+}
+
+#contact-info {
+	display: flex;
+	justify-content: space-around;
+	/* align-items: center; */
+}
+#form-details form {
+  width: 800px !important;
+}
+
+#faqs-details {
+  display: flex;
+  width: 600px;
+  /* justify-content: center; */
+  margin: 30px;
+  padding: 10px 80px;
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+  /* align-items: center; */
+}
