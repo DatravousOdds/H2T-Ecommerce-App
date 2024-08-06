@@ -37,6 +37,7 @@ const createFooter = () => {
       <a href="#">Help Center</a>
       <a href="#">Privacy Settings</a>
       <a href="/contact">Contact Us</a>
+      <a href="/contact">FAQs</a>
       
     </div>
 

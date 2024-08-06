@@ -55,12 +55,11 @@
   text-decoration: none;
   text-transform: capitalize;
   color: #000;
-  
 }
 
 .faqs-detail-styles h6 {
   line-height: 24px;
-  text-decoration: none solid rgb(36,36,36);
+  text-decoration: none solid rgb(36, 36, 36);
 }
 
 #contact-info .info-container {
@@ -94,6 +93,12 @@
   /* align-items: center; */
 }
 
+@media (max-width: 1024px) {
+  #contact-info .info-container {
+    width: 100%;
+  }
+}
+
 @media (max-width: 992px) {
   #contact-wrapper {
     flex-direction: column;
@@ -114,4 +119,30 @@
   #faqs-details {
     width: 90%;
   }
+}
+
+@media (max-width: 768px) {
+  .header-title p {
+    font-size: 14px;
+  }
+
+  #form-details {
+    width: 100%;
+  }
+
+  #faqs-details {
+    width: 100%;
+    padding: 10px 14px;
+  }
+
+  #contact-info {
+    flex-direction: column;
+  }
+
+  #contact-info .info-container {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
 }
