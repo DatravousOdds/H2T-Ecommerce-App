@@ -17,7 +17,7 @@ const newNav = () => {
     <div id="ss-icon">
       <div class="icon-container">
         <div>
-          <a href="cart.html" class="sh"><i class="fa-solid  fa-cart-shopping"></i></a>
+          <a href="/cart" class="sh"><i class="fa-solid fa-bag-shopping"></i></a>
         </div>
         <div>
           <button class="nav-btn-dd btn-1 nav-icon " type="button"><i
@@ -37,7 +37,7 @@ const newNav = () => {
       <li><button class="login-btn"><a class='center-text' href="/login">Login</a></button></li>
       <li><button class="signup-btn"><a class='center-text' href=/signup>Signup</a></button></li>
       <li><a href="#"><i class="fa-regular fa-bell"></i></a></li>
-      <li><a href="/cart" class="sh"><i class="fa-solid fa-cart-shopping"></i></a></li>
+      <li><a href="/cart" class="sh"><i class="fa-solid fa-bag-shopping"></i></a></li>
       <li id="user_profile" class="hide"><a href="/profile"><i class="fa-regular fa-user user_profile"></i></a></liv>
     </ul>
   </div>
