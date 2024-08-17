@@ -1,3 +1,5 @@
+"use strict";
+
 // importing packages
 const express = require("express");
 const admin = require("firebase-admin");
