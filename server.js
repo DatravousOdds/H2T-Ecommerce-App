@@ -92,7 +92,12 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(staticPth, "login.html"));
 });
 
-//sigup route
+//profile route
+app.get("/profile", (req, res) => {
+  res.sendFile(path.join(staticPth, "profile.html"))
+});
+
+//signup route
 app.get("/signup", (req, res) => {
   res.sendFile(path.join(staticPth, "signup.html"));
 });
