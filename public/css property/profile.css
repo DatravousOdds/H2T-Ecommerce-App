@@ -1,0 +1,65 @@
+form {
+  background-color: transparent !important;
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+    width: 100% !important;
+}
+.lf-wrapper li {
+  text-decoration: none;
+  list-style: none;
+}
+
+i {
+  color: black;
+}
+
+#left-nav-wrapper {
+  border: 2px solid red;
+  height: 100%;
+  padding: 1rem;
+}
+.lf-wrapper li a {
+  padding: 10px 20px;
+}
+
+#profile-section {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  display: flex;
+}
+
+.lf-wrapper li {
+  text-decoration: none;
+  list-style: none;
+  padding: 10px 0px;
+  font-size: 1.5rem;
+  color: #606060;
+}
+
+#right-navigation {
+  width: 500px;
+  height: 500px;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-wrapper {
+  display: flex;
+}
+
+.pfp-section img{
+    
+}
+
+#bio-section {
+    display: flex;
+    flex-direction: column;
+
+}
