@@ -1,7 +1,22 @@
 button {
   border: 1px solid #1a5eeb;
-  border-radius: 12px;
-  color: transparent;
+  border-radius: 8px !important;
+  font-weight: 500;
+  color: #1a5eeb;
+  background-color: transparent;
+  padding: 10px;
+}
+
+textarea {
+  border-radius: 8px;
+}
+
+.spacing {
+  padding: 10px 0px;
+}
+
+.timestamp {
+  font-size: 1rem;
 }
 
 form {
@@ -48,19 +63,28 @@ i {
 }
 
 #right-navigation {
-  width: 500px;
+  width: 50%;
   height: 500px;
   border: 2px solid black;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 10px;
 }
 
 .nav-wrapper {
   display: flex;
 }
 
-.pfp-section img {
+#pfp-section {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#pfp-section img {
+  height: 30%;
 }
 
 #bio-section {
