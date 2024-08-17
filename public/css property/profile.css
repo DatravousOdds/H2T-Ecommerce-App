@@ -1,3 +1,9 @@
+button {
+  border: 1px solid #1a5eeb;
+  border-radius: 12px;
+  color: transparent;
+}
+
 form {
   background-color: transparent !important;
   display: flex;
@@ -5,7 +11,7 @@ form {
 }
 
 input {
-    width: 100% !important;
+  width: 100% !important;
 }
 .lf-wrapper li {
   text-decoration: none;
@@ -54,12 +60,10 @@ i {
   display: flex;
 }
 
-.pfp-section img{
-    
+.pfp-section img {
 }
 
 #bio-section {
-    display: flex;
-    flex-direction: column;
-
+  display: flex;
+  flex-direction: column;
 }
