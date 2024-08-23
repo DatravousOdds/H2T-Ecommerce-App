@@ -1034,6 +1034,7 @@ nav .search_box span:hover::after {
 }
 
 footer {
+  padding: 0px 100px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
