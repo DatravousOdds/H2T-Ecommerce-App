@@ -1678,45 +1678,6 @@ footer .rights {
   #feature .fe-box {
     width: 45%;
   }
-  /* .bg-pagination-reviews {
-    display: none;
-  }
-
-  .pagination-reviews {
-    display: flex;
-  } */
-  /* .nav-items {
-    width: 95vw;
-    justify-content: space-between;
-  } */
-
-  /* .triggerSearch {
-    font-size: 1.5rem;
-  } */
-
-  /* .list {
-    display: none;
-  } */
-
-  /* #menu {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 250px;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.9);
-    box-shadow: 0 40px 60px rgba(0, 0, 0, 0.1);
-    color: #fff;
-    padding: 40px;
-    overflow-y: auto;
-    transition: 0.8s ease-in-out;
-    z-index: 1;
-  } */
-
-  /* #menu.active {
-    right: 0;
-    transition: 0.5s;
-  } */
 
   #menu ul {
     font-size: 0.8rem;
@@ -1727,57 +1688,6 @@ footer .rights {
     text-decoration: none;
     line-height: 2em;
   }
-
-  /* #menu ul li a:hover {
-    color: var(--color-red);
-    background: transparent;
-  } */
-
-  /* button.close-btn {
-    font-size: 24px;
-    color: white;
-    border: none;
-    background: none;
-    position: absolute;
-    top: 1rem;
-    left: -10rem;
-    right: 0;
-    margin-right: 10px;
-    cursor: pointer;
-    transition: 0.8s;
-    display: flex;
-    
-  } */
-
-  /* .icon-container {
-    display: none;
-    align-items: center;
-  } */
-
-  /* nav button.nav-btn-dd {
-    display: flex;
-    padding: auto 16px;
-    font-size: 1.67rem;
-    background: none;
-    cursor: pointer;
-  } */
-
-  .signup-btn {
-    /* margin-right: 2rem; */
-  }
-
-  /* button.close-btn {
-    font-size: 22px;
-    color: white;
-    border: none;
-    background: none;
-    position: absolute;
-    top: 1rem;
-    left: 19px;
-    right: 0;
-    margin-right: 10px;
-    display: flex;
-  } */
 
   nav .search_box {
     display: flex;
@@ -1906,7 +1816,9 @@ footer .rights {
   }
 
   footer .col {
+    max-width: 160px;
     flex-basis: 170px;
+
   }
 
   footer .install img {
@@ -1942,6 +1854,7 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
+  
   #hero .hero-text-container {
     flex-direction: column;
   }
