@@ -4,15 +4,22 @@
   font-weight: 500;
   color: #1a5eeb;
   background-color: transparent;
-  padding: 10px;
+  padding: 10px 25px;
 }
 
 textarea {
+  padding: 10px;
+  height: 105px;
+  width: 225px;
   border-radius: 8px;
 }
 
 .spacing {
   padding: 10px 0px;
+}
+
+.spacing-1 {
+  padding: 0px 10px;
 }
 
 .timestamp {
@@ -25,6 +32,12 @@ input {
 .lf-wrapper li {
   text-decoration: none;
   list-style: none;
+  cursor: pointer;
+  transition: 0.5s ease-in-out;
+}
+
+.lf-wrapper li:hover {
+  transform: scale(1.2);
 }
 
 i {
@@ -47,7 +60,11 @@ i {
   border-radius: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
+}
+#user-stats {
+  padding: 0px 10px;
+  display: flex;
 }
 
 #timestamp-container {
@@ -57,7 +74,6 @@ i {
 #follower {
   display: flex;
   flex-direction: column;
-  
 }
 
 #timestamp-container i {
@@ -103,4 +119,46 @@ i {
 #bio-section {
   display: flex;
   flex-direction: column;
+}
+
+/* Extra small devices (phones, <576px) */
+@media (max-width: 575.98px) {
+  #left-navigation {
+    display: none;
+  }
+
+  #profile-section {
+    flex-direction: column;
+  }
+
+  #right-navigation {
+    width: 500px;
+  }
+
+  #timestamp-container {
+    justify-content: center;
+  }
+  textarea {
+    width: 100%;
+  }
+
+  .section-p1 {
+    padding: 30px 45px !important;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
 }
