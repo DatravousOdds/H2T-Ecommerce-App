@@ -110,7 +110,7 @@ p {
   display: flex;
   flex-direction: row;
   padding: 10px 30px;
-  /* justify-content: center; */
+  justify-content: center;
 }
 
 button.normal {

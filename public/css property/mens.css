@@ -142,19 +142,28 @@
 }
 #pagination a {
   text-decoration: none;
-  background-color: #f30c1e;
+  background-color: transparent;
   padding: 12px 20px;
   border-radius: 4px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+  border:none;
+  color: #000;
+  font-size: 16px;
+  font-weight: 500;
   transition: 0.2s ease-in;
 }
 
+.curr-pg {
+  font-weight: 700;
+  font-size: 16px;
+}
 #pagination a:hover {
-  background-color: #fff;
-  color: #000;
-  border: 3px solid red;
+  background-color: #202020;
+  color: #fff;
+  /* border: 3px solid ; */
+}
+
+.breadcrumbs-routes:nth-last-child(4) {
+  font-weight: 800;
 }
 
 #pagination a i {
@@ -367,10 +376,10 @@
   display: block;
 }
 
-@media (max-width: 1400px) {
+@media (min-width: 1200px) {
 }
 
-@media (max-width: 1200px) {
+@media (min-width: 992px) and (max-width: 1199.98px) {
   #prod-cards {
     row-gap: 0.7rem;
     column-gap: 0.7rem;
@@ -396,7 +405,7 @@
     height: 188px;
   }
 }
-@media (max-width: 992px) {
+@media (min-width: 768px) and (max-width: 991.98px) {
   .sort-content {
     right: 12px;
   }
@@ -429,10 +438,14 @@
   }
 
   #product-container .filter-container {
-    width: 70% !important;
+    width: 50% !important;
+  }
+  #product1 .pro {
+    width: 250px;
+    max-width: 250px;
   }
 }
-@media (max-width: 768px) {
+@media (min-width: 576px) and (max-width: 767.98px) {
   #prod-cards {
     row-gap: 0.7rem;
     column-gap: 0.7rem;
@@ -444,7 +457,7 @@
     width: 100%;
   }
 }
-@media (max-width: 576px) {
+@media (max-width: 575.98px) {
   #filter-section {
     display: none;
   }
