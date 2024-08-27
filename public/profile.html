@@ -81,40 +81,48 @@
             <div id="pfp-section" class="pfp-img">
               <img src="/images/1.png" alt="profile picture" />
             </div>
-            <!-- Bio Section -->
-            <div id="bio-section">
-              <div id="timestamp-container" class="ts-container">
-                <i class="fa-solid fa-clock"></i>
-                <h3 class="timestamp">Joined 2024</h3>
+            <div id="pfp-section-1">
+              <!-- Username Section -->
+              <div id="name-infor">
+                <div id="timestamp-container" class="ts-container">
+                  <i class="fa-solid fa-clock"></i>
+                  <h3 class="timestamp">Joined 2024</h3>
+                </div>
+                <div id="wrapper-row" class="wrapper-row">
+                  <p id="username">@sara.almasi</p>
+                  <button id="edit_profile_btn">Edit Profile</button>
+                </div>
               </div>
-
-              <div class="btn-wrapper">
-                <button>
-                  <i
-                    class="fa-solid fa-arrow-up-from-bracket"
-                    style="padding: 5px"
-                  ></i
-                  >Upload
-                </button>
-                <button>Remove</button>
+              <!-- User Stats Section -->
+              <div id="user-stats">
+                <div id="followers" class="spacing-1 center-text">
+                  <div><h5>12.3k</h5></div>
+                  <div id="stats-counter">followers</div>
+                </div>
+                <div id="following" class="spacing-1 center-text">
+                  <div><h5>20k</h5></div>
+                  <div id="stats-counter">following</div>
+                </div>
+                <div id="rating" class="spacing-1 center-text">
+                  <div><h5>3.5k</h5></div>
+                  <div id="stats-counter">Rating</div>
+                </div>
               </div>
-              <div id="bio" class="spacing">
-                <textarea placeholder="Enter a bio..."></textarea>
-              </div>
-            </div>
-            <!-- User Stats Section -->
-            <div id="user-stats">
-              <div id="followers" class="spacing-1">
-                <div><h5>12</h5></div>
-                <div>followers</div>
-              </div>
-              <div id="following" class="spacing-1">
-                <div><h5>20</h5></div>
-                <div>following</div>
-              </div>
-              <div id="rating" class="spacing-1">
-                <div><h5>3.5</h5></div>
-                <div>Rating</div>
+              <!-- Bio Section -->
+              <div id="bio-section">
+                <div class="btn-wrapper">
+                  <button id="upload-btn">
+                    <i
+                      class="fa-solid fa-arrow-up-from-bracket"
+                      style="padding: 5px"
+                    ></i
+                    >Upload
+                  </button>
+                  <button id="remove-btn">Remove</button>
+                </div>
+                <div id="bio" class="spacing">
+                  <textarea placeholder="Enter a bio..."></textarea>
+                </div>
               </div>
             </div>
           </div>
