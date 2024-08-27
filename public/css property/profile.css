@@ -11,6 +11,11 @@ p {
   align-items: center;
 }
 
+.edit-btn {
+  border: transparent;
+  background-color: #EFEFEF;
+}
+
 button {
   border-radius: 8px !important;
   font-weight: 500;
