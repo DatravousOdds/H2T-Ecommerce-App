@@ -1,5 +1,3 @@
-
-
 /* CSS */
 .button-31 {
   background-color: #222;
@@ -9,7 +7,7 @@
   color: #fff;
   cursor: pointer;
   display: inline-block;
-  font-family: "Farfetch Basis","Helvetica Neue",Arial,sans-serif;
+  font-family: "Farfetch Basis", "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.5;
@@ -31,7 +29,7 @@
 
 .button-31:hover,
 .button-31:focus {
-  opacity: .75;
+  opacity: 0.75;
 }
 
 .button-16:hover {
@@ -139,8 +137,8 @@ button {
 }
 
 .lf-wrapper li:hover {
-  transform: scale(1.2);
-  background-color: #d7d7d7;
+  transform: scale(1.1);
+  background-color: #d5d5d5;
 }
 
 #left-nav-wrapper i {
@@ -151,6 +149,7 @@ button {
   /* border: 2px solid red; */
   height: 100%;
   padding: 1rem;
+  background-color: #f8f7f7;
 }
 .lf-wrapper li a {
   padding: 10px 20px;
@@ -219,6 +218,7 @@ button {
 #right-navigation {
   width: 50%;
   height: 100%;
+  flex-direction: column;
   /* border: 2px solid black; */
   display: flex;
   align-items: center;
@@ -259,6 +259,7 @@ button {
   margin: 8px 0;
   display: inline-block;
   border: 1px solid #ccc;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
   border-radius: 4px;
   box-sizing: border-box;
 }
