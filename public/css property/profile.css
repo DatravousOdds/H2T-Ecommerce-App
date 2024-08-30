@@ -92,13 +92,27 @@ button {
   text-align: center;
 }
 
+#bio {
+  display: flex;
+  justify-content: center;
+}
+
 #upload-btn {
   border: 1px solid #1a5eeb;
   color: #1a5eeb;
 }
+.btn-wrapper {
+  gap: 12px;
+  display: flex;
+  justify-content: center;
+}
 
-#upload-btn i {
-  color: #1a5eeb;
+#bio-section .btn-wrapper #remove-btn:hover {
+  box-shadow: rgba(0, 0, 0, 0.03) 0px 4px 4px 0px;
+  background-color: #202124;
+  color: #fff;
+  transition: 0.2s ease-in-out;
+  border: transparent;
 }
 
 #remove-btn {
@@ -112,10 +126,19 @@ button {
 
 #bio-section textarea {
   padding: 10px;
+  line-height: 1.5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 1px 1px 1px #999;
   height: 105px;
-  width: 225px;
+  max-width: 100%;
   border-radius: 8px;
-  width: 100%;
+  width: 50%;
+}
+
+#bio-section textarea:focus {
+  border: 2px solid grey;
+  outline: transparent;
 }
 
 .spacing {
@@ -173,6 +196,7 @@ button {
 #user-stats {
   padding: 0px 10px;
   display: flex;
+  justify-content: center;
   font-weight: 600;
   text-transform: capitalize;
 }
@@ -212,11 +236,14 @@ button {
   padding: 0px 0px !important;
 }
 .lf-wrapper li {
+  display: flex;
+  align-items: center;
   text-decoration: none;
   list-style: none;
   padding: 10px 0px;
   font-size: 14px;
   color: #606060;
+  border-radius: 12px;
 }
 
 #right-navigation {
@@ -249,6 +276,8 @@ button {
 
 #pfp-section img {
   height: 150px;
+  border-radius: 100%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
 }
 
 #bio-section {
@@ -320,6 +349,7 @@ button {
 
   #user-stats {
     padding: 16px 10px;
+    justify-content: center;
   }
 
   .lf-wrapper li {
@@ -352,6 +382,12 @@ button {
 
   ul {
     padding: 0 !important;
+  }
+
+  .btn-wrapper {
+    gap: 12px;
+    display: flex;
+    justify-content: center;
   }
 }
 
