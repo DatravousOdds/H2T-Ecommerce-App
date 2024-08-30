@@ -45,6 +45,9 @@
 
 .cancel {
   background-color: #e51a3c;
+  color: #000;
+  border: 2px solid #d7d7d7;
+  background-color: #fff;
 }
 
 p {
