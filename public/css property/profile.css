@@ -24,7 +24,7 @@
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  width: 100%;
+  /* width: 100%; */
 }
 
 .button-31:hover,
@@ -41,6 +41,10 @@
 .button-16:focus {
   border-color: #4285f4;
   outline: none;
+}
+
+.cancel {
+  background-color: #e51a3c;
 }
 
 p {
@@ -162,7 +166,7 @@ button {
   width: 100%;
   padding: 10px;
   border-radius: 12px;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   /* justify-content: center; */
 }
@@ -205,17 +209,18 @@ button {
 }
 
 .section-p1 {
-  padding: 30px 80px !important;
+  padding: 0px 0px !important;
 }
 .lf-wrapper li {
   text-decoration: none;
   list-style: none;
   padding: 10px 0px;
-  font-size: 1.5rem;
+  font-size: 14px;
   color: #606060;
 }
 
 #right-navigation {
+  gap: 10px;
   width: 50%;
   height: 100%;
   flex-direction: column;
@@ -229,6 +234,10 @@ button {
 .nav-wrapper {
   display: flex;
   gap: 24px;
+}
+
+.pfp {
+  display: block;
 }
 
 #pfp-section {
