@@ -1,3 +1,6 @@
+:root {
+}
+
 /* CSS */
 .button-31 {
   background-color: #222;
@@ -266,9 +269,46 @@ button {
   padding: 10px;
 }
 
+.payment-wrapper {
+  width: 600px;
+  height: 100%;
+  border: 2px solid black;
+  border-radius: 12px;
+  display: flex;
+}
+
+.inner-wrapper {
+  width: 300px;
+  height: 200px;
+  border: 2px solid black;
+  margin: 20px 20px;
+  border-radius: 12px;
+}
+
+.wallet-balance {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 .nav-wrapper {
   display: flex;
   gap: 24px;
+}
+
+.usd {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.usd-img {
+  border: 2px solid rgb(15, 15, 15);
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
 }
 
 .pfp {
