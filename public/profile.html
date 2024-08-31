@@ -250,10 +250,40 @@
               <p>Collected from order(s)</p>
             </div>
           </div>
-          <!-- payments-->
-          <div class="inner-wrapper">Payments</div>
+          <!-- payments section-1 -->
+          <div class="inner-wrapper" id="payment-section-1">
+            <h2>Payments</h2>
+            <form action="/" method="POST">
+              <div class="payment-section">
+                <label for="card-name-1">Name on Card</label>
+                <input type="text" id="card-name-1" name="card_name_1" />
+              </div>
+
+              <div>
+                <label class="payment-section">Expiry</label>
+                <input type="text" id="card-expiry" name="card_expiry" />
+              </div>
+
+              <div class="payment-section">
+                <label class="payment-section">Name on Card</label>
+                <input type="text" id="card-name-2" name="card_expiry" />
+              </div>
+            </form>
+          </div>
           <!-- cards on file-->
-          <div class="inner-wrapper">Card on file</div>
+          <div class="inner-wrapper">
+            <h2>Cards on File</h2>
+            <div class="card-wrapper">
+              <div >
+                <p>Visa Debit ending in 5338</p>
+                <i class="fa-brands fa-cc-visa"></i>
+              </div>
+              
+              <div class="card-options">
+                <i class="fa-regular fa-trash-can"></i><button>Edit</button>
+              </div>
+            </div>
+          </div>
           <!-- Payment reports and taxes -->
           <div class="inner-wrapper">Payment reports and taxes</div>
         </div>

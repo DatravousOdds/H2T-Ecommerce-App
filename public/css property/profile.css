@@ -284,13 +284,14 @@ button {
 }
 
 .inner-wrapper {
-  max-width: 255px;
-  width: 100%;
+  /* max-width: 255px; */
+  /* width: 100%; */
   height: 100%;
   border: 2px solid #d9d9d9;
   margin: 20px 20px;
   border-radius: 12px;
   padding: 10px;
+  box-shadow: 0px 4px 16px 0px #27313a4a;
 }
 
 .inner-wrapper .payouts {
@@ -305,6 +306,81 @@ button {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+
+#payment-section-1 {
+  width: 100%;
+  max-width: 630px;
+}
+
+.payment-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.payment-section label {
+  flex-basis: 100%;
+  margin-bottom: 5px;
+}
+
+.card-wrapper {
+  box-shadow: 0px 4px 16px 0px #27313a4a;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 500px;
+}
+
+.card-wrapper p {
+  font-weight: 500;
+}
+
+.card-wrapper .card-options {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.card-wrapper div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.card-options i {
+  font-size: 32px;
+}
+
+.card-options button {
+  padding: 8px;
+  font-weight: 500;
+}
+
+.card-options button:hover {
+  background-color: #000;
+  color: white;
+  transition: 0.2s ease-in-out;
+}
+
+.payment-section input {
+  flex-basis: 48%;
+  padding: 8px 8px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+#payment-section-1 form {
+  background-color: transparent;
+  display: block;
+}
+
+.payment-section input #card-name-2 {
+  flex-basis: 100%; /* Full-width input for the second row */
 }
 
 .nav-wrapper {
@@ -340,13 +416,13 @@ button {
 .withdraw {
   border: transparent;
   color: white;
-  background-color: #4A73C7;
+  background-color: #4a73c7;
 }
 
 .add-funds {
   border: transparent;
   color: white;
-  background-color: #04CD53;
+  background-color: #04cd53;
 }
 
 .pfp {
