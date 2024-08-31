@@ -47,24 +47,34 @@
           <div id="left-nav-wrapper" class="lf-wrapper">
             <ul>
               <li>
-                <a href="#"><i class="fa-regular fa-user"></i></a>Profile
+                <a href="#" class="tab-btn" data-tab="profile"
+                  ><i class="fa-regular fa-user"></i></a
+                >Profile
               </li>
               <li>
-                <a href="#"><i class="fa-solid fa-wallet"></i></a>Payment
-                Information
+                <a href="#" class="tab-btn" data-tab="payment information"
+                  ><i class="fa-solid fa-wallet"></i></a
+                >Payment Information
               </li>
               <li>
-                <a href="#"><i class="fa-solid fa-hand-holding-dollar"></i></a
+                <a href="#" class="tab-btn" data-tab="selling"
+                  ><i class="fa-solid fa-hand-holding-dollar"></i></a
                 >Selling
               </li>
               <li>
-                <a href="#"><i class="fa-solid fa-bookmark"></i></a>Favorites
+                <a href="#" class="tab-btn" data-tab="favorites"
+                  ><i class="fa-solid fa-bookmark"></i></a
+                >Favorites
               </li>
               <li>
-                <a href="#"><i class="fa-solid fa-bell"></i></a>Notification
+                <a href="#" class="tab-btn" data-tab="notification"
+                  ><i class="fa-solid fa-bell"></i></a
+                >Notification
               </li>
               <li>
-                <a href="#"><i class="fa-solid fa-sack-dollar"></i></a>Purchases
+                <a href="#" class="tab-btn" data-tab="purchases"
+                  ><i class="fa-solid fa-sack-dollar"></i></a
+                >Purchases
               </li>
               <li>
                 <a href="#"><i class="fa-solid fa-gear"></i></a>Settings
@@ -229,29 +239,38 @@
                 </div>
                 <h1>$0.00</h1>
                 <div class="btn-wrapper">
-                  <button>Withdraw</button>
-                <button>Add Funds</button>
+                  <button class="withdraw">Withdraw</button>
+                  <button class="add-funds">Add Funds</button>
                 </div>
-                
               </div>
             </div>
-            <div class="inner-wrapper payouts"></div>
+            <div class="inner-wrapper payouts">
+              <h4>Upcoming Payouts</h4>
+              <h1>$0.00</h1>
+              <p>Collected from order(s)</p>
+            </div>
           </div>
+          <!-- payments-->
+          <div class="inner-wrapper">Payments</div>
+          <!-- cards on file-->
+          <div class="inner-wrapper">Card on file</div>
+          <!-- Payment reports and taxes -->
+          <div class="inner-wrapper">Payment reports and taxes</div>
         </div>
         <!-- Favorites Content-->
-        <div class="right-navigation" id="payment" style="display: none">
+        <div class="right-navigation" id="favorites" style="display: none">
           Favorites
         </div>
         <!-- Notification Content-->
-        <div class="right-navigation" id="payment" style="display: none">
+        <div class="right-navigation" id="notification" style="display: none">
           Notification
         </div>
         <!-- Purchases Content-->
-        <div class="right-navigation" id="payment" style="display: none">
+        <div class="right-navigation" id="purchases" style="display: none">
           Purchases
         </div>
         <!-- Settings Content-->
-        <div class="right-navigation" id="payment" style="display: none">
+        <div class="right-navigation" id="settings" style="display: none">
           Settings
         </div>
       </div>
@@ -273,6 +292,7 @@
     </section>
 
     <footer></footer>
+    <script src="js/profile.js"></script>
     <script src="js/footer.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/home.js"></script>
