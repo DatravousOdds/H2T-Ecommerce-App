@@ -30,6 +30,25 @@
   /* width: 100%; */
 }
 
+.p1 {
+  padding: 10px 5px;
+}
+
+#filter-stmts i {
+  font-size: 24px;
+}
+
+#filter-stmts p {
+  font-weight: 500;
+}
+
+.default-button {
+  border-radius: 8px;
+  background-color: transparent;
+  border: 2px solid #d9d9d9;
+  padding: 5px 8px;
+}
+
 .button-31:hover,
 .button-31:focus {
   opacity: 0.75;
@@ -280,18 +299,17 @@ button {
   border: 1px solid #d9d9d9;
   border-radius: 12px;
   display: flex;
-  box-shadow: 0px 4px 16px 0px #27313a4a;
+  /* box-shadow: 0px 4px 16px 0px #27313a4a; */
 }
 
 .inner-wrapper {
-  /* max-width: 255px; */
-  /* width: 100%; */
+  width: 630px;
   height: 100%;
   border: 2px solid #d9d9d9;
   margin: 20px 20px;
   border-radius: 12px;
   padding: 10px;
-  box-shadow: 0px 4px 16px 0px #27313a4a;
+  /* box-shadow: 0px 4px 16px 0px #27313a4a; */
 }
 
 .inner-wrapper .payouts {
@@ -326,7 +344,7 @@ button {
 }
 
 .card-wrapper {
-  box-shadow: 0px 4px 16px 0px #27313a4a;
+  /* box-shadow: 0px 4px 16px 0px #27313a4a; */
   border-radius: 4px;
   border: 1px solid #d9d9d9;
   padding: 10px;
@@ -386,6 +404,25 @@ button {
   flex-basis: 100%; /* Full-width input for the second row */
 }
 
+.filter-container {
+  padding-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-container .filter-2 div i {
+  align-items: center;
+}
+
+
+
+
+
+.statement-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .nav-wrapper {
   display: flex;
   gap: 24px;
@@ -401,6 +438,42 @@ button {
   font-size: 1.5rem;
 }
 
+.outer-wrapper {
+  border: 2px solid #E1E1E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px 16px;
+  border-radius: 8px;
+  flex-direction: column;
+}
+
+.outer-wrapper a {
+  text-wrap: nowrap;
+  font-weight: 500;
+  color: #FFFF;
+  border-radius: 10px;
+  text-decoration: none;
+  background-color: #D82C2F;
+  padding: 8px 12px;
+  transition: 0.2s ease-in-out;
+
+}
+.outer-wrapper a:hover {
+  background-color: #B02A2E;
+  color: #FFFFFF;
+}
+
+.outer-wrapper .stmt-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.filter-container .filter-1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .usd {
   display: flex;
   justify-content: center;
@@ -409,8 +482,8 @@ button {
   padding: 10px;
 }
 
-.usd-img {
-  border: 2px solid rgb(15, 15, 15);
+.usd-img img {
+  /* border: 2px solid rgb(15, 15, 15); */
   width: 50px;
   height: 50px;
   border-radius: 100%;
@@ -454,6 +527,23 @@ button {
   background-color: transparent;
   width: 100%;
   display: block;
+}
+
+.stmt {
+  display: flex;
+  justify-content: space-between;
+  gap: 6rem;
+  align-items: center;
+}
+
+.stmt p {
+  font-size: 24px;
+  font-weight: 500;
+  text-wrap: nowrap;
+}
+
+.stmt i {
+  font-size: 24px;
 }
 
 .pfp-1 input[type="text"] {
@@ -561,6 +651,27 @@ button {
 
   .usd h1 {
     font-size: 3rem;
+  }
+
+  .inner-wrapper {
+    width: 80%;
+  }
+
+  #cards-on-file {
+    width: 100%;
+  }
+
+  #payments-reports {
+    width: 500px;
+    max-width: 100%;
+  }
+
+  .card-wrapper {
+    width: 80%;
+  }
+
+  .stmt p {
+    font-size: 16px;
   }
 }
 

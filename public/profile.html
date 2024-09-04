@@ -234,7 +234,9 @@
               <h4>Wallet Balance</h4>
               <div class="usd">
                 <div class="usd-wrapper">
-                  <div class="usd-img"></div>
+                  <div class="usd-img">
+                    <img src="images/flag.jpg" alt="" />
+                  </div>
                   <p>USD</p>
                 </div>
                 <h1>$0.00</h1>
@@ -271,7 +273,7 @@
             </form>
           </div>
           <!-- cards on file-->
-          <div class="inner-wrapper">
+          <div class="inner-wrapper" id="cards-on-file">
             <h2>Cards on File</h2>
             <!-- COF Container-->
             <div class="card-wrapper">
@@ -279,7 +281,7 @@
                 <p>Visa Debit ending in 5338</p>
                 <i class="fa-brands fa-cc-visa"></i>
               </div>
-              
+
               <div class="card-options">
                 <i class="fa-regular fa-trash-can"></i><button>Edit</button>
               </div>
@@ -295,9 +297,79 @@
                 <i class="fa-regular fa-trash-can"></i><button>Edit</button>
               </div>
             </div>
+            <!-- COF Container-->
+            <div class="card-wrapper">
+              <div>
+                <p>Add cards or bank accounts</p>
+              </div>
+
+              <div class="card-options">
+                <i class="fa-solid fa-plus"></i>
+              </div>
+            </div>
           </div>
           <!-- Payment reports and taxes -->
-          <div class="inner-wrapper">Payment reports and taxes</div>
+          <div class="inner-wrapper" id="payments-reports">
+            <div class="filter-container">
+              <div class="filter-1 default-button">
+                <i class="fa-solid fa-filter"></i>
+                <p>Filter</p>
+              </div>
+              <div class="">
+                <div class="default-button filter-1" id="filter-stmts">
+                  <i class="fa-solid fa-angle-down"></i>
+                  <p>2024</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 style="color: #3a3a3a" class="p1">
+                Statements <i class="fa-solid fa-angle-down"></i>
+              </h4>
+            </div>
+
+            <!-- Statements-->
+            <div class="outer-wrapper">
+              <div>
+                <div class="stmt-wrapper">
+                  <div class="inner-wrapper stmt">
+                    <p>Feb Statements</p>
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                  </div>
+                  <div><a href="#">View Details</a></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="stmt-wrapper">
+                  <div class="inner-wrapper stmt">
+                    <p>Feb Statements</p>
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                  </div>
+                  <div><a href="#">View Details</a></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="stmt-wrapper">
+                  <div class="inner-wrapper stmt">
+                    <p>Feb Statements</p>
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                  </div>
+                  <div><a href="#">View Details</a></div>
+                </div>
+              </div>
+            </div>
+            <!-- Tax Center -->
+            <h4 class="p1">
+              Tax Center <i class="fa-solid fa-angle-down"></i>
+            </h4>
+            <div class="outer-wrapper">
+              <div>
+                <b>Not available for Aug 2024</b>
+              </div>
+            </div>
+          </div>
         </div>
         <!-- Favorites Content-->
         <div class="right-navigation" id="favorites" style="display: none">
