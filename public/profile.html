@@ -254,23 +254,26 @@
           </div>
           <!-- payments section-1 -->
           <div class="inner-wrapper" id="payment-section-1">
-            <h2>Payments</h2>
-            <form action="/" method="POST">
-              <div class="payment-section">
-                <label for="card-name-1">Name on Card</label>
-                <input type="text" id="card-name-1" name="card_name_1" />
+            <div class="card-type">
+              <div class="card-text">
+                <span class="logo">
+                  <img src="images/mastercard.png" alt="credit card logo" />
+                  <h5>Master Card</h5>
+                </span>
+                <img src="images/chip-1.webp" alt="chip" class="chip" />
               </div>
-
-              <div>
-                <label class="payment-section">Expiry</label>
-                <input type="text" id="card-expiry" name="card_expiry" />
+            </div>
+            <div class="card-info">
+              <div class="card-name-number">
+                <h6>Card Number</h6>
+                <h5 class="number">**** **** **** 9569</h5>
+                <h5 class="name">Datravous Odds</h5>
               </div>
-
-              <div class="payment-section">
-                <label class="payment-section">Name on Card</label>
-                <input type="text" id="card-name-2" name="card_expiry" />
+              <div class="valid-date">
+                <h6>Valid Thru</h6>
+                <h5>08/23</h5>
               </div>
-            </form>
+            </div>
           </div>
           <!-- cards on file-->
           <div class="inner-wrapper" id="cards-on-file">
@@ -283,7 +286,13 @@
               </div>
 
               <div class="card-options">
-                <i class="fa-regular fa-trash-can"></i><button>Edit</button>
+                <i class="fa-regular fa-trash-can"></i>
+                <div class="edit-container">
+                  <button>Edit</button>
+                  <div class="divider"></div>
+                  <button>Set default</button>
+                </div>
+                
               </div>
             </div>
             <!-- COF Container-->
