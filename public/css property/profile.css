@@ -137,6 +137,13 @@ p {
   justify-content: center;
 }
 
+#cards-on-file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
 .usd .btn-wrapper button {
   padding: 10px 10px;
 }
@@ -309,7 +316,7 @@ p {
   margin: 20px 20px;
   border-radius: 12px;
   padding: 10px;
-  /* box-shadow: 0px 4px 16px 0px #27313a4a; */
+  /* transition: 0.5s ease-in-out; */
 }
 
 .inner-wrapper .payouts {
@@ -331,12 +338,17 @@ p {
   max-width: 630px;
   position: relative;
   padding: 20px;
-  background-color: #F2F2F2;
-  
+  background-color: #f2f2f2;
+  transition: box-shadow 0.3s ease; /* Smooth transition */
+}
+
+#payment-section-1:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4),
+    /* Slightly deeper on hover */ 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
 .card-info h6 {
-  color: #D82C2F;
+  color: #d82c2f;
 }
 
 .card-text,
@@ -417,6 +429,12 @@ p {
   align-items: center;
   width: 500px;
   min-width: 90%;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.card-wrapper:hover {
+  background-color: #f0f0f0;
 }
 
 .card-wrapper p {
@@ -442,12 +460,16 @@ p {
 }
 
 .card-options button {
-  padding: 8px;
+  padding: 0px 8px;
+  color: #b02a2e;
   font-weight: 500;
+  border-radius: 4px;
+  background-color: transparent;
+  border: none;
 }
 
 .card-options button:hover {
-  background-color: #000;
+  background-color: #c05558;
   color: white;
   transition: 0.2s ease-in-out;
 }
@@ -615,9 +637,18 @@ p {
   box-sizing: border-box;
 }
 
+.default-card {
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  background: #e1e1e1;
+  padding: 5px;
+  border-radius: 8px;
+}
+
 .divider {
-  height: 20px;
-  border: 1px solid black;
+  height: 40px;
+  border: 1px solid #d9d9d9;
 }
 
 /* Extra small devices (phones, <576px) */
@@ -683,8 +714,8 @@ p {
     background-color: #f8f7f7;
   }
 
-  #right-navigation {
-    width: 100%;
+  .right-navigation {
+    width: 60% !important;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -717,7 +748,7 @@ p {
   }
 
   .inner-wrapper {
-    width: 80%;
+    width: 100%;
   }
 
   #cards-on-file {
@@ -730,7 +761,7 @@ p {
   }
 
   .card-wrapper {
-    width: 80%;
+    width: 100%;
   }
 
   .stmt p {
