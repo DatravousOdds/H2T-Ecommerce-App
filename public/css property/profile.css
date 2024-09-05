@@ -95,7 +95,7 @@ p {
   background-color: #efefef;
 }
 
-button {
+.btn {
   border-radius: 8px !important;
   font-weight: 500;
   cursor: pointer;
@@ -321,14 +321,77 @@ button {
 
 .wallet-balance {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  /* align-items: center; */
   flex-direction: column;
 }
 
 #payment-section-1 {
   width: 100%;
   max-width: 630px;
+  position: relative;
+  padding: 20px;
+  background-color: #F2F2F2;
+  
+}
+
+.card-info h6 {
+  color: #D82C2F;
+}
+
+.card-text,
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-text .logo h5 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 5px;
+}
+
+.card-text img,
+.chip img {
+  width: 45px;
+}
+
+.card-info {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-name-number {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-name-number .number {
+  letter-spacing: 1px;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.card-name-number .name {
+  font-size: 1.5rem;
+  font-size: 700;
+}
+
+.valid-date {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.valid-date h5 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.valid-date h6 {
+  font-weight: 600;
 }
 
 .payment-section {
@@ -414,10 +477,6 @@ button {
   align-items: center;
 }
 
-
-
-
-
 .statement-container {
   display: flex;
   flex-direction: column;
@@ -439,7 +498,7 @@ button {
 }
 
 .outer-wrapper {
-  border: 2px solid #E1E1E1;
+  border: 2px solid #e1e1e1;
   display: flex;
   /* align-items: center; */
   justify-content: center;
@@ -451,17 +510,16 @@ button {
 .outer-wrapper a {
   text-wrap: nowrap;
   font-weight: 500;
-  color: #FFFF;
+  color: #ffff;
   border-radius: 10px;
   text-decoration: none;
-  background-color: #D82C2F;
+  background-color: #d82c2f;
   padding: 8px 12px;
   transition: 0.2s ease-in-out;
-
 }
 .outer-wrapper a:hover {
-  background-color: #B02A2E;
-  color: #FFFFFF;
+  background-color: #b02a2e;
+  color: #ffffff;
 }
 
 .outer-wrapper .stmt-wrapper {
@@ -555,6 +613,11 @@ button {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
   border-radius: 4px;
   box-sizing: border-box;
+}
+
+.divider {
+  height: 20px;
+  border: 1px solid black;
 }
 
 /* Extra small devices (phones, <576px) */
