@@ -333,6 +333,22 @@ p {
   flex-direction: column;
 }
 
+.wallet-balance h4 {
+  text-align: center !important;
+}
+
+.wallet-balance .usd .usd-wrapper {
+  padding: 12px 12px;
+}
+
+.wallet-balance .usd h1 {
+  font-size: 3.5rem;
+}
+
+
+
+
+
 #payment-section-1 {
   width: 100%;
   max-width: 630px;
@@ -562,10 +578,28 @@ p {
   padding: 10px;
 }
 
+.usd .btn-wrapper .add-funds {
+  font-weight: 600;
+  border-radius: 12px;
+  background-color: transparent;
+  border: 2px solid green;
+  color: green;
+}
+
+.usd .btn-wrapper .add-funds:hover {
+  background-color: green;
+  color: #fff;
+}
+
+.usd .btn-wrapper .withdraw {
+  border-radius: 12px;
+  font-weight: 600;
+}
+
 .usd-img img {
   /* border: 2px solid rgb(15, 15, 15); */
-  width: 50px;
-  height: 50px;
+  width: 80px;
+  height: 80px;
   border-radius: 100%;
 }
 
@@ -651,8 +685,22 @@ p {
   border: 1px solid #d9d9d9;
 }
 
+#left-navigation  ul {
+    padding-left: 1px;
+}
+
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+
+  .right-navigation {
+    max-width: 29rem;
+    width: 100%;
+  }
+
+.usd .btn-wrapper button {
+  padding: 12px 24px;
+}
+
   #left-navigation {
     display: none;
   }
@@ -729,11 +777,17 @@ p {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
   #left-navigation {
-    display: none;
+    display: flex;
   }
+
+ 
 
   #profile-section {
     flex-direction: column;
+  }
+
+  .nav-wrapper {
+    gap: 3rem;
   }
 
   .inner-wrapper {
@@ -750,6 +804,11 @@ p {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+
+#left-nav-wrapper {
+  min-width: 260px;
+}
+
   #profile-section {
     flex-direction: column;
     gap: 10px;
@@ -768,10 +827,7 @@ p {
     font-size: 24px;
   }
 
-  #left-nav-wrapper {
-    min-width: 300px;
-    background-color: #f8f7f7;
-  }
+
 
   .right-navigation {
     width: 60% !important;
