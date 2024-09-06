@@ -680,6 +680,22 @@ p {
   .payment-wrapper {
     flex-direction: column;
   }
+  .inner-wrapper{
+    width: 100%;
+  }
+  .card-wrapper {
+    flex-direction: column;
+    min-width: 317px;
+    width: 100%;
+  }
+
+  .card-wrapper .card-options {
+    font-size: 24px;
+  }
+
+  .payment-wrapper .inner-wrapper {
+    width: 90%;
+  }
 
   
   
