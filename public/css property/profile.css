@@ -326,7 +326,7 @@ p {
   flex-direction: column;
 }
 
-.wallet-balance {
+ .inner-wrapper .wallet-balance {
   display: flex;
   justify-content: space-between;
   /* align-items: center; */
