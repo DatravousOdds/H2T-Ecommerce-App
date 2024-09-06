@@ -665,6 +665,10 @@ p {
     width: 500px;
   }
 
+  .right-navigation {
+    width: 100%;
+  }
+
   #timestamp-container {
     justify-content: center;
     padding: 10px 0px;
@@ -673,9 +677,12 @@ p {
     width: 100%;
   }
 
-  .section-p1 {
-    padding: 30px 45px !important;
+  .payment-wrapper {
+    flex-direction: column;
   }
+
+  
+  
 }
 
 /* Small devices (landscape phones, 576px and up) */
@@ -687,6 +694,17 @@ p {
   #profile-section {
     flex-direction: column;
   }
+
+  .inner-wrapper {
+    width: 90%;
+
+  }
+
+  .payment-wrapper {
+    flex-direction: column;
+  }
+
+ 
 }
 
 /* Medium devices (tablets, 768px and up) */
