@@ -654,7 +654,7 @@ p {
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
   #left-navigation {
-    display: none;
+    display: flex;
   }
 
   #profile-section {
@@ -690,6 +690,10 @@ p {
   }
 
   .card-wrapper .card-options {
+    font-size: 16px;
+  }
+
+  .card-wrapper .card-options i {
     font-size: 24px;
   }
 
