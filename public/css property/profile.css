@@ -562,6 +562,13 @@ h6 {
   flex-direction: column;
 }
 
+.outer-wrapper div {
+  text-align: center;
+  padding: 10px 10px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
 .outer-wrapper a {
   text-wrap: nowrap;
   font-weight: 500;
