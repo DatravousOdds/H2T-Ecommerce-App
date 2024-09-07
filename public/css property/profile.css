@@ -333,7 +333,7 @@ p {
   flex-direction: column;
 }
 
- .inner-wrapper .wallet-balance {
+.inner-wrapper .wallet-balance {
   display: flex;
   justify-content: space-between;
   /* align-items: center; */
@@ -352,17 +352,26 @@ p {
   font-size: 3.5rem;
 }
 
-
-
-
-
 #payment-section-1 {
   width: 100%;
   max-width: 630px;
   position: relative;
   padding: 20px;
-  background-color: #f2f2f2;
+  background-color: #1a1a1a;
   transition: box-shadow 0.3s ease; /* Smooth transition */
+}
+
+#payment-section-1 .card-text h5 {
+  color: #fff;
+}
+
+#payment-section-1 .card-info .card-name-number h5,
+h6 {
+  color: #fff;
+}
+
+#payment-section-1 .card-info .valid-date h5 {
+  color: #fff;
 }
 
 #payment-section-1:hover {
@@ -692,21 +701,20 @@ p {
   border: 1px solid #d9d9d9;
 }
 
-#left-navigation  ul {
-    padding-left: 1px;
+#left-navigation ul {
+  padding-left: 1px;
 }
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
-
   .right-navigation {
     max-width: 29rem;
     width: 100%;
   }
 
-.usd .btn-wrapper button {
-  padding: 12px 24px;
-}
+  .usd .btn-wrapper button {
+    padding: 12px 24px;
+  }
 
   #left-navigation {
     display: none;
@@ -756,7 +764,7 @@ p {
   .payment-wrapper {
     flex-direction: column;
   }
-  .inner-wrapper{
+  .inner-wrapper {
     width: 100%;
   }
   .card-wrapper {
@@ -776,9 +784,6 @@ p {
   .payment-wrapper .inner-wrapper {
     width: 90%;
   }
-
-  
-  
 }
 
 /* Small devices (landscape phones, 576px and up) */
@@ -786,8 +791,6 @@ p {
   #left-navigation {
     display: flex;
   }
-
- 
 
   #profile-section {
     flex-direction: column;
@@ -799,22 +802,18 @@ p {
 
   .inner-wrapper {
     width: 90%;
-
   }
 
   .payment-wrapper {
     flex-direction: column;
   }
-
- 
 }
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
-
-#left-nav-wrapper {
-  min-width: 260px;
-}
+  #left-nav-wrapper {
+    min-width: 260px;
+  }
 
   #profile-section {
     flex-direction: column;
@@ -833,8 +832,6 @@ p {
   .lf-wrapper li a {
     font-size: 24px;
   }
-
-
 
   .right-navigation {
     width: 60% !important;
