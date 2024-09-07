@@ -148,6 +148,10 @@ p {
   padding: 10px 10px;
 }
 
+#wallet-balance .usd h4 {
+  font-size: 32px;
+}
+
 #bio-section .btn-wrapper #remove-btn:hover {
   box-shadow: rgba(0, 0, 0, 0.03) 0px 4px 4px 0px;
   background-color: #202124;
@@ -300,7 +304,7 @@ p {
 }
 
 .payment-wrapper {
-  max-width: 894px;
+  max-width: 975px;
   width: 100%;
   height: 100%;
   border: 1px solid #d9d9d9;
@@ -310,9 +314,8 @@ p {
 }
 
 .inner-wrapper {
-  max-width: 894px;
+  max-width: 975px;
   width: 100%;
-  height: 100%;
   border: 2px solid #d9d9d9;
   margin: 20px 20px;
   border-radius: 12px;
@@ -320,7 +323,7 @@ p {
   /* transition: 0.5s ease-in-out; */
 }
 
-.inner-wrapper .payouts {
+.inner-wrapper #payouts {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -334,29 +337,30 @@ p {
   flex-direction: column;
 }
 
-.inner-wrapper .wallet-balance {
+#waller-balance {
   display: flex;
-  justify-content: space-between;
-  /* align-items: center; */
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
 }
 
-.wallet-balance h4 {
+#waller-balance h4 {
   text-align: center !important;
 }
 
-.wallet-balance .usd .usd-wrapper {
+#waller-balance .usd .usd-wrapper {
   padding: 12px 12px;
 }
 
-.wallet-balance .usd h1 {
+#waller-balance .usd h1 {
   font-size: 3.5rem;
 }
 
 #payment-section-1 {
-  width: 100%;
+  width: 95%;
   max-width: 630px;
   position: relative;
+  margin: 8px 12px;
   padding: 20px;
   background-color: #1a1a1a;
   transition: box-shadow 0.3s ease; /* Smooth transition */
@@ -608,6 +612,7 @@ h6 {
   align-items: center;
   flex-direction: column;
   padding: 10px;
+  gap: 2rem;
 }
 
 .usd .btn-wrapper .add-funds {
@@ -634,9 +639,7 @@ h6 {
 }
 
 .usd .btn-wrapper .withdraw:hover {
-  background-color: #fff;
-  border: 2px solid #4a73c7;
-  color: #4a73c7;
+  background-color: #6a91e1;
 }
 
 .usd .btn-wrapper button {
@@ -857,7 +860,7 @@ h6 {
   }
 
   .lf-wrapper li {
-    font-size: 1rem;
+    font-size: 16px;
   }
 
   .lf-wrapper li a {
@@ -897,8 +900,8 @@ h6 {
     font-size: 3rem;
   }
 
-  .inner-wrapper {
-    width: 100%;
+  .payment-wrapper .inner-wrapper {
+    width: 92%;
   }
 
   #cards-on-file {
@@ -916,6 +919,19 @@ h6 {
 
   .stmt p {
     font-size: 16px;
+  }
+
+  .payment-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .outer-wrapper .stmt-wrapper {
+    flex-direction: column;
+  }
+
+  .outer-wrapper a {
+    padding: 10px 6rem;
   }
 }
 
