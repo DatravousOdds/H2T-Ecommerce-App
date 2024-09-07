@@ -330,6 +330,10 @@ p {
   flex-direction: column;
 }
 
+#payments-reports {
+  position: relative;
+}
+
 #payouts-container {
   display: flex;
   align-items: center;
@@ -564,9 +568,25 @@ h6 {
   font-size: 1.5rem;
 }
 
-.outer-wrapper {
-  border: 2px solid #e1e1e1;
+.inline {
   display: flex;
+  align-items: center;
+}
+
+.rotate {
+  transform: rotate(0deg);
+}
+
+.dropdown-section {
+  position: relative;
+  display: inline;
+  width: 100%;
+}
+
+.dropdown-menu {
+  position: relative;
+  border: 2px solid #e1e1e1;
+  display: none;
   /* align-items: center; */
   justify-content: center;
   padding: 0px 16px;
@@ -574,14 +594,34 @@ h6 {
   flex-direction: column;
 }
 
-.outer-wrapper div {
+.statement-header,
+.tax-header {
+  cursor: pointer;
+}
+
+.statement-header:hover,
+.tax-header:hover {
+  color: #666;
+}
+.statement-header .dropdown-icon i,
+.tax-header .dropdown-icon i {
+  transform: rotate(180deg);
+  font-size: 24px;
+  transition: 0.2s ease-in-out;
+}
+
+.statement-header h4 {
+  color: "#3a3a3a";
+}
+
+.dropdown-menu div {
   text-align: center;
   padding: 10px 10px;
   font-weight: 500;
   font-size: 16px;
 }
 
-.outer-wrapper a {
+.dropdown-menu a {
   text-wrap: nowrap;
   font-weight: 500;
   color: #ffff;
@@ -591,12 +631,12 @@ h6 {
   padding: 8px 12px;
   transition: 0.2s ease-in-out;
 }
-.outer-wrapper a:hover {
+.dropdown-menu a:hover {
   background-color: #b02a2e;
   color: #ffffff;
 }
 
-.outer-wrapper .stmt-wrapper {
+.dropdown-menu .stmt-wrapper {
   display: flex;
   align-items: center;
 }
@@ -605,6 +645,11 @@ h6 {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+}
+
+.filter-container .filter-1:hover {
+  background-color: #f0f0f0;
 }
 .usd {
   display: flex;
@@ -739,6 +784,12 @@ h6 {
   padding-left: 1px;
 }
 
+.dropdown-menu.active {
+  position: relative;
+  display: flex;
+  transition: 0.5s ease-in-out;
+}
+
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
   .right-navigation {
@@ -766,16 +817,16 @@ h6 {
     font-size: 16px;
   }
 
-  .outer-wrapper {
+  .dropdown-menu {
     align-items: center;
     padding: 16px 16px;
   }
 
-  .outer-wrapper .stmt-wrapper {
+  .dropdown-menu .stmt-wrapper {
     flex-direction: column;
   }
 
-  .outer-wrapper a {
+  .dropdown-menu a {
     padding: 12px 82px;
   }
 
@@ -926,11 +977,16 @@ h6 {
     flex-direction: column;
   }
 
-  .outer-wrapper .stmt-wrapper {
+  #payments-reports {
+    max-width: 975px;
+    width: 100%;
+  }
+
+  .dropdown-menu .stmt-wrapper {
     flex-direction: column;
   }
 
-  .outer-wrapper a {
+  .dropdown-menu a {
     padding: 10px 6rem;
   }
 }
