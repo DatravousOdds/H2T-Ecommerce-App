@@ -487,9 +487,17 @@ h6 {
   align-items: center;
 }
 
+.card-wrapper .card-inner p {
+  font-size: 16px;
+}
+
 .card-options i {
   font-size: 32px;
   cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+.card-options i:hover {
+  transform: scale(1.1);
 }
 
 .card-options button {
@@ -608,6 +616,7 @@ h6 {
   background-color: transparent;
   border: 2px solid green;
   color: green;
+  transition: 0.2s ease-in;
 }
 
 .usd .btn-wrapper .add-funds:hover {
@@ -618,6 +627,20 @@ h6 {
 .usd .btn-wrapper .withdraw {
   border-radius: 12px;
   font-weight: 600;
+  border: transparent;
+  color: white;
+  background-color: #4a73c7;
+  transition: 0.2s ease-out;
+}
+
+.usd .btn-wrapper .withdraw:hover {
+  background-color: #fff;
+  border: 2px solid #4a73c7;
+  color: #4a73c7;
+}
+
+.usd .btn-wrapper button {
+  padding: 8px 32px;
 }
 
 .usd-img img {
@@ -627,11 +650,11 @@ h6 {
   border-radius: 100%;
 }
 
-.withdraw {
+/* .withdraw {
   border: transparent;
   color: white;
   background-color: #4a73c7;
-}
+} */
 
 .add-funds {
   border: transparent;
