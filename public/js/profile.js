@@ -1,12 +1,25 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const tabs = document.querySelectorAll('.tab-btn');
-    const contents = document.querySelectorAll('.right-navigation');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function(){
-            // Hide all content
-            contents.forEach(content => content.style.display = "none")
-        })
-    })
-    
-})
+const toggle = document.getElementById("dropdown-toggle");
+const menu = document.getElementById("dropdown-menu");
+
+
+function setupDropdown(toggleId, menuId) {
+  const toggle = document.getElementById(toggleId);
+  const menu = document.getElementById(menuId);
+  const dropdownIcon = document.querySelector(
+    "#dropdown-toggle .dropdown-icon i"
+  );
+  // Dropdown for Statement Section
+  toggle.addEventListener("click", () => {
+    menu.classList.toggle("active");
+
+    // Toggle rotation
+    if (menu.classList.contains("active")) {
+      dropdownIcon.style.transform = "rotate(0deg)";
+    } else {
+      dropdownIcon.style.transform = "rotate(180deg)";
+    }
+  });
+}
+
+// Initialize dropdowns
+setupDropdown("dropdown-toggle", "dropdown-menu");
