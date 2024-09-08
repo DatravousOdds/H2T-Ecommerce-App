@@ -32,27 +32,37 @@
 
 #select-year {
   position: relative;
+  max-height: 0;
+  overflow: hidden;
+  /* overflow: hidden; */
 }
 
-#select-year ul {
-  width: 100%;
-  max-width: 85px;
+#select-year.open {
+  max-height: 200px;
+}
+
+
+#list {
+  width: 100px;
   left: 1px;
   top: 4px;
   padding-left: 0 !important;
   flex-direction: column;
   position: absolute;
   display: flex;
-  z-index: 1;
+  z-index: 2;
   align-items: flex-start;
   list-style: none;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
+  background-color: #fff;
 }
 #select-year ul li {
-  padding: 4px 10px;
-  width: 100%;
+  padding: 8px 10px;
+  margin: 4px 2px;
+  width: 95%;
   cursor: pointer;
+  border-radius: 8px;
 }
 
 #select-year ul li:hover {
