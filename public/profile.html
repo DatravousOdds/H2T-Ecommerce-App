@@ -327,13 +327,24 @@
                 <i class="fa-solid fa-filter"></i>
                 <p>Filter</p>
               </div>
-              <div class="">
+
+              <div class="filter-dropdown-container">
                 <div class="default-button filter-1" id="filter-stmts">
                   <span class="dropdown-icon"
                     ><i class="fa-solid fa-angle-down"></i
                   ></span>
                   <p>2024</p>
                 </div>
+                <!-- Dropdown section for Year -->
+                <div id="select-year">
+                  <ul id="list">
+                    <li class="options">2024</li>
+                    <li class="options">2025</li>
+                    <li class="options">2026</li>
+                    <li class="options">2027</li>
+                  </ul>
+                </div>
+
               </div>
             </div>
             <!-- Dropdown section for 'Statements' with toggle icon -->
@@ -379,8 +390,8 @@
               </div>
             </div>
             <!-- Tax Center -->
-            <div id="dropdown-toggle">
-              <div class="tax-header inline">
+            <div class="dropdown-section" id="dropdown-toggle">
+              <div class="statement-header inline">
                 <h4 class="p1">Tax Center</h4>
                 <span class="dropdown-icon"
                   ><i class="fa-solid fa-angle-down"></i

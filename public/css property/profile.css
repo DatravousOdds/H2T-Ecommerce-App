@@ -30,6 +30,35 @@
   /* width: 100%; */
 }
 
+#select-year {
+  position: relative;
+}
+
+#select-year ul {
+  width: 100%;
+  max-width: 85px;
+  left: 1px;
+  top: 4px;
+  padding-left: 0 !important;
+  flex-direction: column;
+  position: absolute;
+  display: flex;
+  z-index: 1;
+  align-items: flex-start;
+  list-style: none;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+}
+#select-year ul li {
+  padding: 4px 10px;
+  width: 100%;
+  cursor: pointer;
+}
+
+#select-year ul li:hover {
+  background-color: #d9d9d9;
+}
+
 .p1 {
   padding: 10px 5px;
 }
@@ -43,6 +72,7 @@
 }
 
 .default-button {
+  height: 42px;
   border-radius: 8px;
   background-color: transparent;
   border: 2px solid #d9d9d9;
@@ -594,8 +624,7 @@ h6 {
   flex-direction: column;
 }
 
-.statement-header,
-.tax-header {
+.statement-header {
   cursor: pointer;
 }
 
