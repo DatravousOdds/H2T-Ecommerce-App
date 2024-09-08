@@ -33,14 +33,20 @@
 #select-year {
   position: relative;
   max-height: 0;
+  opacity: 0;
+  visibility: hidden;
   overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease, visibility 0.4s ease;
+
   /* overflow: hidden; */
 }
 
 #select-year.open {
-  max-height: 200px;
+  max-height: 500px; /* Set to a value larger than the dropdown content */
+  opacity: 1;
+  overflow: visible;
+  visibility: visible;
 }
-
 
 #list {
   width: 100px;
@@ -609,7 +615,7 @@ h6 {
 }
 
 .inline {
-  display: flex;
+  display: flex !important;
   align-items: center;
 }
 
@@ -632,24 +638,29 @@ h6 {
   padding: 0px 16px;
   border-radius: 8px;
   flex-direction: column;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease, visibility 0.4s ease;
 }
 
-.statement-header {
+.dropdown-header {
   cursor: pointer;
 }
 
-.statement-header:hover,
+.dropdown-header:hover,
 .tax-header:hover {
   color: #666;
 }
-.statement-header .dropdown-icon i,
+.dropdown-header .dropdown-icon i,
 .tax-header .dropdown-icon i {
   transform: rotate(180deg);
   font-size: 24px;
   transition: 0.2s ease-in-out;
 }
 
-.statement-header h4 {
+.dropdown-header h4 {
   color: "#3a3a3a";
 }
 
@@ -827,12 +838,10 @@ h6 {
   position: relative;
   display: flex;
   opacity: 1;
-  transition: 0.5s ease-in-out;
   z-index: 0;
-  
+  max-height: 500px; /* Set to a value larger than the dropdown content */
+  visibility: visible;
 }
-  
-
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
@@ -925,13 +934,13 @@ h6 {
     flex-direction: column;
   }
 
- 
-
-  #payments-reports, #cards-on-file {
+  #payments-reports,
+  #cards-on-file {
     width: 450px;
   }
 
-  #payouts, #wallet-balance {
+  #payouts,
+  #wallet-balance {
     max-width: 425px;
     width: 90%;
   }
@@ -955,7 +964,6 @@ h6 {
   .nav-wrapper {
     gap: 5rem;
   }
-
 
   .payment-wrapper {
     flex-direction: column;
