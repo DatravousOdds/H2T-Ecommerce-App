@@ -27,6 +27,7 @@ dropdownSection.forEach((section) => {
     // Toggle the clicked dropdown menu
     menu.classList.toggle("active");
 
+
     // Toggle rotation
     if (menu.classList.contains("active")) {
       dropdownIcon.style.transform = "rotate(180deg)";
@@ -35,3 +36,4 @@ dropdownSection.forEach((section) => {
     }
   });
 });
+
