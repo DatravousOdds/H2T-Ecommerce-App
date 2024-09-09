@@ -1,18 +1,14 @@
 const dropdownSection = document.querySelectorAll(".dropdown-section");
-const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
 
-// testing
-smallDropdownSection.forEach((section) => [
-  console.log("Small Menus", section),
-]);
+
+
+
 
 /* 
     Selects all elements with class .dropdown-section 
     Loops through each dropdown-section to apply logic 
 */
 dropdownSection.forEach((section) => {
-  console.log("Dropdown Menu", dropdownSection);
-  console.log(section);
   const dropdownIcon = section.querySelector(".dropdown-icon i");
   const menu = section.querySelector(".dropdown-menu");
   const toggle = section.querySelector(".dropdown-header");
@@ -40,12 +36,23 @@ dropdownSection.forEach((section) => {
   });
 });
 
-// year filter dropdown
-const yearHeader = document.querySelector(".dropdown-header");
-const yearIcon = yearHeader.querySelector(".dropdown-icon i");
-const yearMenu = document.querySelector(".year-dropdown");
+/* 
+  TODO: Create a function that has the dropdown functionality
+*/
 
-yearHeader.addEventListener("click", () => {
+
+
+
+const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
+const spanElement = document.getElementById('filter-icon');
+const hasFilterIcon = spanElement.querySelector('i.fa-filter') !== null;
+// testing
+smallDropdownSection.forEach((smallMenu) => {
+  const yearHeader = smallMenu.querySelector(".dropdown-header")
+  const yearIcon = smallMenu.querySelector(".dropdown-icon i")
+  const yearMenu = smallMenu.querySelector(".year-dropdown")
+
+  yearHeader.addEventListener("click", () => {
   // Toggle the click dropdown menu
   yearMenu.classList.toggle("open");
 
@@ -56,3 +63,12 @@ yearHeader.addEventListener("click", () => {
     yearIcon.style.transform = "rotate(0deg)";
   }
 });
+
+})
+// testing
+if (hasFilterIcon) {
+  console.log("This element does the have the filter icon")
+} else {
+  console.log("This element does not contin the filter icon")
+}
+

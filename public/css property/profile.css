@@ -30,6 +30,12 @@
   /* width: 100%; */
 }
 
+#sm-list {
+  width: 100%;
+  padding-left: 0 !important;
+  display: flex;
+}
+
 #select-year {
   position: relative;
   max-height: 0;
@@ -41,7 +47,7 @@
   /* overflow: hidden; */
 }
 
-#select-year.open {
+#select-year .open {
   max-height: 500px; /* Set to a value larger than the dropdown content */
   opacity: 1;
   overflow: visible;
@@ -692,6 +698,7 @@ h6 {
 }
 
 .filter-container .filter-1 {
+  padding: 5px 5px;
   display: flex;
   align-items: center;
   gap: 12px;
