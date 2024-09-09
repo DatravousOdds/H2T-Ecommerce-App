@@ -30,10 +30,30 @@
   /* width: 100%; */
 }
 
-#sm-list {
+#sm-list { 
   width: 100%;
   padding-left: 0 !important;
   display: flex;
+  flex-direction: column;
+  list-style: none;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  margin-top: 5px
+
+  
+}
+
+
+
+#sm-list li {
+  padding: 8px 8px;
+  cursor: pointer;
+  text-wrap: nowrap;
+}
+#sm-list li:hover {
+  background-color: #d9d9d9;
+  width: 80%;
+  border-radius: 8px;
 }
 
 #select-year {
@@ -47,7 +67,7 @@
   /* overflow: hidden; */
 }
 
-#select-year .open {
+#select-year.open {
   max-height: 500px; /* Set to a value larger than the dropdown content */
   opacity: 1;
   overflow: visible;
