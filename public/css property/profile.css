@@ -47,18 +47,9 @@
 
 
 
-#sm-list li {
-  padding: 8px 8px;
-  cursor: pointer;
-  text-wrap: nowrap;
-}
-#sm-list li:hover {
-  background-color: #d9d9d9;
-  width: 80%;
-  border-radius: 8px;
-}
 
-#select-year {
+
+#select-year, .year-dropdown {
   position: relative;
   max-height: 0;
   opacity: 0;
@@ -69,7 +60,7 @@
   /* overflow: hidden; */
 }
 
-#select-year.open {
+#select-year.open, .year-dropdown.open {
   max-height: 500px; /* Set to a value larger than the dropdown content */
   opacity: 1;
   overflow: visible;
@@ -91,15 +82,16 @@
   border-radius: 8px;
   background-color: #fff;
 }
-#select-year ul li {
+#select-year ul li, #sm-list li {
   padding: 8px 10px;
   margin: 4px 2px;
   width: 95%;
   cursor: pointer;
   border-radius: 8px;
+  text-wrap: nowrap;
 }
 
-#select-year ul li:hover {
+#select-year ul li:hover, #sm-list li:hover {
   background-color: #d9d9d9;
 }
 
@@ -967,9 +959,21 @@ h6 {
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
 
+  #newsletter .newstext, #newsletter .form {
+    padding: var(--padding-medium);
+  }
+
+  .right-navigation {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 30px 50px;
+  }
  
   #left-navigation {
-    display: flex;
+    display: none;
+
   }
 
   #profile-section {
@@ -989,6 +993,7 @@ h6 {
 
   .card-wrapper {
     width: 290px;
+    flex-direction: column;
   }
 
   /* #cards-on-file {
@@ -1028,6 +1033,7 @@ h6 {
 
   #left-nav-wrapper {
     min-width: 260px;
+    
   }
 
   #profile-section {
@@ -1053,6 +1059,7 @@ h6 {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    padding: 30px 50px;
   }
 
   #pfp-section {
@@ -1123,6 +1130,11 @@ h6 {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+
+.right-navigation {
+  width: 75%;
+}
+
 }
 
 /* Extra large devices (large desktops, 1200px and up) */
