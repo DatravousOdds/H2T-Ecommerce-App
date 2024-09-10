@@ -1,4 +1,6 @@
 :root {
+
+  --padding-medium: 10px 10px;
 }
 
 /* CSS */
@@ -872,6 +874,17 @@ h6 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+
+  #newsletter .form {
+    padding: var(--padding-medium);
+    
+  }
+
+#newsletter .newstext {
+  padding: var(--padding-medium);
+}
+
+
   .right-navigation {
     max-width: 29rem;
     width: 100%;
@@ -953,6 +966,8 @@ h6 {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+
+ 
   #left-navigation {
     display: flex;
   }
@@ -1000,6 +1015,17 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+
+  #newsletter .form {
+    padding: var(--padding-medium);
+    
+  }
+
+#newsletter .newstext {
+  padding: var(--padding-medium);
+}
+
+
   #left-nav-wrapper {
     min-width: 260px;
   }
