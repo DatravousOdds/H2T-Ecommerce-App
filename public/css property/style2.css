@@ -737,11 +737,11 @@ nav .search_box span:hover::after {
 
 .des .pro-brand .pro-brand-txt {
   max-width: 100%;
-  font-weight: 700;
+  font-weight: 500;
   word-wrap: break-word;
   letter-spacing: 0.004rem;
   display: inline;
-  font-size: 1rem;
+  font-size: 0.75rem;
   overflow-wrap: break-word;
 }
 
@@ -778,7 +778,7 @@ nav .search_box span:hover::after {
   position: relative;
   margin-right: 1rem;
   flex: 0 0 auto;
-  height: 450px;
+  /* height: 450px; */
   margin-right: 40px;
   transition: 0.5s ease-in-out;
 }
@@ -1680,7 +1680,7 @@ footer .rights {
 /*  Applies styles to screens < 767px */
 @media (max-width: 920px) {
   #banner {
-    margin: 0px auto;
+    margin: 0 auto;
     width: 100%;
   }
 
@@ -1866,6 +1866,10 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
+
+  
+
+  
   #hero .hero-text-container {
     flex-direction: column;
   }
@@ -1877,8 +1881,16 @@ footer .rights {
     margin-left: 2rem;
   }
 
-  #product1 .pro {
-  }
+  /* #product1 .pro {
+    width: 100%;
+    min-width: 200px;
+    padding: 1px 1px;
+    margin-right: 0px;
+    margin-top: 0px;
+    height: auto;
+  } */
+
+  
 
   #hero .hero-text {
     padding: 9rem 19px;
@@ -1951,6 +1963,10 @@ footer .rights {
     font-size: 24px;
     display: flex;
   }
+
+  /* .liked i {
+    font-size: 1rem;
+  } */
 
   #ss-icon {
     /* display: flex;
@@ -2032,10 +2048,7 @@ footer .rights {
     justify-content: center;
   }
 
-  .image-custom {
-    width: 175px;
-    height: 160px;
-  }
+ 
 }
 
 @media (max-width: 477px) {
