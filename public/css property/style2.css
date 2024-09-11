@@ -731,7 +731,7 @@ nav .search_box span:hover::after {
 
 .image-custom {
   width: 100%;
-  height: 287px;
+  height: auto;
   object-fit: contain;
 }
 
