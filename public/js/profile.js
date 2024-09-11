@@ -65,10 +65,5 @@ smallDropdownSection.forEach((smallMenu) => {
 });
 
 })
-// testing
-if (hasFilterIcon) {
-  console.log("This element does the have the filter icon")
-} else {
-  console.log("This element does not contin the filter icon")
-}
+
 
