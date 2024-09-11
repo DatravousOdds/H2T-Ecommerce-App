@@ -145,7 +145,7 @@
   background-color: transparent;
   padding: 12px 20px;
   border-radius: 4px;
-  border:none;
+  border: none;
   color: #000;
   font-size: 16px;
   font-weight: 500;
@@ -450,11 +450,15 @@
     row-gap: 0.7rem;
     column-gap: 0.7rem;
     display: grid;
-    grid-template-columns: repeat(3, 130px);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .product-card {
     width: 100%;
+  }
+
+  #filter-section {
+    display: none;
   }
 }
 @media (max-width: 575.98px) {
@@ -472,7 +476,7 @@
     display: grid;
     row-gap: 1rem;
     column-gap: 1.2rem;
-    grid-template-columns: repeat(2, 45.7%);
+    grid-template-columns: repeat(2, 52%);
   }
 
   .product-card {
