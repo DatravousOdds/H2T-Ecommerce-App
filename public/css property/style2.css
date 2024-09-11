@@ -113,8 +113,6 @@ p {
   justify-content: center;
 }
 
-
-
 button.normal {
   font-size: 14px;
   font-weight: 600;
@@ -479,18 +477,16 @@ nav .search_box span:hover::after {
 }
 
 #banner button {
-  
-    border-radius: 2px;
-    text-transform: uppercase;
-    padding: 16px 32px;
-    text-decoration: none;
-    color: white;
-    font-weight: 600;
-    background-color: #f30c1e;
-    font-size: 12px;
-    border: transparent;
-    transition: 0.2s ease-in-out;
-
+  border-radius: 2px;
+  text-transform: uppercase;
+  padding: 16px 32px;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  background-color: #f30c1e;
+  font-size: 12px;
+  border: transparent;
+  transition: 0.2s ease-in-out;
 }
 
 /* hero section */
@@ -1835,7 +1831,6 @@ footer .rights {
   footer .col {
     max-width: 160px;
     flex-basis: 170px;
-
   }
 
   footer .install img {
@@ -1871,7 +1866,6 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
-  
   #hero .hero-text-container {
     flex-direction: column;
   }
@@ -1881,6 +1875,9 @@ footer .rights {
     width: 100%;
     overflow-x: auto;
     margin-left: 2rem;
+  }
+
+  #product1 .pro {
   }
 
   #hero .hero-text {
@@ -2031,18 +2028,13 @@ footer .rights {
     margin-left: 0px;
   }
 
-  /* #product1 .pro-container {
-    justify-content: space-between;
-    padding-top: 20px;
-    flex-wrap: wrap;
-  } */
-
   #product1 .pro-container {
     justify-content: center;
   }
 
-  #product1 .pro {
-    margin: 15px;
+  .image-custom {
+    width: 175px;
+    height: 160px;
   }
 }
 
@@ -2205,5 +2197,28 @@ footer .rights {
   #form-details form {
     width: 100%;
     margin-bottom: 30px;
+  }
+
+  /* Mens Page */
+  .image-custom {
+    width: 140px;
+    height: 75px;
+  }
+
+  .liked {
+    position: absolute;
+    top: 0px;
+    right: 1px;
+    z-index: 1;
+    width: 32px;
+  }
+
+  #prod-card-container {
+    margin: 0px 0px !important;
+  }
+
+  #product1 .pro {
+    height: auto;
+    margin: 1px;
   }
 }
