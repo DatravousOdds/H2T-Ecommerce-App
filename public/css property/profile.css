@@ -1,5 +1,4 @@
 :root {
-
   --padding-medium: 10px 10px;
 }
 
@@ -32,7 +31,7 @@
   /* width: 100%; */
 }
 
-#sm-list { 
+#sm-list {
   width: 100%;
   padding-left: 0 !important;
   display: flex;
@@ -40,16 +39,11 @@
   list-style: none;
   border-radius: 8px;
   border: 1px solid #d9d9d9;
-  margin-top: 5px
-
-  
+  margin-top: 5px;
 }
 
-
-
-
-
-#select-year, .year-dropdown {
+#select-year,
+.year-dropdown {
   position: relative;
   max-height: 0;
   opacity: 0;
@@ -60,7 +54,8 @@
   /* overflow: hidden; */
 }
 
-#select-year.open, .year-dropdown.open {
+#select-year.open,
+.year-dropdown.open {
   max-height: 500px; /* Set to a value larger than the dropdown content */
   opacity: 1;
   overflow: visible;
@@ -82,7 +77,8 @@
   border-radius: 8px;
   background-color: #fff;
 }
-#select-year ul li, #sm-list li {
+#select-year ul li,
+#sm-list li {
   padding: 8px 10px;
   margin: 4px 2px;
   width: 95%;
@@ -91,7 +87,8 @@
   text-wrap: nowrap;
 }
 
-#select-year ul li:hover, #sm-list li:hover {
+#select-year ul li:hover,
+#sm-list li:hover {
   background-color: #d9d9d9;
 }
 
@@ -293,7 +290,7 @@ p {
   padding: 10px 20px;
 }
 
-#profile-section {
+.profile-section {
   gap: 5rem;
   box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
@@ -312,7 +309,7 @@ p {
   text-transform: capitalize;
 }
 
-#profile-section label {
+.profile-section label {
   font-weight: 700;
   font-size: 24px;
 }
@@ -367,6 +364,18 @@ p {
   align-items: center;
   justify-content: center;
   padding: 30px 10px;
+}
+
+#profile-inner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#profile-wrapper {
+  display: flex;
+  justify-content: space-between;
 }
 
 .payment-wrapper {
@@ -867,16 +876,13 @@ h6 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
-
   #newsletter .form {
     padding: var(--padding-medium);
-    
   }
 
-#newsletter .newstext {
-  padding: var(--padding-medium);
-}
-
+  #newsletter .newstext {
+    padding: var(--padding-medium);
+  }
 
   .right-navigation {
     max-width: 29rem;
@@ -891,7 +897,7 @@ h6 {
     display: none;
   }
 
-  #profile-section {
+  .profile-section {
     flex-direction: column;
   }
 
@@ -959,8 +965,8 @@ h6 {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
-
-  #newsletter .newstext, #newsletter .form {
+  #newsletter .newstext,
+  #newsletter .form {
     padding: var(--padding-medium);
   }
 
@@ -971,13 +977,12 @@ h6 {
     gap: 16px;
     padding: 30px 50px;
   }
- 
+
   #left-navigation {
     display: none;
-
   }
 
-  #profile-section {
+  .profile-section {
     flex-direction: column;
   }
 
@@ -1021,23 +1026,19 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
-
   #newsletter .form {
     padding: var(--padding-medium);
-    
   }
 
-#newsletter .newstext {
-  padding: var(--padding-medium);
-}
-
+  #newsletter .newstext {
+    padding: var(--padding-medium);
+  }
 
   #left-nav-wrapper {
     min-width: 260px;
-    
   }
 
-  #profile-section {
+  .profile-section {
     flex-direction: column;
     gap: 10px;
   }
@@ -1131,11 +1132,9 @@ h6 {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
-
-.right-navigation {
-  width: 75%;
-}
-
+  .right-navigation {
+    width: 75%;
+  }
 }
 
 /* Extra large devices (large desktops, 1200px and up) */
