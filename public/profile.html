@@ -87,139 +87,153 @@
           </div>
         </div>
         <!-- Profile Content-->
-        <div class="right-navigation" id="profile" style="display: none">
-          <div id="profile-section" class="pfp">
-            <div id="pfp-section" class="pfp-img">
-              <img src="/images/1.png" alt="profile picture" />
-            </div>
-            <div id="pfp-section-1">
-              <!-- Username Section -->
-              <div id="name-infor">
-                <div id="timestamp-container" class="ts-container">
-                  <i class="fa-regular fa-calendar"></i>
-                  <h3 class="timestamp">Joined 2024</h3>
+        <div class="right-navigation" id="profile" style="display: flex">
+          <div id="profile-wrapper">
+            <div id="profile-inner-wrapper">
+              <!-- Profile Picture Information-->
+              <div class="profile-section" class="pfp">
+                <div id="pfp-section" class="pfp-img">
+                  <img src="/images/1.png" alt="profile picture" />
                 </div>
-                <div id="wrapper-row" class="wrapper-row">
-                  <p id="username">@sara.almasi</p>
-                  <button id="edit_profile_btn" class="edit-btn">
-                    Edit Profile
-                  </button>
-                </div>
-              </div>
-              <!-- User Stats Section -->
-              <div id="user-stats">
-                <div id="followers" class="spacing-1 center-text">
-                  <div><h5>12.3k</h5></div>
-                  <div id="stats-counter">followers</div>
-                </div>
-                <div id="following" class="spacing-1 center-text">
-                  <div><h5>20k</h5></div>
-                  <div id="stats-counter">following</div>
-                </div>
-                <div id="rating" class="spacing-1 center-text">
-                  <div id="rating-counter">
-                    <h5>5.0</h5>
+                <div id="pfp-section-1">
+                  <!-- Username Section -->
+                  <div id="name-infor">
+                    <div id="timestamp-container" class="ts-container">
+                      <i class="fa-regular fa-calendar"></i>
+                      <h3 class="timestamp">Joined 2024</h3>
+                    </div>
+                    <div id="wrapper-row" class="wrapper-row">
+                      <p id="username">@sara.almasi</p>
+                      <button id="edit_profile_btn" class="edit-btn">
+                        Edit Profile
+                      </button>
+                    </div>
                   </div>
-                  <div id="stats-counter">Rating</div>
+                  <!-- User Stats Section -->
+                  <div id="user-stats">
+                    <div id="followers" class="spacing-1 center-text">
+                      <div><h5>12.3k</h5></div>
+                      <div id="stats-counter">followers</div>
+                    </div>
+                    <div id="following" class="spacing-1 center-text">
+                      <div><h5>20k</h5></div>
+                      <div id="stats-counter">following</div>
+                    </div>
+                    <div id="rating" class="spacing-1 center-text">
+                      <div id="rating-counter">
+                        <h5>5.0</h5>
+                      </div>
+                      <div id="stats-counter">Rating</div>
+                    </div>
+                  </div>
+                  <!-- Bio Section -->
+                  <div id="bio-section">
+                    <div class="btn-wrapper">
+                      <button id="upload-btn">
+                        <i
+                          class="fa-solid fa-arrow-up-from-bracket"
+                          style="padding: 5px"
+                        ></i
+                        >Upload
+                      </button>
+                      <button id="remove-btn">
+                        <i
+                          class="fa-regular fa-trash-can"
+                          style="padding: 5px"
+                        ></i
+                        >Remove
+                      </button>
+                    </div>
+                    <div id="bio" class="spacing">
+                      <textarea placeholder="Enter a bio..."></textarea>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <!-- Bio Section -->
-              <div id="bio-section">
-                <div class="btn-wrapper">
-                  <button id="upload-btn">
-                    <i
-                      class="fa-solid fa-arrow-up-from-bracket"
-                      style="padding: 5px"
-                    ></i
-                    >Upload
-                  </button>
-                  <button id="remove-btn">
-                    <i class="fa-regular fa-trash-can" style="padding: 5px"></i
-                    >Remove
-                  </button>
+              <!-- Profile Information -->
+              <div class="profile-section" class="pfp">
+                <h3>Profile</h3>
+                <div class="pfp-1">
+                  <form action="#">
+                    <label for="fname">First Name</label>
+                    <input
+                      type="text"
+                      name="firstname"
+                      id="fname"
+                      placeholder="Your name.."
+                    />
+                    <label for="fname">Last Name</label>
+                    <input
+                      type="text"
+                      name="lastname"
+                      id="fname"
+                      placeholder="Your last name..."
+                    />
+                    <label for="fname">Email</label>
+                    <input
+                      type="text"
+                      name="email"
+                      id="fname"
+                      placeholder="noemail@noemail.com"
+                    />
+                    <label for="fname">Phone Number</label>
+                    <input
+                      type="text"
+                      name="email"
+                      id="fname"
+                      placeholder="Phone number"
+                    />
+                  </form>
+                  <div>
+                    <button class="button-31">Save changes</button>
+                    <button class="button-31 cancel">Cancel</button>
+                  </div>
                 </div>
-                <div id="bio" class="spacing">
-                  <textarea placeholder="Enter a bio..."></textarea>
+              </div>
+              <!-- Shipping Information-->
+              <div class="profile-section" class="pfp">
+                <h3>Shipping Information</h3>
+                <div class="pfp-1">
+                  <form action="#">
+                    <label for="fname">First Name</label>
+                    <input
+                      type="text"
+                      name="firstname"
+                      id="fname"
+                      placeholder="Your name.."
+                    />
+                    <label for="fname">Last Name</label>
+                    <input
+                      type="text"
+                      name="lastname"
+                      id="fname"
+                      placeholder="Your last name..."
+                    />
+                    <label for="fname">Country</label>
+                    <input
+                      type="text"
+                      name="country"
+                      id="country"
+                      placeholder="Country"
+                    />
+                    <label for="fname">Address</label>
+                    <input
+                      type="text"
+                      name="address"
+                      id="address"
+                      placeholder="Your address..."
+                    />
+                  </form>
+                </div>
+                <div class="btn-container">
+                  <button class="button-31">Save changes</button>
+                  <button class="button-31 cancel">Cancel</button>
                 </div>
               </div>
             </div>
-          </div>
-          <div id="profile-section" class="pfp">
-            <h3>Profile</h3>
-            <div class="pfp-1">
-              <form action="#">
-                <label for="fname">First Name</label>
-                <input
-                  type="text"
-                  name="firstname"
-                  id="fname"
-                  placeholder="Your name.."
-                />
-                <label for="fname">Last Name</label>
-                <input
-                  type="text"
-                  name="lastname"
-                  id="fname"
-                  placeholder="Your last name..."
-                />
-                <label for="fname">Email</label>
-                <input
-                  type="text"
-                  name="email"
-                  id="fname"
-                  placeholder="noemail@noemail.com"
-                />
-                <label for="fname">Phone Number</label>
-                <input
-                  type="text"
-                  name="email"
-                  id="fname"
-                  placeholder="Phone number"
-                />
-              </form>
-              <div>
-                <button class="button-31">Save changes</button>
-                <button class="button-31 cancel">Cancel</button>
-              </div>
-            </div>
-          </div>
-          <div id="profile-section" class="pfp">
-            <h3>Shipping Information</h3>
-            <div class="pfp-1">
-              <form action="#">
-                <label for="fname">First Name</label>
-                <input
-                  type="text"
-                  name="firstname"
-                  id="fname"
-                  placeholder="Your name.."
-                />
-                <label for="fname">Last Name</label>
-                <input
-                  type="text"
-                  name="lastname"
-                  id="fname"
-                  placeholder="Your last name..."
-                />
-                <label for="fname">Country</label>
-                <input
-                  type="text"
-                  name="country"
-                  id="country"
-                  placeholder="Country"
-                />
-                <label for="fname">Address</label>
-                <input
-                  type="text"
-                  name="address"
-                  id="address"
-                  placeholder="Your address..."
-                />
-              </form>
-            </div>
-            <div class="btn-container">
-              <button class="button-31">Save changes</button>
-              <button class="button-31 cancel">Cancel</button>
+            <!-- Reviews Content -->
+            <div id="review-content" class="profile-section">
+              REVIEWS CONTENT
             </div>
           </div>
         </div>
@@ -228,7 +242,7 @@
           Payment
         </div>
         <!-- Selling Content-->
-        <div class="right-navigation" id="payment" style="display: flex">
+        <div class="right-navigation" id="payment" style="display: none">
           <div class="section-p1 payment-wrapper">
             <div class="inner-wrapper" id="wallet-balance">
               <div class="usd">
@@ -322,30 +336,28 @@
           </div>
           <!-- Payment reports and taxes -->
           <div class="inner-wrapper" id="payments-reports">
-            <div class="filter-container ">
-
+            <div class="filter-container">
               <div class="dropdown-section-sm">
-                <div class="filter-1 default-button dropdown-header" id="filter">
+                <div
+                  class="filter-1 default-button dropdown-header"
+                  id="filter"
+                >
                   <span class="filter-icon" id="filter-icon">
-                  <i class="fa-solid fa-filter"></i>
+                    <i class="fa-solid fa-filter"></i>
                   </span>
                   <p>Filter</p>
                 </div>
 
-
                 <!-- Dropdown Menu for small  -->
-                 <div id="year-selection" class="year-dropdown"> 
+                <div id="year-selection" class="year-dropdown">
                   <ul id="sm-list" class="list-options">
                     <li class="options">Clear All Filter</li>
                     <li class="options">Reset</li>
                   </ul>
-                 </div>
+                </div>
               </div>
-            
-              
 
               <div class="dropdown-section-sm">
-
                 <div
                   class="default-button filter-1 dropdown-header"
                   id="year-header"
@@ -364,7 +376,6 @@
                     <li class="options">2027</li>
                   </ul>
                 </div>
-
               </div>
             </div>
             <!-- Dropdown section for 'Statements' with toggle icon -->
