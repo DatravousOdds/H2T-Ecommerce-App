@@ -281,7 +281,7 @@ p {
 }
 
 #left-nav-wrapper {
-  /* border: 2px solid red; */
+  width: 260px;
   height: 100%;
   padding: 1rem;
   background-color: #f8f7f7;
@@ -1040,7 +1040,8 @@ h6 {
 
   .profile-section {
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
+    margin: 10px;
   }
 
   #user-stats {
@@ -1060,12 +1061,21 @@ h6 {
     width: 60% !important;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 30px 50px;
+    /* gap: 16px; */
+    padding: 14px;
+    flex: 1;
   }
 
   #pfp-section {
     flex-direction: column;
+  }
+
+  #profile-inner-wrapper {
+    flex: 1;
+  }
+
+  #pfp-data {
+    width: 365px;
   }
 
   .section-p1 {
@@ -1083,7 +1093,7 @@ h6 {
   }
 
   .nav-wrapper {
-    gap: 3rem;
+    gap: 1px;
   }
 
   .usd h1 {
@@ -1127,6 +1137,10 @@ h6 {
 
   .dropdown-menu a {
     padding: 10px 6rem;
+  }
+
+  #bio-section textarea {
+    width: 100%;
   }
 }
 
