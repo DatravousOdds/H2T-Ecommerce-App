@@ -113,7 +113,7 @@
 }
 
 .button-31:hover,
-.button-31:focus {
+.button-31:focus, {
   opacity: 0.75;
 }
 
@@ -155,7 +155,9 @@ p {
 
 .edit-btn {
   border: transparent;
-  background-color: #efefef;
+  background-color: #000;
+  font-weight: 500;
+  color: white;
   padding: 10px;
   border-radius: 8px;
   transition: 0.2s ease;
@@ -163,6 +165,7 @@ p {
 }
 
 .edit-btn:hover {
+  background-color: #0000008a;
   transform: scale(1.1);
 }
 
@@ -349,7 +352,7 @@ p {
 }
 
 .section-p1 {
-  padding: 0px 0px !important;
+  padding: 0px 16px !important;
 }
 .lf-wrapper li {
   display: flex;
