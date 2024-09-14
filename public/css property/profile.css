@@ -277,7 +277,33 @@ p {
   font-size: 1rem;
 }
 
-/* Profile Section */
+/* Reviews Section */
+
+.rating-feedback {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.feedback {
+  background-color: #fff;
+  border: 2px solid #d6d6d6;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  color: #000;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.rating-feedback .rating-style {
+  font-size: large;
+  font-weight: 700;
+  padding: 0px 6px;
+  color: #ff0000;
+}
 .rating-container {
   display: flex;
   align-items: center;
@@ -1092,8 +1118,13 @@ h6 {
     align-items: center;
   }
 
+  .rating-container .rating-count {
+    font-weight: 500;
+    color: #6a6a6a;
+  }
+
   .rating-breakdown .rating-process .rating-bar {
-    width: 140px;
+    width: 138px;
   }
 
   #newsletter .form {
