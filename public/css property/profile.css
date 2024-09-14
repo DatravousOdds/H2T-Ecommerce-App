@@ -158,6 +158,12 @@ p {
   background-color: #efefef;
   padding: 10px;
   border-radius: 8px;
+  transition: 0.2s ease;
+  
+}
+
+.edit-btn:hover {
+  transform: scale(1.1);
 }
 
 .btn {
@@ -1004,9 +1010,9 @@ h6 {
     flex-direction: column;
   }
 
-  /* #cards-on-file {
-    width: 450px;
-  } */
+  #bio-section textarea {
+    width: 100%;
+  }
 
   .dropdown-menu .stmt-wrapper {
     flex-direction: column;
