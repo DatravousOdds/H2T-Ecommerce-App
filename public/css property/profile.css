@@ -291,12 +291,23 @@ p {
 .rating-breakdown .rating-process {
   display: flex;
   align-items: center;
+  gap: 6px;
 }
 
 .rating-breakdown .rating-process .rating-bar {
   border: 1px solid black;
-  width: 100px;
-  height: 10px;
+  width: 140px;
+  height: 12px;
+  border-radius: 12px;
+}
+
+.rating-breakdown .rating-process .review-overall {
+  font-weight: 700;
+}
+
+.rating-breakdown .rating-process .review-counter {
+  font-weight: 500;
+  color: #6a6a6a;
 }
 
 .lf-wrapper li {
@@ -1069,6 +1080,22 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  /* Review Section */
+
+  .rating-breakdown {
+    padding: 10px 0px;
+  }
+
+  .rating-container {
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .rating-breakdown .rating-process .rating-bar {
+    width: 140px;
+  }
+
   #newsletter .form {
     padding: var(--padding-medium);
   }
