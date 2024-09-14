@@ -113,7 +113,7 @@
 }
 
 .button-31:hover,
-.button-31:focus, {
+.button-31:focus {
   opacity: 0.75;
 }
 
@@ -161,7 +161,6 @@ p {
   padding: 10px;
   border-radius: 8px;
   transition: 0.2s ease;
-  
 }
 
 .edit-btn:hover {
