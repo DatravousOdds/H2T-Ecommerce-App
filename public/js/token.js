@@ -29,8 +29,10 @@ const compareToken = (token, key) => {
 
 // send data function
 const sendData = (path, data) => {
+  console.log(data);
+  console.log(path);
   fetch(path, {
-    method: "post",
+    method: "POST",
     headers: new Headers({ "Content-Type": "application/json" }),
     body: JSON.stringify(data),
   })
@@ -41,6 +43,7 @@ const sendData = (path, data) => {
 };
 
 const processData = (data) => {
+  console.log(data);
   loader.style.display = null;
   if (data.alert) {
     showAlert(data.alert);
@@ -61,15 +64,16 @@ const processData = (data) => {
 };
 
 // alert function
-const showAlert = (msg) => {
+const showAlert = (msg, type) => {
+  console.log(msg, type);
   let alertBox = document.querySelector(".alert-box");
   let alertMsg = document.querySelector(".alert-msg");
   let alertImg = document.querySelector(".alert-img");
 
   alertMsg.innerHTML = msg;
 
-  if ((type = "success")) {
-    alertImg.src = `images/success.png`;
+  if (type === "success") {
+    alertImg.src = `images/success.png`; 
     alertMsg.style.color = `#0ab50a`;
   } else {
     // means it is an error
