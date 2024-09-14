@@ -379,6 +379,7 @@ p {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 24px;
 }
 
 #profile-wrapper {
@@ -650,6 +651,13 @@ h6 {
 
 .usd-wrapper p {
   font-size: 1.5rem;
+}
+
+/* Ulities Classes */
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
 }
 
 .inline {
