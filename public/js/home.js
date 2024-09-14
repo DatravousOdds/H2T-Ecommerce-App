@@ -6,8 +6,8 @@ setupSliderEffect = () => {
     const preBTn = [...document.querySelectorAll('pre-btn')];
 
     prodcontainers.forEach((item, i) => {
-        let containerDimenstions = item.getBoundingClientRect();
-        let containerWidth = containerDimenstions.width;
+        let containerDimensions = item.getBoundingClientRect();
+        let containerWidth = containerDimensions.width;
 
         nextBTn[i].addEventListener('click', () => {
             item.scrollLeft += containerWidth;
