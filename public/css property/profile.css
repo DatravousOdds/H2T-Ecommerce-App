@@ -156,6 +156,8 @@ p {
 .edit-btn {
   border: transparent;
   background-color: #efefef;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .btn {
