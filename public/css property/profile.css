@@ -104,6 +104,12 @@
   font-weight: 500;
 }
 
+hr {
+  width: 100%;
+  text-align: left;
+  margin-left: 0;
+}
+
 .default-button {
   height: 42px;
   border-radius: 8px;
@@ -271,9 +277,28 @@ p {
   font-size: 1rem;
 }
 
-/* input {
-  width: 100% !important;
-} */
+/* Profile Section */
+.rating-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rating-container .rating-overall h2 {
+  font-weight: 700;
+}
+
+.rating-breakdown .rating-process {
+  display: flex;
+  align-items: center;
+}
+
+.rating-breakdown .rating-process .rating-bar {
+  border: 1px solid black;
+  width: 100px;
+  height: 10px;
+}
+
 .lf-wrapper li {
   text-decoration: none;
   list-style: none;
