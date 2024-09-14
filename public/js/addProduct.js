@@ -15,30 +15,30 @@ window.onload = () => {
 // price inputs 
 
 const $realPrice = document.querySelector('#actual-price');
-const $discountPrecentage = document.querySelector('#discount');
+const $discountPercentage = document.querySelector('#discount');
 const $sellPrice = document.querySelector('#s-price');
 
-$discountPrecentage.addEventListener('input', () => {
-    if ($discountPrecentage.value > 100) {
-        $discountPrecentage.value = 90;
+$discountPercentage.addEventListener('input', () => {
+    if ($discountPercentage.value > 100) {
+        $discountPercentage.value = 90;
     } else {
-        let discount = $realPrice.value * $discountPrecentage.value / 100;
+        let discount = $realPrice.value * $discountPercentage.value / 100;
         $sellPrice.value = $realPrice.value - discount;
     }
 })
 
 $sellPrice.addEventListener('input', () => {
     let discount = ($sellPrice.value / $realPrice.value) * 100;
-    $discountPrecentage.value = discount;
+    $discountPercentage.value = discount;
 })
 
 // upload img handle
-let uploadimg = document.querySelectorAll('.imageupload');
+let uploadImg = document.querySelectorAll('.imageupload');
 let imgPath = []; // will store all upload img paths
 
-uploadimg.forEach((imageupload, index) => {
-    imageupload.addEventListener('change', () => {
-        const file = imageupload.files[0];
+uploadImg.forEach((imageUpload, index) => {
+    imageUpload.addEventListener('change', () => {
+        const file = imageUpload.files[0];
         let imageUrl;
 
         if (file.type.includes('image')) {
@@ -52,7 +52,7 @@ uploadimg.forEach((imageupload, index) => {
                     }).then(res => {
                         imageUrl = url.split("?")[0];
                         imgPath[index] = imageUrl;
-                        let label = document.querySelector(`label[for=${imageupload.id}]
+                        let label = document.querySelector(`label[for=${imageUpload.id}]
                        `);
                         label.style.backgroundImage = `url(${imageUrl})`;
                         let productImg = document.querySelector('.product-image');
@@ -105,7 +105,7 @@ const validForm = () => {
         return showAlert('upload atleast one product image')
     } else if (!sizes.length) { // size array
         return showAlert('select at least one size');
-    } else if (!$realPrice.value.length || !$discountPrecentage.value.length || !$sellPrice.
+    } else if (!$realPrice.value.length || !$discountPercentage.value.length || !$sellPrice.
         value.length) {
         return showAlert('you must add pricings');
     } else if (stock.value < 20) {
@@ -128,7 +128,7 @@ const productData = () => {
         images: imgPath,
         sizes: sizes,
         actualPrice: $realPrice.value,
-        discount: $discountPrecentage.value,
+        discount: $discountPercentage.value,
         sellPrice: $sellPrice.value,
         stock: stock.value,
         tags: tagArr,
@@ -176,7 +176,7 @@ const setInfoData = (data) => {
     shortLine.value = data.shortDes;
     des.value = data.des;
     $realPrice.value = data.actualPrice;
-    $discountPrecentage.value = data.discount;
+    $discountPercentage.value = data.discount;
     $sellPrice.value = data.sellPrice;
     stock.value = data.stock;
     tags.value = data.tags;
