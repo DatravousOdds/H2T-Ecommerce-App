@@ -279,6 +279,15 @@ p {
 
 /* Reviews Section */
 
+.user-reviews {
+  display: flex;
+}
+
+.rating-display {
+  display: flex;
+  align-items: center;
+}
+
 .rating-feedback {
   display: flex;
   flex-direction: row;
@@ -312,6 +321,10 @@ p {
 
 .rating-container .rating-overall h2 {
   font-weight: 700;
+}
+
+.rating-breakdown {
+  padding: 24px 0px;
 }
 
 .rating-breakdown .rating-process {
@@ -413,7 +426,7 @@ p {
 }
 
 .section-p1 {
-  padding: 0px 16px !important;
+  padding: 0px 16px 0px 0px!important;
 }
 .lf-wrapper li {
   display: flex;
@@ -447,6 +460,7 @@ p {
 }
 
 #profile-wrapper {
+  gap: 24px;
   display: flex;
   justify-content: space-between;
 }
@@ -1107,6 +1121,10 @@ h6 {
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
   /* Review Section */
+
+  .user-review-img {
+    
+  }
 
   .rating-breakdown {
     padding: 10px 0px;
