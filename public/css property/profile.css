@@ -279,8 +279,30 @@ p {
 
 /* Reviews Section */
 
-.user-reviews {
+.review-card .rating-display {
+  gap: 4px;
   display: flex;
+  align-items: center;
+}
+
+.review-card .user-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.review-card .user-review {
+  padding: 32px 0px;
+
+}
+
+.review-card .user-info .user-review-img {
+  border-radius: 32px;
+}
+
+.user-review {
+  display: flex;
+  gap: 12px;
 }
 
 .rating-display {
@@ -1122,9 +1144,25 @@ h6 {
 @media (min-width: 768px) and (max-width: 991.98px) {
   /* Review Section */
 
-  .user-review-img {
-    
-  }
+.review-card .user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.review-card .user-review {
+  display: flex;
+  gap: 1rem
+  ;
+}
+.review-card {
+  padding: 24px 0px;
+}
+
+.review-card .user-review-img {
+  border-radius: 24px;
+}
+
+
 
   .rating-breakdown {
     padding: 10px 0px;
