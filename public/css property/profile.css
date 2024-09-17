@@ -1086,6 +1086,10 @@ h6 {
     padding: var(--padding-medium);
   }
 
+  #review-content {
+    width: 300px;
+  }
+
   .right-navigation {
     width: 100% !important;
     display: flex;
