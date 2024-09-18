@@ -278,6 +278,13 @@ p {
 }
 
 /* Reviews Section */
+.review-card {
+  border-bottom: 2px solid #d6d6d6;
+}
+
+.review-details {
+  padding-bottom: 1rem;
+}
 
 .review-card .rating-display {
   gap: 4px;
@@ -292,8 +299,7 @@ p {
 }
 
 .review-card .user-review {
-  padding: 32px 0px;
-
+  padding: 32px 0px 4px;
 }
 
 .review-card .user-info .user-review-img {
@@ -303,6 +309,11 @@ p {
 .user-review {
   display: flex;
   gap: 12px;
+}
+
+.user-info p,
+.rating-display {
+  font-weight: 500;
 }
 
 .rating-display {
@@ -448,7 +459,7 @@ p {
 }
 
 .section-p1 {
-  padding: 0px 16px 0px 0px!important;
+  padding: 0px 16px 0px 0px !important;
 }
 .lf-wrapper li {
   display: flex;
@@ -1156,24 +1167,22 @@ h6 {
 @media (min-width: 768px) and (max-width: 991.98px) {
   /* Review Section */
 
-.review-card .user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.review-card .user-review {
-  display: flex;
-  gap: 1rem;
-}
-.review-card {
-  padding: 24px 0px;
-}
+  .review-card .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .review-card .user-review {
+    display: flex;
+    gap: 4rem;
+  }
+  .review-card {
+    padding: 24px 0px;
+  }
 
-.review-card .user-review-img {
-  border-radius: 24px;
-}
-
-
+  .review-card .user-review-img {
+    border-radius: 24px;
+  }
 
   .rating-breakdown {
     padding: 10px 0px;
@@ -1209,7 +1218,7 @@ h6 {
   .profile-section {
     flex-direction: column;
     gap: 5px;
-    margin: 10px;
+    /* margin: 10px; */
   }
 
   #user-stats {
