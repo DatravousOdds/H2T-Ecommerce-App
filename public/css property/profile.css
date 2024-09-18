@@ -1086,8 +1086,16 @@ h6 {
     padding: var(--padding-medium);
   }
 
+  .review-card .user-review {
+    padding: 32px 0px 12px;
+  }
+
+  .user-review {
+    gap: 3.5rem;
+  }
+
   #review-content {
-    width: 300px;
+    width: auto;
   }
 
   .right-navigation {
@@ -1155,8 +1163,7 @@ h6 {
 }
 .review-card .user-review {
   display: flex;
-  gap: 1rem
-  ;
+  gap: 1rem;
 }
 .review-card {
   padding: 24px 0px;
