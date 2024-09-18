@@ -1675,6 +1675,10 @@ footer .rights {
   .section-p1 {
     padding: 0px 55px;
   }
+
+  footer .col {
+    flex: 0 0 22%;
+  }
 }
 
 /*  Applies styles to screens < 767px */
@@ -2243,9 +2247,9 @@ footer .rights {
   .liked {
     position: absolute;
     top: 0px;
-    right: 1px;
+    left: 9rem;
     z-index: 1;
-    width: 32px;
+    width: 0px;
   }
 
   #prod-card-container {
