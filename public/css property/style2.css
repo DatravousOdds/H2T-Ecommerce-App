@@ -2110,6 +2110,8 @@ footer .rights {
 
 /* Screen for smartphones */
 @media (max-width: 430px) {
+
+/* Nav Menu */
   nav .search_box {
     display: flex;
     margin: auto 1px;
@@ -2212,10 +2214,30 @@ footer .rights {
     margin-bottom: 30px;
   }
 
+  /* Home page */
+
+  #product1 .pro {
+    width: 200px;
+  }
+
+  #product1 .pro .product-image {
+    width: 185px;
+    height: 150px;
+  }
+  #product1 .pro img {
+    border-style: none;
+    border-radius: 20px;
+  }
+
+  #product1 .pro-container {
+    justify-content: flex-start;
+  }
+
   /* Mens Page */
   .image-custom {
-    width: 140px;
-    height: 75px;
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
   }
 
   .liked {
