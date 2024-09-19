@@ -278,6 +278,12 @@ p {
 }
 
 /* Reviews Section */
+
+#review-content {
+  width: 651px;
+  height: 100%;
+}
+
 .review-card {
   border-bottom: 2px solid #d6d6d6;
 }
@@ -379,7 +385,8 @@ p {
 
 .rating-breakdown .rating-process .rating-bar {
   border: 1px solid black;
-  width: 357px;
+  /* max-width: 357px; */
+  width: 336px;
   height: 12px;
   border-radius: 12px;
 }
@@ -391,6 +398,14 @@ p {
 .rating-breakdown .rating-process .review-counter {
   font-weight: 500;
   color: #6a6a6a;
+}
+
+.see-all-reviews {
+  padding: 20px 0px;
+}
+
+.see-all-reviews a {
+  color: #000;
 }
 
 .lf-wrapper li {
@@ -420,16 +435,15 @@ p {
 }
 
 .profile-section {
-  gap: 5rem;
   box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
-  width: 100%;
-  padding: 10px;
+  padding: 10px 24px;
   border-radius: 12px;
-  /* display: flex; */
   align-items: center;
-  /* justify-content: center; */
+  
 }
+
+
 #user-stats {
   padding: 16px 10px;
   display: flex;
@@ -485,14 +499,14 @@ p {
 
 .right-navigation {
   gap: 10px;
-  width: 50%;
+  width: auto;
   height: 100%;
   flex-direction: column;
   /* border: 2px solid black; */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px 10px;
+  padding: 24px 10px;
 }
 
 #profile-inner-wrapper {
@@ -931,6 +945,8 @@ h6 {
 
 .pfp {
   display: block;
+  width: 500px;
+  margin-bottom: 1rem;
 }
 
 #pfp-section {
@@ -1117,7 +1133,7 @@ h6 {
   }
 
   #review-content {
-    width: auto;
+    width: 588px !important;
   }
 
   .right-navigation {
@@ -1342,6 +1358,6 @@ h6 {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
   .right-navigation {
-    width: 65%;
+    width: 100%;
   }
 }
