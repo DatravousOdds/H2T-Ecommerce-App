@@ -1074,6 +1074,66 @@ h6 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+
+  .section-p1 {
+    padding: 0px !important;
+  }
+
+  #profile-inner-wrapper {
+    padding: 16px 0px;
+
+  }
+
+  .pfp, #review-content {
+    width: 90%;
+  }
+
+  #review-content {
+    order: 1;
+    height: auto;
+    
+  }
+
+  #review-content  h1 {
+    font-size: 24px;
+  }
+
+  .review-wrapper {
+    flex-direction: column;
+  }
+
+  .review-wrapper .rating-container {
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .review-wrapper .rating-container h2 {
+    font-size: 3rem;
+  }
+
+  .rating-container .rating-details {
+    text-align: left;
+  }
+
+  #reivew-content .rating-breakdown {
+    padding: 24px 0px;
+  }
+
+  .rating-breakdown .rating-process .rating-bar {
+    width: 56%;
+  }
+
+  #profile-data {
+    order: 2;
+  }
+
+  #shipping-data {
+    order: 3;
+  }
+
+
+
   #newsletter .form {
     padding: var(--padding-medium);
   }
@@ -1083,7 +1143,6 @@ h6 {
   }
 
   .right-navigation {
-    max-width: 29rem;
     width: 100%;
   }
 
@@ -1120,13 +1179,7 @@ h6 {
     padding: 12px 82px;
   }
 
-  #right-navigation {
-    width: 500px;
-  }
-
-  .right-navigation {
-    width: 100%;
-  }
+  
 
   #timestamp-container {
     justify-content: center;
