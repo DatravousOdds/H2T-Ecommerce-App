@@ -257,7 +257,7 @@ p {
   height: 105px;
   max-width: 100%;
   border-radius: 8px;
-  width: 50%;
+  width: 64%;
 }
 
 #bio-section textarea:focus {
@@ -386,9 +386,19 @@ p {
 .rating-breakdown .rating-process .rating-bar {
   border: 1px solid black;
   /* max-width: 357px; */
+  position: relative;
   width: 336px;
   height: 12px;
   border-radius: 12px;
+  overflow: hidden;
+}
+
+
+
+.rating-bar .rating-bar-fill {
+  width: 70%;
+  height: 100%;
+  background-color: #000;
 }
 
 .rating-breakdown .rating-process .review-overall {
@@ -523,6 +533,7 @@ p {
   align-items: center;
   justify-content: center;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
 #profile-wrapper {
@@ -842,13 +853,24 @@ h6 {
   align-items: center;
 }
 
-.header-info #edit-info-header {
+.header-info h3 {
+  font-size: 24px;
+}
+
+.header-info .edit-info {
   gap: 8px;
   display: flex;
   align-items: center;
+  cursor: pointer;
+  transition: 0.5s ease;
+  padding: 10px;
+  border-radius: 8px;
 
 }
 
+.header-info .edit-info:hover {
+  transform: scale(1.1);
+}
 .dropdown-header {
   cursor: pointer;
 }
@@ -1214,6 +1236,7 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+
   /* Review Section */
 
   .review-card .user-info {
