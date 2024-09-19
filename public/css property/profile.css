@@ -347,7 +347,7 @@ p {
   align-items: center;
   width: auto;
   color: #000;
-  font-weight: 600;
+  font-weight: 500;
   border-radius: 8px;
 }
 
@@ -355,7 +355,7 @@ p {
   font-size: large;
   font-weight: 700;
   padding: 0px 6px;
-  color: #ff0000;
+  color: #14AE12;
 }
 .rating-container {
   display: flex;
@@ -402,6 +402,14 @@ p {
 
 .see-all-reviews {
   padding: 20px 0px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.see-all-reviews i {
+  font-size: 18px;
 }
 
 .see-all-reviews a {
