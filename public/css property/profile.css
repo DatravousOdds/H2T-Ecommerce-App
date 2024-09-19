@@ -835,6 +835,20 @@ h6 {
   transition: max-height 0.4s ease, opacity 0.4s ease, visibility 0.4s ease;
 }
 
+/* Profile profile  page */
+.header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-info #edit-info-header {
+  gap: 8px;
+  display: flex;
+  align-items: center;
+
+}
+
 .dropdown-header {
   cursor: pointer;
 }
