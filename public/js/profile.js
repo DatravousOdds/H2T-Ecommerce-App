@@ -93,6 +93,7 @@ editBtn.addEventListener('click', () => {
     input.disabled = false;
     input.style.backgroundColor = "#dfefff";
     input.style.border = "#b0b0b0";
+    input.style.padding = "12px 20px";
 
   
     
@@ -109,11 +110,16 @@ saveBtn.addEventListener("click", function() {
     input.style.backgroundColor = "transparent";
     input.style.border = "none";
     input.style.boxShadow = "none";
+    input.style.padding = "0px 0px";
+
   })
    //  removing the save, cancel btns from the dom
   saveBtn.style.display = "none"
   cancelBtn.style.display =  "none"
   editBtn.style.display = "flex"
+
+
+  // add function in the future to send to a database
 
 }) 
 

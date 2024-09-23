@@ -1462,8 +1462,13 @@ h6 {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
  .rating-breakdown .rating-process .rating-bar {
-    width: 175px;
+    width:
+     175px;
  }
+
+.profile-section label {
+  font-size: 18px;
+}
 
  #shipping-data {
   order: 1;
