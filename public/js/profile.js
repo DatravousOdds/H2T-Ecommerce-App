@@ -6,10 +6,9 @@ const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
 const spanElement = document.getElementById('filter-icon');
 const profileForms =  document.querySelectorAll(".profile-section");
 const hasFilterIcon = spanElement.querySelector('i.fa-filter') !== null;
-// const bioSection = profileForms.getElementById("pfp-section-1");
 const firstSection = profileForms[0];
 const bio = firstSection.querySelector("#bio");
-console.log(bio);
+
 
 
 
@@ -158,57 +157,4 @@ profileForms.forEach(formSection => {
 
 
 
-
-//   inputs.forEach(input => {
-//     input.disabled = true;
-//     input.style.backgroundColor = "transparent";
-//     input.style.border = "none";
-//     input.style.boxShadow = "none";
-//     input.style.padding = "0px 0px";
-
-//     saveBtn.style.display = "none";
-//     cancelBtn.style.display = "none";
-//     editBtn.style.display = "flex";
-
-//   })
-// })
-
-// editBtn.addEventListener('click', () => {
-//   console.log('Edit button clicked'); // testing 
-//   inputs.forEach(input => {
-//     input.disabled = false;
-//     input.style.backgroundColor = "#e0e0e0";
-//     input.style.border = "#b0b0b0";
-//     input.style.padding = "12px 20px";
-
-  
-    
-//   });
-//   saveBtn.style.display = "inline"
-//   cancelBtn.style.display = "inline"
-//   editBtn.style.display = "none"  
-// });
-
-// // action for when the save chgs  btn is clicked :: Personal Information 
-// saveBtn.addEventListener("click", function() {
-//   inputs.forEach(input =>  {
-//     input.disabled = true;
-//     input.style.backgroundColor = "transparent";
-//     input.style.border = "none";
-//     input.style.boxShadow = "none";
-//     input.style.padding = "0px 0px";
-
-//     // Send to a database
-    
-
-//   })
-//    //  removing the save, cancel btns from the dom
-//   saveBtn.style.display = "none"
-//   cancelBtn.style.display =  "none"
-//   editBtn.style.display = "flex"
-
-
-
-
-// }) 
 
