@@ -9,7 +9,9 @@ const hasFilterIcon = spanElement.querySelector('i.fa-filter') !== null;
 // const bioSection = profileForms.getElementById("pfp-section-1");
 const firstSection = profileForms[0];
 const bio = firstSection.querySelector("#bio");
-console.log(bio)
+console.log(bio);
+
+
 
 
 
