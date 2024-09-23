@@ -1,3 +1,6 @@
+/* * 09/22/2024 Travis Odds  Adding action to forms, no connect db yet. * */
+
+
 const dropdownSection = document.querySelectorAll(".dropdown-section");
 
 
@@ -66,4 +69,51 @@ smallDropdownSection.forEach((smallMenu) => {
 
 })
 
+const editBtn = document.querySelector("#edit-info-header .edit-info");
+const saveBtn = document.querySelector("#personalInfoActionBtn .save-btn");
+const cancelBtn = document.querySelector("#personalInfoActionBtn .cancel-btn");
+const inputs = document.querySelectorAll("#personalInformation input");
+
+
+
+
+console.log(inputs)
+
+
+
+
+
+cancelBtn.addEventListener("click", function(){
+  console.log('Cancel button clicked')
+})
+
+editBtn.addEventListener('click', () => {
+  console.log('Edit button clicked')
+  inputs.forEach(input => {
+    input.disabled = false;
+    input.style.backgroundColor = "#dfefff";
+    input.style.border = "#b0b0b0";
+
+  
+    
+  });
+  saveBtn.style.display = "inline"
+  cancelBtn.style.display = "inline"
+  editBtn.style.display = "none"  
+});
+
+// action for when the save chgs  btn is clicked :: Personal Information 
+saveBtn.addEventListener("click", function() {
+  inputs.forEach(input =>  {
+    input.disabled = true;
+    input.style.backgroundColor = "transparent";
+    input.style.border = "none";
+    input.style.boxShadow = "none";
+  })
+   //  removing the save, cancel btns from the dom
+  saveBtn.style.display = "none"
+  cancelBtn.style.display =  "none"
+  editBtn.style.display = "flex"
+
+}) 
 
