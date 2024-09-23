@@ -2,8 +2,14 @@
 
 
 const dropdownSection = document.querySelectorAll(".dropdown-section");
-
-
+const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
+const spanElement = document.getElementById('filter-icon');
+const profileForms =  document.querySelectorAll(".profile-section");
+const hasFilterIcon = spanElement.querySelector('i.fa-filter') !== null;
+// const bioSection = profileForms.getElementById("pfp-section-1");
+const firstSection = profileForms[0];
+const bio = firstSection.querySelector("#bio");
+console.log(bio)
 
 
 
@@ -38,18 +44,11 @@ dropdownSection.forEach((section) => {
     }
   });
 });
-
 /* 
   TODO: Create a function that has the dropdown functionality
 */
 
-
-
-
-const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
-const spanElement = document.getElementById('filter-icon');
-const hasFilterIcon = spanElement.querySelector('i.fa-filter') !== null;
-// testing
+// Performs small menu action for profile -- payment information --
 smallDropdownSection.forEach((smallMenu) => {
   const yearHeader = smallMenu.querySelector(".dropdown-header")
   const yearIcon = smallMenu.querySelector(".dropdown-icon i")
@@ -69,13 +68,7 @@ smallDropdownSection.forEach((smallMenu) => {
 
 })
 
-// const editBtn = document.querySelector("#edit-info-header .edit-info");
-// const saveBtn = document.querySelector("#personalInfoActionBtn .save-btn");
-// const cancelBtn = document.querySelector("#personalInfoActionBtn .cancel-btn");
-// const inputs = document.querySelectorAll("#personalInformation input");
-const profileForms =  document.querySelectorAll(".profile-section");
-console.log(profileForms) 
-
+// Performs menu actions such as save, cancel or edit for profile -- profile --
 profileForms.forEach(formSection => {
   const editBtn = formSection.querySelector(".edit-info");
   const saveBtn = formSection.querySelector(".save-btn");
@@ -151,6 +144,7 @@ profileForms.forEach(formSection => {
     
 })
 
+// Performs menu actions for pfp-section bio-section for profile -- profile --
 
 
 
@@ -160,7 +154,9 @@ profileForms.forEach(formSection => {
 
 
 
-// cancelBtn.addEventListener("click", () => {
+
+
+
 //   inputs.forEach(input => {
 //     input.disabled = true;
 //     input.style.backgroundColor = "transparent";
