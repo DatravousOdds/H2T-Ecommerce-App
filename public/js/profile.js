@@ -69,71 +69,148 @@ smallDropdownSection.forEach((smallMenu) => {
 
 })
 
-const editBtn = document.querySelector("#edit-info-header .edit-info");
-const saveBtn = document.querySelector("#personalInfoActionBtn .save-btn");
-const cancelBtn = document.querySelector("#personalInfoActionBtn .cancel-btn");
-const inputs = document.querySelectorAll("#personalInformation input");
+// const editBtn = document.querySelector("#edit-info-header .edit-info");
+// const saveBtn = document.querySelector("#personalInfoActionBtn .save-btn");
+// const cancelBtn = document.querySelector("#personalInfoActionBtn .cancel-btn");
+// const inputs = document.querySelectorAll("#personalInformation input");
+const profileForms =  document.querySelectorAll(".profile-section");
+console.log(profileForms) 
 
+profileForms.forEach(formSection => {
+  const editBtn = formSection.querySelector(".edit-info");
+  const saveBtn = formSection.querySelector(".save-btn");
+  const cancelBtn = formSection.querySelector(".cancel-btn");
+  const forms = formSection.querySelectorAll("form")
+ 
+ forms.forEach(eachForm => {
+  const inputs = eachForm.querySelectorAll("input");
 
+  saveBtn.style.display = "none";
+  cancelBtn.style.display = "none";
 
-
-
-
-
-
-
-
-cancelBtn.addEventListener("click", () => {
-  inputs.forEach(input => {
-    input.disabled = true;
-    input.style.backgroundColor = "transparent";
-    input.style.border = "none";
-    input.style.boxShadow = "none";
-    input.style.padding = "0px 0px";
-
-    saveBtn.style.display = "none";
-    cancelBtn.style.display = "none";
-    editBtn.style.display = "flex";
-
+  cancelBtn.addEventListener("click", () => {
+    inputs.forEach(input => {
+      input.disabled = true;
+      input.style.backgroundColor = "transparent";
+      input.style.border = "none";
+      input.style.boxShadow = "none";
+      input.style.padding = "0px 0px";
+  
+      saveBtn.style.display = "none";
+      cancelBtn.style.display = "none";
+      editBtn.style.display = "flex";
+  
+    })
   })
-})
+  
+  editBtn.addEventListener('click', () => {
+    console.log('Edit button clicked'); // testing 
+    inputs.forEach(input => {
+      input.disabled = false;
+      input.style.backgroundColor = "#e0e0e0";
+      input.style.border = "#b0b0b0";
+      input.style.padding = "12px 20px";
+  
+    
+      
+    });
+    saveBtn.style.display = "inline"
+    cancelBtn.style.display = "inline"
+    editBtn.style.display = "none"  
+  });
+  
+  // action for when the save chgs  btn is clicked :: Personal Information 
+  saveBtn.addEventListener("click", function() {
+    inputs.forEach(input =>  {
+      input.disabled = true;
+      input.style.backgroundColor = "transparent";
+      input.style.border = "none";
+      input.style.boxShadow = "none";
+      input.style.padding = "0px 0px";
+  
+      // Send to a database
+      
+  
+    })
+     //  removing the save, cancel btns from the dom
+    saveBtn.style.display = "none"
+    cancelBtn.style.display =  "none"
+    editBtn.style.display = "flex"
+  
+  
+  
+  
+  }) 
 
-editBtn.addEventListener('click', () => {
-  console.log('Edit button clicked'); // testing 
-  inputs.forEach(input => {
-    input.disabled = false;
-    input.style.backgroundColor = "#e0e0e0";
-    input.style.border = "#b0b0b0";
-    input.style.padding = "12px 20px";
+ })
+
+  
+
 
   
     
-  });
-  saveBtn.style.display = "inline"
-  cancelBtn.style.display = "inline"
-  editBtn.style.display = "none"  
-});
+})
 
-// action for when the save chgs  btn is clicked :: Personal Information 
-saveBtn.addEventListener("click", function() {
-  inputs.forEach(input =>  {
-    input.disabled = true;
-    input.style.backgroundColor = "transparent";
-    input.style.border = "none";
-    input.style.boxShadow = "none";
-    input.style.padding = "0px 0px";
 
-    // Send to a database
+
+
+
+
+
+
+
+
+// cancelBtn.addEventListener("click", () => {
+//   inputs.forEach(input => {
+//     input.disabled = true;
+//     input.style.backgroundColor = "transparent";
+//     input.style.border = "none";
+//     input.style.boxShadow = "none";
+//     input.style.padding = "0px 0px";
+
+//     saveBtn.style.display = "none";
+//     cancelBtn.style.display = "none";
+//     editBtn.style.display = "flex";
+
+//   })
+// })
+
+// editBtn.addEventListener('click', () => {
+//   console.log('Edit button clicked'); // testing 
+//   inputs.forEach(input => {
+//     input.disabled = false;
+//     input.style.backgroundColor = "#e0e0e0";
+//     input.style.border = "#b0b0b0";
+//     input.style.padding = "12px 20px";
+
+  
+    
+//   });
+//   saveBtn.style.display = "inline"
+//   cancelBtn.style.display = "inline"
+//   editBtn.style.display = "none"  
+// });
+
+// // action for when the save chgs  btn is clicked :: Personal Information 
+// saveBtn.addEventListener("click", function() {
+//   inputs.forEach(input =>  {
+//     input.disabled = true;
+//     input.style.backgroundColor = "transparent";
+//     input.style.border = "none";
+//     input.style.boxShadow = "none";
+//     input.style.padding = "0px 0px";
+
+//     // Send to a database
     
 
-  })
-   //  removing the save, cancel btns from the dom
-  saveBtn.style.display = "none"
-  cancelBtn.style.display =  "none"
-  editBtn.style.display = "flex"
+//   })
+//    //  removing the save, cancel btns from the dom
+//   saveBtn.style.display = "none"
+//   cancelBtn.style.display =  "none"
+//   editBtn.style.display = "flex"
 
 
 
 
-}) 
+// }) 
 
