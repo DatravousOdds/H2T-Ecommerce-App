@@ -1,12 +1,14 @@
 /* * 09/22/2024 Travis Odds  Adding action to forms, no connect db yet. * */
+/* * 09/23/2024 Travis Odds  Rewrote form logic w bio actions. * */
 
 const dropdownSection = document.querySelectorAll(".dropdown-section");
 const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
 const spanElement = document.getElementById("filter-icon");
 const profileSection = document.querySelectorAll(".profile-section");
 const hasFilterIcon = spanElement.querySelector("i.fa-filter") !== null;
-const firstSection = profileSection[0];
-const bio = firstSection.querySelector("#bio");
+const userProfileCard = profileSection[0];
+const bio = userProfileCard.querySelector("#bio");
+console.log(bio);
 
 /* 
     Selects all elements with class .dropdown-section 
@@ -73,9 +75,8 @@ profileSection.forEach((section) => {
 
   // Handle save button click
   saveBtn.forEach((btn) => {
-    console.log(btn);
     btn.addEventListener("click", () => {
-      console.log("save button was click");
+      // console.log("save button was click");
       inputs.forEach((input) => {
         input.disabled = true;
         input.style.backgroundColor = "transparent";
@@ -96,6 +97,8 @@ profileSection.forEach((section) => {
 
       inputs.forEach((input) => {
         input.disabled = false;
+
+        // input disabled
         input.style.backgroundColor = "#e0e0e0";
         input.style.border = "#b0b0b0";
         input.style.padding = "12px 20px";
@@ -110,64 +113,41 @@ profileSection.forEach((section) => {
   // Handle cancel button click
   cancelBtn.forEach((btn) => {
     console.log(btn);
+    btn.addEventListener("click", () => {
+      console.log("cancel button was clicked!");
+
+      inputs.forEach((input) => {
+        input.disabled = true;
+
+        // .input-enabled
+        input.style.backgroundColor = "transparent";
+        input.style.border = "none";
+        input.style.boxShadow = "none";
+        input.style.padding = "0px 0px";
+      });
+      allActionButtons.forEach((action) => {
+        action.style.display = "none";
+      });
+    });
   });
+
+  // Hides the cta buttons by default
   allActionButtons.forEach((action) => {
     action.style.display = "none";
   });
 });
 
-// Initially hide save and cancel buttons
-// saveBtn.style.display = "none";
-// cancelBtn.style.display = "none";
+const allTabs = document.querySelectorAll(".tab-btn");
+allTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const tabId = tab.getAttribute("data-tab");
 
-// Handle cancel button click
-// cancelBtn.addEventListener("click", () => {
-//   inputs.forEach(input => {
-//     input.disabled = true;
-//     input.style.backgroundColor = "transparent";
-//     input.style.border = "none";
-//     input.style.boxShadow = "none";
-//     input.style.padding = "0px 0px";
+    // Hide all tab content
+    document.querySelectorAll(".tab").forEach((t) => {
+      console.log(t);
+    });
 
-//     saveBtn.style.display = "none";
-//     cancelBtn.style.display = "none";
-//     editBtn.style.display = "flex";
-
-//   })
-// })
-
-// // Handle edit button click
-// editBtn.addEventListener('click', () => {
-//   console.log('Edit button clicked'); // testing
-//   inputs.forEach(input => {
-//     input.disabled = false;
-//     input.style.backgroundColor = "#e0e0e0";
-//     input.style.border = "#b0b0b0";
-//     input.style.padding = "12px 20px";
-
-//   });
-//   saveBtn.style.display = "inline"
-//   cancelBtn.style.display = "inline"
-//   editBtn.style.display = "none"
-// });
-
-// action for when the save chgs  btn is clicked :: Personal Information
-// saveBtn.addEventListener("click", () => {
-//   inputs.forEach(input =>  {
-//     input.disabled = true;
-//     input.style.backgroundColor = "transparent";
-//     input.style.border = "none";
-//     input.style.boxShadow = "none";
-//     input.style.padding = "0px 0px";
-
-//     // Send to a database
-
-//   })
-//    //  removing the save, cancel btns from the dom
-//   saveBtn.style.display = "none"
-//   cancelBtn.style.display =  "none"
-//   editBtn.style.display = "flex"
-
-// })
-
-// Performs menu actions for pfp-section bio-section for profile -- profile --
+    // Show the clicked tab content
+    document.getElementById(tabId).classList.add("tab-active");
+  });
+});

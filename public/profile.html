@@ -45,49 +45,50 @@
       <div class="nav-wrapper">
         <div id="left-navigation" class="tabs">
           <div id="left-nav-wrapper" class="lf-wrapper">
-            <ul>
-              <li>
-                <a href="#" class="tab-btn" data-tab="profile"
+            <ul class="tabs">
+              <li class="tab-btn">
+                <a href="#" data-tab="profile"
                   ><i class="fa-regular fa-user"></i></a
                 >Profile
               </li>
-              <li>
-                <a href="#" class="tab-btn" data-tab="payment information"
+              <li class="tab-btn">
+                <a href="#" data-tab="payment information"
                   ><i class="fa-solid fa-wallet"></i></a
                 >Payment Information
               </li>
-              <li>
-                <a href="#" class="tab-btn" data-tab="selling"
+              <li class="tab-btn">
+                <a href="#" data-tab="selling"
                   ><i class="fa-solid fa-hand-holding-dollar"></i></a
                 >Selling
               </li>
-              <li>
-                <a href="#" class="tab-btn" data-tab="favorites"
+              <li class="tab-btn">
+                <a href="#" data-tab="favorites"
                   ><i class="fa-solid fa-bookmark"></i></a
                 >Favorites
               </li>
-              <li>
-                <a href="#" class="tab-btn" data-tab="notification"
+              <li class="tab-btn">
+                <a href="#" data-tab="notification"
                   ><i class="fa-solid fa-bell"></i></a
                 >Notification
               </li>
-              <li>
-                <a href="#" class="tab-btn" data-tab="purchases"
+              <li class="tab-btn">
+                <a href="#" data-tab="purchases"
                   ><i class="fa-solid fa-sack-dollar"></i></a
                 >Purchases
               </li>
-              <li>
+              <li class="tab-btn">
                 <a href="#"><i class="fa-solid fa-gear"></i></a>Settings
               </li>
-              <li>
+              <li class="tab-btn">
                 <a href="#"><i class="fa-solid fa-right-from-bracket"></i></a
                 >Log out
               </li>
             </ul>
           </div>
         </div>
+
         <!-- Profile Content-->
-        <div class="right-navigation" id="profile" style="display: flex">
+        <div class="right-navigation tab" id="profile">
           <div id="profile-wrapper">
             <div id="profile-inner-wrapper">
               <!-- Profile Picture Section -->
@@ -425,11 +426,9 @@
           </div>
         </div>
         <!-- Payment Content-->
-        <div class="right-navigation" id="payment" style="display: none">
-          Payment
-        </div>
+        <div class="right-navigation tab" id="payment">Payment</div>
         <!-- Selling Content-->
-        <div class="right-navigation" id="payment" style="display: none">
+        <div class="right-navigation tab" id="selling">
           <div class="section-p1 payment-wrapper">
             <div class="inner-wrapper" id="wallet-balance">
               <div class="usd">
@@ -625,21 +624,13 @@
           </div>
         </div>
         <!-- Favorites Content-->
-        <div class="right-navigation" id="favorites" style="display: none">
-          Favorites
-        </div>
+        <div class="right-navigation tab" id="favorites">Favorites</div>
         <!-- Notification Content-->
-        <div class="right-navigation" id="notification" style="display: none">
-          Notification
-        </div>
+        <div class="right-navigation tab" id="notification">Notification</div>
         <!-- Purchases Content-->
-        <div class="right-navigation" id="purchases" style="display: none">
-          Purchases
-        </div>
+        <div class="right-navigation tab" id="purchases">Purchases</div>
         <!-- Settings Content-->
-        <div class="right-navigation" id="settings" style="display: none">
-          Settings
-        </div>
+        <div class="right-navigation tab" id="settings">Settings</div>
       </div>
     </section>
 

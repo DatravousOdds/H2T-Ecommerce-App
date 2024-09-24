@@ -1046,6 +1046,27 @@ h6 {
   font-size: 24px;
 }
 
+.tab {
+  display: none;
+}
+
+.tab-active {
+  display: flex;
+}
+
+.input-disabled {
+  background-color: "#e0e0e0";
+  border: "#b0b0b0";
+  padding: "12px 20px";
+}
+
+.input-enabled {
+  background-color: "transparent";
+  border: "none";
+  box-shadow: "none";
+  padding: "0px 0px";
+}
+
 .pfp-1 input[type="text"] {
   width: 100%;
   /* padding: 12px 20px; */
