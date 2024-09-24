@@ -358,7 +358,7 @@ p {
   font-size: large;
   font-weight: 700;
   padding: 0px 6px;
-  color: #14AE12;
+  color: #14ae12;
 }
 .rating-container {
   display: flex;
@@ -395,8 +395,6 @@ p {
   border-radius: 12px;
   overflow: hidden;
 }
-
-
 
 .rating-bar .rating-bar-fill {
   width: 70%;
@@ -461,9 +459,7 @@ p {
   padding: 10px 24px;
   border-radius: 12px;
   align-items: center;
-  
 }
-
 
 #user-stats {
   padding: 16px 10px;
@@ -870,7 +866,6 @@ h6 {
   transition: 0.5s ease;
   padding: 10px;
   border-radius: 8px;
-
 }
 
 .header-info .edit-info:hover {
@@ -997,7 +992,6 @@ h6 {
   width: 500px;
   margin-bottom: 1rem;
   /* height: 544px; */
-
 }
 
 #pfp-section {
@@ -1025,7 +1019,6 @@ h6 {
   font-size: 1rem;
   color: #fff;
   border-radius: 12px;
-
 }
 
 .pfp-1 form {
@@ -1092,27 +1085,33 @@ h6 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
-
+  .header-info h3 {
+    font-size: 18px;
+  }
+  #bio-section form,
+  #bio-section textarea {
+    width: 100%;
+  }
   .section-p1 {
     padding: 0px !important;
   }
 
   #profile-inner-wrapper {
     padding: 16px 0px;
-
+    justify-content: center;
   }
 
-  .pfp, #review-content {
+  .pfp,
+  #review-content {
     width: 92%;
   }
 
   #review-content {
     order: 1;
     height: auto;
-    
   }
 
-  #review-content  h1 {
+  #review-content h1 {
     font-size: 24px;
   }
 
@@ -1152,8 +1151,6 @@ h6 {
     order: 3;
   }
 
-
-
   #newsletter .form {
     padding: var(--padding-medium);
   }
@@ -1176,6 +1173,7 @@ h6 {
 
   .profile-section {
     flex-direction: column;
+    padding: 10px;
   }
 
   .stmt {
@@ -1198,8 +1196,6 @@ h6 {
   .dropdown-menu a {
     padding: 12px 82px;
   }
-
-  
 
   #timestamp-container {
     justify-content: center;
@@ -1309,6 +1305,20 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  #pfp-data,
+  #profile-data,
+  #shipping-data,
+  #review-content {
+    width: 95%;
+  }
+
+  #bio-section {
+    align-items: center;
+  }
+
+  #bio-section form {
+    width: 100%;
+  }
 
   /* Review Section */
 
@@ -1394,10 +1404,7 @@ h6 {
 
   #profile-inner-wrapper {
     flex: 1;
-  }
-
-  #pfp-data {
-    width: 365px;
+    justify-content: center;
   }
 
   .section-p1 {
@@ -1471,20 +1478,27 @@ h6 {
   .right-navigation {
     width: 75%;
   }
+
+  #bio-section {
+    align-items: center;
+  }
+
+  #bio-section textarea {
+    width: 100%;
+  }
 }
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
- .rating-breakdown .rating-process .rating-bar {
-    width:
-     175px;
- }
+  .rating-breakdown .rating-process .rating-bar {
+    width: 175px;
+  }
 
-.profile-section label {
-  font-size: 18px;
-}
+  .profile-section label {
+    font-size: 18px;
+  }
 
- #shipping-data {
-  order: 1;
- }
+  #shipping-data {
+    order: 1;
+  }
 }
