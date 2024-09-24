@@ -201,7 +201,8 @@ p {
   text-align: center;
 }
 
-#bio {
+#bio-section #bio {
+  width: 100%;
   background-color: transparent;
   display: flex;
   justify-content: center;
@@ -990,6 +991,7 @@ h6 {
 .pfp {
   display: block;
   width: 500px;
+  max-width: 100%;
   margin-bottom: 1rem;
   /* height: 544px; */
 }
@@ -1483,11 +1485,12 @@ h6 {
     align-items: center;
   }
 
-  #bio-section textarea {
+  #bio-section textarea,
+  #review-content,
+  .pfp {
     width: 100%;
   }
 }
-
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
   .rating-breakdown .rating-process .rating-bar {
