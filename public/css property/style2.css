@@ -1011,7 +1011,7 @@ nav .search_box span:hover::after {
 }
 
 #newsletter input {
-  height: 3.125rem;
+  /* height: 3.125rem; */
   padding: 0.1.25em;
   font-size: 16px;
   width: 100%;
@@ -1870,10 +1870,6 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
-
-  
-
-  
   #hero .hero-text-container {
     flex-direction: column;
   }
@@ -1893,8 +1889,6 @@ footer .rights {
     margin-top: 0px;
     height: auto;
   } */
-
-  
 
   #hero .hero-text {
     padding: 9rem 19px;
@@ -2051,8 +2045,6 @@ footer .rights {
   #product1 .pro-container {
     justify-content: center;
   }
-
- 
 }
 
 @media (max-width: 477px) {
@@ -2114,8 +2106,7 @@ footer .rights {
 
 /* Screen for smartphones */
 @media (max-width: 430px) {
-
-/* Nav Menu */
+  /* Nav Menu */
   nav .search_box {
     display: flex;
     margin: auto 1px;
