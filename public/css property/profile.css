@@ -1280,15 +1280,23 @@ h6 {
     padding: var(--padding-medium);
   }
 
+  #profile-inner-wrapper {
+    justify-content: center;
+  }
+
   .review-card .user-review {
     padding: 32px 0px 12px;
+  }
+
+  .rating-breakdown .rating-process .rating-bar {
+    width: 273px;
   }
 
   .user-review {
     gap: 3.5rem;
   }
 
-  #review-content {
+  #review-content, .pfp {
     width: 588px !important;
   }
 
@@ -1344,6 +1352,8 @@ h6 {
     flex-direction: column;
     width: 450px;
   }
+
+  
 }
 
 /* Medium devices (tablets, 768px and up) */
