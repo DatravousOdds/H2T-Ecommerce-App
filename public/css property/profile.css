@@ -210,6 +210,21 @@ p {
   gap: 1rem;
 }
 
+#bio-value[disabled] {
+  background-color: transparent; /* Make background transparent */
+  border: none; /* Remove borders */
+  color: #333; /* Set text color */
+  font-size: 16px; /* Adjust font size */
+  line-height: 1.6; /* Increase line height for readability */
+  padding: 10px 0; /* Add some space around the text */
+  width: 100%; /* Ensure it fills the container */
+  resize: none; /* Prevent resizing */
+  overflow: hidden; /* Hide any overflow */
+  white-space: pre-wrap; /* Ensure new lines are displayed */
+  text-align: center;
+  box-shadow: none;
+}
+
 #upload-btn {
   border: 1px solid #1a5eeb;
   color: #1a5eeb;
