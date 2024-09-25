@@ -140,7 +140,6 @@ profileSection.forEach((section) => {
 
 // Tab Navigation actions
 allTabs.forEach((tab) => {
-  console.log("Tab", tab);
   tab.addEventListener("click", () => {
     const tabId = tab.getAttribute("data-tab");
     tab.classList.add("active");
