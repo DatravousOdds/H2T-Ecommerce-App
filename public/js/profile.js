@@ -13,12 +13,19 @@ const bioTextarea = document.getElementById("bio-value");
 const updateBioBtn = document.getElementById("update-bio-btn");
 const saveBioBtn = document.getElementById("save-bio-btn");
 const allTabs = document.querySelectorAll(".tab-btn");
+const pfpActions =  document.getElementById("pfp-actions");
+let currentBio =  bioTextarea.value || "";
+
+
+
+console.log(pfpActions);
 
 // Testing
 console.log(updateBioBtn, saveBioBtn, bioTextarea, userProfileCard);
 
-let currentBio = "Hello World, hopefully this works lol";
-bioTextarea.value = currentBio;
+
+
+
 // UserCard actions: edit, bio-update, save, upload, remove
 updateBioBtn.addEventListener("click", () => {
   console.log("update bio button was clicked!");
@@ -32,12 +39,27 @@ saveBioBtn.addEventListener("click", () => {
   saveBioBtn.style.display = "none";
   updateBioBtn.style.display = "inline";
 
-  currentBio = bioTextarea.value;
+  currentBio = bioTextarea.value.trim() // removes white space from the bio
+  
+// if there is an bio show it, not remove textarea
+  if(currentBio === "") {
+    bioTextarea.style.display = "none";
+  } else {
+    bioTextarea.style.display = "block";
+  }
 
   // save to firebase db
 
   console.log("The current bio is:", currentBio);
 });
+
+// Checks the bio on intial page load
+if(currentBio === "") {
+  bioTextarea.style.display = "none";
+} else {
+  bioTextarea.style.display = "block";
+}
+
 
 /* 
     Selects all elements with class .dropdown-section 
