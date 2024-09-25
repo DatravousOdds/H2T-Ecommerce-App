@@ -5,11 +5,12 @@ const dropdownSection = document.querySelectorAll(".dropdown-section");
 const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
 const spanElement = document.getElementById("filter-icon");
 const profileSection = document.querySelectorAll(".profile-section");
-const hasFilterIcon = spanElement.querySelector("i.fa-filter") !== null;
+const hasFilterIcon =
+  spanElement && spanElement.querySelector("i.fa-filter") !== null;
 const userProfileCard = profileSection[0];
 const bio = userProfileCard.querySelector("#bio");
 console.log(bio);
-
+const allTabs = document.querySelectorAll(".tab-btn");
 /* 
     Selects all elements with class .dropdown-section 
     Loops through each dropdown-section to apply logic 
@@ -137,17 +138,16 @@ profileSection.forEach((section) => {
   });
 });
 
-const allTabs = document.querySelectorAll(".tab-btn");
 allTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     const tabId = tab.getAttribute("data-tab");
 
     // Hide all tab content
     document.querySelectorAll(".tab").forEach((t) => {
-      console.log(t);
+      t.classList.remove("active");
     });
 
     // Show the clicked tab content
-    document.getElementById(tabId).classList.add("tab-active");
+    document.getElementById(tabId).classList.add("active");
   });
 });
