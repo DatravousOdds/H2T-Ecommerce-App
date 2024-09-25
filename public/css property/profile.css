@@ -276,7 +276,7 @@ p {
   height: 105px;
   max-width: 100%;
   border-radius: 8px;
-  width: 64%;
+  width: 100%;
 }
 
 #bio-section textarea:focus {
