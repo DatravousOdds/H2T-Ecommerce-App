@@ -1,20 +1,50 @@
-/* * 09/22/2024 Travis Odds  Adding action to forms, no connect db yet. * */
-/* * 09/23/2024 Travis Odds  Rewrote form logic w bio actions. * */
-
+// Payment Information Section
 const dropdownSection = document.querySelectorAll(".dropdown-section");
 const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
 const spanElement = document.getElementById("filter-icon");
 const profileSection = document.querySelectorAll(".profile-section");
 const hasFilterIcon =
   spanElement && spanElement.querySelector("i.fa-filter") !== null;
+
+// Bio Section
 const userProfileCard = profileSection[0];
-const bio = userProfileCard.querySelector("#bio");
-console.log("Bio Section:", bio);
+const bioSection = userProfileCard.querySelector("#bio");
+const bioTextarea = document.getElementById("bio-value");
+const updateBioBtn = document.getElementById("update-bio-btn");
+const saveBioBtn = document.getElementById("save-bio-btn");
 const allTabs = document.querySelectorAll(".tab-btn");
+
+// Testing
+console.log(updateBioBtn, saveBioBtn, bioTextarea, userProfileCard);
+
+let currentBio = "Hello World, hopefully this works lol";
+bioTextarea.value = currentBio;
+// UserCard actions: edit, bio-update, save, upload, remove
+updateBioBtn.addEventListener("click", () => {
+  console.log("update bio button was clicked!");
+  bioTextarea.disabled = false;
+  saveBioBtn.style.display = "inline";
+  updateBioBtn.style.display = "none";
+});
+
+saveBioBtn.addEventListener("click", () => {
+  bioTextarea.disabled = true;
+  saveBioBtn.style.display = "none";
+  updateBioBtn.style.display = "inline";
+
+  currentBio = bioTextarea.value;
+
+  // save to firebase db
+
+  console.log("The current bio is:", currentBio);
+});
+
 /* 
     Selects all elements with class .dropdown-section 
     Loops through each dropdown-section to apply logic 
 */
+
+// Payment Information actions: dropdown
 dropdownSection.forEach((section) => {
   const dropdownIcon = section.querySelector(".dropdown-icon i");
   const menu = section.querySelector(".dropdown-menu");
@@ -47,7 +77,7 @@ dropdownSection.forEach((section) => {
   TODO: Create a function that has the dropdown functionality
 */
 
-// Performs small menu action for profile -- payment information --
+// Payment Information actions: dropdown
 smallDropdownSection.forEach((smallMenu) => {
   const yearHeader = smallMenu.querySelector(".dropdown-header");
   const yearIcon = smallMenu.querySelector(".dropdown-icon i");
@@ -66,7 +96,7 @@ smallDropdownSection.forEach((smallMenu) => {
   });
 });
 
-// Performs menu actions such as save, cancel or edit for profile -- profile --
+// Profile actions: edit, save, cancel
 profileSection.forEach((section) => {
   const edit = section.querySelectorAll(".edit-info-header");
   const allActionButtons = section.querySelectorAll(".action-buttons");
@@ -138,7 +168,7 @@ profileSection.forEach((section) => {
   });
 });
 
-// Tab Navigation actions
+// Profile actions: navigate
 allTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     const tabId = tab.getAttribute("data-tab");
