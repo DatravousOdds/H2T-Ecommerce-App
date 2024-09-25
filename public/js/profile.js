@@ -14,11 +14,12 @@ const updateBioBtn = document.getElementById("update-bio-btn");
 const saveBioBtn = document.getElementById("save-bio-btn");
 const allTabs = document.querySelectorAll(".tab-btn");
 const pfpActions =  document.getElementById("pfp-actions");
-let currentBio =  bioTextarea.value || "";
+bioTextarea.style.display ="none";
+let currentBio = bioTextarea.value || "";
 
 
 
-console.log(pfpActions);
+// console.log(pfpActions);
 
 // Testing
 console.log(updateBioBtn, saveBioBtn, bioTextarea, userProfileCard);
@@ -30,35 +31,34 @@ console.log(updateBioBtn, saveBioBtn, bioTextarea, userProfileCard);
 updateBioBtn.addEventListener("click", () => {
   console.log("update bio button was clicked!");
   bioTextarea.disabled = false;
-  saveBioBtn.style.display = "inline";
-  updateBioBtn.style.display = "none";
+  saveBioBtn.style.display = "inline"; // show the save button
+  updateBioBtn.style.display = "none"; // removes edit button
+  bioTextarea.style.display = "inline"; // shows the textarea 
 });
 
 saveBioBtn.addEventListener("click", () => {
   bioTextarea.disabled = true;
   saveBioBtn.style.display = "none";
   updateBioBtn.style.display = "inline";
-
-  currentBio = bioTextarea.value.trim() // removes white space from the bio
-  
-// if there is an bio show it, not remove textarea
-  if(currentBio === "") {
+  currentBio = bioTextarea.value.trim();
+  if (currentBio == "") {
     bioTextarea.style.display = "none";
   } else {
-    bioTextarea.style.display = "block";
+    bioTextarea.style.display =  "inline";
   }
+  
+  
+  
+  // removes white space from the bio
+  
+
 
   // save to firebase db
 
   console.log("The current bio is:", currentBio);
 });
 
-// Checks the bio on intial page load
-if(currentBio === "") {
-  bioTextarea.style.display = "none";
-} else {
-  bioTextarea.style.display = "block";
-}
+
 
 
 /* 
