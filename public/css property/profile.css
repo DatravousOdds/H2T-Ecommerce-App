@@ -1054,6 +1054,12 @@ h6 {
   display: flex;
 }
 
+.tab-btn.active {
+  background-color: #d6d6d6;
+  font-weight: bold;
+  font-size: 18px;
+}
+
 .input-disabled {
   background-color: "#e0e0e0";
   border: "#b0b0b0";
@@ -1413,7 +1419,6 @@ h6 {
   }
 
   .tab {
-   
     flex-direction: column;
     /* gap: 16px; */
     padding: 14px;
