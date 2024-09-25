@@ -211,6 +211,7 @@ p {
 }
 
 #bio-value[disabled] {
+  height: auto;
   background-color: transparent; /* Make background transparent */
   border: none; /* Remove borders */
   color: #333; /* Set text color */
