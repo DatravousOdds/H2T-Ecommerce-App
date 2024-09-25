@@ -9,7 +9,7 @@ const hasFilterIcon =
   spanElement && spanElement.querySelector("i.fa-filter") !== null;
 const userProfileCard = profileSection[0];
 const bio = userProfileCard.querySelector("#bio");
-console.log(bio);
+console.log("Bio Section:", bio);
 const allTabs = document.querySelectorAll(".tab-btn");
 /* 
     Selects all elements with class .dropdown-section 
@@ -138,9 +138,17 @@ profileSection.forEach((section) => {
   });
 });
 
+// Tab Navigation actions
 allTabs.forEach((tab) => {
+  console.log("Tab", tab);
   tab.addEventListener("click", () => {
     const tabId = tab.getAttribute("data-tab");
+    tab.classList.add("active");
+
+    // Remove active from all other tabs
+    allTabs.forEach((btn) => {
+      btn.classList.remove("active");
+    });
 
     // Hide all tab content
     document.querySelectorAll(".tab").forEach((t) => {
@@ -149,5 +157,8 @@ allTabs.forEach((tab) => {
 
     // Show the clicked tab content
     document.getElementById(tabId).classList.add("active");
+
+    // Add active class to the current tab
+    tab.classList.add("active");
   });
 });
