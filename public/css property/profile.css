@@ -232,7 +232,7 @@ p {
 }
 .btn-wrapper {
   gap: 12px;
-  display: flex;
+  display: none;
   justify-content: center;
 }
 
