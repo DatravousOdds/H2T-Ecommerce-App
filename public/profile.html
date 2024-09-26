@@ -123,7 +123,8 @@
                   <!-- Bio Section -->
                   <div id="bio-section">
                     <div  id="pfp-actions"  class="btn-wrapper">
-                      <button id="upload-btn">
+                      <input type="file" id="file-input" style="display: none;" accept="'image/*">
+                      <button type="button" id="upload-btn">
                         <i
                           class="fa-solid fa-arrow-up-from-bracket"
                           style="padding: 5px"
@@ -142,6 +143,7 @@
                     <form id="bio" class="spacing">
                       <textarea
                         id="bio-value"
+                        placeholder="Enter a bio..."
                         spellcheck="true"
                         value=""
                         disabled

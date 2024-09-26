@@ -22,7 +22,7 @@ let currentBio = bioTextarea.value || "";
 // console.log(pfpActions);
 
 // Testing
-console.log(updateBioBtn, saveBioBtn, bioTextarea, userProfileCard);
+console.log(updateBioBtn, saveBioBtn, bioTextarea, userProfileCard, pfpActions);
 
 
 
@@ -33,20 +33,23 @@ updateBioBtn.addEventListener("click", () => {
   bioTextarea.disabled = false;
   saveBioBtn.style.display = "inline"; // show the save button
   updateBioBtn.style.display = "none"; // removes edit button
-  bioTextarea.style.display = "inline"; // shows the textarea 
+  bioTextarea.style.display = "inline"; // shows the textarea
+  pfpActions.style.display = "flex";
+
 });
 
 saveBioBtn.addEventListener("click", () => {
   bioTextarea.disabled = true;
   saveBioBtn.style.display = "none";
   updateBioBtn.style.display = "inline";
+  pfpActions.style.display = " none";
   currentBio = bioTextarea.value.trim();
   if (currentBio == "") {
     bioTextarea.style.display = "none";
   } else {
     bioTextarea.style.display =  "inline";
   }
-  
+
   
   
   // removes white space from the bio
