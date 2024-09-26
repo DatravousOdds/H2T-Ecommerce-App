@@ -232,8 +232,12 @@ p {
 }
 .btn-wrapper {
   gap: 12px;
-  display: none;
+  display: flex;
   justify-content: center;
+}
+
+#bio-section .btn-wrapper {
+  display: none;
 }
 
 #cards-on-file {
