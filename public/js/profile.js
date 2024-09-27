@@ -13,19 +13,30 @@ const bioTextarea = document.getElementById("bio-value");
 const updateBioBtn = document.getElementById("update-bio-btn");
 const saveBioBtn = document.getElementById("save-bio-btn");
 const allTabs = document.querySelectorAll(".tab-btn");
-const pfpActions =  document.getElementById("pfp-actions");
-bioTextarea.style.display ="none";
+const pfpActions = document.getElementById("pfp-actions");
+const fileInput = document.getElementById("file-input");
+const uploadBtn = document.getElementById("upload-btn");
+bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
-
-
 
 // console.log(pfpActions);
 
 // Testing
-console.log(updateBioBtn, saveBioBtn, bioTextarea, userProfileCard, pfpActions);
+console.log("File Input:", fileInput);
+console.log("Upload Button:", uploadBtn);
 
+// UserCard action: upload img
+uploadBtn.addEventListener("click", () => {
+  console.log("Upload button was clicked!");
+  if (fileInput) {
+    fileInput.click();
+  }
+});
 
-
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  console.log(file);
+});
 
 // UserCard actions: edit, bio-update, save, upload, remove
 updateBioBtn.addEventListener("click", () => {
@@ -35,7 +46,6 @@ updateBioBtn.addEventListener("click", () => {
   updateBioBtn.style.display = "none"; // removes edit button
   bioTextarea.style.display = "inline"; // shows the textarea
   pfpActions.style.display = "flex";
-
 });
 
 saveBioBtn.addEventListener("click", () => {
@@ -47,22 +57,15 @@ saveBioBtn.addEventListener("click", () => {
   if (currentBio == "") {
     bioTextarea.style.display = "none";
   } else {
-    bioTextarea.style.display =  "inline";
+    bioTextarea.style.display = "inline";
   }
 
-  
-  
   // removes white space from the bio
-  
-
 
   // save to firebase db
 
   console.log("The current bio is:", currentBio);
 });
-
-
-
 
 /* 
     Selects all elements with class .dropdown-section 
