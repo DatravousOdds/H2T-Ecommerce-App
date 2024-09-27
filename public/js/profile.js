@@ -10,14 +10,15 @@ const hasFilterIcon =
 const userProfileCard = profileSection[0];
 const bioSection = userProfileCard.querySelector("#bio");
 const bioTextarea = document.getElementById("bio-value");
-const updateBioBtn = document.getElementById("update-bio-btn");
-const saveBioBtn = document.getElementById("save-bio-btn");
+const updateBioBtn = document.getElementById("update-bio-btn"); // Edit profile Button
+const saveBioBtn = document.getElementById("save-bio-btn"); // save changes Button
 const allTabs = document.querySelectorAll(".tab-btn");
 const pfpActions = document.getElementById("pfp-actions");
 const fileInput = document.getElementById("file-input");
 const uploadBtn = document.getElementById("upload-btn");
 const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
+const websiteLinks =  document.getElementById("website-link-box")
 bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
 
@@ -28,6 +29,7 @@ console.log("File Input:", fileInput);
 console.log("Upload Button:", uploadBtn);
 console.log("Profile Picture: ", profilePicture);
 console.log("Remove Button:", removeBtn);
+console.log("Website Links:", websiteLinks);
 
 // UserCard action: click
 uploadBtn.addEventListener("click", () => {
@@ -57,17 +59,21 @@ updateBioBtn.addEventListener("click", () => {
   updateBioBtn.style.display = "none"; // removes edit button
   bioTextarea.style.display = "inline"; // shows the textarea
   pfpActions.style.display = "flex";
+  websiteLinks.style.display = "inline";
 });
 
 removeBtn.addEventListener("click", () => {
+  console.log("the removed button was clicked!")
   profilePicture.src = "/images/1.png";
 });
 
 saveBioBtn.addEventListener("click", () => {
+  console.log("The save button was clicked!");
   bioTextarea.disabled = true;
   saveBioBtn.style.display = "none";
   updateBioBtn.style.display = "inline";
   pfpActions.style.display = " none";
+  websiteLinks.style.display = "inline";
   currentBio = bioTextarea.value.trim();
   if (currentBio == "") {
     bioTextarea.style.display = "none";
