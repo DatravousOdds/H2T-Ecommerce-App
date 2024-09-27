@@ -22,7 +22,6 @@ const websiteLinks =  document.getElementById("website-link-box")
 bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
 
-// console.log(pfpActions);
 
 // Testing
 console.log("File Input:", fileInput);
@@ -51,7 +50,7 @@ fileInput.addEventListener("change", (e) => {
   reader.readAsDataURL(file); // Read the files as a Data URL
 });
 
-// UserCard actions: edit, bio-update, save, upload, remove
+// UserCard actions: edit
 updateBioBtn.addEventListener("click", () => {
   console.log("update bio button was clicked!");
   bioTextarea.disabled = false;
@@ -62,26 +61,37 @@ updateBioBtn.addEventListener("click", () => {
   websiteLinks.style.display = "inline";
 });
 
+// UserProfile actions: remove img
 removeBtn.addEventListener("click", () => {
   console.log("the removed button was clicked!")
   profilePicture.src = "/images/1.png";
 });
 
+// UserProfile actions: save
 saveBioBtn.addEventListener("click", () => {
+
   console.log("The save button was clicked!");
+
   bioTextarea.disabled = true;
   saveBioBtn.style.display = "none";
   updateBioBtn.style.display = "inline";
   pfpActions.style.display = " none";
   websiteLinks.style.display = "inline";
   currentBio = bioTextarea.value.trim();
-  if (currentBio == "") {
+
+  if (currentBio == "" || websiteLinks == "") {
+
     bioTextarea.style.display = "none";
+    websiteLinks.style.display = "none";
+
   } else {
+
     bioTextarea.style.display = "inline";
+    websiteLinks.style.display = "inline";
+
   }
 
-  // removes white space from the bio
+  
 
   // save to firebase db
 
@@ -93,7 +103,7 @@ saveBioBtn.addEventListener("click", () => {
     Loops through each dropdown-section to apply logic 
 */
 
-// Payment Information actions: dropdown
+// Payment Information actions: dropdown menu
 dropdownSection.forEach((section) => {
   const dropdownIcon = section.querySelector(".dropdown-icon i");
   const menu = section.querySelector(".dropdown-menu");
@@ -126,7 +136,7 @@ dropdownSection.forEach((section) => {
   TODO: Create a function that has the dropdown functionality
 */
 
-// Payment Information actions: dropdown
+// Payment Information actions: small dropdown menu
 smallDropdownSection.forEach((smallMenu) => {
   const yearHeader = smallMenu.querySelector(".dropdown-header");
   const yearIcon = smallMenu.querySelector(".dropdown-icon i");
@@ -217,7 +227,7 @@ profileSection.forEach((section) => {
   });
 });
 
-// Profile actions: navigate
+// Profile Page actions: navigate
 allTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     const tabId = tab.getAttribute("data-tab");
