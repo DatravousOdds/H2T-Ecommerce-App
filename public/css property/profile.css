@@ -253,7 +253,17 @@ p {
 #bio-section:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 5px rbga(0, 123, 255, 0.5); /* A blue show on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* A blue show on focus */
+}
+
+#bio-section label {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+#bio-section #website-link-box {
+  width: 100%;
+  padding: 12px 0px;
 }
 
 #cards-on-file {
@@ -847,6 +857,8 @@ h6 {
 }
 
 /* Ulities Classes */
+
+
 
 .action-buttons {
   display: flex;
