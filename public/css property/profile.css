@@ -1300,7 +1300,8 @@ h6 {
     gap: 3.5rem;
   }
 
-  #review-content, .pfp {
+  #review-content,
+  .pfp {
     width: 588px !important;
   }
 
@@ -1356,8 +1357,6 @@ h6 {
     flex-direction: column;
     width: 450px;
   }
-
-  
 }
 
 /* Medium devices (tablets, 768px and up) */
@@ -1412,7 +1411,7 @@ h6 {
   }
 
   .rating-breakdown .rating-process .rating-bar {
-    width: 138px;
+    width: 340px;
   }
 
   #newsletter .form {
