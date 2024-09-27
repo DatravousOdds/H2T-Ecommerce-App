@@ -240,6 +240,22 @@ p {
   display: none;
 }
 
+#bio-section #website {
+  padding: 5px;
+  width: 80%;
+  border-radius: 8px;
+  border: 1px solid #d6d6d6;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* smooth transition */
+  
+}
+
+#bio-section:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rbga(0, 123, 255, 0.5); /* A blue show on focus */
+}
+
 #cards-on-file {
   display: flex;
   align-items: center;
