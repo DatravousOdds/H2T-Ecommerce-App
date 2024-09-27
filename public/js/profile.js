@@ -18,17 +18,20 @@ const fileInput = document.getElementById("file-input");
 const uploadBtn = document.getElementById("upload-btn");
 const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
-const websiteLinks =  document.getElementById("website-link-box")
+const websiteLinks =  document.getElementById("website-link-box");
+const username = document.getElementById("username");
 bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
 
 
 // Testing
-console.log("File Input:", fileInput);
-console.log("Upload Button:", uploadBtn);
-console.log("Profile Picture: ", profilePicture);
-console.log("Remove Button:", removeBtn);
-console.log("Website Links:", websiteLinks);
+// console.log("File Input:", fileInput);
+// console.log("Upload Button:", uploadBtn);
+// console.log("Profile Picture: ", profilePicture);
+// console.log("Remove Button:", removeBtn);
+// console.log("Website Links:", websiteLinks);
+console.log(username.textContent);
+
 
 // UserCard action: click
 uploadBtn.addEventListener("click", () => {
