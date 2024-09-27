@@ -16,6 +16,8 @@ const allTabs = document.querySelectorAll(".tab-btn");
 const pfpActions = document.getElementById("pfp-actions");
 const fileInput = document.getElementById("file-input");
 const uploadBtn = document.getElementById("upload-btn");
+const profilePicture = document.getElementById("profile-picture");
+const removeBtn = document.getElementById("remove-btn");
 bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
 
@@ -24,8 +26,10 @@ let currentBio = bioTextarea.value || "";
 // Testing
 console.log("File Input:", fileInput);
 console.log("Upload Button:", uploadBtn);
+console.log("Profile Picture: ", profilePicture);
+console.log("Remove Button:", removeBtn);
 
-// UserCard action: upload img
+// UserCard action: click
 uploadBtn.addEventListener("click", () => {
   console.log("Upload button was clicked!");
   if (fileInput) {
@@ -33,9 +37,16 @@ uploadBtn.addEventListener("click", () => {
   }
 });
 
+// UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
+  const file = e.target.files[0]; // Grabs the first img from the list
   console.log(file);
+  const reader = new FileReader(); // creates a new FileReader
+  reader.onload = function (event) {
+    profilePicture.src = event.target.result; // sets the profile picture
+  };
+
+  reader.readAsDataURL(file); // Read the files as a Data URL
 });
 
 // UserCard actions: edit, bio-update, save, upload, remove
@@ -46,6 +57,10 @@ updateBioBtn.addEventListener("click", () => {
   updateBioBtn.style.display = "none"; // removes edit button
   bioTextarea.style.display = "inline"; // shows the textarea
   pfpActions.style.display = "flex";
+});
+
+removeBtn.addEventListener("click", () => {
+  profilePicture.src = "/images/1.png";
 });
 
 saveBioBtn.addEventListener("click", () => {
