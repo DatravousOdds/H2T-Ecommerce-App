@@ -19,11 +19,21 @@ const uploadBtn = document.getElementById("upload-btn");
 const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
 const websiteLinks =  document.getElementById("website-link-box");
+// Website Links
 const url = document.getElementById("website");
+const title = document.getElementById("title");
+const websiteUrlDisplay = document.getElementById("website-link-display");
+
+// Username
 const username = document.getElementById("username");
+
+// Hide bio by default
 bioTextarea.style.display = "none";
+
+
 let currentBio = bioTextarea.value || "";
 let currentUrl = url.value || "";
+let currentUrlTitle = title.value || "";
 
 
 
@@ -35,6 +45,8 @@ let currentUrl = url.value || "";
 // console.log("Profile Picture: ", profilePicture);
 // console.log("Remove Button:", removeBtn);
 // console.log("Website Links:", websiteLinks);
+// console.log(websiteUrlDisplay);
+
 
 
 
@@ -102,6 +114,7 @@ saveBioBtn.addEventListener("click", () => {
   // Get the trimmed values
   currentBio = bioTextarea.value.trim();
   currentUrl = url.value.trim();
+  currentUrlTitle = title.value.trim();
 
   // Logic to hide or show elements based on content
   if (currentBio === "") {
@@ -116,15 +129,36 @@ saveBioBtn.addEventListener("click", () => {
    
   }
 
-  if (currentUrl === "") {
+  if (currentUrl === "" && currentUrlTitle == "") {
 
     // Hide bio, and website element
     websiteLinks.style.display = "none";
     
 
   } else {
+
     // Show bio and website if they are filled
     websiteLinks.style.display = "block";
+
+
+    const anchor = document.createElement("a");
+    anchor.href = currentUrl;
+    anchor.innerText = currentUrlTitle;
+    anchor.target = "_blank" // create a new tab
+    anchor.classList.add("website-link");
+    anchor.type = "text";
+
+
+    // Append to the website display container
+    websiteUrlDisplay.appendChild(anchor);
+    websiteUrlDisplay.style.display = "block";
+
+    websiteLinks.style.display = 'none';
+
+    
+
+
+
    
   }
 
@@ -135,6 +169,13 @@ saveBioBtn.addEventListener("click", () => {
   // Logging for testing
   console.log("The url is:", currentUrl)
   console.log("The current bio is:", currentBio);
+  console.log("The url title is:", currentUrlTitle);
+
+  // Reset the url & title for next input
+  url.value = "";
+  title.value = "";
+
+  
 
   /* TODO: Save user data to firebase  */
 
@@ -293,3 +334,5 @@ allTabs.forEach((tab) => {
     tab.classList.add("active");
   });
 });
+
+
