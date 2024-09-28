@@ -1173,6 +1173,14 @@ h6 {
   visibility: visible;
 }
 
+.hover-scale {
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.hover-scale:hover {
+  transform: scale(2);
+}
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
   .header-info h3 {
