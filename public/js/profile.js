@@ -35,7 +35,7 @@ let currentUrl = url.value || "";
 // console.log("Profile Picture: ", profilePicture);
 // console.log("Remove Button:", removeBtn);
 // console.log("Website Links:", websiteLinks);
-console.log(username.textContent);
+
 
 
 // UserCard action: click

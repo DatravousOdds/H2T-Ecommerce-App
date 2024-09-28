@@ -240,9 +240,9 @@ p {
   display: none;
 }
 
-#bio-section #website {
+#bio-section #website, #title {
   padding: 5px;
-  width: 80%;
+  width: 100%;
   border-radius: 8px;
   border: 1px solid #d6d6d6;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -264,6 +264,10 @@ p {
 #bio-section #website-link-box {
   width: 100%;
   padding: 12px 0px;
+}
+
+.website-input-container, .title-input-container {
+  padding: 5px;
 }
 
 #cards-on-file {
