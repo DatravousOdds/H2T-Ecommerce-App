@@ -145,25 +145,28 @@ saveBioBtn.addEventListener("click", () => {
 
     const anchor = document.createElement("a");
     anchor.href = currentUrl;
+
     anchor.innerText = currentUrlTitle;
     anchor.target = "_blank"; // create a new tab
     anchor.classList.add("website-link");
+  
     anchor.type = "text";
     const linkIcon = document.createElement("i");
+    
    
 
     const domain = new URL(currentUrl).hostname;
 
     // Checks if the url matches known e-commcerce websites
     if (domain.includes("amazon")) {
-      linkIcon.classList.add("fa-brands fa-amazon"); // amazon icon
+      linkIcon.classList.add("fa-brands","fa-amazon"); // amazon icon
     } else if (domain.includes("shopify")){
       linkIcon.classList.add("fa-brands", "fa-shopify");
     } else if (domain.includes("ebay")) {
       linkIcon.classList.add("fa-brands", "fa-ebay");
-    } else if ("facebook") {
+    } else if (domain.includes("facebook")) {
       linkIcon.classList.add("fa-brands", "fa-facebook");
-    } else if ("instagram") {
+    } else if (domain.includes("instagram")) {
       linkIcon.classList.add("fa-brands", "fa-instagram");
     } else {
       linkIcon.classList.add("fa-link");
