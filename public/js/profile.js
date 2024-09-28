@@ -140,18 +140,41 @@ saveBioBtn.addEventListener("click", () => {
     // Show bio and website if they are filled
     websiteLinks.style.display = "block";
 
+    const div = document.createElement("div");
+    div.classList.add("website-link-div");
 
     const anchor = document.createElement("a");
     anchor.href = currentUrl;
     anchor.innerText = currentUrlTitle;
-    anchor.target = "_blank" // create a new tab
+    anchor.target = "_blank"; // create a new tab
     anchor.classList.add("website-link");
     anchor.type = "text";
+    const linkIcon = document.createElement("i");
+   
 
+    const domain = new URL(currentUrl).hostname;
+
+    // Checks if the url matches known e-commcerce websites
+    if (domain.includes("amazon")) {
+      linkIcon.classList.add("fa-brands fa-amazon"); // amazon icon
+    } else if (domain.includes("shopify")){
+      linkIcon.classList.add("fa-brands", "fa-shopify");
+    } else if (domain.includes("ebay")) {
+      linkIcon.classList.add("fa-brands", "fa-ebay");
+    } else if ("facebook") {
+      linkIcon.classList.add("fa-brands", "fa-facebook");
+    } else if ("instagram") {
+      linkIcon.classList.add("fa-brands", "fa-instagram");
+    } else {
+      linkIcon.classList.add("fa-link");
+    }
+
+   
+    div.appendChild(linkIcon);
 
     // Append to the website display container
-    websiteUrlDisplay.appendChild(anchor);
-    websiteUrlDisplay.style.display = "block";
+    websiteUrlDisplay.appendChild(div);
+    websiteUrlDisplay.style.display = "flex";
 
     websiteLinks.style.display = 'none';
 
