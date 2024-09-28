@@ -55,7 +55,13 @@ fileInput.addEventListener("change", (e) => {
     profilePicture.src = event.target.result; // sets the profile picture
   };
 
-  reader.readAsDataURL(file); // Read the files as a Data URL
+  if (file) {
+     reader.readAsDataURL(file); // Read the files as a Data URL
+
+    }
+ 
+  fileInput.value = "";
+
 });
 
 // UserCard actions: edit
@@ -73,6 +79,9 @@ updateBioBtn.addEventListener("click", () => {
 removeBtn.addEventListener("click", () => {
   console.log("the removed button was clicked!")
   profilePicture.src = "/images/1.png";
+
+  // Reset the file input to allow uploading the same image again
+  fileInput.value = "";
 });
 
 // UserProfile actions: save
