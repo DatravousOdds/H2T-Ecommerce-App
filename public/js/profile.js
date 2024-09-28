@@ -19,9 +19,14 @@ const uploadBtn = document.getElementById("upload-btn");
 const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
 const websiteLinks =  document.getElementById("website-link-box");
+const url = document.getElementById("website");
 const username = document.getElementById("username");
 bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
+let currentUrl = url.value || "";
+
+
+
 
 
 // Testing
@@ -75,30 +80,56 @@ saveBioBtn.addEventListener("click", () => {
 
   console.log("The save button was clicked!");
 
+  // Disable the bioTextArea
   bioTextarea.disabled = true;
+
+  // Hide save button, show edit button
   saveBioBtn.style.display = "none";
   updateBioBtn.style.display = "inline";
-  pfpActions.style.display = " none";
-  websiteLinks.style.display = "inline";
+
+  // Hide profile actions
+  pfpActions.style.display = "none";
+
+  // Get the trimmed values
   currentBio = bioTextarea.value.trim();
+  currentUrl = url.value.trim();
 
-  if (currentBio == "" || websiteLinks == "") {
+  // Logic to hide or show elements based on content
+  if (currentBio === "") {
 
+    // Hide bio, and website element
     bioTextarea.style.display = "none";
-    websiteLinks.style.display = "none";
+    
 
   } else {
-
-    bioTextarea.style.display = "inline";
-    websiteLinks.style.display = "inline";
-
+    // Show bio and website if they are filled
+    bioTextarea.style.display = "block";
+   
   }
+
+  if (currentUrl === "") {
+
+    // Hide bio, and website element
+    websiteLinks.style.display = "none";
+    
+
+  } else {
+    // Show bio and website if they are filled
+    websiteLinks.style.display = "block";
+   
+  }
+
+
 
   
 
-  // save to firebase db
-
+  // Logging for testing
+  console.log("The url is:", currentUrl)
   console.log("The current bio is:", currentBio);
+
+  /* TODO: Save user data to firebase  */
+
+
 });
 
 /* 
