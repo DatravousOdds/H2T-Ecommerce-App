@@ -34,6 +34,8 @@ bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
 let currentUrl = url.value || "";
 let currentUrlTitle = title.value || "";
+// Togglee for "edit mode" state
+let isEditMode = false;
 
 
 
@@ -85,6 +87,16 @@ updateBioBtn.addEventListener("click", () => {
   bioTextarea.style.display = "inline"; // shows the textarea
   pfpActions.style.display = "flex";
   websiteLinks.style.display = "inline";
+
+
+  // Set is EditMode to true to enable removing links
+  isEditMode = true;
+
+  // Show the close icon when in edit mode 
+  const closeIcons = document.querySelectorAll(".close-icon");
+  closeIcons.forEach(icon => {
+    icon.style.display = "block";
+  })
 });
 
 // UserProfile actions: remove img
@@ -109,12 +121,25 @@ saveBioBtn.addEventListener("click", () => {
   updateBioBtn.style.display = "inline";
 
   // Hide profile actions
+  isEditMode = false;
+
+  // Hide profile actions
   pfpActions.style.display = "none";
+
+  const closeIcons = document.querySelectorAll(".close-icon");
+  closeIcons.forEach(icon => {
+    icon.style.display = "none";
+  });
+
+
 
   // Get the trimmed values
   currentBio = bioTextarea.value.trim();
   currentUrl = url.value.trim();
   currentUrlTitle = title.value.trim();
+
+
+  
 
   // Logic to hide or show elements based on content
   if (currentBio === "") {
@@ -177,9 +202,14 @@ saveBioBtn.addEventListener("click", () => {
    anchor.appendChild(linkIcon);
     div.appendChild(anchor);
 
+
+
+
     const closeIcon = document.createElement("i");
     closeIcon.classList.add("fa-solid", "fa-circle-xmark", "close-icon");
     
+    closeIcon.style.display = "none";
+  
     closeIcon.addEventListener('click',(e) => {
       e.preventDefault();
       div.remove();
@@ -194,7 +224,6 @@ saveBioBtn.addEventListener("click", () => {
     // Append to the website display container
     websiteUrlDisplay.appendChild(div);
     websiteUrlDisplay.style.display = "flex";
-
     websiteLinks.style.display = 'none';
 
     
