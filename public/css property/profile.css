@@ -274,6 +274,8 @@ p {
 .website-link-div {
   padding: 10px;
   font-size: 2rem;
+  display: flex;
+  align-items: center;
 }
 
 .shopify {
@@ -894,9 +896,15 @@ h6 {
   font-size: 1.5rem;
 }
 
+
+/* Style for the social media icon */
+.close-icon {
+  cursor: pointer;
+}
+
+
+
 /* Ulities Classes */
-
-
 
 .action-buttons {
   display: flex;
