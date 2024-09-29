@@ -153,10 +153,8 @@ saveBioBtn.addEventListener("click", () => {
     anchor.classList.add("website-link");
   
     anchor.type = "text";
-    console.log(anchor)
+  
     const linkIcon = document.createElement("i");
-    
-   
 
     const domain = new URL(currentUrl).hostname;
 
@@ -175,8 +173,23 @@ saveBioBtn.addEventListener("click", () => {
       linkIcon.classList.add("fa-link");
     }
 
+  
    anchor.appendChild(linkIcon);
     div.appendChild(anchor);
+
+    const closeIcon = document.createElement("i");
+    closeIcon.classList.add("fa-solid", "fa-circle-xmark", "close-icon");
+    
+    closeIcon.addEventListener('click',(e) => {
+      e.preventDefault();
+      div.remove();
+    });
+    
+    
+
+
+
+    div.append(closeIcon);
 
     // Append to the website display container
     websiteUrlDisplay.appendChild(div);
