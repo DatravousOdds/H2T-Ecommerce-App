@@ -261,9 +261,6 @@ p {
   font-weight: 500;
 }
 
-.shopify {
-  background-color: #95BF46;
-}
 
 #bio-section #website-link-box {
   width: 100%;
@@ -278,6 +275,23 @@ p {
   padding: 10px;
   font-size: 2rem;
 }
+
+.shopify {
+  color: #95BF46;
+}
+
+.facebook {
+  color:#0765FF;
+}
+
+.instagram {
+  color: #DB0C7A;
+}
+
+.amazon {
+  color: #F59400;
+}
+ 
 
 #cards-on-file {
   display: flex;

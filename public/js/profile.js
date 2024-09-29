@@ -137,6 +137,8 @@ saveBioBtn.addEventListener("click", () => {
 
   } else {
 
+    
+
     // Show bio and website if they are filled
     websiteLinks.style.display = "block";
 
@@ -146,11 +148,12 @@ saveBioBtn.addEventListener("click", () => {
     const anchor = document.createElement("a");
     anchor.href = currentUrl;
 
-    anchor.innerText = currentUrlTitle;
+    // anchor.innerText = currentUrlTitle;
     anchor.target = "_blank"; // create a new tab
     anchor.classList.add("website-link");
   
     anchor.type = "text";
+    console.log(anchor)
     const linkIcon = document.createElement("i");
     
    
@@ -159,21 +162,21 @@ saveBioBtn.addEventListener("click", () => {
 
     // Checks if the url matches known e-commcerce websites
     if (domain.includes("amazon")) {
-      linkIcon.classList.add("fa-brands","fa-amazon"); // amazon icon
+      linkIcon.classList.add("fa-brands","fa-amazon", "amazon"); // amazon icon
     } else if (domain.includes("shopify")){
-      linkIcon.classList.add("fa-brands", "fa-shopify");
+      linkIcon.classList.add("fa-brands", "fa-shopify", "shopify");
     } else if (domain.includes("ebay")) {
-      linkIcon.classList.add("fa-brands", "fa-ebay");
+      linkIcon.classList.add("fa-brands", "fa-ebay", "ebay");
     } else if (domain.includes("facebook")) {
-      linkIcon.classList.add("fa-brands", "fa-facebook");
+      linkIcon.classList.add("fa-brands", "fa-facebook", "facebook");
     } else if (domain.includes("instagram")) {
-      linkIcon.classList.add("fa-brands", "fa-instagram");
+      linkIcon.classList.add("fa-brands", "fa-instagram", "instagram");
     } else {
       linkIcon.classList.add("fa-link");
     }
 
-   
-    div.appendChild(linkIcon);
+   anchor.appendChild(linkIcon);
+    div.appendChild(anchor);
 
     // Append to the website display container
     websiteUrlDisplay.appendChild(div);
