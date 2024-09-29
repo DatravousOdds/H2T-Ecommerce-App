@@ -206,7 +206,7 @@ saveBioBtn.addEventListener("click", () => {
 
 
     const closeIcon = document.createElement("i");
-    closeIcon.classList.add("fa-solid", "fa-circle-xmark", "close-icon");
+    closeIcon.classList.add("fa-solid", "fa-xmark", "close-icon");
     
     closeIcon.style.display = "none";
   
