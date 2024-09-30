@@ -24,8 +24,14 @@ const url = document.getElementById("website");
 const title = document.getElementById("title");
 const websiteUrlDisplay = document.getElementById("website-link-display");
 
+// Review section
+const reviewModal = document.getElementById("reviews-modal");
+
 // Username
 const username = document.getElementById("username");
+
+// see all reviews
+const seeAllReviewsBtn = document.getElementById("see-all-reviews");
 
 // Hide bio by default
 bioTextarea.style.display = "none";
@@ -50,6 +56,14 @@ let isEditMode = false;
 // console.log(websiteUrlDisplay);
 
 
+// Review action: all reviews
+seeAllReviewsBtn.addEventListener('click', ()=> {
+
+reviewModal.style.display = "flex";
+
+console.log(reviewModal);
+
+})
 
 
 // UserCard action: click
@@ -253,6 +267,10 @@ saveBioBtn.addEventListener("click", () => {
 
 });
 
+// Review actions : dropdown menu
+seeAllReviewsBtn.addEventListener("click", ()=> {
+  console.log("The see all review button was clicked!");
+})
 /* 
     Selects all elements with class .dropdown-section 
     Loops through each dropdown-section to apply logic 
