@@ -32,6 +32,7 @@ const username = document.getElementById("username");
 
 // see all reviews
 const seeAllReviewsBtn = document.getElementById("see-all-reviews");
+const closeBtn = document.querySelector(".close");
 
 // Hide bio by default
 bioTextarea.style.display = "none";
@@ -56,14 +57,24 @@ let isEditMode = false;
 // console.log(websiteUrlDisplay);
 
 
-// Review action: all reviews
+// Review action: all reviews, close
 seeAllReviewsBtn.addEventListener('click', ()=> {
 
 reviewModal.style.display = "flex";
+document.body.classList.add("no-scroll");
 
 console.log(reviewModal);
+console.log(closeBtn);
 
+});
+
+closeBtn.addEventListener('click', ()=> {
+  console.log("The close button was clicked")
+  reviewModal.style.display = "none";
+  document.body.classList.remove("no-scroll");
 })
+
+
 
 
 // UserCard action: click
