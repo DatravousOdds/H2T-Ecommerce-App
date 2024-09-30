@@ -19,6 +19,10 @@ const uploadBtn = document.getElementById("upload-btn");
 const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
 const websiteLinks =  document.getElementById("website-link-box");
+
+
+
+
 // Website Links
 const url = document.getElementById("website");
 const title = document.getElementById("title");
@@ -42,17 +46,36 @@ let currentBio = bioTextarea.value || "";
 let currentUrl = url.value || "";
 let currentUrlTitle = title.value || "";
 
+
+
 // Max word count
-const wordCount = document.getElementById("word-count");
-const maxWord = 150;
+const  wordCountDisplay = document.getElementById("word-count");
+const maxWords = 30;
 
 // Toggle for "edit mode" state
 let isEditMode = false;
 
 
+
+
+
 bioTextarea.addEventListener('input', () => {
   const text = bioTextarea.value;
-  console.log(text);
+  
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  
+  const wordCount = words.length;
+  console.log("The amount word:",wordCount);
+   
+  wordCountDisplay.textContent = `${wordCount} / ${maxWords}`;
+
+  if(wordCount > maxWords) {
+    console.log("You have exceeded the maximum of words");
+  }
+
+  
+
+ 
 })
 
 
@@ -85,16 +108,59 @@ uploadBtn.addEventListener("click", () => {
   }
 });
 
+
+// Image upload validation and preview
+const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
+const feedback =  document.getElementById("feedback");
+
+console.log(feedback);
+
+
+
+
 // UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0]; // Grabs the first img from the list
   console.log(file);
+
+  feedback.textContent = "";
+
   const reader = new FileReader(); // creates a new FileReader
   reader.onload = function (event) {
     profilePicture.src = event.target.result; // sets the profile picture
   };
 
   if (file) {
+    console.log(file.type);
+    // Validate file type
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!validImageTypes.includes(file.type)) {
+      const err = new Error("File format error!");
+
+      feedback.innerHTML = "" // Clears out old content
+
+      // append error icon
+      const errIcon = document.createElement("i");
+      errIcon.classList.add("fa-solid", "fa-circle-exclamation", "error");
+      feedback.appendChild(errIcon);
+
+      // add error message after the icon
+      const errorMessage = document.createTextNode(`${err.message}`);
+      feedback.appendChild(errorMessage); 
+
+      // add style to error msg
+      feedback.classList.add("error");
+      
+      return;
+    }
+
+    if (file.size > maxFileSize) {
+      const err = new Error(`File too big ${maxFileSize.toFixed(2)} MB`);
+      feedback.textContent = err.message;
+      feedback.classList.add("error");
+      return;
+    }
+    
      reader.readAsDataURL(file); // Read the files as a Data URL
 
     }
@@ -112,7 +178,7 @@ updateBioBtn.addEventListener("click", () => {
   bioTextarea.style.display = "inline"; // shows the textarea
   pfpActions.style.display = "flex";
   websiteLinks.style.display = "inline";
-  wordCount.style.display = "flex"; // show word counter
+  wordCountDisplay.style.display = "flex"; // show word counter
 
 
   // Set is EditMode to true to enable removing links
@@ -137,7 +203,7 @@ removeBtn.addEventListener("click", () => {
 // UserProfile actions: save
 saveBioBtn.addEventListener("click", () => {
 
-  wordCount.style.display = "none";
+  wordCountDisplay.style.display = "none";
   
 
   // Disable the bioTextArea
