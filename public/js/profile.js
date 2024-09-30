@@ -41,20 +41,21 @@ bioTextarea.style.display = "none";
 let currentBio = bioTextarea.value || "";
 let currentUrl = url.value || "";
 let currentUrlTitle = title.value || "";
-// Togglee for "edit mode" state
+
+// Max word count
+const wordCount = document.getElementById("word-count");
+const maxWord = 150;
+
+// Toggle for "edit mode" state
 let isEditMode = false;
 
 
+bioTextarea.addEventListener('input', () => {
+  const text = bioTextarea.value;
+  console.log(text);
+})
 
 
-
-// Testing
-// console.log("File Input:", fileInput);
-// console.log("Upload Button:", uploadBtn);
-// console.log("Profile Picture: ", profilePicture);
-// console.log("Remove Button:", removeBtn);
-// console.log("Website Links:", websiteLinks);
-// console.log(websiteUrlDisplay);
 
 
 // Review action: all reviews, close
@@ -73,7 +74,6 @@ closeBtn.addEventListener('click', ()=> {
   reviewModal.style.display = "none";
   document.body.classList.remove("no-scroll");
 })
-
 
 
 
@@ -112,6 +112,7 @@ updateBioBtn.addEventListener("click", () => {
   bioTextarea.style.display = "inline"; // shows the textarea
   pfpActions.style.display = "flex";
   websiteLinks.style.display = "inline";
+  wordCount.style.display = "flex"; // show word counter
 
 
   // Set is EditMode to true to enable removing links
@@ -136,7 +137,8 @@ removeBtn.addEventListener("click", () => {
 // UserProfile actions: save
 saveBioBtn.addEventListener("click", () => {
 
-  console.log("The save button was clicked!");
+  wordCount.style.display = "none";
+  
 
   // Disable the bioTextArea
   bioTextarea.disabled = true;
@@ -198,7 +200,7 @@ saveBioBtn.addEventListener("click", () => {
     const anchor = document.createElement("a");
     anchor.href = currentUrl;
 
-    // anchor.innerText = currentUrlTitle;
+    
     anchor.target = "_blank"; // create a new tab
     anchor.classList.add("website-link");
   
