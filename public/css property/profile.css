@@ -433,6 +433,12 @@ p {
   gap: 1rem;
 }
 
+/* error message styles */
+.error-msg {
+  color: red;
+}
+
+
 .feedback {
   background-color: #fff;
   border: 2px solid #d6d6d6;
