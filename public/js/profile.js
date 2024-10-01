@@ -26,7 +26,34 @@ const websiteLinks =  document.getElementById("website-link-box");
 // Website Links
 const url = document.getElementById("website");
 const title = document.getElementById("title");
+const websiteFeedback = document.getElementById("website-feedback");
+const titleFeedback = document.getElementById("title-feedback");
 const websiteUrlDisplay = document.getElementById("website-link-display");
+
+// Profile actions: website link vaildation
+url.addEventListener('change', ()=> {
+  console.log("website has changed");
+  const websiteValue = url.value;
+  console.log(websiteValue);
+
+  if(websiteValue == " ") {
+    websiteValue.setCustomValidity("");
+    websiteFeedback.textContent = "";
+
+  } else if (!websiteValue.checkValidity()) {
+    const errorIcon = document.createElement("i");
+  
+    errorIcon.classList.add("fa-solid", "fa-circle-exclamation", "error");
+    websiteFeedback.setCustomValidity("Please enter a vaild URL (e.g., https://example.com). ");
+    websiteFeedback.appendChild(errorIcon);
+    
+    
+  } else {
+    websiteFeedback.setCustomValidity(" ");
+  }
+})
+
+
 
 // Review section
 const reviewModal = document.getElementById("reviews-modal");
@@ -108,12 +135,7 @@ uploadBtn.addEventListener("click", () => {
   }
 });
 
-const websiteFeedback = document.getElementById("website-feedback");
-const titleFeedback = document.getElementById("title-feedback");
 
-
-console.log(websiteFeedback);
-console.log(titleFeedback);
 
 // Image upload validation and preview
 const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
