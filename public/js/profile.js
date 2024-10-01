@@ -33,23 +33,28 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 // Profile actions: website link vaildation
 url.addEventListener('change', ()=> {
   console.log("website has changed");
-  const websiteValue = url.value;
-  console.log(websiteValue);
-
-  if(websiteValue == " ") {
-    websiteValue.setCustomValidity("");
-    websiteFeedback.textContent = "";
-
-  } else if (!websiteValue.checkValidity()) {
-    const errorIcon = document.createElement("i");
   
-    errorIcon.classList.add("fa-solid", "fa-circle-exclamation", "error");
-    websiteFeedback.setCustomValidity("Please enter a vaild URL (e.g., https://example.com). ");
+
+
+  websiteFeedback.innerHTML = "";
+
+  if(url.value.trim() === " ") {
+
+    websiteFeedback.textContent = "";
+    url.setCustomValidity("");
+
+  } else if (!url.checkValidity()) {
+
+    const errorIcon = document.createElement("i");
+    errorIcon.classList.add("fa-solid", "fa-circle-exclamation", "error-msg");
+    const errorMessage = document.createTextNode("Please enter a valid URL (e.g., https:://example.com). ");
     websiteFeedback.appendChild(errorIcon);
-    
-    
+    websiteFeedback.appendChild(errorMessage);
+    url.setCustomValidity("Please enter a vaild URL (e.g., https://example.com). ");
+
   } else {
-    websiteFeedback.setCustomValidity(" ");
+    url.setCustomValidity(" ");
+    websiteFeedback.innerHTML = "";
   }
 })
 
