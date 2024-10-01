@@ -150,13 +150,20 @@ fileInput.addEventListener("change", (e) => {
 
       // add style to error msg
       feedback.classList.add("error");
-      
+
       return;
     }
 
     if (file.size > maxFileSize) {
+
+      const errIcon = document.createElement("i");
+      errIcon.classList.add("fa-solid", "fa-circle-exclamation", "error");
+      feedback.appendChild(errIcon);
+
       const err = new Error(`File too big ${maxFileSize.toFixed(2)} MB`);
-      feedback.textContent = err.message;
+      const errorMessage = document.createTextNode(`${err.message}`);
+      feedback.appendChild(errorMessage);
+
       feedback.classList.add("error");
       return;
     }

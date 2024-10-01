@@ -454,6 +454,10 @@ p {
   color: red;
 }
 
+#feedback i {
+  padding: 5px;
+}
+
 .rating-feedback .rating-style {
   font-size: large;
   font-weight: 700;
