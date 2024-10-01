@@ -460,7 +460,7 @@ p {
   color: red;
 }
 
-#feedback i {
+#feedback i, #website-feedback i{
   padding: 5px;
 }
 
