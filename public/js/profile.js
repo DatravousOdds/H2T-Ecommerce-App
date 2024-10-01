@@ -108,6 +108,12 @@ uploadBtn.addEventListener("click", () => {
   }
 });
 
+const websiteFeedback = document.getElementById("website-feedback");
+const titleFeedback = document.getElementById("title-feedback");
+
+
+console.log(websiteFeedback);
+console.log(titleFeedback);
 
 // Image upload validation and preview
 const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
