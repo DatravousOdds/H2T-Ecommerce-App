@@ -92,8 +92,12 @@ bioTextarea.addEventListener("input", () => {
   if (wordCount > maxWords) {
     console.log("You have exceeded the maximum of words");
     wordCountDisplay.classList.add("error-msg");
+    
     saveBioBtn.disabled = true;
+  } else if (wordCount <= 0) {
+    wordCountDisplay.style.display = "none";
   } else {
+    wordCountDisplay.style.display = "flex"
     wordCountDisplay.classList.remove("error-msg");
     saveBioBtn.disabled = false;
   }
