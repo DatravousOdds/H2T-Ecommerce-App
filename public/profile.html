@@ -90,7 +90,8 @@
                     id="profile-picture"
                   />
                 </div>
-                <div id="feedback"></div> <!-- Feedback for file upload -->
+                <div id="feedback"></div>
+                <!-- Feedback for file upload -->
                 <div id="pfp-section-1">
                   <!-- Username Section -->
                   <div id="name-infor">
@@ -106,10 +107,7 @@
                         width="30px"
                         alt=""
                       />
-                      
                     </div>
-
-                   
                   </div>
                   <!-- User Stats Section -->
                   <div id="user-stats">
@@ -155,34 +153,30 @@
                     </div>
 
                     <!-- Display website URLs-->
-                     <div id="website-link-display">
-                      
-                     </div>
-                    
+                    <div id="website-link-display"></div>
+
                     <!-- Bio Form -->
                     <form id="bio" class="spacing">
                       <!-- Website Links -->
-                    <div id="website-link-box" class="website-links" style="display: none;">
+                      <div
+                        id="website-link-box"
+                        class="website-links"
+                        style="display: none"
+                      >
+                        <div class="website-input-container">
+                          <label for="website" name="website"> Website: </label>
+                          <input type="url" id="website" required />
+                          <!-- Feedback for website url input -->
+                          <div id="website-feedback" class="error-msg"></div>
+                        </div>
 
-                      <div class="website-input-container">
-                        <label for="website" name="website">
-                        Website:
-                      </label>
-                      <input type="url" id="website" required />
-                      <!-- Feedback for website url input -->
-                      <div id="website-feedback" class="error-msg"></div>
+                        <div class="title-input-container">
+                          <label for="title" name="title"> Title: </label>
+                          <input type="text" id="title" required />
+                          <!-- Feedback for title input -->
+                          <div id="title-feedback" class="error-msg"></div>
+                        </div>
                       </div>
-
-                      <div class="title-input-container">
-                        <label for="title" name="title">
-                        Title:
-                      </label>
-                      <input type="text" id="title" required/>
-                      <!-- Feedback for title input -->
-                       <div id="title-feedback" class="error-msg"></div>
-                      </div>
-                      
-                    </div>
 
                       <textarea
                         id="bio-value"
@@ -191,14 +185,14 @@
                         value=""
                         disabled
                       ></textarea>
-                      <div id="word-count">0 /  75 words</div>
+                      <div id="word-count"></div>
 
                       <button id="update-bio-btn" type="button">
                         Edit Profile
                       </button>
                       <button
                         id="save-bio-btn"
-                        type="button"
+                        type="submit"
                         style="display: none"
                       >
                         Save
@@ -262,14 +256,14 @@
                     <input
                       type="text"
                       name="username"
-                      id="username"
+                      id="profile-username"
                       placeholder=""
                       value=""
                       disabled
                     />
                   </form>
                   <div id="personalInfoActionBtn" class="action-buttons">
-                    <button class="button-31 save-btn">Save changes</button>
+                    <button class="button-31 save-btn" type="submit">Save changes</button>
                     <button class="button-31 cancel-btn">Cancel</button>
                   </div>
                 </div>
@@ -476,14 +470,14 @@
                 </div>
 
                 <div class="see-more">
-                  <div id="see-all-reviews"  class="see-all-reviews">
+                  <div id="see-all-reviews" class="see-all-reviews">
                     <a href="#" class="read-more">See all reviews</a>
                     <i class="fa-solid fa-angle-down"></i>
                   </div>
                 </div>
 
                 <!-- See all reviews menu -->
-                 <div  id="reviews-modal" class="review-menu">
+                <div id="reviews-modal" class="review-menu">
                   <div class="review-content">
                     <span class="close">&times;</span>
                     <h2>All Reviews</h2>
@@ -512,11 +506,9 @@
                       <p>Review 3: Lorem ipsum dolor sit</p>
                       <p>Review 3: Lorem ipsum dolor sit</p>
                       <p>Review 3: Lorem ipsum dolor sit</p>
-                      
                     </div>
                   </div>
-                 </div>
-
+                </div>
               </div>
             </div>
           </div>

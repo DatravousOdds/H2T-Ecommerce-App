@@ -18,10 +18,7 @@ const fileInput = document.getElementById("file-input");
 const uploadBtn = document.getElementById("upload-btn");
 const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
-const websiteLinks =  document.getElementById("website-link-box");
-
-
-
+const websiteLinks = document.getElementById("website-link-box");
 
 // Website Links
 const url = document.getElementById("website");
@@ -30,35 +27,32 @@ const websiteFeedback = document.getElementById("website-feedback");
 const titleFeedback = document.getElementById("title-feedback");
 const websiteUrlDisplay = document.getElementById("website-link-display");
 
-// Profile actions: website link vaildation
-url.addEventListener('change', ()=> {
+// Profile actions: website link validation
+url.addEventListener("change", () => {
   console.log("website has changed");
-  
-
 
   websiteFeedback.innerHTML = "";
+  url.setCustomValidity("");
 
-  if(url.value.trim() === " ") {
-
+  if (url.value.trim() === "") {
     websiteFeedback.textContent = "";
     url.setCustomValidity("");
-
   } else if (!url.checkValidity()) {
-
     const errorIcon = document.createElement("i");
     errorIcon.classList.add("fa-solid", "fa-circle-exclamation", "error-msg");
-    const errorMessage = document.createTextNode("Please enter a valid URL (e.g., https:://example.com). ");
+    const errorMessage = document.createTextNode(
+      "Please enter a valid URL (e.g., https:://example.com). "
+    );
     websiteFeedback.appendChild(errorIcon);
     websiteFeedback.appendChild(errorMessage);
-    url.setCustomValidity("Please enter a vaild URL (e.g., https://example.com). ");
-
+    url.setCustomValidity(
+      "Please enter a valid URL (e.g., https://example.com). "
+    );
   } else {
-    url.setCustomValidity(" ");
     websiteFeedback.innerHTML = "";
+    url.setCustomValidity("");
   }
-})
-
-
+});
 
 // Review section
 const reviewModal = document.getElementById("reviews-modal");
@@ -73,64 +67,52 @@ const closeBtn = document.querySelector(".close");
 // Hide bio by default
 bioTextarea.style.display = "none";
 
-
 let currentBio = bioTextarea.value || "";
 let currentUrl = url.value || "";
 let currentUrlTitle = title.value || "";
 
-
-
 // Max word count
-const  wordCountDisplay = document.getElementById("word-count");
+const wordCountDisplay = document.getElementById("word-count");
 const maxWords = 30;
 
 // Toggle for "edit mode" state
 let isEditMode = false;
 
-
-
-
-
-bioTextarea.addEventListener('input', () => {
+bioTextarea.addEventListener("input", () => {
   const text = bioTextarea.value;
-  
+  console.log(text);
+
   const words = text.trim().split(/\s+/).filter(Boolean);
-  
+
   const wordCount = words.length;
-  console.log("The amount word:",wordCount);
-   
+  console.log("The amount word:", wordCount);
+
   wordCountDisplay.textContent = `${wordCount} / ${maxWords}`;
 
-  if(wordCount > maxWords) {
+  if (wordCount > maxWords) {
     console.log("You have exceeded the maximum of words");
+    wordCountDisplay.classList.add("error-msg");
+    saveBioBtn.disabled = true;
+  } else {
+    wordCountDisplay.classList.remove("error-msg");
+    saveBioBtn.disabled = false;
   }
-
-  
-
- 
-})
-
-
-
-
-// Review action: all reviews, close
-seeAllReviewsBtn.addEventListener('click', ()=> {
-
-reviewModal.style.display = "flex";
-document.body.classList.add("no-scroll");
-
-console.log(reviewModal);
-console.log(closeBtn);
-
 });
 
-closeBtn.addEventListener('click', ()=> {
-  console.log("The close button was clicked")
+// Review action: all reviews, close
+seeAllReviewsBtn.addEventListener("click", () => {
+  reviewModal.style.display = "flex";
+  document.body.classList.add("no-scroll");
+
+  console.log(reviewModal);
+  console.log(closeBtn);
+});
+
+closeBtn.addEventListener("click", () => {
+  console.log("The close button was clicked");
   reviewModal.style.display = "none";
   document.body.classList.remove("no-scroll");
-})
-
-
+});
 
 // UserCard action: click
 uploadBtn.addEventListener("click", () => {
@@ -140,16 +122,11 @@ uploadBtn.addEventListener("click", () => {
   }
 });
 
-
-
 // Image upload validation and preview
 const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
-const feedback =  document.getElementById("feedback");
+const feedback = document.getElementById("feedback");
 
 console.log(feedback);
-
-
-
 
 // UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
@@ -166,11 +143,11 @@ fileInput.addEventListener("change", (e) => {
   if (file) {
     console.log(file.type);
     // Validate file type
-    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
     if (!validImageTypes.includes(file.type)) {
       const err = new Error("File format error!");
 
-      feedback.innerHTML = "" // Clears out old content
+      feedback.innerHTML = ""; // Clears out old content
 
       // append error icon
       const errIcon = document.createElement("i");
@@ -179,7 +156,7 @@ fileInput.addEventListener("change", (e) => {
 
       // add error message after the icon
       const errorMessage = document.createTextNode(`${err.message}`);
-      feedback.appendChild(errorMessage); 
+      feedback.appendChild(errorMessage);
 
       // add style to error msg
       feedback.classList.add("error");
@@ -188,7 +165,6 @@ fileInput.addEventListener("change", (e) => {
     }
 
     if (file.size > maxFileSize) {
-
       const errIcon = document.createElement("i");
       errIcon.classList.add("fa-solid", "fa-circle-exclamation", "error");
       feedback.appendChild(errIcon);
@@ -200,13 +176,11 @@ fileInput.addEventListener("change", (e) => {
       feedback.classList.add("error");
       return;
     }
-    
-     reader.readAsDataURL(file); // Read the files as a Data URL
 
-    }
- 
+    reader.readAsDataURL(file); // Read the files as a Data URL
+  }
+
   fileInput.value = "";
-
 });
 
 // UserCard actions: edit
@@ -220,20 +194,19 @@ updateBioBtn.addEventListener("click", () => {
   websiteLinks.style.display = "inline";
   wordCountDisplay.style.display = "flex"; // show word counter
 
-
   // Set is EditMode to true to enable removing links
   isEditMode = true;
 
-  // Show the close icon when in edit mode 
+  // Show the close icon when in edit mode
   const closeIcons = document.querySelectorAll(".close-icon");
-  closeIcons.forEach(icon => {
+  closeIcons.forEach((icon) => {
     icon.style.display = "block";
-  })
+  });
 });
 
 // UserProfile actions: remove img
 removeBtn.addEventListener("click", () => {
-  console.log("the removed button was clicked!")
+  console.log("the removed button was clicked!");
   profilePicture.src = "/images/1.png";
 
   // Reset the file input to allow uploading the same image again
@@ -242,9 +215,7 @@ removeBtn.addEventListener("click", () => {
 
 // UserProfile actions: save
 saveBioBtn.addEventListener("click", () => {
-
   wordCountDisplay.style.display = "none";
-  
 
   // Disable the bioTextArea
   bioTextarea.disabled = true;
@@ -260,43 +231,53 @@ saveBioBtn.addEventListener("click", () => {
   pfpActions.style.display = "none";
 
   const closeIcons = document.querySelectorAll(".close-icon");
-  closeIcons.forEach(icon => {
+  closeIcons.forEach((icon) => {
     icon.style.display = "none";
   });
-
-
 
   // Get the trimmed values
   currentBio = bioTextarea.value.trim();
   currentUrl = url.value.trim();
   currentUrlTitle = title.value.trim();
 
-
-  
-
   // Logic to hide or show elements based on content
   if (currentBio === "") {
-
     // Hide bio, and website element
     bioTextarea.style.display = "none";
-    
-
   } else {
     // Show bio and website if they are filled
     bioTextarea.style.display = "block";
-   
   }
 
   if (currentUrl === "" && currentUrlTitle == "") {
-
     // Hide bio, and website element
     websiteLinks.style.display = "none";
-    
+  } else if (currentUrl !== "" && currentUrlTitle === "") {
+    // If URL is provided but title is missing, show an
+    titleFeedback.innerHTML = "";
 
+    const errorIcon = document.createElement("i");
+    errorIcon.classList.add("fa-solid", "fa-circle-exclamation", "error-msg");
+    const errorMessage = document.createTextNode("Please enter a title!");
+
+    titleFeedback.appendChild(errorIcon);
+    titleFeedback.appendChild(errorMessage);
+
+    return; // Exit early since there's an error
+  } else if ((currentUrl === "") & (currentUrlTitle !== "")) {
+    websiteFeedback.innerHTML = "";
+
+    const errorIcon = document.createElement("i");
+    errorIcon.classList.add("fa-solid", "fa-circle-exclamation", "error-msg");
+    const errorMessage = document.createTextNode("Please fill out this field!");
+
+    websiteFeedback.appendChild(errorIcon);
+    websiteFeedback.appendChild(errorMessage);
+
+    return; // Exit early since there's an error
   } else {
-
-    
-
+    websiteFeedback.innerHTML = "";
+    titleFeedback.innerHTML = "";
     // Show bio and website if they are filled
     websiteLinks.style.display = "block";
 
@@ -305,21 +286,18 @@ saveBioBtn.addEventListener("click", () => {
 
     const anchor = document.createElement("a");
     anchor.href = currentUrl;
-
-    
     anchor.target = "_blank"; // create a new tab
     anchor.classList.add("website-link");
-  
     anchor.type = "text";
-  
+
     const linkIcon = document.createElement("i");
 
     const domain = new URL(currentUrl).hostname;
 
-    // Checks if the url matches known e-commcerce websites
+    // Checks if the url matches known e-commerce websites
     if (domain.includes("amazon")) {
-      linkIcon.classList.add("fa-brands","fa-amazon", "amazon"); // amazon icon
-    } else if (domain.includes("shopify")){
+      linkIcon.classList.add("fa-brands", "fa-amazon", "amazon"); // amazon icon
+    } else if (domain.includes("shopify")) {
       linkIcon.classList.add("fa-brands", "fa-shopify", "shopify");
     } else if (domain.includes("ebay")) {
       linkIcon.classList.add("fa-brands", "fa-ebay", "ebay");
@@ -331,47 +309,30 @@ saveBioBtn.addEventListener("click", () => {
       linkIcon.classList.add("fa-link");
     }
 
-  
-   anchor.appendChild(linkIcon);
+    anchor.appendChild(linkIcon);
     div.appendChild(anchor);
 
-
-
-
+    // Close Icon
     const closeIcon = document.createElement("i");
     closeIcon.classList.add("fa-solid", "fa-xmark", "close-icon");
-    
     closeIcon.style.display = "none";
-  
-    closeIcon.addEventListener('click',(e) => {
+
+    // Event listener for removing the link
+    closeIcon.addEventListener("click", (e) => {
       e.preventDefault();
       div.remove();
     });
-    
-    
-
-
 
     div.append(closeIcon);
 
     // Append to the website display container
     websiteUrlDisplay.appendChild(div);
     websiteUrlDisplay.style.display = "flex";
-    websiteLinks.style.display = 'none';
-
-    
-
-
-
-   
+    websiteLinks.style.display = "none";
   }
 
-
-
-  
-
   // Logging for testing
-  console.log("The url is:", currentUrl)
+  console.log("The url is:", currentUrl);
   console.log("The current bio is:", currentBio);
   console.log("The url title is:", currentUrlTitle);
 
@@ -379,17 +340,13 @@ saveBioBtn.addEventListener("click", () => {
   url.value = "";
   title.value = "";
 
-  
-
   /* TODO: Save user data to firebase  */
-
-
 });
 
 // Review actions : dropdown menu
-seeAllReviewsBtn.addEventListener("click", ()=> {
+seeAllReviewsBtn.addEventListener("click", () => {
   console.log("The see all review button was clicked!");
-})
+});
 /* 
     Selects all elements with class .dropdown-section 
     Loops through each dropdown-section to apply logic 
@@ -542,5 +499,3 @@ allTabs.forEach((tab) => {
     tab.classList.add("active");
   });
 });
-
-
