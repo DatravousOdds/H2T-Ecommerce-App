@@ -29,7 +29,7 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 
 // Profile actions: website link validation
 url.addEventListener("change", () => {
-  console.log("website has changed");
+  
 
   websiteFeedback.innerHTML = "";
   url.setCustomValidity("");
@@ -67,6 +67,7 @@ const closeBtn = document.querySelector(".close");
 // Hide bio by default
 bioTextarea.style.display = "none";
 
+
 let currentBio = bioTextarea.value || "";
 let currentUrl = url.value || "";
 let currentUrlTitle = title.value || "";
@@ -80,12 +81,12 @@ let isEditMode = false;
 
 bioTextarea.addEventListener("input", () => {
   const text = bioTextarea.value;
-  console.log(text);
+  
 
   const words = text.trim().split(/\s+/).filter(Boolean);
 
   const wordCount = words.length;
-  console.log("The amount word:", wordCount);
+  // console.log("The amount word:", wordCount);
 
   wordCountDisplay.textContent = `${wordCount} / ${maxWords}`;
 
@@ -122,19 +123,18 @@ seeAllReviewsBtn.addEventListener("click", () => {
   reviewModal.style.display = "flex";
   document.body.classList.add("no-scroll");
 
-  console.log(reviewModal);
-  console.log(closeBtn);
+  
 });
 
 closeBtn.addEventListener("click", () => {
-  console.log("The close button was clicked");
+  
   reviewModal.style.display = "none";
   document.body.classList.remove("no-scroll");
 });
 
 // UserCard action: click
 uploadBtn.addEventListener("click", () => {
-  console.log("Upload button was clicked!");
+  
   if (fileInput) {
     fileInput.click();
   }
@@ -149,7 +149,7 @@ console.log(feedback);
 // UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0]; // Grabs the first img from the list
-  console.log(file);
+  
 
   feedback.textContent = "";
 
@@ -157,6 +157,8 @@ fileInput.addEventListener("change", (e) => {
   reader.onload = function (event) {
     profilePicture.src = event.target.result; // sets the profile picture
   };
+
+// TODO: create function to generate error
 
   if (file) {
     console.log(file.type);
@@ -203,7 +205,7 @@ fileInput.addEventListener("change", (e) => {
 
 // UserCard actions: edit
 updateBioBtn.addEventListener("click", () => {
-  console.log("update bio button was clicked!");
+  
   bioTextarea.disabled = false;
   saveBioBtn.style.display = "inline"; // show the save button
   updateBioBtn.style.display = "none"; // removes edit button
@@ -224,7 +226,7 @@ updateBioBtn.addEventListener("click", () => {
 
 // UserProfile actions: remove img
 removeBtn.addEventListener("click", () => {
-  console.log("the removed button was clicked!");
+  
   profilePicture.src = "/images/1.png";
 
   // Reset the file input to allow uploading the same image again
@@ -363,7 +365,7 @@ saveBioBtn.addEventListener("click", () => {
 
 // Review actions : dropdown menu
 seeAllReviewsBtn.addEventListener("click", () => {
-  console.log("The see all review button was clicked!");
+  // console.log("The see all review button was clicked!");
 });
 /* 
     Selects all elements with class .dropdown-section 
@@ -422,13 +424,21 @@ smallDropdownSection.forEach((smallMenu) => {
   });
 });
 
-// Profile actions: edit, save, cancel
+// Profile actions: edit, save, cancel, validation
 profileSection.forEach((section) => {
   const edit = section.querySelectorAll(".edit-info-header");
   const allActionButtons = section.querySelectorAll(".action-buttons");
   const saveBtn = section.querySelectorAll(".save-btn");
   const cancelBtn = section.querySelectorAll(".cancel-btn");
   const inputs = section.querySelectorAll("input");
+
+  inputs.forEach(input => {
+    console.log(input);
+    if (input.type = "fname") {
+      console.log(input.id)
+    }
+  })
+
 
   // Handle save button click
   saveBtn.forEach((btn) => {
@@ -450,7 +460,7 @@ profileSection.forEach((section) => {
   // Handle edit button click
   edit.forEach((btn) => {
     btn.addEventListener("click", () => {
-      console.log("edit button was clicked!");
+      // console.log("edit button was clicked!");
 
       inputs.forEach((input) => {
         input.disabled = false;
@@ -471,7 +481,7 @@ profileSection.forEach((section) => {
   cancelBtn.forEach((btn) => {
     console.log(btn);
     btn.addEventListener("click", () => {
-      console.log("cancel button was clicked!");
+      // console.log("cancel button was clicked!");
 
       inputs.forEach((input) => {
         input.disabled = true;
