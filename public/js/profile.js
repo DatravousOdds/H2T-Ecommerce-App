@@ -89,17 +89,31 @@ bioTextarea.addEventListener("input", () => {
 
   wordCountDisplay.textContent = `${wordCount} / ${maxWords}`;
 
+  // Show error  message if the words are greater than the max words
   if (wordCount > maxWords) {
-    console.log("You have exceeded the maximum of words");
+    wordCountDisplay.style.display = "flex";
     wordCountDisplay.classList.add("error-msg");
+
+    bioTextarea.setCustomValidity("You have exceeded the maximum of words");
     
+    saveBioBtn.classList.add("disabled")
     saveBioBtn.disabled = true;
+
   } else if (wordCount <= 0) {
     wordCountDisplay.style.display = "none";
+
+    // clear any error message
+    bioTextarea.setCustomValidity("");
+
   } else {
     wordCountDisplay.style.display = "flex"
     wordCountDisplay.classList.remove("error-msg");
+    
+    
     saveBioBtn.disabled = false;
+
+    // clears the error message
+    bioTextarea.setCustomValidity("");
   }
 });
 
