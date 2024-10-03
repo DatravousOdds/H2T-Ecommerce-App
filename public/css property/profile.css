@@ -1283,7 +1283,7 @@ h6 {
   padding: "0px 0px";
 }
 
-.pfp-1 input[type="text"] {
+.pfp-1 input[type="text"], .pfp-1 input[type="email"], input[type="tel"] {
   width: 100%;
   /* padding: 12px 20px; */
   margin: 8px 0;
