@@ -1,3 +1,6 @@
+import { countries } from "countries-list";
+console.log(countries)
+
 // Payment Information Section
 const dropdownSection = document.querySelectorAll(".dropdown-section");
 const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
@@ -5,6 +8,9 @@ const spanElement = document.getElementById("filter-icon");
 const profileSection = document.querySelectorAll(".profile-section");
 const hasFilterIcon =
   spanElement && spanElement.querySelector("i.fa-filter") !== null;
+
+
+
 
 // Bio Section
 const userProfileCard = profileSection[0];
@@ -144,7 +150,7 @@ uploadBtn.addEventListener("click", () => {
 const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
 const feedback = document.getElementById("feedback");
 
-console.log(feedback);
+// console.log(feedback);
 
 // UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
@@ -365,7 +371,7 @@ saveBioBtn.addEventListener("click", () => {
 
 // Review actions : dropdown menu
 seeAllReviewsBtn.addEventListener("click", () => {
-  // console.log("The see all review button was clicked!");
+  
 });
 /* 
     Selects all elements with class .dropdown-section 
@@ -476,7 +482,7 @@ profileSection.forEach((section) => {
 
   // Handle cancel button click
   cancelBtn.forEach((btn) => {
-    console.log(btn);
+    // console.log(btn);
     btn.addEventListener("click", () => {
       // console.log("cancel button was clicked!");
 
@@ -524,3 +530,5 @@ allTabs.forEach((tab) => {
     tab.classList.add("active");
   });
 });
+
+// Generate Countries 

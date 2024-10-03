@@ -215,9 +215,10 @@
                   </div>
                   <!-- eof Edit Button -->
                 </div>
+                <!-- Personal Information Form-->
                 <div class="pfp-1">
                   <form action="#" id="personalInformation">
-                    <label>First Name</label>
+                    <label for="fname">First Name</label>
                     <input
                       type="text"
                       name="fname"
@@ -226,16 +227,16 @@
                       value="Sara"
                       disabled
                     />
-                    <label>Last Name</label>
+                    <label for="lname">Last Name</label>
                     <input
                       type="text"
-                      name="lastname"
+                      name="lname"
                       id="lname"
                       placeholder="Your last name..."
                       value="Almasi"
                       disabled
                     />
-                    <label>Email</label>
+                    <label for="email">Email</label>
                     <input
                       type="email"
                       name="email"
@@ -244,7 +245,7 @@
                       value="sara.almasi@example.com"
                       disabled
                     />
-                    <label>Phone Number</label>
+                    <label for="phoneNumber">Phone Number</label>
                     <input
                       type="tel"
                       name="phoneNumber"
@@ -253,10 +254,10 @@
                       value="123-456-7890"
                       disabled
                     />
-                    <label>Username</label>
+                    <label for="profile-username">Username</label>
                     <input
                       type="text"
-                      name="username"
+                      name="profile-username"
                       id="profile-username"
                       placeholder=""
                       value=""
@@ -283,32 +284,36 @@
                 </div>
                 <div class="pfp-1">
                   <form action="#" id="shippingInformation">
-                    <label for="fname">First Name</label>
+                    <label for="firstname">First Name</label>
                     <input
                       type="text"
                       name="firstname"
-                      id="fname"
+                      id="firstname"
                       placeholder="Your name.."
                       value="Sara"
                       disabled
                     />
-                    <label for="fname">Last Name</label>
+                    <label for="lastname">Last Name</label>
                     <input
                       type="text"
                       name="lastname"
-                      id="fname"
+                      id="lastname"
                       placeholder="Your last name..."
                       value="Almasi"
                       disabled
                     />
-                    <label for="fname">Country</label>
-                    <input
-                      type="text"
-                      name="country"
-                      id="country"
-                      placeholder="Country"
-                    />
-                    <label for="fname">Address</label>
+                    <label for="country">Country</label>
+                    <select id="country" name="country" required>
+                      <option value=""></option>
+                      <option value=""></option>
+                      <option value=""></option>
+                      <option value=""></option>
+                      <option value=""></option>
+                      <option value=""></option>
+                      <option value=""></option>
+                      <option value=""></option>
+                    </select>
+                    <label for="address">Address</label>
                     <input
                       type="text"
                       name="address"
@@ -739,7 +744,7 @@
     </section>
 
     <footer></footer>
-    <script src="js/profile.js"></script>
+    <script type="module" src="js/profile.js"></script>
     <script src="js/footer.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/home.js"></script>
