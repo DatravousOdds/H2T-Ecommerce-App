@@ -1,5 +1,3 @@
-import { countries } from "countries-list";
-console.log(countries)
 
 // Payment Information Section
 const dropdownSection = document.querySelectorAll(".dropdown-section");
@@ -532,3 +530,13 @@ allTabs.forEach((tab) => {
 });
 
 // Generate Countries 
+fetch('https://restcountries.com/v3.1/all')
+.then(res => res.json())
+.then(data => {
+  console.log(data);
+  const select = document.getElementById("country");
+  data.forEach(country => {
+    const option = document.createElement("option");
+    console.log(country.cca2)
+  })
+})
