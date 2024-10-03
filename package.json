@@ -11,13 +11,14 @@
   "dependencies": {
     "aws-sdk": "^2.1213.0",
     "bcrypt": "^5.1.0",
+    "countries-list": "^3.1.1",
     "dotenv": "^16.0.2",
     "express": "^4.19.2",
     "express.js": "^1.0.0",
     "firebase-admin": "^11.0.1",
     "jquery": "^3.6.3",
     "nodemailer": "^6.7.8",
-    "nodemon": "^2.0.19",    
+    "nodemon": "^2.0.19",
     "uuid": "^9.0.0"
   }
 }
