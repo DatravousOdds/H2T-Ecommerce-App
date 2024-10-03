@@ -434,9 +434,6 @@ profileSection.forEach((section) => {
 
   inputs.forEach(input => {
     console.log(input);
-    if (input.type = "fname") {
-      console.log(input.id)
-    }
   })
 
 
