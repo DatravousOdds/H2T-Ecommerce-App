@@ -73,8 +73,7 @@ url.addEventListener("change", () => {
 // Review section
 const reviewModal = document.getElementById("reviews-modal");
 
-// Username
-const username = document.getElementById("username");
+
 
 // see all reviews
 const seeAllReviewsBtn = document.getElementById("see-all-reviews");
@@ -447,9 +446,16 @@ profileSection.forEach((section) => {
   const saveBtn = section.querySelectorAll(".save-btn");
   const cancelBtn = section.querySelectorAll(".cancel-btn");
   const inputs = section.querySelectorAll("input");
+  const select = section.querySelectorAll("select");
+  
+  select.forEach(ele => {
+    console.log(ele);
+    ele.disabled = true;
+  })
+  
 
   inputs.forEach(input => {
-    console.log(input);
+    // console.log(input);
   })
 
 
@@ -474,6 +480,10 @@ profileSection.forEach((section) => {
   edit.forEach((btn) => {
     btn.addEventListener("click", () => {
       // console.log("edit button was clicked!");
+
+      select.forEach(element => {
+        element.disabled = false;
+      })
 
       inputs.forEach((input) => {
         input.disabled = false;
