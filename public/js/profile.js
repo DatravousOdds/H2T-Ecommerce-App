@@ -439,7 +439,7 @@ smallDropdownSection.forEach((smallMenu) => {
   });
 });
 
-// Profile actions: edit, save, cancel, validation
+// Profile actions: edit, save, cancel
 profileSection.forEach((section) => {
   const edit = section.querySelectorAll(".edit-info-header");
   const allActionButtons = section.querySelectorAll(".action-buttons");
@@ -447,20 +447,25 @@ profileSection.forEach((section) => {
   const cancelBtn = section.querySelectorAll(".cancel-btn");
   const inputs = section.querySelectorAll("input");
   const select = section.querySelectorAll("select");
+
+
   
   select.forEach(ele => {
-    console.log(ele);
+    // console.log(ele);
     ele.disabled = true;
   })
   
 
-  inputs.forEach(input => {
-    // console.log(input);
-  })
+  
 
 
   // Handle save button click
   saveBtn.forEach((btn) => {
+
+    select.forEach(ele => {
+      ele.disabled = true;
+    })
+
     btn.addEventListener("click", () => {
       // console.log("save button was click");
       inputs.forEach((input) => {
@@ -505,6 +510,10 @@ profileSection.forEach((section) => {
     // console.log(btn);
     btn.addEventListener("click", () => {
       // console.log("cancel button was clicked!");
+
+      select.forEach(ele => {
+        ele.disabled = true;
+      })
 
       inputs.forEach((input) => {
         input.disabled = true;
@@ -551,3 +560,33 @@ allTabs.forEach((tab) => {
   });
 });
 
+const personalInformationForm = document.getElementById("personalInformation");
+console.log(personalInformationForm);
+const shippingInformationForm = document.getElementById("shippingInformation");
+console.log(shippingInformationForm);
+
+personalInformationForm.addEventListener('submit', (e) => {
+  e.preventDefault(); // prevents form submission for validation checks
+
+  const firstname = document.getElementById("fname").value.trim();
+  const lastname = document.getElementById("lname").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phoneNumber = document.getElementById("phoneNumber").value.trim();
+  const username =  documenet.getElementById("profile-username").value.trim();
+
+
+  const fnameError = document.getElementById("fnameError");
+  const lnameError = document.getElementById("lnameError");
+  const emailError = document.getElementById("emailError");
+  const phoneError = document.getElementById("phoneError");
+  const usernameError = document.getElementById("")
+
+  let hasErrors = false; // means there is not any errors
+
+  
+
+
+
+  // testing 
+  console.log(firstname);
+})

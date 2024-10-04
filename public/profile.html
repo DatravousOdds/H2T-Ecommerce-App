@@ -227,6 +227,7 @@
                       value="Sara"
                       disabled
                     />
+                    <span class="error-msg" id="fnameError"></span>
                     <label for="lname">Last Name</label>
                     <input
                       type="text"
@@ -236,6 +237,7 @@
                       value="Almasi"
                       disabled
                     />
+                    <span class="error-msg" id="lnameError"></span>
                     <label for="email">Email</label>
                     <input
                       type="email"
@@ -245,6 +247,7 @@
                       value="sara.almasi@example.com"
                       disabled
                     />
+                    <span class="error-msg" id="emailError"></span>
                     <label for="phoneNumber">Phone Number</label>
                     <input
                       type="tel"
@@ -254,6 +257,7 @@
                       value="123-456-7890"
                       disabled
                     />
+                    <span class="error-msg" id="phoneError"></span>
                     <label for="profile-username">Username</label>
                     <input
                       type="text"
@@ -263,10 +267,11 @@
                       value=""
                       disabled
                     />
+                    <span class="error-msg" id="usernameError"></span>
                   </form>
                   <div id="personalInfoActionBtn" class="action-buttons">
                     <button class="button-31 save-btn" type="submit">Save changes</button>
-                    <button class="button-31 cancel-btn">Cancel</button>
+                    <button class="button-31 cancel-btn" type="reset">Cancel</button>
                   </div>
                 </div>
               </div>
@@ -304,7 +309,7 @@
                     />
                     <label for="country">Country</label>
                     <select id="country" name="country" required>
-                    
+                      <option value="">Select a country</option>
                     </select>
                     <label for="address">Address</label>
                     <input
@@ -315,8 +320,8 @@
                     />
                   </form>
                   <div class="action-buttons">
-                    <button class="button-31 save-btn">Save changes</button>
-                    <button class="button-31 cancel-btn">Cancel</button>
+                    <button class="button-31 save-btn" type="submit">Save changes</button>
+                    <button class="button-31 cancel-btn" type="reset">Cancel</button>
                   </div>
                 </div>
               </div>
