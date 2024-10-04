@@ -568,6 +568,8 @@ console.log(shippingInformationForm);
 personalInformationForm.addEventListener('submit', (e) => {
   e.preventDefault(); // prevents form submission for validation checks
 
+  console.log("form was submitted!");
+
   const firstname = document.getElementById("fname").value.trim();
   const lastname = document.getElementById("lname").value.trim();
   const email = document.getElementById("email").value.trim();
@@ -579,14 +581,24 @@ personalInformationForm.addEventListener('submit', (e) => {
   const lnameError = document.getElementById("lnameError");
   const emailError = document.getElementById("emailError");
   const phoneError = document.getElementById("phoneError");
-  const usernameError = document.getElementById("")
+  const usernameError = document.getElementById("usernameError");
 
   let hasErrors = false; // means there is not any errors
 
+  if (firstname === "") {
+    fnameError.textContent = "Please input a username"
+  }
+  
   
 
 
 
   // testing 
   console.log(firstname);
+  console.log(lastname);
+  console.log(email);
+  console.log(phoneNumber);
+  console.log(username)
+
+
 })
