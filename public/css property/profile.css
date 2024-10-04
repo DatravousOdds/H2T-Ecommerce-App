@@ -661,9 +661,10 @@ p {
 }
 
 #profile-wrapper {
+  flex-wrap: wrap;
   gap: 24px;
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   width: 100%;
 }
 

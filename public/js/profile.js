@@ -574,7 +574,7 @@ personalInformationForm.addEventListener('submit', (e) => {
   const lastname = document.getElementById("lname").value.trim();
   const email = document.getElementById("email").value.trim();
   const phoneNumber = document.getElementById("phoneNumber").value.trim();
-  const username =  documenet.getElementById("profile-username").value.trim();
+  const username =  document.getElementById("profile-username").value.trim();
 
 
   const fnameError = document.getElementById("fnameError");
