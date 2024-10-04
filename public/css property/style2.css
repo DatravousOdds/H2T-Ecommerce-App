@@ -369,7 +369,7 @@ nav .search_box span:hover::after {
 
 .nav-items {
   position: absolute;
-  width: 100vw;
+  width: 100%; /* changed from 100vw */
   display: flex;
   justify-content: space-between;
 }
