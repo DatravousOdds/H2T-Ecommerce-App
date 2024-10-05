@@ -392,7 +392,7 @@
   }
 
   #prod-cards .pro {
-    width: 240px;
+    width: 100%;
     margin-right: 1rem;
     height: 353px;
   }
@@ -416,7 +416,7 @@
     row-gap: 0.7rem;
     column-gap: 0.7rem;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .image-custom {
@@ -440,7 +440,7 @@
 
   #product1 .pro {
     width: 100%;
-    min-width: 200px;
+    min-width: 170px;
     padding: 1px 1px;
     margin-right: 0px;
     margin-top: 0px;
@@ -510,7 +510,7 @@
     display: grid;
     row-gap: 1rem;
     column-gap: 1.2rem;
-    grid-template-columns: repeat(2, 52%);
+    grid-template-columns: repeat(2, 40%);
   }
 
   .product-card {

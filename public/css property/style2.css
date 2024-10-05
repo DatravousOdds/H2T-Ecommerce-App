@@ -1870,6 +1870,11 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
+
+  #product .pro {
+    width: 236px;
+  }
+
   #hero .hero-text-container {
     flex-direction: column;
   }
@@ -2216,7 +2221,7 @@ footer .rights {
   }
 
   #product1 .pro .product-image {
-    width: 185px;
+    width: 80%;
     height: 150px;
   }
   #product1 .pro img {
