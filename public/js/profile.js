@@ -1,4 +1,4 @@
-import { generateCountries } from "./global.js";
+import { generateCountries, validateForm } from "./global.js";
 
 
 // generate countries for select element
@@ -468,16 +468,21 @@ profileSection.forEach((section) => {
 
     btn.addEventListener("click", () => {
       // console.log("save button was click");
-      inputs.forEach((input) => {
-        input.disabled = true;
-        input.style.backgroundColor = "transparent";
-        input.style.border = "none";
-        input.style.boxShadow = "none";
-        input.style.padding = "0px 0px";
-      });
-      allActionButtons.forEach((action) => {
-        action.style.display = "none";
-      });
+      
+      
+        inputs.forEach((input) => {
+          input.disabled = true;
+          input.style.backgroundColor = "transparent";
+          input.style.border = "none";
+          input.style.boxShadow = "none";
+          input.style.padding = "0px 0px";
+        });
+        allActionButtons.forEach((action) => {
+          action.style.display = "none";
+        });
+
+      
+      
     });
   });
 
@@ -561,150 +566,12 @@ allTabs.forEach((tab) => {
 });
 
 const personalInformationForm = document.getElementById("personalInformation");
-console.log(personalInformationForm);
+
 const shippingInformationForm = document.getElementById("shippingInformation");
-console.log(shippingInformationForm);
-
-function setError(inputElement, errorElement, message) {
-  errorElement.textContent = message;
-  inputElement.classList.add("input-error");
-  errorElement.classList.add("error-msg");
-}
-
-function clearError(inputElement, errorElement) {
-  errorElement.textContent = "";
-  inputElement.classList.remove("input-error");
-  errorElement.classList.remove("error-msg");
-}
-
-function validateEmail(email) {
-  const emailPattern = "/^[^\s@]+@[^\s@]+\.[^\s@]+$/";
-  return emailPattern.test(email);
-}
 
 
-function validatePhone(phoneNumber) {
-  const pattern = "/^\d{3}-\d{3}-\d{4}$/";
-  return phonePattern.test(phoneNumber);
-}
-
+// Personal form
 personalInformationForm.addEventListener('submit', (e) => {
   e.preventDefault(); // prevents form submission for validation checks
-
-  console.log("form was submitted!");
-
-  const firstname = document.getElementById("fname").value.trim();
-  const lastname = document.getElementById("lname").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phoneNumber = document.getElementById("phoneNumber").value.trim();
-  const username =  document.getElementById("profile-username").value.trim();
-
-  const formValues =  {
-    firstname : firstname,
-    lastname : lastname,
-    email: email,
-    phoneNumber: phoneNumber,
-    username: username
-  }
-
-  const fnameError = document.getElementById("fnameError");
-  const lnameError = document.getElementById("lnameError");
-  const emailError = document.getElementById("emailError");
-  const phoneError = document.getElementById("phoneError");
-  const usernameError = document.getElementById("usernameError");
-
-  const errorElements = {
-    firstNameError: fnameError,
-    lastNameError: lnameError,
-    emailError: emailError,
-    phoneNumberError:phoneError,
-    userNameError: usernameError
-  }
-
-  
-
-  let hasErrors = false; // means there is not any errors
-
-  // Validate First Name
-  if (formValues.firstname === "") {
-    setError(document.getElementById("fname"), errorElements.firstNameError, "First name is required")
-    hasErrors = true;
-  } else {
-    clearError(document.getElementById("fname"), errorElements.firstNameError)
-   
-  }
-
-
-  // Validate Last Name
-   if (formValues.lastname === "") {
-      lnameError.textContent = "Last name is requiered.";
-      lnameError.classList.add("error-msg");
-      document.getElementById("lname").classList.add("input-error")
-      hasErrors = true;
-   } else {
-    lnameError.textContent = "";
-    lnameError.classList.remove("error-msg");
-    document.getElementById("lname").classList.remove("input-error")
-   }
-
-   // Vaildate Email
-   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;  // Validation this regex pattern later
-   if(!emailPattern.test(email)) {
-    emailError.textContent = "Please enter a valid email address";
-    emailError.classList.add("error-msg");
-    document.getElementById("email").classList.add("input-error")
-    hasErrors =  true;
-   } else {
-    emailError.textContent = "";
-    emailError.classList.remove("error-msg");
-    document.getElementById("email").classList.remove("input-error")
-    
-   }
-
-   // Validate Phone Number
-   const phonePattern = /^\d{3}-\d{3}-\d{4}$/;
-   if (!phonePattern.test(phoneNumber)) {
-    phoneError.textContent = "Phone number must be in the format 123-456-7890";
-    phoneError.classList.add("error-msg");
-    document.getElementById("phoneNumber").classList.add("input-error");
-    hasErrors = true;
-   } else {
-    phoneError.textContent = "";
-    phoneError.classList.remove("error-msg");
-    document.getElementById("phoneNumber").classList.remove("input-error");
-   }
-
-   if (username === "") {
-    usernameError.textContent = "Username is required";
-    usernameError.classList.add("error-msg");
-    document.getElementById("profile-username").classList.add("input-error");
-    hasErrors = true;
-
-   } else {
-    usernameError.textContent = "";
-    usernameError.classList.remove("error-msg");
-    username.classList.remove("input-error");
-    document.getElementById("profile-username").classList.remove("input-error");
-   }
-  
-  
-
-
-
-  // testing 
-  console.log(firstname);
-  console.log(lastname);
-  console.log(email);
-  console.log(phoneNumber);
-  console.log(username)
-
-
-  if (!hasErrors) {
-    console.log("submitting...")
-  } else {
-    inputs.forEach(input => {
-      input.disabled = false;
-    })
-  }
-
+  console.log(validateForm(personalInformationForm))
 })
