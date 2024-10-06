@@ -435,8 +435,8 @@ nav .search_box span:hover::after {
   border-radius: 0.25rem;
   position: relative;
   border-radius: 17px;
-  top: 10px;
-  left: 16rem;
+  top: 33px;
+  left: 9rem;
   z-index: 3;
   width: 50px;
   transition: 0.5s ease-in-out;
@@ -461,7 +461,7 @@ nav .search_box span:hover::after {
 
 /* home page */
 #hero .hero-text {
-  background-image: url(/images/shirt-bg.jpg);
+  background-image: url(/images/sneakerBg.jpg);
   height: 100vh;
   width: 100%;
   opacity: 0.85;
@@ -1661,6 +1661,15 @@ footer .rights {
 }
 
 @media (max-width: 1040px) {
+
+  .image-custom {
+    width: 70%;
+  }
+
+  .liked i {
+    font-size: 22px;
+  }
+
   nav .search_box {
     /* margin: auto 7rem; */
     width: 50%;
@@ -1871,8 +1880,12 @@ footer .rights {
 
 @media (max-width: 799px) {
 
+  .image-custom {
+    width: 70%;
+  }
+
   #product1 .pro {
-    width: 28%;
+    width:100%;
     height: 100%;
   }
 
@@ -2059,7 +2072,7 @@ footer .rights {
 
 @media (max-width: 477px) {
 
-
+ 
 
   #menu {
     width: 100%;
@@ -2251,6 +2264,10 @@ footer .rights {
     left: 4.96rem;
     z-index: 1;
     width: 0px;
+  }
+
+  .liked i {
+    font-size: 15px;
   }
 
   #prod-card-container {
