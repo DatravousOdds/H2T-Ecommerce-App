@@ -443,7 +443,7 @@ nav .search_box span:hover::after {
 }
 
 .liked i {
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: black;
 }
 
@@ -1871,6 +1871,11 @@ footer .rights {
 
 @media (max-width: 799px) {
 
+  #product1 .pro {
+    width: 28%;
+    height: 100%;
+  }
+
   #product .pro {
     width: 236px;
   }
@@ -2048,11 +2053,14 @@ footer .rights {
   }
 
   #product1 .pro-container {
-    justify-content: center;
+    justify-content: flex-start;
   }
 }
 
 @media (max-width: 477px) {
+
+
+
   #menu {
     width: 100%;
     height: 100%;
@@ -2104,9 +2112,6 @@ footer .rights {
     transform: scale(1);
   }
 
-  #product1 .pro {
-    width: 100%;
-  }
 }
 
 /* Screen for smartphones */
@@ -2217,11 +2222,11 @@ footer .rights {
   /* Home page */
 
   #product1 .pro {
-    width: 200px;
+    width: 160px;
   }
 
   #product1 .pro .product-image {
-    width: 80%;
+    width: 82%;
     height: 150px;
   }
   #product1 .pro img {
@@ -2243,7 +2248,7 @@ footer .rights {
   .liked {
     position: absolute;
     top: 0px;
-    left: 9rem;
+    left: 4.96rem;
     z-index: 1;
     width: 0px;
   }

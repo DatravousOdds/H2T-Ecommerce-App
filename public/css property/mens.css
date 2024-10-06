@@ -222,7 +222,7 @@
   padding: 0px 21px;
   height: auto;
   transition: height 0.3s ease-out;
-  width: 95%;
+  width: 57%;
   justify-content: space-between;
   font-size: 1rem;
 }
@@ -384,7 +384,7 @@
     row-gap: 0.7rem;
     column-gap: 0.7rem;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .product-card {
@@ -427,7 +427,7 @@
   .liked {
     top: 0px;
     position: absolute;
-    left: 12rem;
+    left: 10.75rem;
   }
 
   .liked i {
@@ -510,7 +510,7 @@
     display: grid;
     row-gap: 1rem;
     column-gap: 1.2rem;
-    grid-template-columns: repeat(2, 40%);
+    grid-template-columns: repeat(2, 45%);
   }
 
   .product-card {
