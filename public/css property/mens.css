@@ -420,14 +420,14 @@
   }
 
   .image-custom {
-    width: 175px;
+    width: 57%;
     height: 160px;
   }
 
   .liked {
-    top: 0px;
+    top: 18px;
     position: absolute;
-    left: 10.75rem;
+    left: 8rem;
   }
 
   .liked i {
@@ -501,16 +501,18 @@
   }
 
   #product-container .filter-container {
+    width: 100%;
     align-items: center;
     flex-direction: column;
     padding: 0px 0px;
   }
 
   #prod-cards {
+    width: 100%;
     display: grid;
     row-gap: 1rem;
     column-gap: 1.2rem;
-    grid-template-columns: repeat(2, 45%);
+    grid-template-columns: repeat(2, 49%);
   }
 
   .product-card {
@@ -530,7 +532,7 @@
   }
 
   .section-p1 {
-    padding: 0px 16px !important;
+    padding: 0px 0px !important;
   }
 
   /* Filters Options */
