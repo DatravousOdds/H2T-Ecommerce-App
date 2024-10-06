@@ -585,9 +585,46 @@ personalInformationForm.addEventListener('submit', (e) => {
 
   let hasErrors = false; // means there is not any errors
 
+  // Validate First Name
   if (firstname === "") {
-    fnameError.textContent = "Please input a username"
+    fnameError.textContent = "First name is required."
+    fnameError.classList.add("error-msg");
+    hasErrors = true;
+  } else {
+    fnameError.textContent = "";
+    fnameError.classList.remove("error-msg");
   }
+
+  // Validate Last Name
+   if (lastname === "") {
+      lnameError.textContent = "Last name is requiered.";
+      lnameError.classList.add("error-msg");
+      hasErrors = true;
+   } else {
+    lnameError.textContent = "";
+    lnameError.classList.remove("error-msg");
+   }
+
+   // Vaildate Email
+   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;  // Validation this regex pattern later
+   if(!emailPattern.test(email)) {
+    emailError.textContent = "Please enter a valid email address";
+    emailError.classList.add("error-msg");
+   } else {
+    emailPattern.textContent = "";
+    emailPattern.classList.remove("error-msg");
+   }
+
+   // Validate Phone Number
+   const phonePattern = /^\d{3}-\d{3}-\d{4}$/;
+   if (!phonePattern.test(phoneNumber)) {
+    phoneError.textContent = "Phone number must be in the format 123-456-7890";
+    phoneError.classList.add("error-msg");
+    hasErrors = true;
+   } else {
+    phoneError.textContent = "";
+    phoneError.classList.remove("error-msg");
+   }
   
   
 
