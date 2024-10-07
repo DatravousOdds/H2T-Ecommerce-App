@@ -493,11 +493,11 @@ profileSection.forEach((section) => {
         console.log(inputs);
 
         inputs.forEach((input) => {
-          // input.disabled = true;
-          // input.style.backgroundColor = "transparent";
-          // input.style.border = "none";
-          // input.style.boxShadow = "none";
-          // input.style.padding = "0px 0px";
+          input.disabled = true;
+          input.style.backgroundColor = "transparent";
+          input.style.border = "none";
+          input.style.boxShadow = "none";
+          input.style.padding = "0px 0px";
         });
         allActionButtons.forEach((action) => {
           action.style.display = "none";
