@@ -311,7 +311,8 @@
                 </div>
                 <div class="pfp-1">
                   <form action="#" id="shippingInformation">
-                    <label for="firstname">First Name</label>
+                    <div class="input-groups">
+                     <label for="firstname">First Name</label>
                     <input
                       type="text"
                       name="firstname"
@@ -319,8 +320,10 @@
                       placeholder="Your name.."
                       value="Sara"
                       disabled
-                    />
-                    <label for="lastname">Last Name</label>
+                    /> 
+                    </div>
+                    <div class="input-groups">
+                      <label for="lastname">Last Name</label>
                     <input
                       type="text"
                       name="lastname"
@@ -329,17 +332,23 @@
                       value="Almasi"
                       disabled
                     />
-                    <label for="country">Country</label>
+                    </div>
+                    <div class="input-groups">
+                      <label for="country">Country</label>
                     <select id="country" name="country" required>
                       <option value="">Select a country</option>
                     </select>
-                    <label for="address">Address</label>
+                    </div>
+                    <div class="input-groups">
+                     <label for="address">Address</label>
                     <input
                       type="text"
                       name="address"
                       id="address"
                       placeholder="Your address..."
-                    />
+                    /> 
+                    </div>
+                    
                     <div class="action-buttons"></div>
                     <button class="button-31 save-btn" id="save-shipping-info" type="submit">Save changes</button>
                     <button class="button-31 cancel-btn" type="reset">Cancel</button>
