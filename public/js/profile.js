@@ -502,6 +502,8 @@ profileSection.forEach((section) => {
         allActionButtons.forEach((action) => {
           action.style.display = "none";
         });
+      } else {
+        
       }
       
         
