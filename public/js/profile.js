@@ -1,4 +1,4 @@
-import { generateCountries, validateForm } from "./global.js";
+import { clearError, generateCountries, validateForm } from "./global.js";
 
 
 // generate countries for select element
@@ -42,6 +42,12 @@ const title = document.getElementById("title");
 const websiteFeedback = document.getElementById("website-feedback");
 const titleFeedback = document.getElementById("title-feedback");
 const websiteUrlDisplay = document.getElementById("website-link-display");
+
+// Forms
+const personalInformationForm = document.getElementById("personalInformation");
+const shippingInformationForm = document.getElementById("shippingInformation");
+
+
 
 // Profile actions: website link validation
 url.addEventListener("change", () => {
@@ -468,8 +474,7 @@ profileSection.forEach((section) => {
 
     btn.addEventListener("click", () => {
       // console.log("save button was click");
-      
-      
+      if (validateForm(personalInformationForm)) {
         inputs.forEach((input) => {
           input.disabled = true;
           input.style.backgroundColor = "transparent";
@@ -480,6 +485,9 @@ profileSection.forEach((section) => {
         allActionButtons.forEach((action) => {
           action.style.display = "none";
         });
+      }
+      
+        
 
       
       
@@ -528,6 +536,29 @@ profileSection.forEach((section) => {
         input.style.border = "none";
         input.style.boxShadow = "none";
         input.style.padding = "0px 0px";
+
+        document.getElementById("fname").classList.remove("input-error");
+        document.getElementById("lname").classList.remove("input-error");
+        document.getElementById("email").classList.remove("input-error");
+        document.getElementById("phoneNumber").classList.remove("input-error");
+        document.getElementById("profile-username").classList.remove("input-error");
+
+        if (document.getElementById("fnameError")) {
+          document.getElementById("fnameError").textContent = "";
+        }
+        if(document.getElementById("lname")) {
+          document.getElementById("lnameError").textContent = "";
+        }
+        if(document.getElementById("email")) {
+          document.getElementById("emailError").textContent = "";
+        }
+        if(document.getElementById("phoneNumber")) {
+          document.getElementById("phoneError").textContent = "";
+        }
+        if (document.getElementById("profile-username")) {
+          document.getElementById("usernameError").textContent = "";
+        }
+        
       });
       allActionButtons.forEach((action) => {
         action.style.display = "none";
@@ -564,10 +595,6 @@ allTabs.forEach((tab) => {
     tab.classList.add("active");
   });
 });
-
-const personalInformationForm = document.getElementById("personalInformation");
-
-const shippingInformationForm = document.getElementById("shippingInformation");
 
 
 // Personal form
