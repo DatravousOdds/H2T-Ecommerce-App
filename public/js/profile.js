@@ -36,6 +36,10 @@ const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
 const websiteLinks = document.getElementById("website-link-box");
 
+// Image upload validation and preview
+const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
+const feedback = document.getElementById("feedback");
+
 // Website Links
 const url = document.getElementById("website");
 const title = document.getElementById("title");
@@ -88,7 +92,6 @@ const closeBtn = document.querySelector(".close");
 // Hide bio by default
 bioTextarea.style.display = "none";
 
-
 let currentBio = bioTextarea.value || "";
 let currentUrl = url.value || "";
 let currentUrlTitle = title.value || "";
@@ -102,12 +105,8 @@ let isEditMode = false;
 
 bioTextarea.addEventListener("input", () => {
   const text = bioTextarea.value;
-  
-
   const words = text.trim().split(/\s+/).filter(Boolean);
-
   const wordCount = words.length;
-  // console.log("The amount word:", wordCount);
 
   wordCountDisplay.textContent = `${wordCount} / ${maxWords}`;
 
@@ -161,9 +160,7 @@ uploadBtn.addEventListener("click", () => {
   }
 });
 
-// Image upload validation and preview
-const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
-const feedback = document.getElementById("feedback");
+
 
 // console.log(feedback);
 
