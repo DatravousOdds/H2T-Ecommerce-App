@@ -491,9 +491,8 @@ profileSection.forEach((section) => {
 
   // Handle cancel button click
   cancelBtn.forEach((btn) => {
-    // console.log(btn);
     btn.addEventListener("click", () => {
-      // console.log("cancel button was clicked!");
+      console.log("The Id is:", btn.id);
 
       select.forEach((ele) => {
         ele.disabled = true;
@@ -501,35 +500,60 @@ profileSection.forEach((section) => {
 
       inputs.forEach((input) => {
         input.disabled = true;
-
-        // input-enabled
         input.style.backgroundColor = "transparent";
         input.style.border = "none";
         input.style.boxShadow = "none";
         input.style.padding = "0px 0px";
 
-        document.getElementById("fname").classList.remove("input-error");
-        document.getElementById("lname").classList.remove("input-error");
-        document.getElementById("email").classList.remove("input-error");
-        document.getElementById("phoneNumber").classList.remove("input-error");
-        document
-          .getElementById("profile-username")
-          .classList.remove("input-error");
+        if (btn.id === "cancel-personal-info") {
+          const inputIds = [
+            "fname",
+            "lname",
+            "email",
+            "phoneNumber",
+            "profile-username",
+          ];
 
-        if (document.getElementById("fnameError")) {
-          document.getElementById("fnameError").textContent = "";
-        }
-        if (document.getElementById("lname")) {
-          document.getElementById("lnameError").textContent = "";
-        }
-        if (document.getElementById("email")) {
-          document.getElementById("emailError").textContent = "";
-        }
-        if (document.getElementById("phoneNumber")) {
-          document.getElementById("phoneError").textContent = "";
-        }
-        if (document.getElementById("profile-username")) {
-          document.getElementById("usernameError").textContent = "";
+          inputIds.forEach((id) => {
+            const input = document.getElementById(id);
+            if (input) {
+              input.classList.remove("input-error");
+            }
+          });
+
+          const errorIds = [
+            "fnameError",
+            "lnameError",
+            "emailError",
+            "phoneError",
+            "usernameError",
+          ];
+
+          errorIds.forEach((id) => {
+            const errorElem = document.getElementById(id);
+            if (errorElem) errorElem.textContent = "";
+          });
+        } else if (btn.id === "cancel-shipping-info") {
+          const shippingFormIds = ["fname", "lname", "country", "address"];
+          const shippingErrorIds = [
+            "fnameError",
+            "lnameError",
+            "countryError",
+            "addressError",
+          ];
+
+          shippingFormIds.forEach((id) => {
+            const shippingInput = document.getElementById(id);
+            if (shippingInput) {
+              shippingInput.classList.remove("input-error");
+            }
+          });
+
+          shippingErrorIds.forEach((id) => {
+            const errorElem = document.getElementById(id);
+            console.log(errorElem);
+            if (errorElem) errorElem.textContent = "";
+          });
         }
       });
       allActionButtons.forEach((action) => {
