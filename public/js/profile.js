@@ -528,10 +528,13 @@ profileSection.forEach((section) => {
       } else if (btn.id === "cancel-shipping-info") {
         const inputs = section.querySelectorAll("input");
         const spans = section.querySelectorAll("span");
-        console.log(spans);
+        // console.log(spans);
         inputs.forEach((input) => {
           console.log(input);
           input.classList.remove("input-error");
+        });
+        spans.forEach((span) => {
+          span.textContent = "";
         });
 
         // shippingFormIds.forEach((id) => {
