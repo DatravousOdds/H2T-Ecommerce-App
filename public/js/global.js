@@ -57,13 +57,18 @@ export function validateForm(formElement) {
   let isValid = true; // Assume the form is valid initially
 
   // Get form fields
-  const firstname = formElement.querySelector("[name='fname']").value.trim();
-  const lastname = formElement.querySelector("[name='lname']").value.trim();
-  const email = formElement.querySelector("[name='email']").value.trim();
-  const phoneNumber = formElement.querySelector("[name='phoneNumber']").value.trim();
+  const firstname = formElement.querySelector("[name='fname']")?.value.trim();
+  const lastname = formElement.querySelector("[name='lname']")?.value.trim();
+  const email = formElement.querySelector("[name='email']")?.value.trim();
+  const phoneNumber = formElement.querySelector("[name='phoneNumber']")?.value.trim();
   const username = formElement.querySelector("[name='profile-username']")?.value.trim(); // Optional for shipping form
+  const country = formElement.querySelector("select")?.value.trim();
+  const address = formElement.querySelector("[name='address']")?.value.trim();
+
 
   // Get error message containers
+  const addressError = formElement.querySelector("#addressError");
+  const countryError = formElement.querySelector("#countryError");
   const fnameError = formElement.querySelector("#fnameError");
   const lnameError = formElement.querySelector("#lnameError");
   const emailError = formElement.querySelector("#emailError");
@@ -71,20 +76,22 @@ export function validateForm(formElement) {
   const usernameError = formElement.querySelector("#usernameError");
 
   // Clear previous errors
-  clearError(formElement.querySelector("[name='fname']"), fnameError);
-  clearError(formElement.querySelector("[name='lname']"), lnameError);
-  clearError(formElement.querySelector("[name='email']"), emailError);
-  clearError(formElement.querySelector("[name='phoneNumber']"), phoneError);
+  if (addressError) clearError(formElement.querySelector("[name='address']"), addressError)
+  if (fnameError) clearError(formElement.querySelector("[name='fname']"), fnameError);
+  if (lnameError) clearError(formElement.querySelector("[name='lname']"), lnameError);
+  if (emailError) clearError(formElement.querySelector("[name='email']"), emailError);
+  if (phoneError) clearError(formElement.querySelector("[name='phoneNumber']"), phoneError);
+  if (addressError) clearError(formElement.querySelector("select"), countryError);
   if (usernameError) clearError(formElement.querySelector("[name='profile-username']"), usernameError);
 
   // Validate First Name
-  if (firstname === "" || firstname === null) {
+  if (!firstname) {
     setError(formElement.querySelector("[name='fname']"), fnameError, "First name is required");
     isValid = false;
   }
 
   // Validate Last Name
-  if (lastname === "" || lastname === null) {
+  if (!lastname) {
     setError(formElement.querySelector("[name='lname']"), lnameError, "Last name is required");
     isValid = false;
   }
@@ -104,6 +111,18 @@ export function validateForm(formElement) {
   // Validate Username (only for personal information form)
   if (username !== undefined && username === "") {
     setError(formElement.querySelector("[name='profile-username']"), usernameError, "Username is required");
+    isValid = false;
+  }
+
+  // Validate Country
+  if (!country || country == "") {
+    setError(formElement.querySelector("select"), countryError, "Please select a country");
+    isValid = false;
+  }
+
+  // Validate Address
+  if (address === "") {
+    setError(formElement.querySelector("[name='address']"), addressError, "Please enter a valid address");
     isValid = false;
   }
 

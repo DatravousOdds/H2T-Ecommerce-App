@@ -470,8 +470,25 @@ profileSection.forEach((section) => {
     })
 
     btn.addEventListener("click", () => {
-      // console.log("save button was click");
-      if (validateForm(personalInformationForm)) {
+      
+      let currentForm = null;
+      
+      if(btn.id === "save-personal-info") {
+        currentForm = document.getElementById("personalInformation");
+      } else {
+        currentForm = document.getElementById("shippingInformation");
+      }
+
+
+      if(!currentForm) return // exit early
+
+
+
+      if (validateForm(currentForm)) {
+
+        const inputs = currentForm.querySelectorAll("input", "select");
+        console.log(inputs);
+
         inputs.forEach((input) => {
           input.disabled = true;
           input.style.backgroundColor = "transparent";
@@ -482,6 +499,8 @@ profileSection.forEach((section) => {
         allActionButtons.forEach((action) => {
           action.style.display = "none";
         });
+      } else {
+        
       }
       
         
@@ -528,7 +547,7 @@ profileSection.forEach((section) => {
       inputs.forEach((input) => {
         input.disabled = true;
 
-        // .input-enabled
+        // input-enabled
         input.style.backgroundColor = "transparent";
         input.style.border = "none";
         input.style.boxShadow = "none";
