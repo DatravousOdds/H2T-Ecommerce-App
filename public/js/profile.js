@@ -1,15 +1,10 @@
 import { clearError, generateCountries, validateForm } from "./global.js";
 
-
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
-  generateCountries(apiUrl, 'country');
-})
-
-
-
-
+  generateCountries(apiUrl, "country");
+});
 
 // Payment Information Section
 const dropdownSection = document.querySelectorAll(".dropdown-section");
@@ -18,9 +13,6 @@ const spanElement = document.getElementById("filter-icon");
 const profileSection = document.querySelectorAll(".profile-section");
 const hasFilterIcon =
   spanElement && spanElement.querySelector("i.fa-filter") !== null;
-
-
-
 
 // Bio Section
 const userProfileCard = profileSection[0];
@@ -51,12 +43,8 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
 
-
-
 // Profile actions: website link validation
 url.addEventListener("change", () => {
-  
-
   websiteFeedback.innerHTML = "";
   url.setCustomValidity("");
 
@@ -82,8 +70,6 @@ url.addEventListener("change", () => {
 
 // Review section
 const reviewModal = document.getElementById("reviews-modal");
-
-
 
 // see all reviews
 const seeAllReviewsBtn = document.getElementById("see-all-reviews");
@@ -116,21 +102,18 @@ bioTextarea.addEventListener("input", () => {
     wordCountDisplay.classList.add("error-msg");
 
     bioTextarea.setCustomValidity("You have exceeded the maximum of words");
-    
-    saveBioBtn.classList.add("disabled")
-    saveBioBtn.disabled = true;
 
+    saveBioBtn.classList.add("disabled");
+    saveBioBtn.disabled = true;
   } else if (wordCount <= 0) {
     wordCountDisplay.style.display = "none";
 
     // clear any error message
     bioTextarea.setCustomValidity("");
-
   } else {
-    wordCountDisplay.style.display = "flex"
+    wordCountDisplay.style.display = "flex";
     wordCountDisplay.classList.remove("error-msg");
-    
-    
+
     saveBioBtn.disabled = false;
 
     // clears the error message
@@ -142,32 +125,25 @@ bioTextarea.addEventListener("input", () => {
 seeAllReviewsBtn.addEventListener("click", () => {
   reviewModal.style.display = "flex";
   document.body.classList.add("no-scroll");
-
-  
 });
 
 closeBtn.addEventListener("click", () => {
-  
   reviewModal.style.display = "none";
   document.body.classList.remove("no-scroll");
 });
 
 // UserCard action: click
 uploadBtn.addEventListener("click", () => {
-  
   if (fileInput) {
     fileInput.click();
   }
 });
-
-
 
 // console.log(feedback);
 
 // UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0]; // Grabs the first img from the list
-  
 
   feedback.textContent = "";
 
@@ -176,7 +152,7 @@ fileInput.addEventListener("change", (e) => {
     profilePicture.src = event.target.result; // sets the profile picture
   };
 
-// TODO: create function to generate error
+  // TODO: create function to generate error
 
   if (file) {
     console.log(file.type);
@@ -223,7 +199,6 @@ fileInput.addEventListener("change", (e) => {
 
 // UserCard actions: edit
 updateBioBtn.addEventListener("click", () => {
-  
   bioTextarea.disabled = false;
   saveBioBtn.style.display = "inline"; // show the save button
   updateBioBtn.style.display = "none"; // removes edit button
@@ -244,7 +219,6 @@ updateBioBtn.addEventListener("click", () => {
 
 // UserProfile actions: remove img
 removeBtn.addEventListener("click", () => {
-  
   profilePicture.src = "/images/1.png";
 
   // Reset the file input to allow uploading the same image again
@@ -382,9 +356,7 @@ saveBioBtn.addEventListener("click", () => {
 });
 
 // Review actions : dropdown menu
-seeAllReviewsBtn.addEventListener("click", () => {
-  
-});
+seeAllReviewsBtn.addEventListener("click", () => {});
 /* 
     Selects all elements with class .dropdown-section 
     Loops through each dropdown-section to apply logic 
@@ -451,41 +423,30 @@ profileSection.forEach((section) => {
   const inputs = section.querySelectorAll("input");
   const select = section.querySelectorAll("select");
 
-
-  
-  select.forEach(ele => {
+  select.forEach((ele) => {
     // console.log(ele);
     ele.disabled = true;
-  })
-  
-
-  
-
+  });
 
   // Handle save button click
   saveBtn.forEach((btn) => {
-
-    select.forEach(ele => {
+    select.forEach((ele) => {
       ele.disabled = true;
-    })
+    });
 
     btn.addEventListener("click", () => {
-      
+      console.log(btn.id);
       let currentForm = null;
-      
-      if(btn.id === "save-personal-info") {
+
+      if (btn.id === "save-personal-info") {
         currentForm = document.getElementById("personalInformation");
       } else {
         currentForm = document.getElementById("shippingInformation");
       }
 
-
-      if(!currentForm) return // exit early
-
-
+      if (!currentForm) return; // exit early
 
       if (validateForm(currentForm)) {
-
         const inputs = currentForm.querySelectorAll("input", "select");
         console.log(inputs);
 
@@ -500,13 +461,7 @@ profileSection.forEach((section) => {
           action.style.display = "none";
         });
       } else {
-        
       }
-      
-        
-
-      
-      
     });
   });
 
@@ -515,9 +470,9 @@ profileSection.forEach((section) => {
     btn.addEventListener("click", () => {
       // console.log("edit button was clicked!");
 
-      select.forEach(element => {
+      select.forEach((element) => {
         element.disabled = false;
-      })
+      });
 
       inputs.forEach((input) => {
         input.disabled = false;
@@ -540,9 +495,9 @@ profileSection.forEach((section) => {
     btn.addEventListener("click", () => {
       // console.log("cancel button was clicked!");
 
-      select.forEach(ele => {
+      select.forEach((ele) => {
         ele.disabled = true;
-      })
+      });
 
       inputs.forEach((input) => {
         input.disabled = true;
@@ -557,24 +512,25 @@ profileSection.forEach((section) => {
         document.getElementById("lname").classList.remove("input-error");
         document.getElementById("email").classList.remove("input-error");
         document.getElementById("phoneNumber").classList.remove("input-error");
-        document.getElementById("profile-username").classList.remove("input-error");
+        document
+          .getElementById("profile-username")
+          .classList.remove("input-error");
 
         if (document.getElementById("fnameError")) {
           document.getElementById("fnameError").textContent = "";
         }
-        if(document.getElementById("lname")) {
+        if (document.getElementById("lname")) {
           document.getElementById("lnameError").textContent = "";
         }
-        if(document.getElementById("email")) {
+        if (document.getElementById("email")) {
           document.getElementById("emailError").textContent = "";
         }
-        if(document.getElementById("phoneNumber")) {
+        if (document.getElementById("phoneNumber")) {
           document.getElementById("phoneError").textContent = "";
         }
         if (document.getElementById("profile-username")) {
           document.getElementById("usernameError").textContent = "";
         }
-        
       });
       allActionButtons.forEach((action) => {
         action.style.display = "none";
@@ -612,9 +568,13 @@ allTabs.forEach((tab) => {
   });
 });
 
-
 // Personal form
-personalInformationForm.addEventListener('submit', (e) => {
+personalInformationForm.addEventListener("submit", (e) => {
   e.preventDefault(); // prevents form submission for validation checks
-  console.log(validateForm(personalInformationForm))
-})
+  console.log(validateForm(personalInformationForm));
+});
+
+shippingInformationForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  console.log(validateForm(shippingInformationForm));
+});
