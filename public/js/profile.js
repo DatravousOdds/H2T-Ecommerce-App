@@ -4,6 +4,7 @@ import { clearError, generateCountries, validateForm } from "./global.js";
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
   generateCountries(apiUrl, "country");
+  generateCountries(apiUrl, "state-select");
 });
 
 // Payment Information Section
@@ -494,68 +495,85 @@ profileSection.forEach((section) => {
     btn.addEventListener("click", () => {
       console.log("The Id is:", btn.id);
 
-      select.forEach((ele) => {
-        ele.disabled = true;
-      });
+      if (btn.id === "cancel-personal-info") {
+        const personalFormIds = [
+          "fname",
+          "lname",
+          "email",
+          "phoneNumber",
+          "profile-username",
+        ];
 
+        personalFormIds.forEach((id) => {
+          const input = document.getElementById(id);
+          if (input) {
+            input.classList.remove("input-error");
+          }
+        });
+
+        const personalErrorIds = [
+          "fnameError",
+          "lnameError",
+          "emailError",
+          "phoneError",
+          "usernameError",
+        ];
+
+        personalErrorIds.forEach((id) => {
+          const errorElem = document.getElementById(id);
+          if (errorElem) {
+            errorElem.textContent = "";
+          }
+        });
+      } else if (btn.id === "cancel-shipping-info") {
+        const inputs = section.querySelectorAll("input");
+        const spans = section.querySelectorAll("span");
+        console.log(spans);
+        inputs.forEach((input) => {
+          console.log(input);
+          input.classList.remove("input-error");
+        });
+
+        // shippingFormIds.forEach((id) => {
+        //   const input = document.getElementById(id);
+        //   if (input) {
+        //     input.classList.remove("input-error");
+        //   } else {
+        //     console.log("Could not find input with ID:", id);
+        //   }
+        // });
+
+        const shippingErrorIds = [
+          "fnameError",
+          "lnameError",
+          "countryError",
+          "addressError",
+        ];
+
+        shippingErrorIds.forEach((id) => {
+          const errorElem = document.getElementById(id);
+
+          if (errorElem) {
+            errorElem.innerText = "";
+          } else {
+            console.log("Could not find input with ID:", id);
+          }
+        });
+      }
+
+      // Disable select elements
+      select.forEach((ele) => (ele.disabled = true));
+
+      // Reset input fields (remove custom styles, etc.)
       inputs.forEach((input) => {
         input.disabled = true;
         input.style.backgroundColor = "transparent";
         input.style.border = "none";
         input.style.boxShadow = "none";
         input.style.padding = "0px 0px";
-
-        if (btn.id === "cancel-personal-info") {
-          const inputIds = [
-            "fname",
-            "lname",
-            "email",
-            "phoneNumber",
-            "profile-username",
-          ];
-
-          inputIds.forEach((id) => {
-            const input = document.getElementById(id);
-            if (input) {
-              input.classList.remove("input-error");
-            }
-          });
-
-          const errorIds = [
-            "fnameError",
-            "lnameError",
-            "emailError",
-            "phoneError",
-            "usernameError",
-          ];
-
-          errorIds.forEach((id) => {
-            const errorElem = document.getElementById(id);
-            if (errorElem) errorElem.textContent = "";
-          });
-        } else if (btn.id === "cancel-shipping-info") {
-          const shippingFormIds = ["fname", "lname", "country", "address"];
-          const shippingErrorIds = [
-            "fnameError",
-            "lnameError",
-            "countryError",
-            "addressError",
-          ];
-
-          shippingFormIds.forEach((id) => {
-            const shippingInput = document.getElementById(id);
-            if (shippingInput) {
-              shippingInput.classList.remove("input-error");
-            }
-          });
-
-          shippingErrorIds.forEach((id) => {
-            const errorElem = document.getElementById(id);
-            console.log(errorElem);
-            if (errorElem) errorElem.textContent = "";
-          });
-        }
       });
+
+      // Hide cta button
       allActionButtons.forEach((action) => {
         action.style.display = "none";
       });

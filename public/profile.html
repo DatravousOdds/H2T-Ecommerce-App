@@ -324,7 +324,9 @@
                 <div class="pfp-1">
                   <form action="#" id="shippingInformation">
                     <div class="input-groups">
-                      <label for="fname">First Name</label>
+                      <label for="fname"
+                        >First Name <span class="required">*</span></label
+                      >
                       <input
                         type="text"
                         name="fname"
@@ -336,7 +338,9 @@
                       <span id="fnameError"></span>
                     </div>
                     <div class="input-groups">
-                      <label for="lname">Last Name</label>
+                      <label for="lname"
+                        >Last Name <span class="required">*</span></label
+                      >
                       <input
                         type="text"
                         name="lname"
@@ -348,14 +352,18 @@
                       <span id="lnameError"></span>
                     </div>
                     <div class="input-groups">
-                      <label for="country">Country</label>
+                      <label for="country"
+                        >Country <span class="required">*</span></label
+                      >
                       <select id="country" name="country" required>
                         <option value="">Select a country</option>
                       </select>
                       <span id="countryError"></span>
                     </div>
                     <div class="input-groups">
-                      <label for="address">Address</label>
+                      <label for="address"
+                        >Address <span class="required">*</span></label
+                      >
                       <input
                         type="text"
                         name="address"
@@ -363,6 +371,67 @@
                         placeholder="Your address..."
                       />
                       <span id="addressError"></span>
+                    </div>
+
+                    <div class="input-groups">
+                      <label for="address">Address 2</label>
+                      <input
+                        type="text"
+                        name="address-two"
+                        id="address-two"
+                        placeholder="Your address..."
+                      />
+                      <span id="addressTwoError"></span>
+                    </div>
+
+                    <div class="input-groups">
+                      <label for="address"
+                        >City <span class="required">*</span></label
+                      >
+                      <input
+                        type="text"
+                        name="city"
+                        id="city"
+                        placeholder="Your address..."
+                      />
+                      <span id="cityError"></span>
+                    </div>
+
+                    <div class="form-group">
+                      <div class="input-groups">
+                        <label for="state-select"
+                          >State/Region <span class="required">*</span></label
+                        >
+                        <select id="state-select" name="state-region" required>
+                          <option value="">Select</option>
+                        </select>
+                      </div>
+
+                      <div class="input-groups">
+                        <label for="postal"
+                          >Postal Code <span class="required">*</span></label
+                        >
+                        <input
+                          type="number"
+                          name="postal"
+                          id="postal"
+                          placeholder="Enter zip code"
+                        />
+                        <span id="postalError"></span>
+                      </div>
+                    </div>
+
+                    <div class="input-groups">
+                      <label for="address"
+                        >Phone Number <span class="required">*</span></label
+                      >
+                      <input
+                        type="tel"
+                        name="phoneNumber"
+                        id="phoneNumber"
+                        placeholder="Enter phone number..."
+                      />
+                      <span id="phoneError"></span>
                     </div>
 
                     <div class="action-buttons">
