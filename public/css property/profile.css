@@ -166,6 +166,15 @@ p {
   align-items: center;
 }
 
+.required {
+  color: red;
+}
+
+.form-group {
+  gap: 1rem;
+  display: flex;
+}
+
 .edit-btn {
   border: transparent;
   background-color: #000;
@@ -258,14 +267,14 @@ p {
   display: none;
 }
 
-#bio-section #website, #title {
+#bio-section #website,
+#title {
   padding: 5px;
   width: 100%;
   border-radius: 8px;
   border: 1px solid #d6d6d6;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: border-color 0.3s ease, box-shadow 0.3s ease; /* smooth transition */
-  
 }
 
 #bio-section:focus {
@@ -279,13 +288,13 @@ p {
   font-weight: 500;
 }
 
-
 #bio-section #website-link-box {
   width: 100%;
   padding: 12px 0px;
 }
 
-.website-input-container, .title-input-container {
+.website-input-container,
+.title-input-container {
   padding: 5px;
 }
 
@@ -297,21 +306,20 @@ p {
 }
 
 .shopify {
-  color: #95BF46;
+  color: #95bf46;
 }
 
 .facebook {
-  color:#0765FF;
+  color: #0765ff;
 }
 
 .instagram {
-  color: #DB0C7A;
+  color: #db0c7a;
 }
 
 .amazon {
-  color: #F59400;
+  color: #f59400;
 }
- 
 
 #cards-on-file {
   display: flex;
@@ -470,15 +478,16 @@ p {
 }
 
 #feedback {
- text-align: center;
- text-transform: capitalize; 
+  text-align: center;
+  text-transform: capitalize;
 }
 
 #feedback.error {
   color: red;
 }
 
-#feedback i, #website-feedback i{
+#feedback i,
+#website-feedback i {
   padding: 5px;
 }
 
@@ -938,22 +947,17 @@ h6 {
   font-size: 1.5rem;
 }
 
-
 /* Style for the social media icon */
 .close-icon {
   font-size: 22px;
   cursor: pointer;
   color: #000;
-  padding:  5px 8px;
+  padding: 5px 8px;
   transition: 0.3s ease-in-out;
   border-radius: 25px;
 }
 
-
-
-
 /* The Modal (background) */
-
 
 /* Disable body scroll */
 .no-scroll {
@@ -971,7 +975,6 @@ h6 {
   height: 100vh;
   overflow-y: hidden;
   background-color: rgba(0, 0, 0, 0.7);
-
 }
 
 .review-menu h2 {
@@ -997,7 +1000,7 @@ h6 {
 
 .review-content {
   max-height: 685px;
-  border-radius: 12px; 
+  border-radius: 12px;
   background-color: #fefefe;
   margin: 15% auto;
   padding: 20px;
@@ -1007,7 +1010,6 @@ h6 {
   max-width: 600px;
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
-
 }
 
 .review-menu .close {
@@ -1017,10 +1019,10 @@ h6 {
   /* padding: 10px; */
   /* background-color: #000; */
   font-weight: bold;
-  
 }
 
-.close:hover, .close:focus {
+.close:hover,
+.close:focus {
   color: black;
   text-decoration: none;
   cursor: pointer;
@@ -1028,11 +1030,7 @@ h6 {
 
 .close-icon:hover {
   background-color: #d6d6d6;
-  
 }
-
-
-
 
 /* Ulities Classes */
 
@@ -1253,8 +1251,6 @@ h6 {
   display: block;
 }
 
-
-
 .stmt {
   display: flex;
   justify-content: space-between;
@@ -1297,7 +1293,10 @@ h6 {
   padding: "0px 0px";
 }
 
-.pfp-1 input[type="text"], .pfp-1 input[type="email"], input[type="tel"] {
+.pfp-1 input[type="text"],
+.pfp-1 input[type="email"],
+input[type="tel"],
+input[type="number"] {
   width: 100%;
   /* padding: 12px 20px; */
   margin: 8px 0;

@@ -3,14 +3,17 @@ export const generateCountries = (apiUrl, selectId) => {
   fetch(apiUrl)
     .then((res) => res.json())
     .then((data) => {
-      console.log(data);
       const select = document.getElementById(selectId);
+
+      // sorts countries
+      const sortCountries = data.sort((a, b) => {
+        return a.name.common.localeCompare(b.name.common);
+      });
 
       // Check if there is an select element
       if (select) {
-        data.forEach((country) => {
+        sortCountries.forEach((country) => {
           const option = document.createElement("option");
-
           option.value = country.cca2;
           option.textContent = country.name.common;
           select.appendChild(option);
@@ -61,6 +64,7 @@ export function validateForm(formElement) {
   const country = formElement.querySelector("[name='country']")?.value.trim();
   const addressInput = formElement.querySelector("[name='address']");
   const address = addressInput?.value.trim();
+  const city = formElement.querySelector("[name='city']")?.value.trim();
 
   // Get error message containers
   const addressError = formElement.querySelector("#addressError");
@@ -70,6 +74,7 @@ export function validateForm(formElement) {
   const emailError = formElement.querySelector("#emailError");
   const phoneError = formElement.querySelector("#phoneError");
   const usernameError = formElement.querySelector("#usernameError");
+  const cityError = formElement.querySelector("#cityError");
 
   // Clear previous errors
   if (addressError)
@@ -89,6 +94,8 @@ export function validateForm(formElement) {
       formElement.querySelector("[name='profile-username']"),
       usernameError
     );
+  if (cityError)
+    clearError(formElement.querySelector("[name='city']"), cityError);
 
   // Validate First Name
   if (!firstname) {
@@ -142,6 +149,16 @@ export function validateForm(formElement) {
 
   // Validate Country
   if (country && country === "") {
+    setError(
+      formElement.querySelector("[name='country']"),
+      countryError,
+      "Please select a country"
+    );
+    isValid = false;
+  }
+
+  // Validate City
+  if (city && city === "") {
     setError(
       formElement.querySelector("[name='country']"),
       countryError,
