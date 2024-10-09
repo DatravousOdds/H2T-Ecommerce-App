@@ -461,8 +461,8 @@ p {
 }
 
 .input-error {
-  outline: 2px solid red;
-  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  outline: 1px solid red;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
 }
 
 .feedback {
