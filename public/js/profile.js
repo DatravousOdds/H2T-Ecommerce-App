@@ -526,26 +526,25 @@ profileSection.forEach((section) => {
           }
         });
       } else if (btn.id === "cancel-shipping-info") {
-        const inputs = section.querySelectorAll("input");
-        const spans = section.querySelectorAll("span");
-        // console.log(spans);
-        inputs.forEach((input) => {
-          console.log(input);
-          input.classList.remove("input-error");
-        });
+        const shippingForm = document.getElementById("shippingInformation")
+
+        const inputs = shippingForm.querySelectorAll("input");
+        const spans = shippingForm.querySelectorAll("span");
+        const selects = shippingForm.querySelectorAll("select");
+
+        selects.forEach(select => select.classList.remove("input-error"))
+        inputs.forEach((input) => input.classList.remove("input-error"));
         spans.forEach((span) => {
-          span.textContent = "";
+          console.log(span.id)
+          if (span.id === "fnameError") span.textContent = "";
+          if (span.id === "lnameError") span.textContent = "";
+          if (span.id === "addressError") span.textContent = "";
+          if (span.id === "cityError") span.textContent = "";
+          if (span.id === "postalError") span.textContent = "";
+          if (span.id === "phoneError") span.textContent = "";
         });
 
-        // shippingFormIds.forEach((id) => {
-        //   const input = document.getElementById(id);
-        //   if (input) {
-        //     input.classList.remove("input-error");
-        //   } else {
-        //     console.log("Could not find input with ID:", id);
-        //   }
-        // });
-
+        
         const shippingErrorIds = [
           "fnameError",
           "lnameError",

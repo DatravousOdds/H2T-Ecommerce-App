@@ -66,6 +66,7 @@ export function validateForm(formElement) {
   const address = addressInput?.value.trim();
   const city = formElement.querySelector("[name='city']")?.value.trim();
   const postal = formElement.querySelector("[name='postal']")?.value.trim();
+  const stateSelect = formElement.querySelector("[name='state-region']")
 
   // Get error message containers
   const addressError = formElement.querySelector("#addressError");
@@ -77,6 +78,7 @@ export function validateForm(formElement) {
   const usernameError = formElement.querySelector("#usernameError");
   const cityError = formElement.querySelector("#cityError");
   const postalError = formElement.querySelector("#postalError");
+  const stateError = formElement.querySelector("stateError")
 
   // Clear previous errors
   if (addressError)
@@ -100,6 +102,7 @@ export function validateForm(formElement) {
     clearError(formElement.querySelector("[name='city']"), cityError);
   if (postalError)
     clearError(formElement.querySelector("[name='postal']"), postalError);
+  if(stateError) clearError(formElement.querySelector("[name='state-region']"), stateError);
 
   // Validate First Name
   if (!firstname) {
@@ -159,6 +162,12 @@ export function validateForm(formElement) {
       "Please select a country"
     );
     isValid = false;
+  }
+
+  // Validate state-region
+  if(!stateSelect) {
+    setError(formElement.querySelector("[name='state-region']"),
+  stateError, "Please select the state")
   }
 
   // Validate City
