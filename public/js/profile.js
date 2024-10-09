@@ -429,7 +429,7 @@ profileSection.forEach((section) => {
     ele.disabled = true;
   });
 
-  // Handle save button click
+  // Handle save action for form
   saveBtn.forEach((btn) => {
     select.forEach((ele) => {
       ele.disabled = true;
@@ -439,16 +439,20 @@ profileSection.forEach((section) => {
       console.log(btn.id);
       let currentForm = null;
 
-      if (btn.id === "save-personal-info") {
-        currentForm = document.getElementById("personalInformation");
-      } else {
-        currentForm = document.getElementById("shippingInformation");
-      }
+      // if (btn.id === "save-personal-info") {
+      //   currentForm = document.getElementById("personalInformation");
+      // } else {
+      //   currentForm = document.getElementById("shippingInformation");
+      // }
+
+      currentForm = btn.id === "save-personal-info"
+       ? document.getElementById("personalInformation")
+       : document.getElementById("shippingInformation");
 
       if (!currentForm) return; // exit early
 
       if (validateForm(currentForm)) {
-        const inputs = currentForm.querySelectorAll("input", "select");
+        const inputs = currentForm.querySelectorAll("input");
         console.log(inputs);
 
         inputs.forEach((input) => {
