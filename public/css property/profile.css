@@ -265,6 +265,7 @@ p {
 
 #bio-section .btn-wrapper {
   display: none;
+  flex-direction: column;
 }
 
 #bio-section #website,
@@ -463,6 +464,8 @@ p {
 .input-error {
   outline: 1px solid red;
   box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+  background-color: #FEF6F6 !important;
+  
 }
 
 .feedback {
@@ -1037,6 +1040,7 @@ h6 {
 .action-buttons {
   display: flex;
   justify-content: space-between;
+  padding: 12px 0px;
 }
 
 .inline {
