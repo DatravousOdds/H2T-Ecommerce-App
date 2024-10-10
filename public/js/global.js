@@ -48,6 +48,15 @@ export function validatePhone(phoneNumber) {
   return phonePattern.test(phoneNumber);
 }
 
+export function validateAddress(address) {
+  return address.length > 5
+}
+
+export function validatePostalCode(postalCode) {
+  const postalRegex = /^\d{5}(-\d{4})?$/; // Validates 12345 or 12345-6789
+  return postalRegex.test(postalCode);
+}
+
 export function validateForm(formElement) {
   let isValid = true; // Assume the form is valid initially
 
@@ -142,6 +151,7 @@ export function validateForm(formElement) {
       phoneError,
       "Phone number must be in the format 123-456-7890"
     )
+    isValid = false;
   } else if (phoneNumber && !validatePhone(phoneNumber)) {
     setError(
       formElement.querySelector("[name='phoneNumber']"),
@@ -198,6 +208,12 @@ export function validateForm(formElement) {
       "Please enter a postal code"
     );
 
+    isValid = false;
+  } else if (postal && !validatePostalCode(postal)) {
+    setError(formElement.querySelector("[name='postal']"),
+    postalError,
+    "Please enter a valid postal code"
+  );
     isValid = false;
   }
 

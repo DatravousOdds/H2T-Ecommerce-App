@@ -171,7 +171,7 @@
                       >
                         <div class="website-input-container">
                           <label for="website" name="website"> Website: </label>
-                          <input type="url" id="website" required />
+                          <input type="url" id="website" placeholder="https:://example.com" required />
                           <!-- Feedback for website url input -->
                           <div id="website-feedback" class="error-msg"></div>
                         </div>
@@ -332,7 +332,7 @@
                         name="fname"
                         id="fname"
                         placeholder="Your name.."
-                        value="Sara"
+                        value=""
                         disabled
                       />
                       <span id="fnameError"></span>
@@ -346,7 +346,7 @@
                         name="lname"
                         id="lname"
                         placeholder="Your last name..."
-                        value="Almasi"
+                        value=""
                         disabled
                       />
                       <span id="lnameError"></span>
@@ -405,7 +405,7 @@
                         <select id="state-select" name="state-region" required>
                           <option value="">Select</option>
                         </select>
-                        <div id="stateError"></div>
+                        <span id="stateError"></span>
                       </div>
 
                       <div class="input-groups">

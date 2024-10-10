@@ -546,6 +546,7 @@ profileSection.forEach((section) => {
           if (span.id === "cityError") span.textContent = "";
           if (span.id === "postalError") span.textContent = "";
           if (span.id === "phoneError") span.textContent = "";
+          if(span.id === "stateError") span.textContent = "";
         });
 
         
