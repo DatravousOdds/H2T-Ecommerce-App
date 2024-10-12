@@ -1,4 +1,8 @@
+
 import { clearError, generateCountries, validateForm } from "./global.js";
+
+
+
 
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
@@ -401,10 +405,25 @@ smallDropdownSection.forEach((smallMenu) => {
   const yearHeader = smallMenu.querySelector(".dropdown-header");
   const yearIcon = smallMenu.querySelector(".dropdown-icon i");
   const yearMenu = smallMenu.querySelector(".year-dropdown");
+  const options = smallMenu.querySelectorAll("#list .options");
+  const selectedYear = smallMenu.querySelector(".selected-year");
+
+  
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      
+      const selectValue = opt.textContent;
+      selectedYear.textContent = selectValue;
+
+      // function that filters by the selected year
+
+    })
+  })
 
   yearHeader.addEventListener("click", () => {
     // Toggle the click dropdown menu
     yearMenu.classList.toggle("open");
+
 
     // Toggle rotation
     if (yearMenu.classList.contains("open")) {
@@ -593,11 +612,11 @@ profileSection.forEach((section) => {
   });
 });
 
+
 // Profile Page actions: navigate
 allTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     const tabId = tab.getAttribute("data-tab");
-    tab.classList.add("active");
 
     // Remove active from all other tabs
     allTabs.forEach((btn) => {
@@ -605,19 +624,24 @@ allTabs.forEach((tab) => {
     });
 
     // Hide all tab content
-    document.querySelectorAll(".tab").forEach((t) => {
-      t.classList.remove("active");
+    document.querySelectorAll(".tab").forEach((content) => {
+      content.classList.remove("active");
     });
 
-    // Show the clicked tab content
-    document.getElementById(tabId).classList.add("active");
+   tab.classList.add("active");
+   document.getElementById(tabId).classList.add("active");
 
-    // Add active class to the current tab
-    tab.classList.add("active");
+
+    // Storage active tab in localStorage
+    localStorage.setItem("activeTab", tabId);
+   
+
+
+    
   });
 });
 
-// Personal form
+
 personalInformationForm.addEventListener("submit", (e) => {
   e.preventDefault(); // prevents form submission for validation checks
   console.log(validateForm(personalInformationForm));
