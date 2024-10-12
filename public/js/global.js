@@ -225,3 +225,14 @@ export function validateForm(formElement) {
 
   return isValid; // Return true if valid, false if there are errors
 }
+
+export function closeDropdown(event, dropdownId, headerId) {
+  const dropdownContent = document.getElementById(dropdownId);
+  const header = document.getElementById(headerId);
+
+  const isClickInsideDropdown =  dropdownContent.contains(event.target) || header.contains(event.target);
+
+  if (!isClickInsideDropdown) {
+    dropdownContent.classList.remove("open");
+  }
+}
