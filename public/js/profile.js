@@ -1,5 +1,6 @@
 
 import { clearError, generateCountries, validateForm } from "./global.js";
+import { closeDropdown } from "./global.js";
 
 
 
@@ -411,7 +412,7 @@ smallDropdownSection.forEach((smallMenu) => {
   
   options.forEach(opt => {
     opt.addEventListener('click', () => {
-      
+
       const selectValue = opt.textContent;
       selectedYear.textContent = selectValue;
 
@@ -433,6 +434,17 @@ smallDropdownSection.forEach((smallMenu) => {
     }
   });
 });
+
+
+
+
+document.addEventListener('click', (event) =>{
+  closeDropdown(event, "select-year", "year-header")
+  
+  
+})
+
+
 
 // Profile actions: edit, save, cancel
 profileSection.forEach((section) => {
