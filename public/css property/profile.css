@@ -679,7 +679,6 @@ p {
 #profile-wrapper {
   flex-wrap: wrap;
   gap: 24px;
-  display: flex;
   /* justify-content: space-between; */
   width: 100%;
 }
@@ -688,21 +687,31 @@ p {
   max-width: 975px;
   width: 100%;
   height: 100%;
-  border: 1px solid #d9d9d9;
+  /* border: 1px solid #d9d9d9; */
   border-radius: 12px;
   display: flex;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  padding: 10px 24px;
   /* box-shadow: 0px 4px 16px 0px #27313a4a; */
 }
 
 .inner-wrapper {
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  padding: 10px 24px;
   max-width: 975px;
   width: 100%;
-  border: 2px solid #d9d9d9;
+  /* border: 2px solid #d9d9d9; */
   margin: 20px 20px;
   border-radius: 12px;
-  padding: 10px;
+  padding: 12px 24px;
   /* transition: 0.5s ease-in-out; */
 }
+
+.inner-wrapper i {
+  cursor: pointer;
+}
+
+
 
 .inner-wrapper #payouts {
   display: flex;
@@ -842,9 +851,10 @@ h6 {
 }
 
 .card-wrapper {
+   box-shadow:rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   /* box-shadow: 0px 4px 16px 0px #27313a4a; */
   border-radius: 4px;
-  border: 1px solid #d9d9d9;
+  /* border: 1px solid #d9d9d9; */
   padding: 10px;
   margin: 20px;
   display: flex;
@@ -1288,21 +1298,34 @@ h6 {
   background-color: "#e0e0e0";
   border: "#b0b0b0";
   padding: "12px 20px";
+ 
 }
+
+
 
 .input-enabled {
   background-color: "transparent";
   border: "none";
   box-shadow: "none";
   padding: "0px 0px";
+  
 }
+
+
+.profile-section {
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  padding: 10px 24px;
+  border-radius: 12px;
+  align-items: center;
+}
+
 
 .pfp-1 input[type="text"],
 .pfp-1 input[type="email"],
-input[type="tel"],
+.pfp-1 input[type="tel"],
 input[type="number"] {
   width: 100%;
-  /* padding: 12px 20px; */
+  padding: 12px 20px;
   margin: 8px 0;
   background-color: transparent;
   display: inline-block;
@@ -1330,7 +1353,11 @@ input[type="number"] {
   padding-left: 1px;
 }
 
+
+
 .dropdown-menu.active {
+  border: none;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   position: relative;
   display: flex;
   opacity: 1;
