@@ -1523,6 +1523,11 @@ input[type="number"] {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+
+  .inner-wrapper {
+    margin: 15px;
+  }
+
   #newsletter .newstext,
   #newsletter .form {
     padding: var(--padding-medium);
