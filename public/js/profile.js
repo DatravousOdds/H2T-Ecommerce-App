@@ -6,6 +6,7 @@ import { closeDropdown } from "./global.js";
 
 
 
+
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
@@ -23,7 +24,7 @@ const hasFilterIcon =
 const setDefaultCard = document.getElementById("set_default_card");
 const defaultTag = document.querySelector(".default-card");
 const cardWrappers = document.querySelectorAll(".payment-card")
-const editCards =  document.querySelectorAll(".edit-card");
+const actions =  document.querySelectorAll(".edit-card");
 
 
 
@@ -58,6 +59,12 @@ const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
 
 
+console.log(actions)
+
+actions.forEach(action => {
+  console.log(action)
+})
+
 function createDefaultBtn(parentElement, e) {
   const parentContainer = e.target.closest(parentElement);
 
@@ -74,15 +81,6 @@ function createDefaultBtn(parentElement, e) {
   }
 }
 
-editCards.forEach(btn => {
-  
-  if (btn) {
-    btn.addEventListener("click", (event) => {
-    
-      createDefaultBtn("edit-container", event);
-    })
-  }
-})
 
 setDefaultCard.addEventListener("click", () => {
   console.log("set default was clicked!")
@@ -99,7 +97,7 @@ setDefaultCard.addEventListener("click", () => {
   });
 
   // 3. clicked payment container
-  const clickedCard = event.target.closest(".card-wrapper");
+  const clickedCard = setDefaultCard.closest(".card-wrapper");
   
 
   if (clickedCard) {
@@ -111,13 +109,13 @@ setDefaultCard.addEventListener("click", () => {
       const newDefaultCardTag = document.createElement("span");
       newDefaultCardTag.classList.add("default-card");
       newDefaultCardTag.textContent = "Default";
-  
-      
       paymentCardDiv.appendChild(newDefaultCardTag);
     }
 
     setDefaultCard.remove();
     document.querySelector(".divider").remove();
+
+    createDefaultBtn(".edit-container", { target: clickedCard })
    
   }
 
@@ -570,7 +568,8 @@ profileSection.forEach((section) => {
 
       if (!currentForm) return; // exit early
 
-      if (validateForm(currentForm)) {
+      if (validateForm(currentForm) === true) {
+        
         const inputs = currentForm.querySelectorAll("input");
         console.log(inputs);
 
