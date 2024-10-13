@@ -1,4 +1,5 @@
 
+
 import { clearError, generateCountries, validateForm } from "./global.js";
 import { closeDropdown } from "./global.js";
 
@@ -373,15 +374,24 @@ dropdownSection.forEach((section) => {
   const dropdownIcon = section.querySelector(".dropdown-icon i");
   const menu = section.querySelector(".dropdown-menu");
   const toggle = section.querySelector(".dropdown-header");
+ 
 
   toggle.addEventListener("click", () => {
+    console.log("Dropdown clicked!")
     // Hide all other dropdown menus
     document.querySelectorAll(".dropdown-menu").forEach((otherMenu) => {
+      console.log(otherMenu)
       if (otherMenu !== menu) {
         otherMenu.classList.remove("active");
+
         otherMenu.previousElementSibling.querySelector(
           ".dropdown-icon i"
         ).style.transform = "rotate(0deg)";
+      }
+
+      const otherIcon = otherMenu.closest("dropdown-section")?.querySelector("dropdown-icon i");
+      if (otherIcon) {
+        otherIcon.style.transform = "rotate(0deg)";
       }
     });
 
@@ -409,7 +419,9 @@ smallDropdownSection.forEach((smallMenu) => {
   const options = smallMenu.querySelectorAll("#list .options");
   const selectedYear = smallMenu.querySelector(".selected-year");
 
-  
+  console.log(yearHeader);
+
+
   options.forEach(opt => {
     opt.addEventListener('click', () => {
 
@@ -426,6 +438,7 @@ smallDropdownSection.forEach((smallMenu) => {
     yearMenu.classList.toggle("open");
 
 
+
     // Toggle rotation
     if (yearMenu.classList.contains("open")) {
       yearIcon.style.transform = "rotate(180deg)";
@@ -439,7 +452,9 @@ smallDropdownSection.forEach((smallMenu) => {
 
 
 document.addEventListener('click', (event) =>{
-  closeDropdown(event, "select-year", "year-header")
+  closeDropdown(event, "select-year", "year-header", "yearIcon");
+  closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon")
+  closeDropdown(event, "year-selection", "filter");
   
   
 })
