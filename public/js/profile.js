@@ -20,6 +20,13 @@ const spanElement = document.getElementById("filter-icon");
 const profileSection = document.querySelectorAll(".profile-section");
 const hasFilterIcon =
   spanElement && spanElement.querySelector("i.fa-filter") !== null;
+const setDefaultCard = document.getElementById("set_default_card");
+const defaultTag = document.querySelector(".default-card");
+const cardWrappers = document.querySelectorAll(".payment-card")
+console.log(defaultTag)
+console.log(cardWrappers)
+
+
 
 // Bio Section
 const userProfileCard = profileSection[0];
@@ -49,6 +56,49 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 // Forms
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
+
+setDefaultCard.addEventListener("click", () => {
+  console.log("set default was clicked!")
+
+  
+
+
+
+  cardWrappers.forEach(card => {
+   
+    // 1. existing tag, if any
+    const defaultCardSpan = card.querySelector(".default-card");
+   
+    // 2. check if tag exist, if it does remove
+    if (defaultCardSpan) {
+      defaultCardSpan.remove();
+    }
+  });
+
+  // 3. clicked payment container
+  const clickedCard = event.target.closest(".card-wrapper");
+  
+
+  if (clickedCard) {
+
+    const paymentCardDiv = clickedCard.querySelector(".payment-card");
+
+    if (paymentCardDiv) {
+
+      const newDefaultCardTag = document.createElement("span");
+      newDefaultCardTag.classList.add("default-card");
+      newDefaultCardTag.textContent = "Default";
+  
+      
+      paymentCardDiv.appendChild(newDefaultCardTag);
+    }
+
+    setDefaultCard.remove();
+    document.querySelector(".divider").remove();
+   
+  }
+
+})
 
 // Profile actions: website link validation
 url.addEventListener("change", () => {
