@@ -893,6 +893,14 @@ h6 {
   font-size: 16px;
 }
 
+.card-options {
+  display: none;
+}
+
+.card-options:hover {
+  display: flex;
+}
+
 .card-options i {
   font-size: 32px;
   cursor: pointer;
