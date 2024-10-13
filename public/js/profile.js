@@ -23,8 +23,8 @@ const hasFilterIcon =
 const setDefaultCard = document.getElementById("set_default_card");
 const defaultTag = document.querySelector(".default-card");
 const cardWrappers = document.querySelectorAll(".payment-card")
-console.log(defaultTag)
-console.log(cardWrappers)
+const editCards =  document.querySelectorAll(".edit-card");
+
 
 
 
@@ -57,12 +57,35 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
 
+
+
+editCards.forEach(btn => {
+  
+  if (btn) {
+    btn.addEventListener("click", () => {
+      console.log("edit was clicked!")
+      const divider = document.createElement("div");
+      divider.classList.add("divider");
+
+      const defaultBtn = document.createElement("button");
+      
+
+      defaultBtn.id = "set_default_card";
+
+      defaultBtn.textContent = "Set default";
+
+     const container = document.querySelector(".edit-container");
+
+     if (container) {
+      container.appendChild(divider);
+      container.appendChild(defaultBtn);
+     }
+    })
+  }
+})
+
 setDefaultCard.addEventListener("click", () => {
   console.log("set default was clicked!")
-
-  
-
-
 
   cardWrappers.forEach(card => {
    
