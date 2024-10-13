@@ -58,28 +58,28 @@ const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
 
 
+function createDefaultBtn(parentElement, e) {
+  const parentContainer = e.target.closest(parentElement);
+
+  const divider = document.createElement("div");
+  divider.classList.add("divider");
+
+  const button = document.createElement("button");
+  button.id = "set_default_card";
+  button.textContent = "Set default";
+
+  if (parentContainer) {
+    parentContainer.appendChild(divider);
+    parentContainer.appendChild(button);
+  }
+}
 
 editCards.forEach(btn => {
   
   if (btn) {
-    btn.addEventListener("click", () => {
-      console.log("edit was clicked!")
-      const divider = document.createElement("div");
-      divider.classList.add("divider");
-
-      const defaultBtn = document.createElement("button");
-      
-
-      defaultBtn.id = "set_default_card";
-
-      defaultBtn.textContent = "Set default";
-
-     const container = document.querySelector(".edit-container");
-
-     if (container) {
-      container.appendChild(divider);
-      container.appendChild(defaultBtn);
-     }
+    btn.addEventListener("click", (event) => {
+    
+      createDefaultBtn("edit-container", event);
     })
   }
 })
