@@ -115,7 +115,7 @@ export function validateForm(formElement) {
 
 
   // Validate First Name
-  if (!firstname) {
+  if (firstname === "" && formElement.querySelector("[name='fname']")) {
     setError(
       formElement.querySelector("[name='fname']"),
       fnameError,
@@ -125,7 +125,7 @@ export function validateForm(formElement) {
   }
 
   // Validate Last Name
-  if (!lastname) {
+  if (lastname === "" && formElement.querySelector("[name='lname']")) {
     setError(
       formElement.querySelector("[name='lname']"),
       lnameError,
@@ -144,25 +144,15 @@ export function validateForm(formElement) {
     isValid = false;
   }
 
-  // Validate Phone Number
-  if (!phoneNumber)  {
-    setError(
-      formElement.querySelector("[name='phoneNumber']"),
-      phoneError,
-      "Phone number must be in the format 123-456-7890"
-    )
-    isValid = false;
-  } else if (phoneNumber && !validatePhone(phoneNumber)) {
-    setError(
-      formElement.querySelector("[name='phoneNumber']"),
-      phoneError,
-      "Please enter a valid phone number"
-    );
+  
+  // Validate Phone Number if the field exists
+  if (phoneNumber && !validatePhone(phoneNumber)) {
+    setError(formElement.querySelector("[name='phoneNumber']"), phoneError, "Please enter a valid phone number");
     isValid = false;
   }
 
   // Validate Username (only for personal information form)
-  if (username !== undefined && username === "") {
+  if (username === "" && formElement.querySelector("[name='profile-username']")) {
     setError(
       formElement.querySelector("[name='profile-username']"),
       usernameError,
@@ -172,7 +162,7 @@ export function validateForm(formElement) {
   }
 
   // Validate Country
-  if (!country) {
+  if (country === "" && formElement.querySelector("[name='country']")) {
     setError(
       formElement.querySelector("[name='country']"),
       countryError,
@@ -182,7 +172,7 @@ export function validateForm(formElement) {
   }
 
   // Validate state-region
-  if(!stateSelect) {
+  if(stateSelect === "" && formElement.querySelector("[name='state-region']")) {
     setError(formElement.querySelector("[name='state-region']"),
   stateError, 
   "Please select the state")
@@ -190,7 +180,7 @@ export function validateForm(formElement) {
   }
 
   // Validate City
-  if (!city) {
+  if (city === "" && formElement.querySelector("[name='city']")) {
     setError(
       formElement.querySelector("[name='city']"),
       cityError,
@@ -201,7 +191,7 @@ export function validateForm(formElement) {
 
   // Validate Postal Code
   /* TODO : implement a function to validate the postal code */
-  if (!postal) {
+  if (postal && !validatePostalCode(postal)) {
     setError(
       formElement.querySelector("[name='postal']"),
       postalError,
@@ -218,7 +208,7 @@ export function validateForm(formElement) {
   }
 
   // Validate Address
-  if (!address) {
+  if (address === "" && addressInput) {
     setError(addressInput, addressError, "Please enter a valid address");
     isValid = false;
   }
