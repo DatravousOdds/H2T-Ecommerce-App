@@ -226,13 +226,28 @@ export function validateForm(formElement) {
   return isValid; // Return true if valid, false if there are errors
 }
 
-export function closeDropdown(event, dropdownId, headerId) {
+export function closeDropdown(event, dropdownId, headerId, iconId) {
   const dropdownContent = document.getElementById(dropdownId);
   const header = document.getElementById(headerId);
+  const icon = iconId ? document.getElementById(iconId) : null; // check if an idea has been provided
+
 
   const isClickInsideDropdown =  dropdownContent.contains(event.target) || header.contains(event.target);
 
   if (!isClickInsideDropdown) {
     dropdownContent.classList.remove("open");
+    dropdownContent.classList.remove("active")
+
+    // Remove rotation from the icon if it exists
+    if (icon) {
+      icon.classList.remove("rotate");
+
+    } else {
+      // If the dropdown is clicked, you might want to add rotation
+      if (icon) {
+        icon.classList.add("rotate");
+      }
+    }
+    
   }
 }
