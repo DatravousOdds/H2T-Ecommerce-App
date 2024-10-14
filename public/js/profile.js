@@ -170,7 +170,7 @@ let currentUrlTitle = title.value || "";
 
 // Max word count
 const wordCountDisplay = document.getElementById("word-count");
-const maxWords = 30;
+const maxWords = 150;
 
 // Toggle for "edit mode" state
 let isEditMode = false;
@@ -178,21 +178,20 @@ let isEditMode = false;
 
 bioTextarea.addEventListener("input", () => {
   const text = bioTextarea.value;
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  const wordCount = words.length;
+  const charCount = text.length;
 
-  wordCountDisplay.textContent = `${wordCount} / ${maxWords}`;
+  wordCountDisplay.textContent = `${charCount} / ${maxWords}`;
 
   // Show error  message if the words are greater than the max words
-  if (wordCount > maxWords) {
+  if (charCount > maxWords) {
     wordCountDisplay.style.display = "flex";
     wordCountDisplay.classList.add("error-msg");
 
-    bioTextarea.setCustomValidity("You have exceeded the maximum of words");
+    bioTextarea.setCustomValidity("You have exceeded the maximum of characters");
 
     saveBioBtn.classList.add("disabled");
     saveBioBtn.disabled = true;
-  } else if (wordCount <= 0) {
+  } else if (charCount <= 0) {
     wordCountDisplay.style.display = "none";
 
     // clear any error message
