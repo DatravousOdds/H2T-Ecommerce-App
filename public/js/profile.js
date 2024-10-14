@@ -225,7 +225,6 @@ uploadBtn.addEventListener("click", () => {
   }
 });
 
-// console.log(feedback);
 
 // UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
@@ -389,6 +388,9 @@ saveBioBtn.addEventListener("click", () => {
     anchor.type = "text";
 
     const linkIcon = document.createElement("i");
+    const linkText = document.createElement("p");
+
+    linkText.textContent = currentUrlTitle;
 
     const domain = new URL(currentUrl).hostname;
 
@@ -403,12 +405,16 @@ saveBioBtn.addEventListener("click", () => {
       linkIcon.classList.add("fa-brands", "fa-facebook", "facebook");
     } else if (domain.includes("instagram")) {
       linkIcon.classList.add("fa-brands", "fa-instagram", "instagram");
+    } else if (domain.includes("etsy")) {
+      linkIcon.classList.add("fa-brands", "fa-etsy");
     } else {
-      linkIcon.classList.add("fa-link");
+      linkIcon.classList.add("fa-solid","fa-link");
     }
 
     anchor.appendChild(linkIcon);
+    anchor.appendChild(linkText)
     div.appendChild(anchor);
+    
 
     // Close Icon
     const closeIcon = document.createElement("i");
