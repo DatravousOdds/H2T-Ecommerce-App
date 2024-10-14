@@ -137,7 +137,7 @@ export function validateForm(formElement) {
     clearError(formElement.querySelector("[name='city']"), cityError);
   if (postalError)
 
-    
+
     clearError(formElement.querySelector("[name='postal']"), postalError);
   if(stateError) clearError(formElement.querySelector("[name='state-region']"), stateError);
 
@@ -177,6 +177,12 @@ export function validateForm(formElement) {
 
   
   // Validate Phone Number if the field exists
+
+  if (phoneNumber === "") {
+    setError(formElement.querySelector("[name='phoneNumber']"), 
+  phoneError,
+"Phone number is required")
+  }
   if (phoneNumber && !validatePhone(phoneNumber)) {
     setError(formElement.querySelector("[name='phoneNumber']"), phoneError, "Please enter a valid phone number");
     isValid = false;
@@ -222,11 +228,17 @@ export function validateForm(formElement) {
 
   // Validate Postal Code
   /* TODO : implement a function to validate the postal code */
-  if (postal && !validatePostalCode(postal)) {
+  if ( postal === "") {
+    setError(formElement.querySelector("[name='postal']"),
+    postalError,
+    "Please enter a postal code"
+  )
+  isValid = false;
+  } else if (postal && !validatePostalCode(postal)) {
     setError(
       formElement.querySelector("[name='postal']"),
       postalError,
-      "Please enter a postal code"
+      "Please ente a vaild postal code"
     );
 
     isValid = false;
