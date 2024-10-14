@@ -166,7 +166,12 @@ export function validateForm(formElement) {
   }
 
   // Validate Email
-  if (email && !validateEmail(email)) {
+  if (email === "") {
+    setError(formElement.querySelector("[name='email']"),
+  emailError,
+"Please enter a email address")
+
+  } else if (email && !validateEmail(email)) {
     setError(
       formElement.querySelector("[name='email']"),
       emailError,
