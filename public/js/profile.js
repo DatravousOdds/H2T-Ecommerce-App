@@ -1,9 +1,7 @@
 
 
-import { clearError, generateCountries, validateForm } from "./global.js";
+import { generateCountries, validateForm, generateRegions } from "./global.js";
 import { closeDropdown } from "./global.js";
-
-
 
 
 
@@ -11,7 +9,8 @@ import { closeDropdown } from "./global.js";
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
   generateCountries(apiUrl, "country");
-  generateCountries(apiUrl, "state-select");
+  // generateCountries(apiUrl, "state-select");
+  
 });
 
 // Payment Information Section
@@ -57,9 +56,18 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 // Forms
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
+const selectState = document.getElementById("state-select");
+const countrySelect = document.getElementById("country")
+console.log(countrySelect)
+console.log(selectState)
+
+countrySelect.addEventListener('change', function() {
+  console.log("the input has change!")
+})
 
 
-console.log(actions)
+
+
 
 actions.forEach(action => {
   console.log(action)
@@ -166,6 +174,7 @@ const maxWords = 30;
 
 // Toggle for "edit mode" state
 let isEditMode = false;
+
 
 bioTextarea.addEventListener("input", () => {
   const text = bioTextarea.value;

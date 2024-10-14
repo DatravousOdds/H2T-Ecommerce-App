@@ -1,3 +1,5 @@
+
+
 // function to generate countries
 export const generateCountries = (apiUrl, selectId) => {
   fetch(apiUrl)
@@ -16,8 +18,13 @@ export const generateCountries = (apiUrl, selectId) => {
           const option = document.createElement("option");
           option.value = country.cca2;
           option.textContent = country.name.common;
+        
           select.appendChild(option);
         });
+
+        // Call generateRegions to populate regions
+        // generateRegions(data);
+        
       } else {
         console.error(`Select element with id "${selectId}" not found.`);
       }
@@ -25,6 +32,28 @@ export const generateCountries = (apiUrl, selectId) => {
 
     .catch((err) => console.log(err("Error Message:", err)));
 };
+
+export const generateRegions = (countriesData) => {
+  
+  const selectSelect = document.getElementById("state-select")
+
+  countriesData.forEach(country => {
+    // console.log(country.region)
+    regions.add(country.region);
+    // console.log(country.cca2)
+  })
+
+  
+
+  const regionSelect = document.getElementById("state-select");
+
+  if (regionSelect) {
+    
+  }
+
+  
+
+}
 
 export function setError(inputElement, errorElement, message) {
   errorElement.textContent = message;
@@ -107,6 +136,8 @@ export function validateForm(formElement) {
   if (cityError)
     clearError(formElement.querySelector("[name='city']"), cityError);
   if (postalError)
+
+    
     clearError(formElement.querySelector("[name='postal']"), postalError);
   if(stateError) clearError(formElement.querySelector("[name='state-region']"), stateError);
 
@@ -198,12 +229,6 @@ export function validateForm(formElement) {
       "Please enter a postal code"
     );
 
-    isValid = false;
-  } else if (postal && !validatePostalCode(postal)) {
-    setError(formElement.querySelector("[name='postal']"),
-    postalError,
-    "Please enter a valid postal code"
-  );
     isValid = false;
   }
 
