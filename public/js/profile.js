@@ -53,6 +53,14 @@ const title = document.getElementById("title");
 const websiteFeedback = document.getElementById("website-feedback");
 const titleFeedback = document.getElementById("title-feedback");
 const websiteUrlDisplay = document.getElementById("website-link-display");
+const setDefaultCard = document.getElementById("defaultCard");
+
+// Checks for click on parent element
+document.querySelector(".edit-container").addEventListener("click", (event) => {
+  if (event.target && event.target.matches(".set-default-card")) {
+    console.log("Setting Default!");
+  }
+});
 
 // Forms
 const personalInformationForm = document.getElementById("personalInformation");
@@ -70,18 +78,22 @@ actions.forEach((act) => {
     const hasDefaultCard = paymentCard.querySelector("span.default-card");
 
     if (hasDefaultCard) {
-      console.log("Has default span:", hasDefaultCard);
       return;
     }
 
     const editContainer = cardWrapper.querySelector(".edit-container");
 
-    let existingBtn = hasDefaultCard;
+    let existingBtn = editContainer.querySelector(".set-default-card");
+
     if (!existingBtn) {
       // Create and append the 'Set default' button
       const btn = document.createElement("button");
       btn.textContent = "Set default";
+      btn.classList.add("set-default-card");
+      btn.id = "defaultCard";
       editContainer.appendChild(btn);
+    } else {
+      return;
     }
   });
 });
