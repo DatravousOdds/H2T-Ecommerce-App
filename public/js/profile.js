@@ -3,7 +3,18 @@
 import { generateCountries, validateForm, generateRegions } from "./global.js";
 import { closeDropdown } from "./global.js";
 
+// config = {
+//   url : "https://api.countrystatecity.in/v1/countries",
+//   key : ""
+// };
 
+// var req = unirest("GET", "https://www.universal-tutorial.com/api/getaccesstoken" );
+
+// req.headers({
+//   "Accept": "application/json",
+//   "api-token": "AuXnFjES43NqbdODZoc1anLtpO9op_9HsA7hqU56HJoxlbbNrMsUAzmsp6cqoZ0HhWQ",
+//   "user-email": "datravousodds@gmail.com"
+// });
 
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
@@ -61,17 +72,30 @@ const countrySelect = document.getElementById("country")
 console.log(countrySelect)
 console.log(selectState)
 
-countrySelect.addEventListener('change', function() {
-  console.log("the input has change!")
-})
+
 
 
 
 
 
 actions.forEach(action => {
-  console.log(action)
+  action.addEventListener("click", () => {
+    cardWrappers.forEach(wrap => {
+     const defaultTag = wrap.querySelector(".default-card");
+      if (!defaultTag) {
+        console.log("this div contains the default-tag");
+        defaultTag.style.display = "flex";
+      } else {
+        actions.textContent = "View details";
+        const btn = document.createElement("button");
+        const container = document.querySelector("edit-container");
+        container.appendChild(btn);
+      }
+    })
+  })
 })
+
+
 
 function createDefaultBtn(parentElement, e) {
   const parentContainer = e.target.closest(parentElement);
