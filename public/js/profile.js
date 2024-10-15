@@ -1,5 +1,3 @@
-
-
 import { generateCountries, validateForm, generateRegions } from "./global.js";
 import { closeDropdown } from "./global.js";
 
@@ -21,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
   generateCountries(apiUrl, "country");
   // generateCountries(apiUrl, "state-select");
-  
 });
 
 // Payment Information Section
@@ -31,13 +28,6 @@ const spanElement = document.getElementById("filter-icon");
 const profileSection = document.querySelectorAll(".profile-section");
 const hasFilterIcon =
   spanElement && spanElement.querySelector("i.fa-filter") !== null;
-const setDefaultCard = document.getElementById("set_default_card");
-const defaultTag = document.querySelector(".default-card");
-const cardWrappers = document.querySelectorAll(".payment-card")
-const actions =  document.querySelectorAll(".edit-card");
-
-
-
 
 // Bio Section
 const userProfileCard = profileSection[0];
@@ -67,91 +57,25 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 // Forms
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
-const selectState = document.getElementById("state-select");
-const countrySelect = document.getElementById("country")
-console.log(countrySelect)
-console.log(selectState)
 
+const actions = document.querySelectorAll(".edit-card");
+actions.forEach((act) => {
+  act.addEventListener("click", () => {
+    act.textContent = "View Details";
 
+    const cardWrapper = act.closest(".card-wrapper");
 
+    const editContainer = cardWrapper.querySelector(".edit-container");
 
+    const btn = document.createElement("button");
+    btn.textContent = "Set default";
+    editContainer.appendChild(btn);
 
+    console.log("Edit Container:", editContainer);
 
-
-actions.forEach(action => {
-  action.addEventListener("click", () => {
-    cardWrappers.forEach(wrap => {
-     const defaultTag = wrap.querySelector(".default-card");
-      if (!defaultTag) {
-        console.log("this div contains the default-tag");
-        defaultTag.style.display = "flex";
-      } else {
-        actions.textContent = "View details";
-        const btn = document.createElement("button");
-        const container = document.querySelector("edit-container");
-        container.appendChild(btn);
-      }
-    })
-  })
-})
-
-
-
-function createDefaultBtn(parentElement, e) {
-  const parentContainer = e.target.closest(parentElement);
-
-  const divider = document.createElement("div");
-  divider.classList.add("divider");
-
-  const button = document.createElement("button");
-  button.id = "set_default_card";
-  button.textContent = "Set default";
-
-  if (parentContainer) {
-    parentContainer.appendChild(divider);
-    parentContainer.appendChild(button);
-  }
-}
-
-
-setDefaultCard.addEventListener("click", () => {
-  console.log("set default was clicked!")
-
-  cardWrappers.forEach(card => {
-   
-    // 1. existing tag, if any
-    const defaultCardSpan = card.querySelector(".default-card");
-   
-    // 2. check if tag exist, if it does remove
-    if (defaultCardSpan) {
-      defaultCardSpan.remove();
-    }
+    console.log("Card Wrapper:", cardWrapper);
   });
-
-  // 3. clicked payment container
-  const clickedCard = setDefaultCard.closest(".card-wrapper");
-  
-
-  if (clickedCard) {
-
-    const paymentCardDiv = clickedCard.querySelector(".payment-card");
-
-    if (paymentCardDiv) {
-
-      const newDefaultCardTag = document.createElement("span");
-      newDefaultCardTag.classList.add("default-card");
-      newDefaultCardTag.textContent = "Default";
-      paymentCardDiv.appendChild(newDefaultCardTag);
-    }
-
-    setDefaultCard.remove();
-    document.querySelector(".divider").remove();
-
-    createDefaultBtn(".edit-container", { target: clickedCard })
-   
-  }
-
-})
+});
 
 // Profile actions: website link validation
 url.addEventListener("change", () => {
@@ -199,7 +123,6 @@ const maxWords = 150;
 // Toggle for "edit mode" state
 let isEditMode = false;
 
-
 bioTextarea.addEventListener("input", () => {
   const text = bioTextarea.value;
   const charCount = text.length;
@@ -211,7 +134,9 @@ bioTextarea.addEventListener("input", () => {
     wordCountDisplay.style.display = "flex";
     wordCountDisplay.classList.add("error-msg");
 
-    bioTextarea.setCustomValidity("You have exceeded the maximum of characters");
+    bioTextarea.setCustomValidity(
+      "You have exceeded the maximum of characters"
+    );
 
     saveBioBtn.classList.add("disabled");
     saveBioBtn.disabled = true;
@@ -248,7 +173,6 @@ uploadBtn.addEventListener("click", () => {
     fileInput.click();
   }
 });
-
 
 // UserCard action: upload img
 fileInput.addEventListener("change", (e) => {
@@ -432,13 +356,12 @@ saveBioBtn.addEventListener("click", () => {
     } else if (domain.includes("etsy")) {
       linkIcon.classList.add("fa-brands", "fa-etsy");
     } else {
-      linkIcon.classList.add("fa-solid","fa-link");
+      linkIcon.classList.add("fa-solid", "fa-link");
     }
 
     anchor.appendChild(linkIcon);
-    anchor.appendChild(linkText)
+    anchor.appendChild(linkText);
     div.appendChild(anchor);
-    
 
     // Close Icon
     const closeIcon = document.createElement("i");
@@ -483,13 +406,12 @@ dropdownSection.forEach((section) => {
   const dropdownIcon = section.querySelector(".dropdown-icon i");
   const menu = section.querySelector(".dropdown-menu");
   const toggle = section.querySelector(".dropdown-header");
- 
 
   toggle.addEventListener("click", () => {
-    console.log("Dropdown clicked!")
+    console.log("Dropdown clicked!");
     // Hide all other dropdown menus
     document.querySelectorAll(".dropdown-menu").forEach((otherMenu) => {
-      console.log(otherMenu)
+      console.log(otherMenu);
       if (otherMenu !== menu) {
         otherMenu.classList.remove("active");
 
@@ -498,7 +420,9 @@ dropdownSection.forEach((section) => {
         ).style.transform = "rotate(0deg)";
       }
 
-      const otherIcon = otherMenu.closest("dropdown-section")?.querySelector("dropdown-icon i");
+      const otherIcon = otherMenu
+        .closest("dropdown-section")
+        ?.querySelector("dropdown-icon i");
       if (otherIcon) {
         otherIcon.style.transform = "rotate(0deg)";
       }
@@ -530,23 +454,18 @@ smallDropdownSection.forEach((smallMenu) => {
 
   console.log(yearHeader);
 
-
-  options.forEach(opt => {
-    opt.addEventListener('click', () => {
-
+  options.forEach((opt) => {
+    opt.addEventListener("click", () => {
       const selectValue = opt.textContent;
       selectedYear.textContent = selectValue;
 
       // function that filters by the selected year
-
-    })
-  })
+    });
+  });
 
   yearHeader.addEventListener("click", () => {
     // Toggle the click dropdown menu
     yearMenu.classList.toggle("open");
-
-
 
     // Toggle rotation
     if (yearMenu.classList.contains("open")) {
@@ -557,18 +476,11 @@ smallDropdownSection.forEach((smallMenu) => {
   });
 });
 
-
-
-
-document.addEventListener('click', (event) =>{
+document.addEventListener("click", (event) => {
   closeDropdown(event, "select-year", "year-header", "yearIcon");
-  closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon")
+  closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon");
   closeDropdown(event, "year-selection", "filter");
-  
-  
-})
-
-
+});
 
 // Profile actions: edit, save, cancel
 profileSection.forEach((section) => {
@@ -600,14 +512,14 @@ profileSection.forEach((section) => {
       //   currentForm = document.getElementById("shippingInformation");
       // }
 
-      currentForm = btn.id === "save-personal-info"
-       ? document.getElementById("personalInformation")
-       : document.getElementById("shippingInformation");
+      currentForm =
+        btn.id === "save-personal-info"
+          ? document.getElementById("personalInformation")
+          : document.getElementById("shippingInformation");
 
       if (!currentForm) return; // exit early
 
       if (validateForm(currentForm) === true) {
-        
         const inputs = currentForm.querySelectorAll("input");
         console.log(inputs);
 
@@ -686,26 +598,25 @@ profileSection.forEach((section) => {
           }
         });
       } else if (btn.id === "cancel-shipping-info") {
-        const shippingForm = document.getElementById("shippingInformation")
+        const shippingForm = document.getElementById("shippingInformation");
 
         const inputs = shippingForm.querySelectorAll("input");
         const spans = shippingForm.querySelectorAll("span");
         const selects = shippingForm.querySelectorAll("select");
 
-        selects.forEach(select => select.classList.remove("input-error"))
+        selects.forEach((select) => select.classList.remove("input-error"));
         inputs.forEach((input) => input.classList.remove("input-error"));
         spans.forEach((span) => {
-          console.log(span.id)
+          console.log(span.id);
           if (span.id === "fnameError") span.textContent = "";
           if (span.id === "lnameError") span.textContent = "";
           if (span.id === "addressError") span.textContent = "";
           if (span.id === "cityError") span.textContent = "";
           if (span.id === "postalError") span.textContent = "";
           if (span.id === "phoneError") span.textContent = "";
-          if(span.id === "stateError") span.textContent = "";
+          if (span.id === "stateError") span.textContent = "";
         });
 
-        
         const shippingErrorIds = [
           "fnameError",
           "lnameError",
@@ -749,7 +660,6 @@ profileSection.forEach((section) => {
   });
 });
 
-
 // Profile Page actions: navigate
 allTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -765,19 +675,13 @@ allTabs.forEach((tab) => {
       content.classList.remove("active");
     });
 
-   tab.classList.add("active");
-   document.getElementById(tabId).classList.add("active");
-
+    tab.classList.add("active");
+    document.getElementById(tabId).classList.add("active");
 
     // Storage active tab in localStorage
     localStorage.setItem("activeTab", tabId);
-   
-
-
-    
   });
 });
-
 
 personalInformationForm.addEventListener("submit", (e) => {
   e.preventDefault(); // prevents form submission for validation checks
