@@ -1,19 +1,6 @@
 import { generateCountries, validateForm, generateRegions } from "./global.js";
 import { closeDropdown } from "./global.js";
 
-// config = {
-//   url : "https://api.countrystatecity.in/v1/countries",
-//   key : ""
-// };
-
-// var req = unirest("GET", "https://www.universal-tutorial.com/api/getaccesstoken" );
-
-// req.headers({
-//   "Accept": "application/json",
-//   "api-token": "AuXnFjES43NqbdODZoc1anLtpO9op_9HsA7hqU56HJoxlbbNrMsUAzmsp6cqoZ0HhWQ",
-//   "user-email": "datravousodds@gmail.com"
-// });
-
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
@@ -55,16 +42,50 @@ const titleFeedback = document.getElementById("title-feedback");
 const websiteUrlDisplay = document.getElementById("website-link-display");
 const setDefaultCard = document.getElementById("defaultCard");
 
-// Checks for click on parent element
-document.querySelector(".edit-container").addEventListener("click", (event) => {
-  if (event.target && event.target.matches(".set-default-card")) {
-    console.log("Setting Default!");
-  }
-});
-
 // Forms
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
+
+// Form submission
+personalInformationForm.addEventListener("submit", (e) => {
+  e.preventDefault(); // prevents form submission for validation checks
+  console.log(validateForm(personalInformationForm));
+});
+
+shippingInformationForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  console.log(validateForm(shippingInformationForm));
+});
+
+// Checks for click on parent element
+document.querySelector(".edit-container").addEventListener("click", (event) => {
+  if (event.target && event.target.matches(".set-default-card")) {
+    const currentCard = document.querySelector(".payment-card");
+    const existingDefault = document.querySelector(".default-card");
+    console.log("This is the existing default card", existingDefault);
+    console.log(currentCard);
+    /* if other elements contain the span Element. 
+        remove the span element
+      else
+        add span element to current click card (setting as new default) */
+
+    if (existingDefault) {
+      existingDefault.remove();
+    }
+
+    // Creates Default Card
+    const spanElement = document.createElement("span");
+    spanElement.classList.add("default-card");
+    spanElement.textContent = "Default";
+    currentCard.appendChild(spanElement);
+  }
+});
+
+document.addEventListener("click", (event) => {
+  closeDropdown(event, "select-year", "year-header", "yearIcon");
+  closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon");
+  closeDropdown(event, "year-selection", "filter");
+});
 
 const actions = document.querySelectorAll(".edit-card");
 actions.forEach((act) => {
@@ -123,13 +144,6 @@ url.addEventListener("change", () => {
   }
 });
 
-// Review section
-const reviewModal = document.getElementById("reviews-modal");
-
-// see all reviews
-const seeAllReviewsBtn = document.getElementById("see-all-reviews");
-const closeBtn = document.querySelector(".close");
-
 // Hide bio by default
 bioTextarea.style.display = "none";
 
@@ -176,6 +190,12 @@ bioTextarea.addEventListener("input", () => {
     bioTextarea.setCustomValidity("");
   }
 });
+
+// Review section
+const reviewModal = document.getElementById("reviews-modal");
+// see all reviews
+const seeAllReviewsBtn = document.getElementById("see-all-reviews");
+const closeBtn = document.querySelector(".close");
 
 // Review action: all reviews, close
 seeAllReviewsBtn.addEventListener("click", () => {
@@ -497,12 +517,6 @@ smallDropdownSection.forEach((smallMenu) => {
   });
 });
 
-document.addEventListener("click", (event) => {
-  closeDropdown(event, "select-year", "year-header", "yearIcon");
-  closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon");
-  closeDropdown(event, "year-selection", "filter");
-});
-
 // Profile actions: edit, save, cancel
 profileSection.forEach((section) => {
   const edit = section.querySelectorAll(".edit-info-header");
@@ -702,14 +716,4 @@ allTabs.forEach((tab) => {
     // Storage active tab in localStorage
     localStorage.setItem("activeTab", tabId);
   });
-});
-
-personalInformationForm.addEventListener("submit", (e) => {
-  e.preventDefault(); // prevents form submission for validation checks
-  console.log(validateForm(personalInformationForm));
-});
-
-shippingInformationForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  console.log(validateForm(shippingInformationForm));
 });
