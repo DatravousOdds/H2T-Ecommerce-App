@@ -65,15 +65,24 @@ actions.forEach((act) => {
 
     const cardWrapper = act.closest(".card-wrapper");
 
+    const paymentCard = cardWrapper.querySelector(".payment-card");
+
+    const hasDefaultCard = paymentCard.querySelector("span.default-card");
+
+    if (hasDefaultCard) {
+      console.log("Has default span:", hasDefaultCard);
+      return;
+    }
+
     const editContainer = cardWrapper.querySelector(".edit-container");
 
-    const btn = document.createElement("button");
-    btn.textContent = "Set default";
-    editContainer.appendChild(btn);
-
-    console.log("Edit Container:", editContainer);
-
-    console.log("Card Wrapper:", cardWrapper);
+    let existingBtn = hasDefaultCard;
+    if (!existingBtn) {
+      // Create and append the 'Set default' button
+      const btn = document.createElement("button");
+      btn.textContent = "Set default";
+      editContainer.appendChild(btn);
+    }
   });
 });
 
