@@ -58,16 +58,28 @@ shippingInformationForm.addEventListener("submit", (e) => {
 });
 
 // Checks for click on parent element
-document.querySelector(".edit-container").addEventListener("click", (event) => {
+const cardWrappers = document.querySelectorAll(".payment-card");
+cardWrappers.forEach((card) => {
+  // Check if the card already has a "Set Default" span, if not
+  if (!card.querySelector(".set-default-card")) {
+    const setDefaultBtn = document.createElement("button");
+    setDefaultBtn.classList.add("set-default-card");
+    card.appendChild(setDefaultBtn);
+  }
+});
+
+// const editContainer = document.querySelectorAll(".edit-container")
+
+document.querySelector("#cards-on-file").addEventListener("click", (event) => {
   if (event.target && event.target.matches(".set-default-card")) {
-    const currentCard = document.querySelector(".payment-card");
+    const cardWrapper = event.target.closest(".card-wrapper");
+
+    const currentCard = cardWrapper.querySelector(".payment-card");
+
     const existingDefault = document.querySelector(".default-card");
-    console.log("This is the existing default card", existingDefault);
-    console.log(currentCard);
-    /* if other elements contain the span Element. 
-        remove the span element
-      else
-        add span element to current click card (setting as new default) */
+
+    console.log("This is the existing default card:", existingDefault);
+    console.log("This is the current card:", currentCard);
 
     if (existingDefault) {
       existingDefault.remove();
@@ -77,6 +89,7 @@ document.querySelector(".edit-container").addEventListener("click", (event) => {
     const spanElement = document.createElement("span");
     spanElement.classList.add("default-card");
     spanElement.textContent = "Default";
+
     currentCard.appendChild(spanElement);
   }
 });
