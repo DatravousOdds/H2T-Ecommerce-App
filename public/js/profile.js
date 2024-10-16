@@ -57,7 +57,6 @@ shippingInformationForm.addEventListener("submit", (e) => {
   console.log(validateForm(shippingInformationForm));
 });
 
-// Checks for click on parent element
 const cardWrappers = document.querySelectorAll(".payment-card");
 cardWrappers.forEach((card) => {
   // Check if the card already has a "Set Default" span, if not
@@ -68,7 +67,32 @@ cardWrappers.forEach((card) => {
   }
 });
 
-// const editContainer = document.querySelectorAll(".edit-container")
+document.addEventListener("DOMContentLoaded", () => {
+  const cardOptions = document.querySelectorAll(".card-options");
+
+  console.log(cardOptions);
+
+  cardOptions.forEach((option) => {
+    console.log(option);
+
+    const trashBtn = option.querySelector("i.fa-regular.fa-trash-can");
+
+    if (trashBtn) {
+      trashBtn.addEventListener("click", () => {
+        console.log("delete button was clicked!");
+
+        const cardWrapper = option.closest(".card-wrapper");
+
+        if (cardWrapper) {
+          cardWrapper.remove();
+          console.log("Card has been deleted!");
+        }
+      });
+    } else {
+      console.log("Trash button found in this option.");
+    }
+  });
+});
 
 document.querySelector("#cards-on-file").addEventListener("click", (event) => {
   if (event.target && event.target.matches(".set-default-card")) {
