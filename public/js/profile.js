@@ -17,8 +17,6 @@ const hasFilterIcon =
   spanElement && spanElement.querySelector("i.fa-filter") !== null;
 
 // Bio Section
-const userProfileCard = profileSection[0];
-const bioSection = userProfileCard.querySelector("#bio");
 const bioTextarea = document.getElementById("bio-value");
 const updateBioBtn = document.getElementById("update-bio-btn"); // Edit profile Button
 const saveBioBtn = document.getElementById("save-bio-btn"); // save changes Button
@@ -40,7 +38,6 @@ const title = document.getElementById("title");
 const websiteFeedback = document.getElementById("website-feedback");
 const titleFeedback = document.getElementById("title-feedback");
 const websiteUrlDisplay = document.getElementById("website-link-display");
-const setDefaultCard = document.getElementById("defaultCard");
 
 // Forms
 const personalInformationForm = document.getElementById("personalInformation");
@@ -67,6 +64,7 @@ cardWrappers.forEach((card) => {
   }
 });
 
+// Delete card on file
 document.addEventListener("DOMContentLoaded", () => {
   const cardOptions = document.querySelectorAll(".card-options");
 
@@ -79,13 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (trashBtn) {
       trashBtn.addEventListener("click", () => {
-        console.log("delete button was clicked!");
-
         const cardWrapper = option.closest(".card-wrapper");
 
         if (cardWrapper) {
           cardWrapper.remove();
-          console.log("Card has been deleted!");
         }
       });
     } else {
@@ -94,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// Set default card
 document.querySelector("#cards-on-file").addEventListener("click", (event) => {
   if (event.target && event.target.matches(".set-default-card")) {
     const cardWrapper = event.target.closest(".card-wrapper");
@@ -118,6 +114,7 @@ document.querySelector("#cards-on-file").addEventListener("click", (event) => {
   }
 });
 
+// Closes dropdown menu
 document.addEventListener("click", (event) => {
   closeDropdown(event, "select-year", "year-header", "yearIcon");
   closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon");
