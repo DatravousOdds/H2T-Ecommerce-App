@@ -32,7 +32,8 @@
 }
 
 #sm-list {
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   width: 100%;
   padding-left: 0 !important;
   display: flex;
@@ -64,7 +65,8 @@
 }
 
 #list {
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   width: 100px;
   left: 1px;
   top: 4px;
@@ -466,8 +468,7 @@ p {
 .input-error {
   outline: 1px solid red;
   box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
-  background-color: #FEF6F6 !important;
-  
+  background-color: #fef6f6 !important;
 }
 
 .feedback {
@@ -692,13 +693,15 @@ p {
   /* border: 1px solid #d9d9d9; */
   border-radius: 12px;
   display: flex;
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   padding: 10px 24px;
   /* box-shadow: 0px 4px 16px 0px #27313a4a; */
 }
 
 .inner-wrapper {
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   padding: 10px 24px;
   max-width: 975px;
   width: 100%;
@@ -712,8 +715,6 @@ p {
 .inner-wrapper i {
   cursor: pointer;
 }
-
-
 
 .inner-wrapper #payouts {
   display: flex;
@@ -853,7 +854,8 @@ h6 {
 }
 
 .card-wrapper {
-   box-shadow:rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   /* box-shadow: 0px 4px 16px 0px #27313a4a; */
   border-radius: 4px;
   /* border: 1px solid #d9d9d9; */
@@ -1044,6 +1046,17 @@ h6 {
   font-weight: bold;
 }
 
+#add-card-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 10;
+}
+
 .close:hover,
 .close:focus {
   color: black;
@@ -1056,6 +1069,10 @@ h6 {
 }
 
 /* Ulities Classes */
+
+.hidden {
+  display: none;
+}
 
 .action-buttons {
   display: flex;
@@ -1166,7 +1183,8 @@ h6 {
 
 .filter-container .filter-1 {
   border: none;
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   padding: 5px 5px;
   display: flex;
   align-items: center;
@@ -1310,27 +1328,22 @@ h6 {
   background-color: "#e0e0e0";
   border: "#b0b0b0";
   padding: "12px 20px";
- 
 }
-
-
 
 .input-enabled {
   background-color: "transparent";
   border: "none";
   box-shadow: "none";
   padding: "0px 0px";
-  
 }
 
-
 .profile-section {
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   padding: 10px 24px;
   border-radius: 12px;
   align-items: center;
 }
-
 
 .pfp-1 input[type="text"],
 .pfp-1 input[type="email"],
@@ -1365,11 +1378,10 @@ input[type="number"] {
   padding-left: 1px;
 }
 
-
-
 .dropdown-menu.active {
   border: none;
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px, rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   position: relative;
   display: flex;
   opacity: 1;
@@ -1535,14 +1547,13 @@ input[type="number"] {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
-
   .inner-wrapper {
     margin: 15px;
   }
 
   #newsletter .newstext,
   #newsletter .form {
-    padding: var(--padding-medium); 
+    padding: var(--padding-medium);
   }
 
   #profile-inner-wrapper {

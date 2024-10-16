@@ -68,12 +68,20 @@ cardWrappers.forEach((card) => {
 document.addEventListener("DOMContentLoaded", () => {
   const cardOptions = document.querySelectorAll(".card-options");
 
-  console.log(cardOptions);
-
+  const popup = document.getElementById("add-card-popup");
   cardOptions.forEach((option) => {
     console.log(option);
 
     const trashBtn = option.querySelector("i.fa-regular.fa-trash-can");
+    const addCard = option.querySelector(".fa-solid.fa-plus");
+
+    if (addCard) {
+      console.log(addCard);
+      addCard.addEventListener("click", () => {
+        console.log("Add button was clicked!");
+        popup.classList.remove("hidden");
+      });
+    }
 
     if (trashBtn) {
       trashBtn.addEventListener("click", () => {
