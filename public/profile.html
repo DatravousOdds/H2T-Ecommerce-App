@@ -749,15 +749,37 @@
             <!-- Add card popup menu -->
             <div id="add-card-popup" class="hidden">
               <h2>Add a Card</h2>
+              <hr>
               <form action="" id="add-card">
                 <div class="input-group">
-                  <label for="nameOnCard">Name on card</label>
-                  <input type="text" id="nameOnCard" placeholder="Enter your name on the card">
+                  <div class="margin-right">
+                    <label for="nameOnCard">Name on card</label>
+                    <input type="text" id="nameOnCard" placeholder="Enter your name on the card">
+                  </div>
+                  <div class="margin-right">
+                    <label for="cvv">
+                      CVV
+                      </label>
+                      <input type="text" id="cvv" placeholder="123">
+                  </div>
+                  
                 </div>
                 <div class="input-group">
-                  <label for="cardNumber">Card number</label>
-                  <input type="text" id="cardNumber" placeholder="1234 5678 1234 5678">
+                  <div class="margin-right">
+                    <label for="cardNumber">Card number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 1234 5678">
+                  </div>
+                  <div class="margin-right">
+                    <label for="expiry">Expiry</label>
+                    <input type="text" id="expiry" placeholder="MM/YYYY">
+                  </div>
+                 
                 </div>
+                <div>
+                  <input type="checkbox" id="SaveCard">
+                  <label for="saveCard">Save Card</label>
+                </div>
+              
 
               </form>
               <button id="closePopup">Close</button>
