@@ -748,7 +748,11 @@
             </div>
             <!-- Add card popup menu -->
             <div id="add-card-popup" class="hidden">
-              <h2>Add a Card</h2>
+              <div class="addCardHeader">
+                <h2>Add a Card</h2>
+              <span class="close">&times;</span>
+              </div>
+              
               <hr>
               <form action="" id="add-card">
                 <div class="input-group">
@@ -779,10 +783,11 @@
                   <input type="checkbox" id="SaveCard">
                   <label for="saveCard">Save Card</label>
                 </div>
-              
-
               </form>
-              <button id="closePopup">Close</button>
+              <div class="addCardOptions">
+                <button class="btn ">Cancel</button>
+                <button>Add card</button>
+              </div>
             </div>
           </div>
           <!-- Payment reports and taxes -->
