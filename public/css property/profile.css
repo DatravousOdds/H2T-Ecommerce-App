@@ -151,6 +151,12 @@ button:disabled {
   outline: none;
 }
 
+.addCard-btn {
+  background-color: #000;
+  color: #fff;
+  font-weight: 500;
+}
+
 .cancel {
   background-color: #e51a3c;
   color: #000;
@@ -1065,6 +1071,7 @@ h6 {
 
 
 #add-card {
+  align-items: flex-start;
   width: 100%;
   background-color: transparent;
   display: flex;
