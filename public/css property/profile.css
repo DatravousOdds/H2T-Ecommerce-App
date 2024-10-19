@@ -194,6 +194,13 @@ p {
   transform: scale(1.1);
 }
 
+.reg-btn {
+  border: none;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+}
+
 .btn {
   border-radius: 8px !important;
   font-weight: 500;
@@ -1069,6 +1076,15 @@ h6 {
   padding: 20px;
   border-radius: 5px;
   z-index: 10;
+}
+
+.addCardHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.addCardHeader span {
+  font-size: 2rem;
 }
 
 #add-card .input-group {
