@@ -296,7 +296,7 @@ form {
   /* max-width: 700px; */
   background: #212529;
   align-items: center;
-  padding: 10px 10px;
+  padding: 0px 10px;
 }
 
 nav .search_box {

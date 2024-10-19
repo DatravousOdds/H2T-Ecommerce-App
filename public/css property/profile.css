@@ -114,6 +114,12 @@ hr {
   margin-left: 0;
 }
 
+.space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .default-button {
   height: 42px;
   border-radius: 8px;
