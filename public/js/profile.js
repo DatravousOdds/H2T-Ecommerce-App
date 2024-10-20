@@ -43,6 +43,13 @@ const websiteUrlDisplay = document.getElementById("website-link-display");
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
 
+// close add card popup
+const closePopup = document.getElementById("closePopup");
+const addCardMenu = document.getElementById("add-card-popup")
+closePopup.addEventListener("click", () => {
+  addCardMenu.classList.add("hidden")
+})
+
 // Form submission
 personalInformationForm.addEventListener("submit", (e) => {
   e.preventDefault(); // prevents form submission for validation checks
