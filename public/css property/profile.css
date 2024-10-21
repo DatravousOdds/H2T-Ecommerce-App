@@ -1073,6 +1073,10 @@ h6 {
   display: none;
 }
 
+.add-card-menu.active {
+  display: flex;
+}
+
 .add-card-menu {
   position: fixed;
   top: 0;
@@ -1094,13 +1098,19 @@ h6 {
   flex-direction: column;
 }
 
-
 #add-card-popup {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  width: 400px;
+  /* width: 400px; */
   position: relative;
+}
+.underline {
+  text-decoration: underline;
+}
+
+#add-card-popup .addCardOptions {
+  padding: 1rem;
 }
 
 .addCardHeader {
@@ -1115,15 +1125,14 @@ h6 {
   font-weight: bold;
 }
 
-
-
 #add-card .input-group {
   padding: 12px 1rem;
 }
 
-#add-card input[type="text"], #add-card input[type="number"] {
-  padding:10px;
-  width: 100%; 
+#add-card input[type="text"],
+#add-card input[type="number"] {
+  padding: 10px;
+  width: 100%;
   border-radius: 8px;
   border: 1px solid #d6d6d6;
 }
@@ -1140,8 +1149,6 @@ h6 {
 }
 
 /* Ulities Classes */
-
-
 
 .action-buttons {
   display: flex;
