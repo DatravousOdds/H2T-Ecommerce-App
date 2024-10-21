@@ -68,16 +68,23 @@ cardWrappers.forEach((card) => {
   }
 });
 
+const addNewCard = document.getElementById("add-new-card")
+const popupMenu = document.getElementById("addCard-modal")
+console.log(popupMenu)
+console.log("ADD NEW CAR", addNewCard)
+
+
+addNewCard.addEventListener("click",() => {
+  console.log("add card was click")
+  popupMenu.style.display = "flex";
+
+})
 // Delete card on file
 document.addEventListener("DOMContentLoaded", () => {
   const cardOptions = document.querySelectorAll(".card-options");
   cardOptions.forEach((option) => {
-    console.log(option);
 
     const trashBtn = option.querySelector("i.fa-regular.fa-trash-can");
-   
-
-    
     if (trashBtn) {
       trashBtn.addEventListener("click", () => {
         const cardWrapper = option.closest(".card-wrapper");
