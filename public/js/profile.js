@@ -45,10 +45,7 @@ const shippingInformationForm = document.getElementById("shippingInformation");
 
 // close add card popup
 const closePopup = document.getElementById("closePopup");
-const addCardMenu = document.getElementById("add-card-popup")
-closePopup.addEventListener("click", () => {
-  addCardMenu.classList.add("hidden")
-})
+
 
 // Form submission
 personalInformationForm.addEventListener("submit", (e) => {
@@ -74,22 +71,13 @@ cardWrappers.forEach((card) => {
 // Delete card on file
 document.addEventListener("DOMContentLoaded", () => {
   const cardOptions = document.querySelectorAll(".card-options");
-
-  const popup = document.getElementById("add-card-popup");
   cardOptions.forEach((option) => {
     console.log(option);
 
     const trashBtn = option.querySelector("i.fa-regular.fa-trash-can");
-    const addCard = option.querySelector(".fa-solid.fa-plus");
+   
 
-    if (addCard) {
-      console.log(addCard);
-      addCard.addEventListener("click", () => {
-        console.log("Add button was clicked!");
-        popup.classList.remove("hidden");
-      });
-    }
-
+    
     if (trashBtn) {
       trashBtn.addEventListener("click", () => {
         const cardWrapper = option.closest(".card-wrapper");
