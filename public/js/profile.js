@@ -46,7 +46,6 @@ const shippingInformationForm = document.getElementById("shippingInformation");
 // close add card popup
 const closePopup = document.getElementById("closePopup");
 
-
 // Form submission
 personalInformationForm.addEventListener("submit", (e) => {
   e.preventDefault(); // prevents form submission for validation checks
@@ -68,22 +67,26 @@ cardWrappers.forEach((card) => {
   }
 });
 
-const addNewCard = document.getElementById("add-new-card")
-const popupMenu = document.getElementById("addCard-modal")
-console.log(popupMenu)
-console.log("ADD NEW CAR", addNewCard)
+const addNewCard = document.getElementById("add-new-card");
+const popupMenu = document.getElementById("addCard-modal");
+const closePopMenu = document.getElementById("closePopup");
+console.log(closePopMenu);
+console.log(popupMenu);
+console.log("ADD NEW CAR", addNewCard);
 
+addNewCard.addEventListener("click", () => {
+  console.log("add card was click");
+  popupMenu.classList.add("active");
+});
 
-addNewCard.addEventListener("click",() => {
-  console.log("add card was click")
-  popupMenu.style.display = "flex";
+closePopMenu.addEventListener("click", () => {
+  popupMenu.classList.remove("active");
+});
 
-})
 // Delete card on file
 document.addEventListener("DOMContentLoaded", () => {
   const cardOptions = document.querySelectorAll(".card-options");
   cardOptions.forEach((option) => {
-
     const trashBtn = option.querySelector("i.fa-regular.fa-trash-can");
     if (trashBtn) {
       trashBtn.addEventListener("click", () => {
