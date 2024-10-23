@@ -360,6 +360,20 @@ p {
   font-size: 32px;
 }
 
+.funds-container {
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  border: none;
+}
+
+.funds-container .funds-balance {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 #bio-section .btn-wrapper #remove-btn:hover {
   box-shadow: rgba(0, 0, 0, 0.03) 0px 4px 4px 0px;
   background-color: #202124;
