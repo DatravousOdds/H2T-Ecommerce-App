@@ -374,6 +374,17 @@ p {
   gap: 1rem;
 }
 
+.funds-container .currency-dropdown {
+  border-radius: 32px;
+  border: 1px solid;
+  padding: 2px 10px;
+}
+
+.funds-container .currency-dropdown .dropdown-btn {
+  background-color: transparent;
+  border: none;
+}
+
 #bio-section .btn-wrapper #remove-btn:hover {
   box-shadow: rgba(0, 0, 0, 0.03) 0px 4px 4px 0px;
   background-color: #202124;
