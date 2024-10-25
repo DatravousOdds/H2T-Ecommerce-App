@@ -454,6 +454,10 @@ p {
   font-weight: 600;
 }
 
+.funds-container .fa-solid {
+  font-size: larger;
+}
+
 #bio-section .btn-wrapper #remove-btn:hover {
   box-shadow: rgba(0, 0, 0, 0.03) 0px 4px 4px 0px;
   background-color: #202124;
