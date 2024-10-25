@@ -361,28 +361,97 @@ p {
 }
 
 .funds-container {
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 24px;
+  border-radius: 12px;
+  max-width: 450px;
+
+  width: 100%;
+  background: white;
   box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
-  border: none;
+  border: 1px solid #e5e5e5;
 }
 
 .funds-container .funds-balance {
   display: flex;
   align-items: center;
   gap: 1rem;
+  justify-content: space-between;
+}
+
+.funds-balance h1 {
+  font-weight: 700;
+  font-size: 36px;
 }
 
 .funds-container .currency-dropdown {
-  border-radius: 32px;
-  border: 1px solid;
-  padding: 2px 10px;
+  border-radius: 8px;
+  /* border: none; */
+  padding: 8px 12px;
+  gap: 8px;
+  background-color: #f3f4f6;
+  display: flex;
+  border-radius: 8px;
+  align-items: center;
+}
+
+.from-account .from-account-info {
+  flex: 1;
+}
+
+.currency-dropdown span {
+  font-size: 1rem;
 }
 
 .funds-container .currency-dropdown .dropdown-btn {
   background-color: transparent;
   border: none;
+}
+
+.funds-container .from-account {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 9px;
+  margin: 24px 0px;
+}
+
+.funds-container .quick-amounts {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 24px 0px;
+}
+
+.quick-amounts .amount-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.amount-btn.selected {
+  color: white;
+  background-color: green;
+}
+
+#add-funds-btn {
+  padding: 12px;
+  width: 100%;
+  border: none;
+  background: green;
+  color: white;
+  border-radius: 8px;
+}
+
+#ad-funds-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.funds-container .quick-amounts-title {
+  font-weight: 600;
 }
 
 #bio-section .btn-wrapper #remove-btn:hover {

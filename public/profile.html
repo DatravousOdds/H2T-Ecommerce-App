@@ -708,6 +708,7 @@
 
           <!-- cards on file-->
           <div class="inner-wrapper" id="cards-on-file">
+            
             <h2>Cards on File</h2>
             <!-- COF Container-->
             <div class="card-wrapper">
@@ -789,14 +790,14 @@
                 </form>
                 <div class="addCardOptions space-between">
                   <button class="cancel reg-btn underline">Cancel</button>
-                  <button class="addCard-btn reg-btn">Done</button>
+                  <button class="addCard-btn reg-btn">Add card</button>
                 </div>
               </div>
             </div>
             <!-- Add Fund popup Menu-->
-             <div class="funds-container">
+            <div class="funds-container">
               <h3 class="funds-title">Amount</h3>
-              <hr>
+              <hr />
               <div class="funds-balance">
                 <h1>$0.00</h1>
                 <div class="currency-dropdown">
@@ -806,30 +807,37 @@
                   </button>
                 </div>
               </div>
-              <p class="wallet-info">You have $100.00 USD available in your wallet.</p>
+              <p class="wallet-info">
+                You have $100.00 USD available in your wallet.
+              </p>
 
               <div class="from-account">
                 <i class="fa-solid fa-building-columns"></i>
-                <p class="from-account-info">From bank account ending in 9233</p>
+                <p class="from-account-info">
+                  From bank account ending in 9233
+                </p>
                 <i class="fa-solid fa-chevron-down"></i>
               </div>
 
-              <p class="quick-amounts-title"></p>
+              <p class="quick-amounts-title">Quick amounts</p>
 
               <div class="quick-amounts">
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
-                <button class="amount-btn"></button>
+                <button class="amount-btn">$10</button>
+                <button class="amount-btn">$25</button>
+                <button class="amount-btn">$50</button>
+                <button class="amount-btn">$75</button>
+                <button class="amount-btn">$100</button>
+                <button class="amount-btn">$150</button>
+                <button class="amount-btn">$200</button>
+                <button class="amount-btn">$300</button>
+                <button class="amount-btn">$400</button>
+                <button class="amount-btn">$500</button>
               </div>
-             </div>
-          
+
+              <button id="add-funds-btn">Add Funds</button>
+            </div>
+
+          </div>
           <!-- Payment reports and taxes -->
           <div class="inner-wrapper" id="payments-reports">
             <div class="filter-container">
@@ -863,6 +871,7 @@
                   ></span>
                   <p class="selected-year">2024</p>
                 </div>
+
                 <!-- Dropdown section for Year -->
                 <div id="select-year" class="year-dropdown">
                   <ul id="list" class="">
@@ -874,6 +883,7 @@
                 </div>
               </div>
             </div>
+
             <!-- Dropdown section for 'Statements' with toggle icon -->
             <div class="dropdown-section" id="dropdown-toggle">
               <div class="dropdown-header inline">
@@ -911,11 +921,13 @@
                       <p>Feb Statements</p>
                       <i class="fa-solid fa-file-arrow-down"></i>
                     </div>
+
                     <div><a href="#">View Details</a></div>
                   </div>
                 </div>
               </div>
             </div>
+
             <!-- Tax Center -->
             <div class="dropdown-section" id="dropdown-toggle">
               <div class="dropdown-header inline">
