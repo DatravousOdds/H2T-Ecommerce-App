@@ -368,13 +368,13 @@ p {
   background: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e5e5;
-
   transform: scale(0.7);
   opacity: 0;
   transition: all 0.3s ease-in-out;
 }
 
-.add-funds-menu.active .funds-container {
+.add-funds-menu.active .funds-container,
+.add-card-menu.active .add-card-popup {
   transform: scale(1);
   opacity: 1;
 }
@@ -395,6 +395,19 @@ p {
   align-items: center;
   gap: 1rem;
   justify-content: space-between;
+}
+
+.funds-balance .funds-input {
+  font-weight: 700;
+  font-size: 2rem;
+  width: 80%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0px 12px;
+}
+
+.funds-input.focused {
+  border: none;
 }
 
 .funds-balance h1 {
@@ -488,7 +501,8 @@ p {
   transition: all 0.3s ease-in-out;
 }
 
-.add-funds-menu.active {
+.add-funds-menu.active,
+.add-card-menu.active {
   opacity: 1;
   visibility: visible;
   background-color: rgba(0, 0, 0, 0.5);
@@ -1219,9 +1233,9 @@ h6 {
   display: none;
 }
 
-.add-card-menu.active {
+/* .add-card-menu.active {
   display: flex;
-}
+} */
 
 .add-card-menu {
   position: fixed;
@@ -1229,11 +1243,14 @@ h6 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: none;
+  background-color: rgba(0, 0, 0, 0);
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
 }
 
 #add-card {
@@ -1570,7 +1587,7 @@ h6 {
 .pfp-1 input[type="text"],
 .pfp-1 input[type="email"],
 .pfp-1 input[type="tel"],
-input[type="number"] {
+.pfp-1 input[type="number"] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;

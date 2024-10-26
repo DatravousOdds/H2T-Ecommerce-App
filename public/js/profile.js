@@ -1,5 +1,21 @@
-import { generateCountries, validateForm, generateRegions } from "./global.js";
+import { generateCountries, validateForm } from "./global.js";
 import { closeDropdown } from "./global.js";
+
+function openPopupMenu(menu) {
+  const overlay = document.querySelector(menu);
+  overlay.classList.add("active");
+  // Prevent body scrolling when popup is open
+  document.body.style.overflow = "hidden";
+  document.documentElement.style.overflow = "hidden"; // Add this for the html element
+}
+
+function closePopupMenu(menu) {
+  const overlay = document.querySelector(menu);
+  overlay.classList.remove("active");
+  // Reset scrolling
+  document.body.style.overflow = "auto";
+  document.documentElement.style.overflow = "auto"; // Add this for html element
+}
 
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
@@ -68,19 +84,17 @@ cardWrappers.forEach((card) => {
 });
 
 const addNewCard = document.getElementById("add-new-card");
-const popupMenu = document.getElementById("addCard-modal");
 const closePopMenu = document.getElementById("closePopup");
-console.log(closePopMenu);
-console.log(popupMenu);
-console.log("ADD NEW CAR", addNewCard);
 
 addNewCard.addEventListener("click", () => {
   console.log("add card was click");
-  popupMenu.classList.add("active");
+  // popupMenu.classList.add("active");
+  openPopupMenu(".add-card-menu");
 });
 
 closePopMenu.addEventListener("click", () => {
-  popupMenu.classList.remove("active");
+  // popupMenu.classList.remove("active");
+  closePopupMenu(".add-card-menu");
 });
 
 // Delete card on file
@@ -649,7 +663,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -664,7 +678,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -697,7 +711,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -760,13 +774,12 @@ allTabs.forEach((tab) => {
 });
 
 // Add funds popup menu
-
 const quickAmountsContainer = document.getElementById(
   "quick-amounts-container"
 );
 
-const addFundsBtn = document.getElementById("add-funds");
 const fundsBalance = document.getElementById("funds-balance");
+
 const amounts = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
 let selectAmount = 0;
 
@@ -781,7 +794,7 @@ amounts.forEach((amount) => {
   button.addEventListener("click", () => {
     // Updated selected amount
     selectAmount = amount;
-    fundsBalance.textContent = `$${selectAmount.toFixed(2)}`;
+    updateFundsBalance(selectAmount);
 
     // Remove 'selected' class from all buttons, then add to the clicked
   });
@@ -789,24 +802,30 @@ amounts.forEach((amount) => {
   quickAmountsContainer.appendChild(button);
 });
 
-// Corrected console.log statements
-console.log(addFundsBtn);
-
-function openPopupMenu() {
-  const overlay = document.querySelector(".add-funds-menu");
-  overlay.classList.add("active");
-  // Prevent body scrolling when popup is open
-  document.body.overflow = "hidden";
+// Function to update funds balance
+function updateFundsBalance(amount) {
+  fundsBalance.value = amount.toFixed(2);
 }
 
-function closePopupMenu() {
-  const overlay = document.querySelector(".add-funds-menu");
-  overlay.classList.remove("active");
+fundsBalance.addEventListener("blur", () => {
+  const inputAmount = parseFloat(fundsBalance.value);
+  if (!isNaN(inputAmount)) {
+    updateFundsBalance(inputAmount);
+  } else {
+    fundsBalance.value = "0.00";
+  }
+});
 
-  document.body.style.overflow = "auto";
-}
+fundsBalance.addEventListener("keypress", (event) => {
+  if (event.key === "Enter") {
+    fundsBalance.blur(); // Trigger blur event
+  }
+});
 
-addFundsBtn.addEventListener("click", openPopupMenu);
+const addFundsBtn = document.getElementById("add-funds");
+addFundsBtn.addEventListener("click", () => openPopupMenu(".add-funds-menu"));
 
 const addFundsCloseBtn = document.querySelector(".close-button");
-addFundsCloseBtn.addEventListener("click", closePopupMenu);
+addFundsCloseBtn.addEventListener("click", () =>
+  closePopupMenu(".add-funds-menu")
+);
