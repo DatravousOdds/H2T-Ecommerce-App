@@ -708,7 +708,6 @@
 
           <!-- cards on file-->
           <div class="inner-wrapper" id="cards-on-file">
-            
             <h2>Cards on File</h2>
             <!-- COF Container-->
             <div class="card-wrapper">
@@ -795,48 +794,49 @@
               </div>
             </div>
             <!-- Add Fund popup Menu-->
-            <div class="funds-container">
-              <h3 class="funds-title">Amount</h3>
-              <hr />
-              <div class="funds-balance">
-                <h1>$0.00</h1>
-                <div class="currency-dropdown">
-                  <span>USD</span>
-                  <button class="dropdown-btn">
-                    <i class="fa-solid fa-chevron-down"></i>
-                  </button>
+            <div id="addFunds-modal" class="add-funds-menu">
+              <div class="funds-container">
+                <h3 class="funds-title">Amount</h3>
+                <hr />
+                <div class="funds-balance">
+                  <h1>$0.00</h1>
+                  <div class="currency-dropdown">
+                    <span>USD</span>
+                    <button class="dropdown-btn">
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <p class="wallet-info">
-                You have $100.00 USD available in your wallet.
-              </p>
-
-              <div class="from-account">
-                <i class="fa-solid fa-building-columns"></i>
-                <p class="from-account-info">
-                  From bank account ending in 9233
+                <p class="wallet-info">
+                  You have $100.00 USD available in your wallet.
                 </p>
-                <i class="fa-solid fa-chevron-down"></i>
+
+                <div class="from-account">
+                  <i class="fa-solid fa-building-columns"></i>
+                  <p class="from-account-info">
+                    From bank account ending in 9233
+                  </p>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+
+                <p class="quick-amounts-title">Quick amounts</p>
+
+                <div class="quick-amounts">
+                  <button class="amount-btn">$10</button>
+                  <button class="amount-btn">$25</button>
+                  <button class="amount-btn">$50</button>
+                  <button class="amount-btn">$75</button>
+                  <button class="amount-btn">$100</button>
+                  <button class="amount-btn">$150</button>
+                  <button class="amount-btn">$200</button>
+                  <button class="amount-btn">$300</button>
+                  <button class="amount-btn">$400</button>
+                  <button class="amount-btn">$500</button>
+                </div>
+
+                <button id="add-funds-btn">Add Funds</button>
               </div>
-
-              <p class="quick-amounts-title">Quick amounts</p>
-
-              <div class="quick-amounts">
-                <button class="amount-btn">$10</button>
-                <button class="amount-btn">$25</button>
-                <button class="amount-btn">$50</button>
-                <button class="amount-btn">$75</button>
-                <button class="amount-btn">$100</button>
-                <button class="amount-btn">$150</button>
-                <button class="amount-btn">$200</button>
-                <button class="amount-btn">$300</button>
-                <button class="amount-btn">$400</button>
-                <button class="amount-btn">$500</button>
-              </div>
-
-              <button id="add-funds-btn">Add Funds</button>
             </div>
-
           </div>
           <!-- Payment reports and taxes -->
           <div class="inner-wrapper" id="payments-reports">
