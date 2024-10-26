@@ -463,6 +463,10 @@ p {
   z-index: 100;
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 .funds-container .quick-amounts-title {
   font-weight: 600;
 }
