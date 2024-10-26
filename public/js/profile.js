@@ -764,3 +764,36 @@ allTabs.forEach((tab) => {
     localStorage.setItem("activeTab", tabId);
   });
 });
+
+// Add funds popup menu
+const addFundsBtn = document.getElementById("add-funds-btn");
+const quickAmountsContainer = document.getElementById(
+  "quick-amounts-container"
+);
+
+const fromAmountBtn = document.getElementById("from-account");
+const currencyDropdownBtn = document.querySelector(".currency-dropdown");
+const fundsBalance = document.getElementById("funds-balance");
+const amounts = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
+let selectAmount = 0;
+
+// Dynamically create buttons
+amounts.forEach((amount) => {
+  const button = document.createElement("button");
+  button.className = "amount-btn";
+  button.value = amount;
+  button.textContent = `$${amount}`;
+
+  // Click event to update selected amount and highlight the button
+  button.addEventListener("click", () => {
+    // Updated selected amount
+    selectAmount = amount;
+    fundsBalance.textContent = `$${selectAmount.toFixed(2)}`;
+
+    // Remove 'selected' class from all buttons, then add to the clicked
+  });
+
+  quickAmountsContainer.appendChild(button);
+});
+
+// Corrected console.log statements
