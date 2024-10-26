@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <link rel="stylesheet" href="css property/style2.css" />
     <link rel="stylesheet" href="css property/profile.css" />
     <link
@@ -750,7 +751,7 @@
             </div>
             <!-- Add card popup menu -->
             <div id="addCard-modal" class="add-card-menu">
-              <div id="add-card-popup">
+              <div id="add-card-popup" class="add-card-popup">
                 <div class="addCardHeader">
                   <h2>Add a Card</h2>
                   <span id="closePopup" class="close">&times;</span>
@@ -806,7 +807,12 @@
 
                 <hr />
                 <div class="funds-balance">
-                  <h1 id="funds-balance">$0.00</h1>
+                  <input
+                    id="funds-balance"
+                    class="funds-input"
+                    value="0.00"
+                    type="text"
+                  />
                   <div class="currency-dropdown">
                     <select class="currency-select" id="currency">
                       <option value="">USD</option>
@@ -974,6 +980,7 @@
     </section>
 
     <footer></footer>
+
     <script type="module" src="js/profile.js"></script>
     <script src="js/footer.js"></script>
     <script src="js/nav.js"></script>

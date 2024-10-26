@@ -18,13 +18,12 @@ export const generateCountries = (apiUrl, selectId) => {
           const option = document.createElement("option");
           option.value = country.cca2;
           option.textContent = country.name.common;
-        
+
           select.appendChild(option);
         });
 
         // Call generateRegions to populate regions
         // generateRegions(data);
-        
       } else {
         console.error(`Select element with id "${selectId}" not found.`);
       }
@@ -34,26 +33,19 @@ export const generateCountries = (apiUrl, selectId) => {
 };
 
 export const generateRegions = (countriesData) => {
-  
-  const selectSelect = document.getElementById("state-select")
+  const selectSelect = document.getElementById("state-select");
 
-  countriesData.forEach(country => {
+  countriesData.forEach((country) => {
     // console.log(country.region)
     regions.add(country.region);
     // console.log(country.cca2)
-  })
-
-  
+  });
 
   const regionSelect = document.getElementById("state-select");
 
   if (regionSelect) {
-    
   }
-
-  
-
-}
+};
 
 export function setError(inputElement, errorElement, message) {
   errorElement.textContent = message;
@@ -78,7 +70,7 @@ export function validatePhone(phoneNumber) {
 }
 
 export function validateAddress(address) {
-  return address.length > 5
+  return address.length > 5;
 }
 
 export function validatePostalCode(postalCode) {
@@ -89,19 +81,24 @@ export function validatePostalCode(postalCode) {
 export function validateForm(formElement) {
   let isValid = true; // Assume the form is valid initially
 
-  
   // Get form fields
   const firstname = formElement.querySelector("[name='fname']")?.value.trim();
   const lastname = formElement.querySelector("[name='lname']")?.value.trim();
   const email = formElement.querySelector("[name='email']")?.value.trim();
-  const phoneNumber = formElement.querySelector("[name='phoneNumber']")?.value.trim();
-  const username = formElement.querySelector("[name='profile-username']")?.value.trim(); // Optional for shipping form
+  const phoneNumber = formElement
+    .querySelector("[name='phoneNumber']")
+    ?.value.trim();
+  const username = formElement
+    .querySelector("[name='profile-username']")
+    ?.value.trim(); // Optional for shipping form
   const country = formElement.querySelector("[name='country']")?.value.trim();
   const addressInput = formElement.querySelector("[name='address']");
   const address = addressInput?.value.trim();
   const city = formElement.querySelector("[name='city']")?.value.trim();
   const postal = formElement.querySelector("[name='postal']")?.value.trim();
-  const stateSelect = formElement.querySelector("[name='state-region']")?.value.trim();
+  const stateSelect = formElement
+    .querySelector("[name='state-region']")
+    ?.value.trim();
 
   // Get error message containers
   const addressError = formElement.querySelector("#addressError");
@@ -113,7 +110,7 @@ export function validateForm(formElement) {
   const usernameError = formElement.querySelector("#usernameError");
   const cityError = formElement.querySelector("#cityError");
   const postalError = formElement.querySelector("#postalError");
-  const stateError = formElement.querySelector("#stateError")
+  const stateError = formElement.querySelector("#stateError");
 
   // Clear previous errors
   if (addressError)
@@ -136,14 +133,12 @@ export function validateForm(formElement) {
   if (cityError)
     clearError(formElement.querySelector("[name='city']"), cityError);
   if (postalError)
-
-
     clearError(formElement.querySelector("[name='postal']"), postalError);
-  if(stateError) clearError(formElement.querySelector("[name='state-region']"), stateError);
+  if (stateError)
+    clearError(formElement.querySelector("[name='state-region']"), stateError);
 
   console.log(phoneNumber);
   console.log(phoneError);
-
 
   // Validate First Name
   if (firstname === "" && formElement.querySelector("[name='fname']")) {
@@ -167,10 +162,11 @@ export function validateForm(formElement) {
 
   // Validate Email
   if (email === "") {
-    setError(formElement.querySelector("[name='email']"),
-  emailError,
-"Please enter a email address")
-
+    setError(
+      formElement.querySelector("[name='email']"),
+      emailError,
+      "Please enter a email address"
+    );
   } else if (email && !validateEmail(email)) {
     setError(
       formElement.querySelector("[name='email']"),
@@ -180,21 +176,29 @@ export function validateForm(formElement) {
     isValid = false;
   }
 
-  
   // Validate Phone Number if the field exists
 
   if (phoneNumber === "") {
-    setError(formElement.querySelector("[name='phoneNumber']"), 
-  phoneError,
-"Phone number is required")
+    setError(
+      formElement.querySelector("[name='phoneNumber']"),
+      phoneError,
+      "Phone number is required"
+    );
   }
   if (phoneNumber && !validatePhone(phoneNumber)) {
-    setError(formElement.querySelector("[name='phoneNumber']"), phoneError, "Please enter a valid phone number");
+    setError(
+      formElement.querySelector("[name='phoneNumber']"),
+      phoneError,
+      "Please enter a valid phone number"
+    );
     isValid = false;
   }
 
   // Validate Username (only for personal information form)
-  if (username === "" && formElement.querySelector("[name='profile-username']")) {
+  if (
+    username === "" &&
+    formElement.querySelector("[name='profile-username']")
+  ) {
     setError(
       formElement.querySelector("[name='profile-username']"),
       usernameError,
@@ -214,11 +218,16 @@ export function validateForm(formElement) {
   }
 
   // Validate state-region
-  if(stateSelect === "" && formElement.querySelector("[name='state-region']")) {
-    setError(formElement.querySelector("[name='state-region']"),
-  stateError, 
-  "Please select the state")
-  isValid = false;
+  if (
+    stateSelect === "" &&
+    formElement.querySelector("[name='state-region']")
+  ) {
+    setError(
+      formElement.querySelector("[name='state-region']"),
+      stateError,
+      "Please select the state"
+    );
+    isValid = false;
   }
 
   // Validate City
@@ -233,17 +242,18 @@ export function validateForm(formElement) {
 
   // Validate Postal Code
   /* TODO : implement a function to validate the postal code */
-  if ( postal === "") {
-    setError(formElement.querySelector("[name='postal']"),
-    postalError,
-    "Please enter a postal code"
-  )
-  isValid = false;
+  if (postal === "") {
+    setError(
+      formElement.querySelector("[name='postal']"),
+      postalError,
+      "Please enter a postal code"
+    );
+    isValid = false;
   } else if (postal && !validatePostalCode(postal)) {
     setError(
       formElement.querySelector("[name='postal']"),
       postalError,
-      "Please ente a vaild postal code"
+      "Please enter a valid postal code"
     );
 
     isValid = false;
@@ -263,23 +273,21 @@ export function closeDropdown(event, dropdownId, headerId, iconId) {
   const header = document.getElementById(headerId);
   const icon = iconId ? document.getElementById(iconId) : null; // check if an idea has been provided
 
-
-  const isClickInsideDropdown =  dropdownContent.contains(event.target) || header.contains(event.target);
+  const isClickInsideDropdown =
+    dropdownContent.contains(event.target) || header.contains(event.target);
 
   if (!isClickInsideDropdown) {
     dropdownContent.classList.remove("open");
-    dropdownContent.classList.remove("active")
+    dropdownContent.classList.remove("active");
 
     // Remove rotation from the icon if it exists
     if (icon) {
       icon.classList.remove("rotate");
-
     } else {
       // If the dropdown is clicked, you might want to add rotation
       if (icon) {
         icon.classList.add("rotate");
       }
     }
-    
   }
 }
