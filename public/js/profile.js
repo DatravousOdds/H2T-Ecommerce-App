@@ -792,17 +792,21 @@ amounts.forEach((amount) => {
 // Corrected console.log statements
 console.log(addFundsBtn);
 
-addFundsBtn.addEventListener("click", () => {
-  console.log("add button was clicked");
-  const addFundsModal = document.querySelector(".add-funds-menu");
-  addFundsModal.style.display = "flex";
-});
+function openPopupMenu() {
+  const overlay = document.querySelector(".add-funds-menu");
+  overlay.classList.add("active");
+  // Prevent body scrolling when popup is open
+  document.body.overflow = "hidden";
+}
+
+function closePopupMenu() {
+  const overlay = document.querySelector(".add-funds-menu");
+  overlay.classList.remove("active");
+
+  document.body.style.overflow = "auto";
+}
+
+addFundsBtn.addEventListener("click", openPopupMenu);
 
 const addFundsCloseBtn = document.querySelector(".close-button");
-
-// console.log(addFundsCloseBtn);
-
-addFundsCloseBtn.addEventListener("click", () => {
-  const addFundsModal = document.querySelector(".add-funds-menu");
-  addFundsModal.style.display = "none";
-});
+addFundsCloseBtn.addEventListener("click", closePopupMenu);

@@ -368,6 +368,15 @@ p {
   background: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e5e5;
+
+  transform: scale(0.7);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.add-funds-menu.active .funds-container {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .funds-container .close-button {
@@ -469,11 +478,20 @@ p {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: none; /* intially set to none */
+  background-color: rgba(0, 0, 0, 0);
+  display: flex; /* intially set to none */
   align-items: center;
   justify-content: center;
   z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.add-funds-menu.active {
+  opacity: 1;
+  visibility: visible;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .no-scroll {
