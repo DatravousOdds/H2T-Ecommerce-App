@@ -588,12 +588,6 @@ profileSection.forEach((section) => {
       console.log(btn.id);
       let currentForm = null;
 
-      // if (btn.id === "save-personal-info") {
-      //   currentForm = document.getElementById("personalInformation");
-      // } else {
-      //   currentForm = document.getElementById("shippingInformation");
-      // }
-
       currentForm =
         btn.id === "save-personal-info"
           ? document.getElementById("personalInformation")
@@ -655,7 +649,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username",
+          "profile-username"
         ];
 
         personalFormIds.forEach((id) => {
@@ -670,7 +664,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError",
+          "usernameError"
         ];
 
         personalErrorIds.forEach((id) => {
@@ -703,7 +697,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError",
+          "addressError"
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -766,13 +760,12 @@ allTabs.forEach((tab) => {
 });
 
 // Add funds popup menu
-const addFundsBtn = document.getElementById("add-funds-btn");
+
 const quickAmountsContainer = document.getElementById(
   "quick-amounts-container"
 );
 
-const fromAmountBtn = document.getElementById("from-account");
-const currencyDropdownBtn = document.querySelector(".currency-dropdown");
+const addFundsBtn = document.getElementById("add-funds");
 const fundsBalance = document.getElementById("funds-balance");
 const amounts = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
 let selectAmount = 0;
@@ -797,3 +790,19 @@ amounts.forEach((amount) => {
 });
 
 // Corrected console.log statements
+console.log(addFundsBtn);
+
+addFundsBtn.addEventListener("click", () => {
+  console.log("add button was clicked");
+  const addFundsModal = document.querySelector(".add-funds-menu");
+  addFundsModal.style.display = "flex";
+});
+
+const addFundsCloseBtn = document.querySelector(".close-button");
+
+// console.log(addFundsCloseBtn);
+
+addFundsCloseBtn.addEventListener("click", () => {
+  const addFundsModal = document.querySelector(".add-funds-menu");
+  addFundsModal.style.display = "none";
+});

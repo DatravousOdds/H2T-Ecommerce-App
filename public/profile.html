@@ -669,7 +669,7 @@
                 <h1>$100.00</h1>
                 <div class="btn-wrapper">
                   <button class="withdraw">Withdraw</button>
-                  <button class="add-funds">Add Funds</button>
+                  <button class="add-funds" id="add-funds">Add Funds</button>
                 </div>
               </div>
             </div>
@@ -796,15 +796,23 @@
             <!-- Add Fund popup Menu-->
             <div id="addFunds-modal" class="add-funds-menu">
               <div class="funds-container">
-                <h3 class="funds-title">Amount</h3>
+                <div class="header-wrapper">
+                  <h3 class="funds-title">Amount</h3>
+
+                  <button class="close-button">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+
                 <hr />
                 <div class="funds-balance">
                   <h1 id="funds-balance">$0.00</h1>
                   <div class="currency-dropdown">
-                    <span>USD</span>
-                    <button class="dropdown-btn">
-                      <i class="fa-solid fa-chevron-down"></i>
-                    </button>
+                    <select class="currency-select" id="currency">
+                      <option value="">USD</option>
+                      <option value="">EUR</option>
+                      <option value="">GBP</option>
+                    </select>
                   </div>
                 </div>
                 <p class="wallet-info">
@@ -812,11 +820,16 @@
                 </p>
 
                 <div class="from-account" id="from-account">
-                  <i class="fa-solid fa-building-columns"></i>
-                  <p class="from-account-info">
-                    From bank account ending in 9233
-                  </p>
-                  <i class="fa-solid fa-chevron-down"></i>
+                  <select id="paymentMethod">
+                    <option value="1">💳 Visa ending in 4242</option>
+                    <option value="2">💳 Mastercard ending in 1234</option>
+                    <option value="3">
+                      🏦 From Chase account ending in 9233
+                    </option>
+                    <option value="4">
+                      🏦 From Bank of America account ending in 5678
+                    </option>
+                  </select>
                 </div>
 
                 <p class="quick-amounts-title">Quick amounts</p>
