@@ -799,7 +799,7 @@
                 <h3 class="funds-title">Amount</h3>
                 <hr />
                 <div class="funds-balance">
-                  <h1>$0.00</h1>
+                  <h1 id="funds-balance">$0.00</h1>
                   <div class="currency-dropdown">
                     <span>USD</span>
                     <button class="dropdown-btn">
@@ -811,7 +811,7 @@
                   You have $100.00 USD available in your wallet.
                 </p>
 
-                <div class="from-account">
+                <div class="from-account" id="from-account">
                   <i class="fa-solid fa-building-columns"></i>
                   <p class="from-account-info">
                     From bank account ending in 9233
@@ -821,18 +821,10 @@
 
                 <p class="quick-amounts-title">Quick amounts</p>
 
-                <div class="quick-amounts">
-                  <button class="amount-btn">$10</button>
-                  <button class="amount-btn">$25</button>
-                  <button class="amount-btn">$50</button>
-                  <button class="amount-btn">$75</button>
-                  <button class="amount-btn">$100</button>
-                  <button class="amount-btn">$150</button>
-                  <button class="amount-btn">$200</button>
-                  <button class="amount-btn">$300</button>
-                  <button class="amount-btn">$400</button>
-                  <button class="amount-btn">$500</button>
-                </div>
+                <div
+                  class="quick-amounts-container"
+                  class="quick-amounts"
+                ></div>
 
                 <button id="add-funds-btn">Add Funds</button>
               </div>
