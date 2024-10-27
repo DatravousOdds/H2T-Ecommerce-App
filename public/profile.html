@@ -847,6 +847,47 @@
                 <button id="add-funds-btn">Add Funds</button>
               </div>
             </div>
+
+            <!-- Withdraw popup Menu -->
+            <div class="popup-overlay" id="withdrawPopup">
+              <div class="withdraw-container">
+                <button class="close-button" aria-label="Close popup">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <h1 class="withdraw-title">Withdraw Funds</h1>
+                <p class="withdraw-subtitle">
+                  Enter the amount you wish to withdraw from your wallet
+                </p>
+
+                <label class="amount-label">Amount</label>
+                <div class="amount-input-wrapper">
+                  <input
+                    type="number"
+                    class="amount-input"
+                    value="0.00"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                  />
+                  <span class="currency-indicator">USD</span>
+                </div>
+
+                <p class="available-balance">Available balance: $100.00 USD</p>
+
+                <div class="quick-amounts">
+                  <button class="amount-btn">$10</button>
+                  <button class="amount-btn">$25</button>
+                  <button class="amount-btn">$50</button>
+                  <button class="amount-btn">$75</button>
+                  <button class="amount-btn">$100</button>
+                </div>
+
+                <button class="confirm-withdraw-btn" disabled>
+                  Confirm Withdrawal
+                </button>
+              </div>
+            </div>
           </div>
           <!-- Payment reports and taxes -->
           <div class="inner-wrapper" id="payments-reports">
