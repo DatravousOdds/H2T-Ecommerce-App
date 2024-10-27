@@ -829,3 +829,31 @@ const addFundsCloseBtn = document.querySelector(".close-button");
 addFundsCloseBtn.addEventListener("click", () =>
   closePopupMenu(".add-funds-menu")
 );
+
+const addFundsButton = document.getElementById("add-funds-btn");
+
+let walletBalance = 0;
+
+function updateWalletDisplay() {
+  const walletElement = document.getElementById("act-wallet-balance");
+  if (walletElement) {
+    walletElement.textContent = `$${walletBalance.toFixed(2)}`;
+  }
+}
+
+function updateBalance(newAmount) {
+  const amount = parseFloat(newAmount) || 0;
+  walletBalance += amount;
+  updateWalletDisplay();
+}
+
+// console.log(walletBalance);
+if (addFundsBtn) {
+  addFundsButton.addEventListener("click", () => {
+  const selectAmount = parseFloat(fundsBalance.value) || 0;
+  updateBalance(selectAmount);
+
+  closePopupMenu(".add-funds-menu");
+});
+}
+

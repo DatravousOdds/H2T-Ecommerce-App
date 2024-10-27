@@ -667,7 +667,7 @@
                   </div>
                   <p>USD</p>
                 </div>
-                <h1>$100.00</h1>
+                <h1 id="act-wallet-balance">$100.00</h1>
                 <div class="btn-wrapper">
                   <button class="withdraw">Withdraw</button>
                   <button class="add-funds" id="add-funds">Add Funds</button>
@@ -753,8 +753,11 @@
             <div id="addCard-modal" class="add-card-menu">
               <div id="add-card-popup" class="add-card-popup">
                 <div class="addCardHeader">
-                  <h2>Add a Card</h2>
-                  <span id="closePopup" class="close">&times;</span>
+                  <div class="header-wrapper">
+                    <h2>Add a Card</h2>
+                    <p>Enter your card details to add a new payment method.</p>
+                  </div>
+                  <i class="fa-solid fa-xmark close" id="closePopup"></i>
                 </div>
 
                 <hr />
@@ -789,7 +792,6 @@
                   </div>
                 </form>
                 <div class="addCardOptions space-between">
-                  <button class="cancel reg-btn underline">Cancel</button>
                   <button class="addCard-btn reg-btn">Add card</button>
                 </div>
               </div>
