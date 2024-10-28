@@ -667,7 +667,7 @@
                   </div>
                   <p>USD</p>
                 </div>
-                <h1 id="act-wallet-balance">$100.00</h1>
+                <h1 id="act-wallet-balance">$0.00</h1>
                 <div class="btn-wrapper">
                   <button class="withdraw" id="widthdraw">Withdraw</button>
                   <button class="add-funds" id="add-funds">Add Funds</button>
@@ -824,7 +824,9 @@
                   </div>
                 </div>
                 <p class="wallet-info">
-                  You have $100.00 USD available in your wallet.
+                  You have
+                  <span class="wallet-amount">$100.00 USD</span> available in
+                  your wallet.
                 </p>
 
                 <div class="from-account" id="from-account">
@@ -877,7 +879,10 @@
                   <span class="currency-indicator">USD</span>
                 </div>
 
-                <p class="available-balance">Available balance: $100.00 USD</p>
+                <p class="available-balance">
+                  Available balance:
+                  <span id="available-balance">$0.00 USD</span>
+                </p>
 
                 <div class="quick-amounts">
                   <button class="amount-btn">$10</button>
@@ -887,9 +892,7 @@
                   <button class="amount-btn">$100</button>
                 </div>
 
-                <button class="confirm-withdraw-btn" disabled>
-                  Confirm Withdrawal
-                </button>
+                <button class="confirm-withdraw-btn">Confirm Withdrawal</button>
               </div>
             </div>
           </div>
