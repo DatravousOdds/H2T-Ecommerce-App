@@ -669,6 +669,53 @@ p {
   font-size: larger;
 }
 
+/* View Card Details  */
+
+#view-dets .details-container {
+  background-color: white;
+  border: 1px solid #d6d6d6;
+  padding: 10px;
+  border-radius: 12px;
+}
+
+#view-dets .header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#view-dets #card-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 24px;
+}
+
+#view-dets .card-details-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#view-dets .control-button {
+  border-radius: 8px;
+  background-color: transparent;
+  border: 1px solid #ccc;
+  padding: 5px;
+  gap: 1rem;
+  display: flex;
+}
+
+#view-dets #recent-trans {
+  margin: 24px 0px;
+}
+
+#view-dets .trans {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
 #bio-section .btn-wrapper #remove-btn:hover {
   box-shadow: rgba(0, 0, 0, 0.03) 0px 4px 4px 0px;
   background-color: #202124;
