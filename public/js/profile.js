@@ -830,7 +830,7 @@ if (elements.quickAmountsContainer) {
     const button = document.createElement("button");
     button.className = "amount-btn";
     button.value = amount;
-    button.textContent = formatCurrency(amount);
+    button.textContent = `$${amount}`;
 
     // Click event to update selected amount and highlight the button
     button.addEventListener("click", () => {

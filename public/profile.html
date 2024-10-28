@@ -895,6 +895,67 @@
                 <button class="confirm-withdraw-btn">Confirm Withdrawal</button>
               </div>
             </div>
+
+            <!-- View details popup menu-->
+            <div class="" id="view-dets">
+              <div id="details-container" class="details-container">
+                <div class="header-wrapper">
+                  <h1 id="popup-title">Card Details</h1>
+                  <button class="close-button">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                <hr />
+                <div id="card-info">
+                  <h2>Visa Debit ending in 5338</h2>
+                  <!-- wallet icon-->
+                  <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div id="card-details">
+                  <div class="details-item" id="card-holder">
+                    <p>Card Holder</p>
+                    <p id="fullname">John Doe</p>
+                  </div>
+                  <div class="details-item" id="expiration-date">
+                    <p>Expiration Date</p>
+                    <p>05/2025</p>
+                  </div>
+                  <div class="details-item" id="billingAddress">
+                    <p>Billing Address</p>
+                    <p>123 Main St, Anytown, ST 12345</p>
+                  </div>
+                </div>
+                <div id="recent-trans">
+                  <p class="label">Recent Transactions</p>
+                  <div class="transactions">
+                    <div id="r-trans">
+                      <div class="trans">
+                        <p>Running Shoes - Blue</p>
+                        <p>$129.99</p>
+                      </div>
+                      <div class="trans">
+                        <p>Running Shoes - Blue</p>
+                        <p>$89.99</p>
+                      </div>
+                      <div class="trans">
+                        <p>Running Shoes - Blue</p>
+                        <p>$159.99</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-details-controls">
+                  <button id="edit-card" class="control-button">
+                    <i class="fa-solid fa-pen"></i>
+                    <p>Edit Card</p>
+                  </button>
+                  <button id="remove-card" class="control-button">
+                    <i class="fa-regular fa-trash-can"></i>
+                    <p>Remove Card</p>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <!-- Payment reports and taxes -->
           <div class="inner-wrapper" id="payments-reports">
