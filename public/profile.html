@@ -669,7 +669,7 @@
                 </div>
                 <h1 id="act-wallet-balance">$100.00</h1>
                 <div class="btn-wrapper">
-                  <button class="withdraw">Withdraw</button>
+                  <button class="withdraw" id="widthdraw">Withdraw</button>
                   <button class="add-funds" id="add-funds">Add Funds</button>
                 </div>
               </div>
@@ -851,7 +851,11 @@
             <!-- Withdraw popup Menu -->
             <div class="popup-overlay" id="withdrawPopup">
               <div class="withdraw-container">
-                <button class="close-button" aria-label="Close popup">
+                <button
+                  class="close-button"
+                  id="popup-close-btn"
+                  aria-label="Close popup"
+                >
                   <i class="fa-solid fa-xmark"></i>
                 </button>
 

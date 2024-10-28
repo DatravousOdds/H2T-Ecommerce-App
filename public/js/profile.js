@@ -663,7 +663,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username",
+          "profile-username"
         ];
 
         personalFormIds.forEach((id) => {
@@ -678,7 +678,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError",
+          "usernameError"
         ];
 
         personalErrorIds.forEach((id) => {
@@ -711,7 +711,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError",
+          "addressError"
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -822,6 +822,29 @@ fundsBalance.addEventListener("keypress", (event) => {
   }
 });
 
+const amountButtons = document.querySelectorAll(
+  ".withdraw-container .amount-btn"
+);
+console.log(amountButtons);
+
+amountButtons.forEach((button) => {
+  console.log(btn);
+  button.addEventListener("click", () => {
+    amountButtons.forEach((btn) => btn.classList.remove("selected"));
+    button.classList.add("selected");
+  });
+});
+
+const closeWithdrawPopup = document.getElementById("popup-close-btn");
+closeWithdrawPopup.addEventListener("click", () => {
+  closePopupMenu(".popup-overlay");
+});
+
+const withdrawBtn = document.getElementById("widthdraw");
+withdrawBtn.addEventListener("click", () => {
+  openPopupMenu(".popup-overlay");
+});
+
 const addFundsBtn = document.getElementById("add-funds");
 addFundsBtn.addEventListener("click", () => openPopupMenu(".add-funds-menu"));
 
@@ -847,13 +870,11 @@ function updateBalance(newAmount) {
   updateWalletDisplay();
 }
 
-// console.log(walletBalance);
 if (addFundsBtn) {
   addFundsButton.addEventListener("click", () => {
-  const selectAmount = parseFloat(fundsBalance.value) || 0;
-  updateBalance(selectAmount);
+    const selectAmount = parseFloat(fundsBalance.value) || 0;
+    updateBalance(selectAmount);
 
-  closePopupMenu(".add-funds-menu");
-});
+    closePopupMenu(".add-funds-menu");
+  });
 }
-
