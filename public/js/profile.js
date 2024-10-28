@@ -782,6 +782,7 @@ const elements = {
   widthdrawAmount: document.querySelector(".amount-input"),
   closeWithdrawPopup: document.getElementById("popup-close-btn"),
   withdrawBtn: document.getElementById("widthdraw"),
+  confirmWithdrawBtn: document.querySelector(".confirm-withdraw-btn"),
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
@@ -864,34 +865,35 @@ elements.amountButtons?.forEach((button) => {
   });
 });
 
-closeWithdrawPopup.addEventListener("click", () => {
+elements.closeWithdrawPopup?.addEventListener("click", () => {
   closePopupMenu(".popup-overlay");
 });
 
-withdrawBtn.addEventListener("click", () => {
+elements.withdrawBtn.addEventListener("click", () => {
   openPopupMenu(".popup-overlay");
 });
 
-addFundsBtn.addEventListener("click", () => openPopupMenu(".add-funds-menu"));
+elements.addFundsBtn.addEventListener("click", () =>
+  openPopupMenu(".add-funds-menu")
+);
 
-addFundsCloseBtn.addEventListener("click", () =>
+elements.addFundsCloseBtn.addEventListener("click", () =>
   closePopupMenu(".add-funds-menu")
 );
 
-if (addFundsBtn) {
-  addFundsButton.addEventListener("click", () => {
-    const selectAmount = parseFloat(fundsBalance.value) || 0;
-    updateBalance(selectAmount, "add");
-    walletAmount.textContent = `$${walletBalance.toFixed(2)} USD`;
+// Add Funds Button
+elements.addFundsButton.addEventListener("click", () => {
+  const amount = parseFloat(elements.fundsBalance?.value) || 0;
+  updateBalance(amount, "add");
+  closePopupMenu(".add-funds-menu");
+});
+
+elements.withdrawBtn?.addEventListener("click", () => {
+  const amount = parseFloat(elements.widthdrawAmount?.value) || 0;
+  if (amount <= walletBalance) {
+    updateBalance(amount, "withdraw");
     closePopupMenu(".add-funds-menu");
-  });
-}
-
-const widthdrawBtn = document.querySelector(".confirm-withdraw-btn");
-console.log(widthdrawBtn);
-
-if (widthdrawBtn) {
-  widthdrawBtn.addEventListener("click", () => {
-    console.log(fundsBalance.value);
-  });
-}
+  } else {
+    alert("insufficient funds");
+  }
+});
