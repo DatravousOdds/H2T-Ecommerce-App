@@ -774,107 +774,124 @@ allTabs.forEach((tab) => {
 });
 
 // Add funds popup menu
-const quickAmountsContainer = document.getElementById(
-  "quick-amounts-container"
-);
 
-const fundsBalance = document.getElementById("funds-balance");
+const elements = {
+  quickAmountsContainer: document.getElementById("quick-amounts-container"),
+  fundsBalance: document.getElementById("funds-balance"),
+  amountButtons: document.querySelectorAll(".withdraw-container .amount-btn"),
+  widthdrawAmount: document.querySelector(".amount-input"),
+  closeWithdrawPopup: document.getElementById("popup-close-btn"),
+  withdrawBtn: document.getElementById("widthdraw"),
+  addFundsBtn: document.getElementById("add-funds"),
+  addFundsButton: document.getElementById("add-funds-btn"),
+  addFundsCloseBtn: document.querySelector(".close-button"),
+  walletAmount: document.querySelector(".wallet-amount")
+};
 
-const amounts = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
+const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
 let selectAmount = 0;
+let walletBalance = 0;
 
-// Dynamically create buttons
-amounts.forEach((amount) => {
-  const button = document.createElement("button");
-  button.className = "amount-btn";
-  button.value = amount;
-  button.textContent = `$${amount}`;
-
-  // Click event to update selected amount and highlight the button
-  button.addEventListener("click", () => {
-    // Updated selected amount
-    selectAmount = amount;
-    updateFundsBalance(selectAmount);
-
-    // Remove 'selected' class from all buttons, then add to the clicked
-  });
-
-  quickAmountsContainer.appendChild(button);
-});
-
-// Function to update funds balance
-function updateFundsBalance(amount) {
-  fundsBalance.value = amount.toFixed(2);
+// Helper Functions
+function formatCurrency(amount) {
+  return `$${parseFloat(amount).toFixed(2)}`;
 }
 
-fundsBalance.addEventListener("blur", () => {
-  const inputAmount = parseFloat(fundsBalance.value);
-  if (!isNaN(inputAmount)) {
-    updateFundsBalance(inputAmount);
-  } else {
-    fundsBalance.value = "0.00";
+function updateFundsBalance(amount) {
+  if (elements.fundsBalance) {
+    elements.fundsBalance.value = amount.toFixed(2);
   }
-});
-
-fundsBalance.addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    fundsBalance.blur(); // Trigger blur event
-  }
-});
-
-const amountButtons = document.querySelectorAll(
-  ".withdraw-container .amount-btn"
-);
-console.log(amountButtons);
-
-amountButtons.forEach((button) => {
-  console.log(btn);
-  button.addEventListener("click", () => {
-    amountButtons.forEach((btn) => btn.classList.remove("selected"));
-    button.classList.add("selected");
-  });
-});
-
-const closeWithdrawPopup = document.getElementById("popup-close-btn");
-closeWithdrawPopup.addEventListener("click", () => {
-  closePopupMenu(".popup-overlay");
-});
-
-const withdrawBtn = document.getElementById("widthdraw");
-withdrawBtn.addEventListener("click", () => {
-  openPopupMenu(".popup-overlay");
-});
-
-const addFundsBtn = document.getElementById("add-funds");
-addFundsBtn.addEventListener("click", () => openPopupMenu(".add-funds-menu"));
-
-const addFundsCloseBtn = document.querySelector(".close-button");
-addFundsCloseBtn.addEventListener("click", () =>
-  closePopupMenu(".add-funds-menu")
-);
-
-const addFundsButton = document.getElementById("add-funds-btn");
-
-let walletBalance = 0;
+}
 
 function updateWalletDisplay() {
   const walletElement = document.getElementById("act-wallet-balance");
   if (walletElement) {
-    walletElement.textContent = `$${walletBalance.toFixed(2)}`;
+    walletElement.textContent = formatCurrency(walletBalance);
+  }
+  if (elements.walletAmount) {
+    elements.walletAmount.textContent = `${formatCurrency(walletBalance)} USD`;
   }
 }
 
-function updateBalance(newAmount) {
+function updateBalance(newAmount, action) {
   const amount = parseFloat(newAmount) || 0;
-  walletBalance += amount;
+  if ((action === "withdraw") & (walletBalance >= amount)) {
+    walletBalance -= amount;
+  } else if (action === "add") {
+    walletBalance += amount;
+  }
   updateWalletDisplay();
 }
+
+// Dynamically  creates QABs (Quick Amount Buttons)
+if (elements.quickAmountsContainer) {
+  AMOUNTS.forEach((amount) => {
+    const button = document.createElement("button");
+    button.className = "amount-btn";
+    button.value = amount;
+    button.textContent = formatCurrency(amount);
+
+    // Click event to update selected amount and highlight the button
+    button.addEventListener("click", () => {
+      // Updated selected amount
+      selectAmount = amount;
+      updateFundsBalance(selectAmount);
+    });
+
+    elements.quickAmountsContainer.appendChild(button);
+  });
+}
+
+if (elements.fundsBalance) {
+  elements.fundsBalance.addEventListener("blur", () => {
+    const inputAmount = parseFloat(elements.fundsBalance.value);
+    updateFundsBalance(isNaN(inputAmount) ? 0 : inputAmount);
+  });
+
+  elements.fundsBalance.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+      elements.fundsBalance.blur(); // Trigger blur event
+    }
+  });
+}
+
+elements.amountButtons?.forEach((button) => {
+  button.addEventListener("click", () => {
+    const amount = button.textContent.replace("$", "");
+    if (elements.widthdrawAmount) {
+      elements.widthdrawAmount.value = parseFloat(amount).toFixed(2);
+    }
+  });
+});
+
+closeWithdrawPopup.addEventListener("click", () => {
+  closePopupMenu(".popup-overlay");
+});
+
+withdrawBtn.addEventListener("click", () => {
+  openPopupMenu(".popup-overlay");
+});
+
+addFundsBtn.addEventListener("click", () => openPopupMenu(".add-funds-menu"));
+
+addFundsCloseBtn.addEventListener("click", () =>
+  closePopupMenu(".add-funds-menu")
+);
 
 if (addFundsBtn) {
   addFundsButton.addEventListener("click", () => {
     const selectAmount = parseFloat(fundsBalance.value) || 0;
-    updateBalance(selectAmount);
-
+    updateBalance(selectAmount, "add");
+    walletAmount.textContent = `$${walletBalance.toFixed(2)} USD`;
     closePopupMenu(".add-funds-menu");
+  });
+}
+
+const widthdrawBtn = document.querySelector(".confirm-withdraw-btn");
+console.log(widthdrawBtn);
+
+if (widthdrawBtn) {
+  widthdrawBtn.addEventListener("click", () => {
+    console.log(fundsBalance.value);
   });
 }

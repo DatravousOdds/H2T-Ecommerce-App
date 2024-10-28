@@ -512,14 +512,13 @@ p {
 }
 
 .amount-btn.selected {
-  background: #2563eb;
-  color: white;
+  background-color: #2563eb;
 }
 
 .confirm-withdraw-btn {
   width: 100%;
   padding: 14px;
-  background: #dc2626;
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 8px;
