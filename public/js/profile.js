@@ -794,7 +794,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 console.log(elements.viewCardDetails);
@@ -898,15 +898,23 @@ elements.addFundsButton.addEventListener("click", () => {
 });
 
 // Withdraw Funds
-elements.withdrawBtn?.addEventListener("click", () => {
+elements.confirmWithdrawBtn?.addEventListener("click", () => {
   const amount = parseFloat(elements.withdrawAmount?.value) || 0;
+  console.log(amount);
   if (amount <= walletBalance) {
     updateBalance(amount, "withdraw");
-    closePopupMenu(".add-funds-menu");
+    alert("You have successfully withdraw " + amount + " .");
+    closePopupMenu(".popup-overlay");
   } else {
     alert("insufficient funds");
+    // replace alert with pop up notification
   }
 });
 
-const closeBtnForDetails = document.querySelector("#view-dets .close-button");
-console.log(closeBtnForDetails);
+const closeBtnForDetails = document.querySelector(
+  "#view-details .close-button"
+);
+// console.log(closeBtnForDetails);
+closeBtnForDetails.addEventListener("click", () => {
+  closePopupMenu(".view-details-menu");
+});
