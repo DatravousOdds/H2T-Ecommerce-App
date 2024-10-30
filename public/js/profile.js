@@ -149,14 +149,14 @@ document.addEventListener("click", (event) => {
 });
 
 const actions = document.querySelectorAll(".edit-card");
+
 actions.forEach((act) => {
   act.addEventListener("click", () => {
     act.textContent = "View Details";
+    act.className = "view-card-details";
 
     const cardWrapper = act.closest(".card-wrapper");
-
     const paymentCard = cardWrapper.querySelector(".payment-card");
-
     const hasDefaultCard = paymentCard.querySelector("span.default-card");
 
     if (hasDefaultCard) {
@@ -164,7 +164,6 @@ actions.forEach((act) => {
     }
 
     const editContainer = cardWrapper.querySelector(".edit-container");
-
     let existingBtn = editContainer.querySelector(".set-default-card");
 
     if (!existingBtn) {
@@ -176,6 +175,15 @@ actions.forEach((act) => {
       editContainer.appendChild(btn);
     } else {
       return;
+    }
+
+    const viewDetails = document.querySelector(".view-card-details");
+    if (viewDetails) {
+      console.log(viewDetails);
+      viewDetails.addEventListener("click", () => {
+        console.log("view details popup");
+        openPopupMenu(".view-details-menu");
+      });
     }
   });
 });
@@ -663,7 +671,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -678,7 +686,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -711,7 +719,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -779,14 +787,14 @@ const elements = {
   quickAmountsContainer: document.getElementById("quick-amounts-container"),
   fundsBalance: document.getElementById("funds-balance"),
   amountButtons: document.querySelectorAll(".withdraw-container .amount-btn"),
-  widthdrawAmount: document.querySelector(".amount-input"),
+  withdrawAmount: document.querySelector(".amount-input"),
   closeWithdrawPopup: document.getElementById("popup-close-btn"),
   withdrawBtn: document.getElementById("widthdraw"),
   confirmWithdrawBtn: document.querySelector(".confirm-withdraw-btn"),
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
@@ -859,8 +867,8 @@ if (elements.fundsBalance) {
 elements.amountButtons?.forEach((button) => {
   button.addEventListener("click", () => {
     const amount = button.textContent.replace("$", "");
-    if (elements.widthdrawAmount) {
-      elements.widthdrawAmount.value = parseFloat(amount).toFixed(2);
+    if (elements.withdrawAmount) {
+      elements.withdrawAmount.value = parseFloat(amount).toFixed(2);
     }
   });
 });
@@ -888,8 +896,9 @@ elements.addFundsButton.addEventListener("click", () => {
   closePopupMenu(".add-funds-menu");
 });
 
+// Withdraw Funds
 elements.withdrawBtn?.addEventListener("click", () => {
-  const amount = parseFloat(elements.widthdrawAmount?.value) || 0;
+  const amount = parseFloat(elements.withdrawAmount?.value) || 0;
   if (amount <= walletBalance) {
     updateBalance(amount, "withdraw");
     closePopupMenu(".add-funds-menu");
@@ -897,3 +906,6 @@ elements.withdrawBtn?.addEventListener("click", () => {
     alert("insufficient funds");
   }
 });
+
+const closeBtnForDetails = document.querySelector("#view-dets .close-button");
+console.log(closeBtnForDetails);
