@@ -673,7 +673,11 @@ p {
 
 /* View Card Details  */
 
-#view-dets .details-container {
+#card-details {
+  margin-top: 1.5rem;
+}
+
+#view-details .details-container {
   background-color: white;
   border: 1px solid #d6d6d6;
   padding: 1.5rem;
@@ -684,7 +688,7 @@ p {
     0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Add subtle shadow */
 }
 
-#view-dets .header-wrapper {
+#view-details .header-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -693,7 +697,7 @@ p {
   margin-bottom: 1.5rem;
 }
 
-#view-dets .close-button {
+#view-details .close-button {
   padding: 0.5rem;
   border: none;
   background: transparent;
@@ -701,32 +705,32 @@ p {
   transition: background-color 0.2s;
 }
 
-#view-dets .close-button:hover {
+#view-details .close-button:hover {
   background-color: #f3f4f6;
 }
 
-#view-dets .details-item {
+#view-details .details-item {
   margin-bottom: 1rem;
 }
 
-#view-dets .details-item p:first-child {
+#view-details .details-item p:first-child {
   color: #6b7280;
   font-size: 0.875rem;
   margin-bottom: 0.25rem;
 }
 
-#view-dets .details-item p:last-child {
+#view-details .details-item p:last-child {
   font-weight: 500;
 }
 
-#view-dets #card-info {
+#view-details #card-info {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 24px;
 }
 
-#view-dets .card-details-controls {
+#view-details .card-details-controls {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -735,7 +739,7 @@ p {
   border-top: 1px solid #e5e7eb;
 }
 
-#view-dets .control-button {
+#view-details .control-button {
   border-radius: 8px;
   background-color: transparent;
   border: 1px solid #d1d5d1;
@@ -749,41 +753,48 @@ p {
   flex: 1;
 }
 
-#view-dets .control-button:hover {
+#view-details .control-button:hover {
   background-color: #f3f4f6;
   border-color: #9ca3af;
 }
 
-#view-dets #remove-card,
+#view-details #remove-card,
 #remove-card p {
   color: #dc2626; /* Red color for delete button */
 }
 
-#view-dets #remove-card:hover {
+#view-details #remove-card:hover {
   background-color: #fef2f2; /* Light red background on hover */
   border-color: #dc2626;
 }
 
-#view-dets #recent-trans {
+#view-details #recent-trans {
   margin: 1.5rem 0;
 }
 
-#view-dets .trans:last-child {
+#view-details .trans:last-child {
   border-bottom: none;
 }
 
-#view-dets #recent-trans .label {
+#view-details #recent-trans .label {
   color: #6b7280;
   font-size: 0.875rem;
   margin-bottom: 0.75rem;
 }
 
-#view-dets .trans {
+#view-details .trans {
   align-items: center;
   display: flex;
   justify-content: space-between;
   padding: 0.75rem 0;
   border-bottom: 1px solid #e5e7eb;
+}
+
+.prime-card {
+  padding: 10px;
+  border-radius: 8px;
+  background: #000;
+  color: white;
 }
 
 #bio-section .btn-wrapper #remove-btn:hover {
@@ -2055,16 +2066,16 @@ h6 {
 @media (min-width: 576px) and (max-width: 767.98px) {
   /* View details popup */
 
-  #view-dets .details-container {
+  #view-details .details-container {
     padding: 1rem;
     margin: 1rem;
   }
 
-  #view-dets .card-details-controls {
+  #view-details .card-details-controls {
     flex-direction: column;
   }
 
-  #view-dets .control-button {
+  #view-details .control-button {
     width: 100%;
   }
 
