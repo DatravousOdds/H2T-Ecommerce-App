@@ -786,9 +786,11 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
+  viewCardDetails: document.getElementById("view-card-details")
 };
 
+console.log(elements.viewCardDetails);
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
 let selectAmount = 0;
 let walletBalance = 0;
