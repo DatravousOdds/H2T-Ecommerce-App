@@ -634,7 +634,8 @@ p {
   cursor: not-allowed;
 }
 
-.add-funds-menu {
+.add-funds-menu,
+.view-details-menu {
   position: fixed;
   top: 0;
   left: 0;
@@ -651,7 +652,8 @@ p {
 }
 
 .add-funds-menu.active,
-.add-card-menu.active {
+.add-card-menu.active,
+.view-details-menu.active {
   opacity: 1;
   visibility: visible;
   background-color: rgba(0, 0, 0, 0.5);
@@ -695,7 +697,7 @@ p {
   padding: 0.5rem;
   border: none;
   background: transparent;
-  border-radius: 9999px;
+  border-radius: 8px;
   transition: background-color 0.2s;
 }
 
