@@ -489,6 +489,21 @@ p {
   transition: all 0.3s ease-in-out;
 }
 
+/* success added funds notification */
+.payment-nofication {
+  background-color: #52c41a;
+  color: white;
+  display: flex;
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.payment-nofication p {
+  color: white;
+}
+
 .quick-amounts {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

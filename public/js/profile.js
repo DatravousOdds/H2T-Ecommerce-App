@@ -246,6 +246,8 @@ bioTextarea.addEventListener("input", () => {
     saveBioBtn.disabled = true;
   } else if (charCount <= 0) {
     wordCountDisplay.style.display = "none";
+    wordCountDisplay.classList.remove("error-msg");
+    saveBioBtn.disabled = false;
 
     // clear any error message
     bioTextarea.setCustomValidity("");
@@ -671,7 +673,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username",
+          "profile-username"
         ];
 
         personalFormIds.forEach((id) => {
@@ -686,7 +688,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError",
+          "usernameError"
         ];
 
         personalErrorIds.forEach((id) => {
@@ -719,7 +721,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError",
+          "addressError"
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -794,7 +796,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount"),
+  walletAmount: document.querySelector(".wallet-amount")
 };
 
 console.log(elements.viewCardDetails);
