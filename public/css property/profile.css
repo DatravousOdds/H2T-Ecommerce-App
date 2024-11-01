@@ -491,17 +491,54 @@ p {
 
 /* success added funds notification */
 .payment-nofication {
-  background-color: #52c41a;
-  color: white;
-  display: flex;
-  border-radius: 8px;
-  font-weight: 500;
-  padding: 1rem;
-  gap: 1rem;
+  position: fixed;
+  top: 20px;
+  right: -100%; /* Start off-screen */
+  z-index: 1000;
+  transition: right 0.3s ease-in-out;
 }
 
-.payment-nofication p {
-  color: white;
+.payment-nofication.show {
+  right: 20px; /* Slide in from right */
+}
+
+.notification-container {
+  background: #ffffff;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+}
+
+.notification-container i {
+  color: #4caf50;
+  font-size: 20px;
+}
+
+.amount-text {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+}
+
+/* Optional animation for check icon */
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.notification-container i {
+  animation: checkmark 0.3s ease-in-out forwards;
 }
 
 .quick-amounts {

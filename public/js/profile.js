@@ -784,7 +784,6 @@ allTabs.forEach((tab) => {
 });
 
 // Add funds popup menu
-
 const elements = {
   quickAmountsContainer: document.getElementById("quick-amounts-container"),
   fundsBalance: document.getElementById("funds-balance"),
@@ -892,10 +891,43 @@ elements.addFundsCloseBtn.addEventListener("click", () =>
   closePopupMenu(".add-funds-menu")
 );
 
+class PaymentNofication {
+  constructor() {
+    this.notification = document.querySelector("payment-nofication");
+    this.timeout = null;
+  }
+
+  show(amount) {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    const amountText = this.notification.querySelector(".amount-text");
+    amountText.textContent = `$${amount.toFixed(
+      2
+    )} has been added to your wallet`;
+
+    this.notification.classList.add("show");
+
+    this.timeout = setTimeout(() => {
+      this.hide();
+    }, 3000);
+
+    this.notification.onclick = () => this.hide();
+  }
+
+  hide() {
+    this.notification.classList.remove("show");
+  }
+}
+
+const paymentNofication = new PaymentNofication();
+
 // Add Funds Button
 elements.addFundsButton.addEventListener("click", () => {
   const amount = parseFloat(elements.fundsBalance?.value) || 0;
   updateBalance(amount, "add");
+  paymentNofication.show(amount);
   closePopupMenu(".add-funds-menu");
 });
 
@@ -920,3 +952,5 @@ const closeBtnForDetails = document.querySelector(
 closeBtnForDetails.addEventListener("click", () => {
   closePopupMenu(".view-details-menu");
 });
+
+// Example usuage:
