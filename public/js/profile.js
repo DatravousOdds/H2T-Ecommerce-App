@@ -117,29 +117,29 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Set default card
-document.querySelector("#cards-on-file").addEventListener("click", (event) => {
-  if (event.target && event.target.matches(".set-default-card")) {
-    const cardWrapper = event.target.closest(".card-wrapper");
+// document.querySelector("#cards-on-file").addEventListener("click", (event) => {
+//   if (event.target && event.target.matches(".set-default-card")) {
+//     const cardWrapper = event.target.closest(".card-wrapper");
 
-    const currentCard = cardWrapper.querySelector(".payment-card");
+//     const currentCard = cardWrapper.querySelector(".payment-card");
 
-    const existingDefault = document.querySelector(".default-card");
+//     const existingDefault = document.querySelector(".default-card");
 
-    console.log("This is the existing default card:", existingDefault);
-    console.log("This is the current card:", currentCard);
+//     console.log("This is the existing default card:", existingDefault);
+//     console.log("This is the current card:", currentCard);
 
-    if (existingDefault) {
-      existingDefault.remove();
-    }
+//     if (existingDefault) {
+//       existingDefault.remove();
+//     }
 
-    // Creates Default Card
-    const spanElement = document.createElement("span");
-    spanElement.classList.add("default-card");
-    spanElement.textContent = "Default";
+//     // Creates Default Card
+//     const spanElement = document.createElement("span");
+//     spanElement.classList.add("default-card");
+//     spanElement.textContent = "Default";
 
-    currentCard.appendChild(spanElement);
-  }
-});
+//     currentCard.appendChild(spanElement);
+//   }
+// });
 
 // Closes dropdown menu
 document.addEventListener("click", (event) => {
@@ -148,45 +148,207 @@ document.addEventListener("click", (event) => {
   closeDropdown(event, "year-selection", "filter");
 });
 
-const actions = document.querySelectorAll(".edit-card");
+// const actions = document.querySelectorAll(".edit-card");
 
-actions.forEach((act) => {
-  act.addEventListener("click", () => {
-    act.textContent = "View Details";
-    act.className = "view-card-details";
+class PaymentCardManger {
+  constructor() {
+    this.cardsContainer = document.querySelector("#cards-on-file");
+    this.viewDetailsButton = document.querySelector(".view-card-details");
+    this.init();
+  }
 
-    const cardWrapper = act.closest(".card-wrapper");
+  init() {
+    // Initialize all event listeners
+    this.setupDefaultCardListener();
+    this.setupActionButtonsListeners();
+  }
+
+  setupDefaultCardListener() {
+    this.cardsContainer.addEventListener("click", (event) => {
+      if (event.target && event.target.matches(".set-default-card")) {
+        this.handleSetDefaultCard(event);
+      }
+    });
+  }
+
+  handleSetDefaultCard(event) {
+    const cardWrapper = event.target.closest(".card-wrapper");
+    const currentCard = cardWrapper.querySelector(".payment-card");
+    const existingDefault = document.querySelector(".default-card");
+
+    // Log for debugging
+    console.log("Existing default card:", existingDefault);
+    console.log("Current card:", currentCard);
+
+    // remove tags if present
+    if (existingDefault) {
+      existingDefault.remove();
+    }
+
+    // create default tag
+    const defaultTag = document.createElement("span");
+    defaultTag.classList.add("default-card");
+    defaultTag.textContent = "Default";
+    currentCard.appendChild(defaultTag);
+
+    // Update view details popup to show primary payment method
+    this.updateViewDetailsPopup(true);
+
+    // removes all "Set default" tags
+    document
+      .querySelectorAll(".set-default-card")
+      .forEach((btn) => btn.remove());
+  }
+
+  setupActionButtonsListeners() {
+    const actions = document.querySelectorAll(".edit-card");
+
+    actions.forEach((action) => {
+      action.addEventListener("click", () => this.handleActionClick(action));
+    });
+  }
+
+  handleActionClick(actionButton) {
+    // Update button appearance
+    actionButton.textContent = "View Details";
+    actionButton.className = "view-card-details";
+
+    const cardWrapper = actionButton.closest(".card-wrapper");
     const paymentCard = cardWrapper.querySelector(".payment-card");
-    const hasDefaultCard = paymentCard.querySelector("span.default-card");
+    const hasDefaultCard = paymentCard.querySelector(".edit-container");
+    const editContainer = cardWrapper.querySelector(".edit-container");
 
     if (hasDefaultCard) {
+      this.updateViewDetailsPopup(true);
+      this.setupViewDetailsListener(actionButton);
       return;
     }
 
-    const editContainer = cardWrapper.querySelector(".edit-container");
+    this.manageSetDefaultButton(editContainer);
+
+    if (paymentCard.contains(hasDefaultCard)) {
+      console.log("The default tag is on this div");
+    } else {
+      console.log("The span element is not on this div");
+    }
+
+    // Setup view details functionality
+    this.setupViewDetailsListener(actionButton);
+  }
+
+  manageSetDefaultButton(editContainer) {
+    // Check for existing button
     let existingBtn = editContainer.querySelector(".set-default-card");
 
+    // Only create button if it doesn't exist
     if (!existingBtn) {
-      // Create and append the 'Set default' button
       const btn = document.createElement("button");
       btn.textContent = "Set default";
       btn.classList.add("set-default-card");
       btn.id = "defaultCard";
+      // Add ARIA attributes for accessibility
+      btn.setAttribute("aria-label", "Set as default card");
+      btn.setAttribute("type", "button"); // Prevent form submission if within a form
+
       editContainer.appendChild(btn);
-    } else {
-      return;
+    }
+  }
+
+  setupViewDetailsListener(viewDetailsButton) {
+    viewDetailsButton.addEventListener("click", () => {
+      this.openPopupMenu(".view-details-menu");
+    });
+  }
+
+  openPopupMenu(selector) {
+    const popup = document.querySelector(selector);
+    if (popup) {
+      const existingTag = popup.querySelector(".primary-payment-tag");
+      if (existingTag) {
+        existingTag.remove();
+      }
     }
 
-    const viewDetails = document.querySelector(".view-card-details");
-    if (viewDetails) {
-      console.log(viewDetails);
-      viewDetails.addEventListener("click", () => {
-        console.log("view details popup");
-        openPopupMenu(".view-details-menu");
-      });
+    const isDefault = this.isDefaultCard(event.target);
+    if (isDefault) {
+      this.addPrimaryPaymentTag(popup);
     }
-  });
-});
+
+    popup.style.display = "block";
+  }
+
+  isDefaultCard(element) {
+    const cardWrapper = element.closest(".card-wrapper");
+    return cardWrapper.querySelector(".default-card") !== null;
+  }
+
+  addPrimaryPaymentTag(popup) {
+    const paymentDetails = popup.querySelector(".payment-details");
+    if (paymentDetails) {
+      const primaryTag = document.createElement("div");
+      primaryTag.classList.add("primary-payment-tag");
+      primaryTag.textContent = "Primary Payment Method";
+      paymentDetails.appendChild(primaryTag);
+    }
+  }
+
+  updateViewDetailsPopup(isDefault) {
+    const popup = document.querySelector(".view-details-menu");
+    if (!popup) return;
+
+    const existingTag = popup.querySelector(".primary-payment-tag");
+
+    if (isDefault && !existingTag) {
+      this.addPrimaryPaymentTag(popup);
+    } else if (!isDefault && existingTag) {
+      existingTag.remove();
+    }
+  }
+}
+
+const cardManager = new PaymentCardManger();
+
+// actions.forEach((act) => {
+//   act.addEventListener("click", () => {
+//     act.textContent = "View Details";
+//     act.className = "view-card-details";
+
+//     const cardWrapper = act.closest(".card-wrapper");
+//     const paymentCard = cardWrapper.querySelector(".payment-card");
+//     const hasDefaultCard = paymentCard.querySelector("span.default-card");
+
+//     if (hasDefaultCard) {
+//       return;
+//     }
+
+//     const editContainer = cardWrapper.querySelector(".edit-container");
+//     let existingBtn = editContainer.querySelector(".set-default-card");
+
+//     if (!existingBtn) {
+//       // Create and append the 'Set default' button
+//       const btn = document.createElement("button");
+//       btn.textContent = "Set default";
+//       btn.classList.add("set-default-card");
+//       btn.id = "defaultCard";
+//       editContainer.appendChild(btn);
+//     } else {
+//       return;
+//     }
+
+//     if (paymentCard.contains(hasDefaultCard)) {
+//       console.log("The default tag is on this div");
+//     } else {
+//       console.log("The span element is not on this div");
+//     }
+
+//     const viewDetails = document.querySelector(".view-card-details");
+//     if (viewDetails) {
+//       viewDetails.addEventListener("click", () => {
+//         openPopupMenu(".view-details-menu");
+//       });
+//     }
+//   });
+// });
 
 // Profile actions: website link validation
 url.addEventListener("change", () => {
@@ -891,9 +1053,9 @@ elements.addFundsCloseBtn.addEventListener("click", () =>
   closePopupMenu(".add-funds-menu")
 );
 
-class PaymentNofication {
+class PaymentNotification {
   constructor() {
-    this.notification = document.querySelector("payment-nofication");
+    this.notification = document.querySelector(".payment-nofication");
     this.timeout = null;
   }
 
@@ -921,13 +1083,13 @@ class PaymentNofication {
   }
 }
 
-const paymentNofication = new PaymentNofication();
+const paymentNotification = new PaymentNotification();
 
 // Add Funds Button
 elements.addFundsButton.addEventListener("click", () => {
   const amount = parseFloat(elements.fundsBalance?.value) || 0;
   updateBalance(amount, "add");
-  paymentNofication.show(amount);
+  paymentNotification.show(amount);
   closePopupMenu(".add-funds-menu");
 });
 
@@ -954,3 +1116,5 @@ closeBtnForDetails.addEventListener("click", () => {
 });
 
 // Example usuage:
+const primaryPaymentMethod = document.querySelector(".prime-card");
+console.log(primaryPaymentMethod);
