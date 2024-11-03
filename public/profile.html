@@ -710,57 +710,66 @@
           <!-- cards on file-->
           <div class="inner-wrapper" id="cards-on-file">
             <h2>Cards on File</h2>
-            <!-- COF Container-->
-            <div class="card-wrapper">
-              <div class="card-inner payment-card">
-                <p>Visa Debit ending in 5338</p>
-                <i class="fa-brands fa-cc-visa"></i>
-              </div>
-
-              <div class="card-options">
-                <div class="edit-container">
-                  <button
-                    type="button"
-                    class="edit-card"
-                    aria-label="Edit Card"
-                  >
-                    Edit
-                  </button>
+            <div id="card-list" class="card-list">
+              <!-- COF Container-->
+              <div class="card-wrapper">
+                <div class="card-inner payment-card">
+                  <p>Visa Debit ending in 5338</p>
+                  <i class="fa-brands fa-cc-visa"></i>
                 </div>
-                <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
-              </div>
-            </div>
-            <!-- COF Container-->
-            <div class="card-wrapper">
-              <div class="payment-card">
-                <p>Visa Debit ending in 5338</p>
-                <i class="fa-brands fa-cc-discover"></i>
-                <!-- <span class="default-card">Default</span> -->
-              </div>
 
-              <div class="card-options">
-                <div class="edit-container">
-                  <button
-                    type="button"
-                    class="edit-card"
-                    aria-label="Edit Card"
-                  >
-                    Edit
-                  </button>
+                <div class="card-options">
+                  <div class="edit-container">
+                    <button
+                      type="button"
+                      class="edit-card"
+                      aria-label="Edit Card"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <i
+                    class="fa-regular fa-trash-can"
+                    aria-label="Delete Card"
+                  ></i>
                 </div>
-                <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
               </div>
-            </div>
-            <!-- COF Container-->
-            <div class="card-wrapper">
-              <div>
-                <p>Add cards or bank accounts</p>
-              </div>
+              <!-- COF Container-->
+              <div class="card-wrapper">
+                <div class="payment-card">
+                  <p>Visa Debit ending in 5338</p>
+                  <i class="fa-brands fa-cc-discover"></i>
+                  <!-- <span class="default-card">Default</span> -->
+                </div>
 
-              <div class="card-options" id="add-new-card">
-                <i class="fa-solid fa-plus"></i>
+                <div class="card-options">
+                  <div class="edit-container">
+                    <button
+                      type="button"
+                      class="edit-card"
+                      aria-label="Edit Card"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                  <i
+                    class="fa-regular fa-trash-can"
+                    aria-label="Delete Card"
+                  ></i>
+                </div>
+              </div>
+              <!-- COF Container-->
+              <div class="card-wrapper">
+                <div>
+                  <p>Add cards or bank accounts</p>
+                </div>
+
+                <div class="card-options" id="add-new-card">
+                  <i class="fa-solid fa-plus"></i>
+                </div>
               </div>
             </div>
+
             <!-- Add card popup menu -->
             <div id="addCard-modal" class="add-card-menu">
               <div id="add-card-popup" class="add-card-popup">
@@ -920,7 +929,7 @@
 
                 <div id="card-info">
                   <i class="fa-solid fa-wallet"></i>
-                  <h2>Visa Debit ending in 5338</h2>
+                  <h2 id="card-ending">Visa Debit ending in 5338</h2>
                 </div>
                 <div class="primary-card-container"></div>
                 <!-- <span class="prime-card">Primary Payment Method</span> -->

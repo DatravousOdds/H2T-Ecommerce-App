@@ -148,6 +148,58 @@ document.addEventListener("click", (eventa) => {
   closeDropdown(event, "year-selection", "filter");
 });
 
+const addCardbtn = document.querySelector(".addCard-btn");
+console.log(addCardbtn);
+
+addCardbtn.addEventListener("click", () => {
+  const newCard = {
+    nameOnCard: document.getElementById("nameOnCard").value,
+    cvv: document.getElementById("cvv").value,
+    cardNumber: document.getElementById("cardNumber").value,
+    expiry: document.getElementById("expiry").value
+  };
+
+  const cardList = document.querySelector(".card-list"); // assuming .card-list is the container for cards
+
+  const wrapper = `
+    <div class="card-wrapper">
+      <div class="payment-card">
+        <p>${newCard.nameOnCard} ending in ${newCard.cardNumber.slice(-4)}</p>
+        <i class="fa-brands fa-cc-discover"></i>
+      </div>
+      <div class="card-options">
+        <div class="edit-container">
+          <button type="button" class="edit-card" aria-label="Edit Card">Edit</button>
+        </div>
+        <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
+      </div>
+    </div>
+  `;
+
+  // Insert the new card element
+  cardList.insertAdjacentHTML("afterbegin", wrapper);
+
+  const viewDetailsButton = cardList.querySelector(".view-details");
+  console.log(viewDetailsButton);
+
+  viewDetailsButton.addEventListener("click", () => {
+    const cardHolderName = newCard.nameOnCard;
+    const cardNumber = newCard.cardNumber;
+    const expiryDate = newCard.expiry;
+
+    document.getElementById("fullname").textContent = cardHolderName;
+    document.getElementById("expiration-date").textContent = expiryDate;
+    document.getElementById("card-ending").textContent = cardNumber;
+  });
+
+  console.log(newCard.cardNumber);
+  console.log(newCard.cvv);
+  console.log(newCard.expiry);
+  console.log(newCard.nameOnCard);
+
+  closePopupMenu(".add-card-menu");
+});
+
 // const actions = document.querySelectorAll(".edit-card");
 
 class PaymentCardManager {
