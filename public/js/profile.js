@@ -148,72 +148,71 @@ document.addEventListener("click", (eventa) => {
   closeDropdown(event, "year-selection", "filter");
 });
 
-const addCardbtn = document.querySelector(".addCard-btn");
-console.log(addCardbtn);
+// Constants
+const ADD_CARD_BTN_SELECTOR = ".addCard-btn";
+const CARD_LIST_SELECTOR = ".card-list";
+const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
+  <div class="card-wrapper">
+    <div class="payment-card">
+      <p>${name} ending in ${lastFourDigits}</p>
+      <i class="fa-brands fa-cc-discover"></i>
+    </div>
+    <div class="card-options">
+      <div class="edit-container">
+        <button type="button" class="edit-card" aria-label="Edit Card">Edit</button>
+      </div>
+      <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
+    </div>
+  </div>
+`;
 
-addCardbtn.addEventListener("click", () => {
+// Initialize add card button
+const addCardBtn = document.querySelector(ADD_CARD_BTN_SELECTOR);
+if (addCardBtn) {
+  addCardBtn.addEventListener("click", handleAddCard);
+}
+
+function handleAddCard() {
   const newCard = {
-    nameOnCard: document.getElementById("nameOnCard").value,
+    cardHolder: document.getElementById("nameOnCard").value,
     cvv: document.getElementById("cvv").value,
     cardNumber: document.getElementById("cardNumber").value,
-    expiry: document.getElementById("expiry").value
+    expirationDate: document.getElementById("expiry").value,
+    billingAddress: document.getElementById("billingAddress").value
   };
 
-  const cardList = document.querySelector(".card-list"); // assuming .card-list is the container for cards
+  const fullName = document.getElementById("fullname");
+  if (fullName) {
+    fullName.textContent = newCard.nameOnCard;
+  }
 
-  const wrapper = `
-    <div class="card-wrapper">
-      <div class="payment-card">
-        <p>${newCard.nameOnCard} ending in ${newCard.cardNumber.slice(-4)}</p>
-        <i class="fa-brands fa-cc-discover"></i>
-      </div>
-      <div class="card-options">
-        <div class="edit-container">
-          <button type="button" class="edit-card" aria-label="Edit Card">Edit</button>
-        </div>
-        <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
-      </div>
-    </div>
-  `;
-
-  // Insert the new card element
-  cardList.insertAdjacentHTML("afterbegin", wrapper);
-
-  const viewDetailsButton = cardList.querySelector(".view-details");
-  console.log(viewDetailsButton);
-
-  viewDetailsButton.addEventListener("click", () => {
-    const cardHolderName = newCard.nameOnCard;
-    const cardNumber = newCard.cardNumber;
-    const expiryDate = newCard.expiry;
-
-    document.getElementById("fullname").textContent = cardHolderName;
-    document.getElementById("expiration-date").textContent = expiryDate;
-    document.getElementById("card-ending").textContent = cardNumber;
-  });
-
-  console.log(newCard.cardNumber);
-  console.log(newCard.cvv);
-  console.log(newCard.expiry);
   console.log(newCard.nameOnCard);
+  const cardList = document.querySelector(CARD_LIST_SELECTOR);
+  if (!cardList) {
+    console.error("Card list container not found");
+    return;
+  }
 
+  const lastFourDigits = newCard.cardNumber.slice(-4);
+  console.log(lastFourDigits);
+  const newCardHTML = CARD_WRAPPER_TEMPLATE(newCard.nameOnCard, lastFourDigits);
+
+  cardList.insertAdjacentHTML("afterbegin", newCardHTML);
   closePopupMenu(".add-card-menu");
-});
-
-// const actions = document.querySelectorAll(".edit-card");
+}
 
 class PaymentCardManager {
   constructor() {
     this.cardsContainer = document.querySelector("#cards-on-file");
     this.popup = document.querySelector(".view-details-menu");
     this.activeCard = null;
-    this.boundEscapeHandler = this.handleEscape.bind(this);
-    this.isEscapeListenerAdded = false;
 
     if (!this.cardsContainer) {
-      throw new Error("Cards container element not found");
+      console.error("Cards container element not found");
+      return;
     }
 
+    this.bindEscapeHandler = this.handleEscape.bind(this);
     this.init();
   }
 
@@ -226,26 +225,25 @@ class PaymentCardManager {
       const target = event.target;
 
       if (target?.matches(".set-default-card")) {
-        this.handleSetDefaultCard(target);
+        this.setDefaultCard(target);
       } else if (target?.matches(".edit-card")) {
-        this.handleEditButtonClick(target);
+        this.toggleEditCardMode(target);
       } else if (target?.matches(".view-card-details")) {
-        this.handleViewDetailsClick(target);
+        this.openViewDetails(target);
       }
     });
   }
 
-  handleSetDefaultCard(button) {
+  setDefaultCard(button) {
     const cardWrapper = button.closest(".card-wrapper");
     if (!cardWrapper) return;
 
-    this.removeExistingDefaultCard();
-    this.setNewDefaultCard(cardWrapper);
-    this.updateCardInterface(cardWrapper, true);
-    this.updateViewDetailsPopup(true);
+    this.clearDefaultCard();
+    this.markAsDefault(cardWrapper);
+    this.updatePopupView(true);
   }
 
-  removeExistingDefaultCard() {
+  clearDefaultCard() {
     const defaultCard = this.cardsContainer.querySelector(".default-card");
     if (defaultCard) {
       const wrapper = defaultCard.closest(".card-wrapper");
@@ -254,62 +252,51 @@ class PaymentCardManager {
     }
   }
 
-  setNewDefaultCard(cardWrapper) {
+  markAsDefault(cardWrapper) {
     const cardInner = cardWrapper.querySelector(".payment-card");
-    if (!cardInner) return;
-
     const defaultTag = document.createElement("span");
-    defaultTag.classList.add("default-card");
+    defaultTag.className = "default-card";
     defaultTag.textContent = "Default";
     defaultTag.setAttribute("aria-label", "Default payment method");
     cardInner.appendChild(defaultTag);
+
+    this.updateCardInterface(cardWrapper, true);
   }
 
   updateCardInterface(cardWrapper, isDefault) {
     const editContainer = cardWrapper.querySelector(".edit-container");
-    if (!editContainer) return;
+    const mainButton =
+      editContainer.querySelector("button") || document.createElement("button");
 
-    // Get or create the main button
-    let mainButton = editContainer.querySelector("button");
-    if (!mainButton) {
-      mainButton = document.createElement("button");
-      editContainer.appendChild(mainButton);
-    }
-
-    // Configure main button based on default status
     if (isDefault) {
       mainButton.textContent = "View Details";
       mainButton.className = "view-card-details";
       mainButton.setAttribute("aria-label", "View card details");
-
-      // Remove set default button if exists
-      const setDefaultBtn = editContainer.querySelector(".set-default-card");
-      if (setDefaultBtn) setDefaultBtn.remove();
+      editContainer.querySelector(".set-default-card")?.remove();
     } else {
       mainButton.textContent = "Edit";
       mainButton.className = "edit-card";
       mainButton.setAttribute("aria-label", "Edit Card");
     }
+
+    if (!mainButton.parentNode) editContainer.appendChild(mainButton);
   }
 
-  handleEditButtonClick(button) {
-    console.log(button);
+  toggleEditCardMode(button) {
     const cardWrapper = button.closest(".card-wrapper");
     if (!cardWrapper) return;
 
-    // Change button to View Details
     button.textContent = "View Details";
     button.className = "view-card-details";
     button.setAttribute("aria-label", "View card details");
 
-    // Add Set Default button if not default card
     if (!this.isDefaultCard(cardWrapper)) {
       this.addSetDefaultButton(cardWrapper);
     }
   }
 
-  handleViewDetailsClick(button) {
-    this.openPopupMenu(button);
+  openViewDetails(button) {
+    this.showPopup(button);
   }
 
   addSetDefaultButton(cardWrapper) {
@@ -325,84 +312,63 @@ class PaymentCardManager {
     editContainer.appendChild(setDefaultBtn);
   }
 
-  openPopupMenu(button) {
+  showPopup(button) {
     if (!this.popup) return;
 
-    this.closePopupMenu();
-
+    this.closePopup();
     this.popup.classList.add("active");
     document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
 
     const isDefault = this.isDefaultCard(button.closest(".card-wrapper"));
-    if (isDefault) {
-      this.addPrimaryPaymentTag(this.popup);
-    }
+    if (isDefault) this.showPrimaryTag();
 
     this.activeCard = button.closest(".card-wrapper");
-
-    if (!this.isEscapeListenerAdded) {
-      document.addEventListener("keydown", this.boundEscapeHandler);
-      this.isEscapeListenerAdded = true;
-    }
+    document.addEventListener("keydown", this.bindEscapeHandler);
   }
 
-  closePopupMenu() {
+  closePopup() {
     if (!this.popup) return;
 
-    document.removeEventListener("keydown", this.boundEscapeHandler);
-    this.isEscapeListenerAdded = false;
-
+    document.removeEventListener("keydown", this.bindEscapeHandler);
     this.popup.classList.remove("active");
     document.body.style.overflow = "";
-    document.documentElement.style.overflow = "";
-
     this.activeCard = null;
-
-    const existingTag = this.popup.querySelector(".primary-card");
-    if (existingTag) existingTag.remove();
+    this.popup.querySelector(".primary-card")?.remove();
   }
 
-  handleEscape(e) {
-    if (e.key === "Escape") {
-      this.closePopupMenu();
-    }
+  handleEscape(event) {
+    if (event.key === "Escape") this.closePopup();
   }
 
   isDefaultCard(cardWrapper) {
     return cardWrapper?.querySelector(".default-card") !== null;
   }
 
-  addPrimaryPaymentTag(popup) {
-    const paymentDetails = popup.querySelector(".primary-card-container");
-    if (!paymentDetails) return;
-
-    const existingTag = paymentDetails.querySelector(".primary-card");
-    if (existingTag) return;
+  showPrimaryTag() {
+    const container = this.popup.querySelector(".primary-card-container");
+    if (!container || container.querySelector(".primary-card")) return;
 
     const primaryTag = document.createElement("div");
-    primaryTag.classList.add("primary-card");
+    primaryTag.className = "primary-card";
     primaryTag.textContent = "Primary Payment Method";
     primaryTag.setAttribute("aria-label", "Primary payment method indicator");
-    paymentDetails.appendChild(primaryTag);
+    container.appendChild(primaryTag);
   }
 
-  updateViewDetailsPopup(isDefault) {
-    if (!this.popup?.classList.contains("active")) return;
-
+  updatePopupView(isDefault) {
+    if (!this.popup.classList.contains("active")) return;
     const existingTag = this.popup.querySelector(".primary-card");
-
     if (isDefault && !existingTag) {
-      this.addPrimaryPaymentTag(this.popup);
+      this.showPrimaryTag();
     } else if (!isDefault && existingTag) {
       existingTag.remove();
     }
   }
 }
 
-// Initialize
+// Initialize PaymentCardManager instance
 try {
-  const cardManager = new PaymentCardManager();
+  new PaymentCardManager();
 } catch (error) {
   console.error("Failed to initialize PaymentCardManager:", error);
 }
