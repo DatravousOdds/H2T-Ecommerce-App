@@ -304,8 +304,6 @@ const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
 
 addNewCard.addEventListener("click", () => {
-  console.log("add card was click");
-  // popupMenu.classList.add("active");
   openPopupMenu(".add-card-menu");
 });
 
@@ -353,7 +351,9 @@ const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
       <div class="edit-container">
         <button type="button" class="edit-card" aria-label="Edit Card">Edit</button>
       </div>
-      <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
+      <div class="delete-card">
+        <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
+      </div>
     </div>
   </div>
 `;
