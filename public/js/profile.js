@@ -1,22 +1,6 @@
 import { generateCountries, validateForm } from "./global.js";
 import { closeDropdown } from "./global.js";
 
-function openPopupMenu(menu) {
-  const overlay = document.querySelector(menu);
-  overlay.classList.add("active");
-  // Prevent body scrolling when popup is open
-  document.body.style.overflow = "hidden";
-  document.documentElement.style.overflow = "hidden"; // Add this for the html element
-}
-
-function closePopupMenu(menu) {
-  const overlay = document.querySelector(menu);
-  overlay.classList.remove("active");
-  // Reset scrolling
-  document.body.style.overflow = "auto";
-  document.documentElement.style.overflow = "auto"; // Add this for html element
-}
-
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
@@ -83,8 +67,180 @@ cardWrappers.forEach((card) => {
   }
 });
 
+function openPopupMenu(menuSelector) {
+  const overlay = document.querySelector(menuSelector);
+  if (!overlay) {
+    console.error(`Menu element "${menuSelector}" not found`);
+    return;
+  }
+
+  // Add active class with animation timing
+  overlay.style.display = "flex";
+  requestAnimationFrame(() => {
+    overlay.classList.add("active");
+  });
+
+  // Prevent background scrolling
+  document.body.style.overflow = "hidden";
+  document.documentElement.style.overflow = "hidden";
+
+  // Add escape key listener
+  document.addEventListener("keydown", handleEscapeKey);
+
+  // Add click outside listener
+  overlay.addEventListener("click", handleOutsideClick);
+
+  // Focus first focusable element
+  const firstFocusable = overlay.querySelector(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  if (firstFocusable) {
+    firstFocusable.focus();
+  }
+}
+
+function closePopupMenu(menuSelector) {
+  const overlay = document.querySelector(menuSelector);
+  if (!overlay) {
+    console.error(`Menu element "${menuSelector}" not found`);
+    return;
+  }
+
+  overlay.classList.remove("active");
+
+  // Reset scrolling
+  document.body.style.overflow = "auto";
+  document.documentElement.style.overflow = "auto";
+
+  // Remove event listeners
+  document.removeEventListener("keydown", handleEscapeKey);
+  overlay.removeEventListener("click", handleOutsideClick);
+
+  // Reset form if present
+  const form = overlay.querySelector("form");
+  if (form) {
+    form.reset();
+  }
+
+  // Hide overlay after animation
+  overlay.addEventListener("transitionend", function hideOverlay() {
+    overlay.style.display = "none";
+    overlay.removeEventListener("transitionend", hideOverlay);
+  });
+}
+
+function handleEscapeKey(event) {
+  if (event.key === "Escape") {
+    const activeMenu = document.querySelector(".add-card-menu.active");
+    if (activeMenu) {
+      closePopupMenu(".add-card-menu");
+    }
+  }
+}
+
+function handleOutsideClick(event) {
+  const popup = event.currentTarget.querySelector(".add-card-popup");
+  if (popup && !popup.contains(event.target)) {
+    closePopupMenu(".add-card-menu");
+  }
+}
+
+function showError(element, message) {
+  const errorDiv = document.createElement("div");
+  errorDiv.className = "error-message";
+  errorDiv.textContent = message;
+
+  if (element) {
+    const existingError = element.parentElement.querySelector(".error-message");
+    if (existingError) {
+      existingError.remove();
+    }
+
+    element.parentElement.appendChild(errorDiv);
+    element.classList.add("error");
+    element.focus();
+  } else {
+    const formElement = document.getElementById("add-card");
+    formElement.insertBefore(errorDiv, formElement.firstChild);
+  }
+
+  setTimeout(() => {
+    errorDiv.remove();
+    if (element) {
+      element.classList.remove("error");
+    }
+  }, 3000);
+}
+
+function showSuccess(message) {
+  const successDiv = document.createElement("div");
+  successDiv.className = "success-message";
+  successDiv.textContent = message;
+
+  const formElement = document.getElementById("add-card");
+  formElement.insertBefore(successDiv, formElement.firstChild);
+
+  setTimeout(() => {
+    successDiv.remove();
+  }, 3000);
+}
+
 const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
+
+// Form Validation and Formatting
+const cardForm = document.getElementById("add-card");
+const cardNumber = document.getElementById("cardNumber");
+const cvv = document.getElementById("cvv");
+const expiry = document.getElementById("expiry");
+
+// Card Number Formatting
+cardNumber.addEventListener("input", (e) => {
+  let value = e.target.value.replace(/\D/g, "");
+  value = value.replace(/(\d{4})(?=\d)/g, "$1 ");
+  value = value.substring(0, 19);
+  e.target.value = value;
+});
+
+cvv.addEventListener("input", (e) => {
+  let value = e.target.value.replace(/\D/g, "");
+  value = value.substring(0, 4);
+  e.target.value = value;
+});
+
+// Expiry Date Validation
+expiry.addEventListener("input", (e) => {
+  const currentDate = new Date();
+
+  const selectedDate = new Date(e.target.value);
+
+  if (selectedDate < currentDate) {
+    expiry.setCustomValidity("Please select a future date");
+  } else {
+    expiry.setCustomValidity("");
+  }
+});
+
+// Form Submission
+cardForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const holderName = document.getElementById("nameOnCard").value;
+  const cardNumber = document.getElementById("cardNumber").value;
+  const expiry = document.getElementById("input-expiry").value;
+  const billingAddress = document.getElementById("billing-address").value;
+
+  console.log(holderName);
+  console.log(cardNumber);
+  console.log(expiry);
+  console.log(billingAddress);
+
+  document.getElementById("fullName").textContent = holderName;
+  document.getElementById("expiry").textContent = expiry;
+  document.getElementById("billing-address").textContent = billingAddress;
+
+  closePopupMenu(".add-card-popup");
+});
 
 addNewCard.addEventListener("click", () => {
   console.log("add card was click");
@@ -115,31 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
-// Set default card
-// document.querySelector("#cards-on-file").addEventListener("click", (event) => {
-//   if (event.target && event.target.matches(".set-default-card")) {
-//     const cardWrapper = event.target.closest(".card-wrapper");
-
-//     const currentCard = cardWrapper.querySelector(".payment-card");
-
-//     const existingDefault = document.querySelector(".default-card");
-
-//     console.log("This is the existing default card:", existingDefault);
-//     console.log("This is the current card:", currentCard);
-
-//     if (existingDefault) {
-//       existingDefault.remove();
-//     }
-
-//     // Creates Default Card
-//     const spanElement = document.createElement("span");
-//     spanElement.classList.add("default-card");
-//     spanElement.textContent = "Default";
-
-//     currentCard.appendChild(spanElement);
-//   }
-// });
 
 // Closes dropdown menu
 document.addEventListener("click", (eventa) => {
@@ -173,6 +304,7 @@ if (addCardBtn) {
 }
 
 function handleAddCard() {
+  // Get form values
   const newCard = {
     cardHolder: document.getElementById("nameOnCard").value,
     cvv: document.getElementById("cvv").value,
@@ -181,57 +313,204 @@ function handleAddCard() {
     billingAddress: document.getElementById("billingAddress").value
   };
 
-  const fullName = document.getElementById("fullname");
-  if (fullName) {
-    fullName.textContent = newCard.nameOnCard;
-  }
-
-  console.log(newCard.nameOnCard);
-  const cardList = document.querySelector(CARD_LIST_SELECTOR);
-  if (!cardList) {
-    console.error("Card list container not found");
-    return;
-  }
-
+  // Get the last 4 digits of the card
   const lastFourDigits = newCard.cardNumber.slice(-4);
-  console.log(lastFourDigits);
-  const newCardHTML = CARD_WRAPPER_TEMPLATE(newCard.nameOnCard, lastFourDigits);
 
-  cardList.insertAdjacentHTML("afterbegin", newCardHTML);
-  closePopupMenu(".add-card-menu");
+  // Update the view details menu
+  // const viewDetailsMenu = document.querySelector(".view-details-menu");
+  // viewDetailsMenu.innerHTML = `
+  //   <div id="details-container" class="details-container">
+  //     <div class="header-wrapper">
+  //       <h1 id="popup-title">Card Details</h1>
+  //       <button class="close-button">
+  //         <i class="fa-solid fa-xmark"></i>
+  //       </button>
+  //     </div>
+
+  //     <div id="card-info">
+  //       <i class="fa-solid fa-wallet"></i>
+  //       <h2 id="card-ending">Visa Debit ending in ${lastFourDigits}</h2>
+  //     </div>
+  //     <div class="primary-card-container"></div>
+
+  //     <div id="card-details">
+  //       <div class="details-item" id="card-holder">
+  //         <p>Card Holder</p>
+  //         <p id="fullname">${newCard.cardHolder}</p>
+  //       </div>
+  //       <div class="details-item" id="expiration-date">
+  //         <p>Expiration Date</p>
+  //         <p>${newCard.expirationDate}</p>
+  //       </div>
+  //       <div class="details-item" id="billingAddress">
+  //         <p>Billing Address</p>
+  //         <p>${newCard.billingAddress}</p>
+  //       </div>
+  //     </div>
+  //     <div id="recent-trans">
+  //       <p class="label">Recent Transactions</p>
+  //       <div class="transactions">
+  //         <div id="r-trans">
+  //           <div class="trans">
+  //             <p>Running Shoes - Blue</p>
+  //             <p>$129.99</p>
+  //           </div>
+  //           <div class="trans">
+  //             <p>Running Shoes - Blue</p>
+  //             <p>$89.99</p>
+  //           </div>
+  //           <div class="trans">
+  //             <p>Running Shoes - Blue</p>
+  //             <p>$159.99</p>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //     <div class="card-details-controls">
+  //       <button id="edit-card" class="control-button">
+  //         <i class="fa-solid fa-pen"></i>
+  //         <p>Edit Card</p>
+  //       </button>
+  //       <button id="remove-card" class="control-button">
+  //         <i class="fa-regular fa-trash-can"></i>
+  //         <p>Remove Card</p>
+  //       </button>
+  //     </div>
+  //   </div>`;
+
+  // Update card list if CARD_LIST_SELECTOR and CARD_WRAPPER_TEMPLATE are defined
+  const cardList = document.querySelector(CARD_LIST_SELECTOR);
+  if (cardList && typeof CARD_WRAPPER_TEMPLATE === "function") {
+    const newCardHTML = CARD_WRAPPER_TEMPLATE(
+      newCard.cardHolder,
+      lastFourDigits
+    );
+    cardList.insertAdjacentHTML("afterbegin", newCardHTML);
+  }
 }
 
 class PaymentCardManager {
   constructor() {
+    // Initialize class properties
     this.cardsContainer = document.querySelector("#cards-on-file");
     this.popup = document.querySelector(".view-details-menu");
+    this.closeButton = document.querySelector(
+      ".view-details-menu .close-button"
+    ); // Update close button selector
     this.activeCard = null;
+    this.isPopupOpen = false; // Add state tracking
 
     if (!this.cardsContainer) {
       console.error("Cards container element not found");
       return;
     }
 
+    if (!this.popup) {
+      console.error("Popup element not found");
+      return;
+    }
+
+    // Bind methods to preserve context
     this.bindEscapeHandler = this.handleEscape.bind(this);
+    this.handleClosePopup = this.closePopup.bind(this);
+
     this.init();
   }
 
   init() {
     this.setupEventListeners();
+
+    // Add close button listener if it exists
+    if (this.closeButton) {
+      this.closeButton.addEventListener("click", this.handleClosePopup);
+    }
   }
 
   setupEventListeners() {
+    // Use event delegation for card container
     this.cardsContainer.addEventListener("click", (event) => {
       const target = event.target;
+      console.log("Clicked element:", target);
 
       if (target?.matches(".set-default-card")) {
         this.setDefaultCard(target);
       } else if (target?.matches(".edit-card")) {
         this.toggleEditCardMode(target);
       } else if (target?.matches(".view-card-details")) {
+        console.log("View details clicked");
         this.openViewDetails(target);
       }
     });
+
+    // Add click outside listener for popup
+    document.addEventListener("click", (event) => {
+      if (
+        this.isPopupOpen &&
+        !this.popup.contains(event.target) &&
+        !event.target.matches(".view-card-details")
+      ) {
+        this.closePopup();
+      }
+    });
+  }
+
+  openViewDetails(button) {
+    console.log("Opening view details");
+    this.showPopup(button);
+  }
+
+  showPopup(button) {
+    console.log(button);
+    console.log("Popup", this.popup);
+    console.log("IS popup open?", this.isPopupOpen);
+    if (!this.popup || this.isPopupOpen) {
+      console.log("Popup already open or not found");
+      return;
+    }
+
+    console.log("Showing popup");
+    this.isPopupOpen = true;
+    this.popup.style.display = "flex"; // Ensure popup is visible
+
+    // Use requestAnimationFrame for smooth animation
+    requestAnimationFrame(() => {
+      this.popup.classList.add("active");
+      document.body.style.overflow = "hidden";
+
+      const cardWrapper = button.closest(".card-wrapper");
+      const isDefault = this.isDefaultCard(cardWrapper);
+
+      if (isDefault) {
+        this.showPrimaryTag();
+      }
+
+      this.activeCard = cardWrapper;
+      document.addEventListener("keydown", this.bindEscapeHandler);
+    });
+  }
+
+  closePopup() {
+    if (!this.popup || !this.isPopupOpen) {
+      console.log("Popup already closed or not found");
+      return;
+    }
+
+    console.log("Closing popup");
+    document.removeEventListener("keydown", this.bindEscapeHandler);
+    this.popup.classList.remove("active");
+
+    // Wait for transition to complete before hiding
+    this.popup.addEventListener(
+      "transitionend",
+      () => {
+        this.popup.style.display = "none";
+        document.body.style.overflow = "";
+        this.activeCard = null;
+        this.popup.querySelector(".primary-card")?.remove();
+        this.isPopupOpen = false;
+      },
+      { once: true }
+    ); // Use once: true to automatically remove the listener
   }
 
   setDefaultCard(button) {
@@ -295,10 +574,6 @@ class PaymentCardManager {
     }
   }
 
-  openViewDetails(button) {
-    this.showPopup(button);
-  }
-
   addSetDefaultButton(cardWrapper) {
     const editContainer = cardWrapper.querySelector(".edit-container");
     if (!editContainer || editContainer.querySelector(".set-default-card"))
@@ -312,32 +587,10 @@ class PaymentCardManager {
     editContainer.appendChild(setDefaultBtn);
   }
 
-  showPopup(button) {
-    if (!this.popup) return;
-
-    this.closePopup();
-    this.popup.classList.add("active");
-    document.body.style.overflow = "hidden";
-
-    const isDefault = this.isDefaultCard(button.closest(".card-wrapper"));
-    if (isDefault) this.showPrimaryTag();
-
-    this.activeCard = button.closest(".card-wrapper");
-    document.addEventListener("keydown", this.bindEscapeHandler);
-  }
-
-  closePopup() {
-    if (!this.popup) return;
-
-    document.removeEventListener("keydown", this.bindEscapeHandler);
-    this.popup.classList.remove("active");
-    document.body.style.overflow = "";
-    this.activeCard = null;
-    this.popup.querySelector(".primary-card")?.remove();
-  }
-
   handleEscape(event) {
-    if (event.key === "Escape") this.closePopup();
+    if (event.key === "Escape") {
+      this.closePopup();
+    }
   }
 
   isDefaultCard(cardWrapper) {
@@ -357,6 +610,7 @@ class PaymentCardManager {
 
   updatePopupView(isDefault) {
     if (!this.popup.classList.contains("active")) return;
+
     const existingTag = this.popup.querySelector(".primary-card");
     if (isDefault && !existingTag) {
       this.showPrimaryTag();
@@ -368,52 +622,12 @@ class PaymentCardManager {
 
 // Initialize PaymentCardManager instance
 try {
-  new PaymentCardManager();
+  const paymentManager = new PaymentCardManager();
+  // Make instance available globally for debugging
+  window.paymentManager = paymentManager;
 } catch (error) {
   console.error("Failed to initialize PaymentCardManager:", error);
 }
-
-// actions.forEach((act) => {
-//   act.addEventListener("click", () => {
-//     act.textContent = "View Details";
-//     act.className = "view-card-details";
-
-//     const cardWrapper = act.closest(".card-wrapper");
-//     const paymentCard = cardWrapper.querySelector(".payment-card");
-//     const hasDefaultCard = paymentCard.querySelector("span.default-card");
-
-//     if (hasDefaultCard) {
-//       return;
-//     }
-
-//     const editContainer = cardWrapper.querySelector(".edit-container");
-//     let existingBtn = editContainer.querySelector(".set-default-card");
-
-//     if (!existingBtn) {
-//       // Create and append the 'Set default' button
-//       const btn = document.createElement("button");
-//       btn.textContent = "Set default";
-//       btn.classList.add("set-default-card");
-//       btn.id = "defaultCard";
-//       editContainer.appendChild(btn);
-//     } else {
-//       return;
-//     }
-
-//     if (paymentCard.contains(hasDefaultCard)) {
-//       console.log("The default tag is on this div");
-//     } else {
-//       console.log("The span element is not on this div");
-//     }
-
-//     const viewDetails = document.querySelector(".view-card-details");
-//     if (viewDetails) {
-//       viewDetails.addEventListener("click", () => {
-//         openPopupMenu(".view-details-menu");
-//       });
-//     }
-//   });
-// });
 
 // Profile actions: website link validation
 url.addEventListener("change", () => {
@@ -1173,7 +1387,7 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
 });
 
 const closeBtnForDetails = document.querySelector(
-  "#view-details .close-button"
+  ".view-details-menu .close-button"
 );
 // console.log(closeBtnForDetails);
 closeBtnForDetails.addEventListener("click", () => {
