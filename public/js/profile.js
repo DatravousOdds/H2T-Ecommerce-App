@@ -330,7 +330,7 @@ document.addEventListener("click", (event) => {
 });
 
 // Add Card functionality
-const ADD_CARD_BTN_SELECTOR = ".addCard-btn";
+// const ADD_CARD_BTN_SELECTOR = ".addCard-btn";
 const CARD_LIST_SELECTOR = ".card-list";
 const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
   <div class="card-wrapper">
@@ -1322,6 +1322,23 @@ class PaymentNotification {
   constructor() {
     this.notification = document.querySelector(".payment-nofication");
     this.timeout = null;
+  }
+
+  success(amount, type = "deposit") {
+
+    
+    this.notification.textContent = "";
+    
+    const container = document.createElement("div");
+    container.classList.add("notification-container");
+    this.notification.appendChild(container);
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid", "fa-mark");
+    icon.setAttribute("aria-hidden="true"");
+    const p = document.createElement("p");
+    p.classList.add("amount-text");
+    p.textContent = `${amount} has been added to your wallet`
   }
 
   show(amount) {
