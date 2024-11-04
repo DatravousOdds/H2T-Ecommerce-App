@@ -713,53 +713,6 @@
             <div id="card-list" class="card-list">
               <!-- COF Container-->
               <div class="card-wrapper">
-                <div class="card-inner payment-card">
-                  <p>Visa Debit ending in 5338</p>
-                  <i class="fa-brands fa-cc-visa"></i>
-                </div>
-
-                <div class="card-options">
-                  <div class="edit-container">
-                    <button
-                      type="button"
-                      class="edit-card"
-                      aria-label="Edit Card"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  <i
-                    class="fa-regular fa-trash-can"
-                    aria-label="Delete Card"
-                  ></i>
-                </div>
-              </div>
-              <!-- COF Container-->
-              <div class="card-wrapper">
-                <div class="payment-card">
-                  <p>Visa Debit ending in 5338</p>
-                  <i class="fa-brands fa-cc-discover"></i>
-                  <!-- <span class="default-card">Default</span> -->
-                </div>
-
-                <div class="card-options">
-                  <div class="edit-container">
-                    <button
-                      type="button"
-                      class="edit-card"
-                      aria-label="Edit Card"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  <i
-                    class="fa-regular fa-trash-can"
-                    aria-label="Delete Card"
-                  ></i>
-                </div>
-              </div>
-              <!-- COF Container-->
-              <div class="card-wrapper">
                 <div>
                   <p>Add cards or bank accounts</p>
                 </div>
@@ -771,30 +724,61 @@
             </div>
 
             <!-- Add card popup menu -->
-            <div id="addCard-modal" class="add-card-menu">
+            <div
+              id="addCard-modal"
+              class="add-card-menu"
+              role="dialog"
+              aria-labelledby="modalTitle"
+            >
               <div id="add-card-popup" class="add-card-popup">
                 <div class="addCardHeader">
                   <div class="header-wrapper">
-                    <h2>Add a Card</h2>
+                    <h2 id="modalTitle">Add a Card</h2>
                     <p>Enter your card details to add a new payment method.</p>
                   </div>
-                  <i class="fa-solid fa-xmark close" id="closePopup"></i>
+                  <!-- Changed from <i> to <button> for better accessibility -->
+                  <button
+                    type="button"
+                    class="close"
+                    id="closePopup"
+                    aria-label="Close popup"
+                  >
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                  </button>
                 </div>
 
                 <hr />
-                <form action="" id="add-card">
+                <!-- Added novalidate to handle custom validation -->
+                <form action="" id="add-card" novalidate>
                   <div class="input-group">
                     <div class="margin-right">
                       <label for="nameOnCard">Name on card</label>
                       <input
                         type="text"
                         id="nameOnCard"
+                        name="nameOnCard"
                         placeholder="Enter your name on the card"
+                        required
+                        autocomplete="cc-name"
+                        minlength="2"
                       />
+                      <!-- Added error message container -->
+                      <div class="error-message" id="nameError"></div>
                     </div>
                     <div class="margin-right">
-                      <label for="cvv"> CVV </label>
-                      <input type="text" id="cvv" placeholder="123" />
+                      <label for="cvv">CVV</label>
+                      <input
+                        type="text"
+                        id="cvv"
+                        name="cvv"
+                        placeholder="123"
+                        required
+                        maxlength="4"
+                        pattern="\d{3,4}"
+                        autocomplete="cc-csc"
+                        inputmode="numeric"
+                      />
+                      <div class="error-message" id="cvvError"></div>
                     </div>
                   </div>
                   <div class="input-group">
@@ -803,12 +787,26 @@
                       <input
                         type="text"
                         id="cardNumber"
+                        name="cardNumber"
                         placeholder="1234 5678 1234 5678"
+                        required
+                        pattern="\d{4}\s\d{4}\s\d{4}\s\d{4}"
+                        autocomplete="cc-number"
+                        inputmode="numeric"
                       />
+                      <div class="error-message" id="cardError"></div>
                     </div>
                     <div class="margin-right">
-                      <label for="expiry">Expiry</label>
-                      <input type="text" id="expiry" placeholder="MM/YYYY" />
+                      <label for="input-expiry">Expiry</label>
+                      <input
+                        type="month"
+                        id="input-expiry"
+                        name="input-expiry"
+                        required
+                        autocomplete="cc-exp"
+                        min="${new Date().toISOString().slice(0, 7)}"
+                      />
+                      <div class="error-message" id="expiryError"></div>
                     </div>
                   </div>
                   <div class="input-group">
@@ -817,14 +815,26 @@
                       <input
                         type="text"
                         id="billing-address"
+                        name="billingAddress"
+                        autocomplete="street-address"
                         placeholder="Enter your billing address"
+                        required
+                        minlength="5"
                       />
+                      <div class="error-message" id="addressError"></div>
                     </div>
                   </div>
+                  <!-- Moved submit button inside form -->
+                  <div class="addCardOptions space-between">
+                    <button
+                      type="submit"
+                      class="addCard-btn reg-btn"
+                      id="submitButton"
+                    >
+                      Add card
+                    </button>
+                  </div>
                 </form>
-                <div class="addCardOptions space-between">
-                  <button class="addCard-btn reg-btn">Add card</button>
-                </div>
               </div>
             </div>
             <!-- Add Fund popup Menu-->
@@ -942,19 +952,19 @@
                   <h2 id="card-ending">Visa Debit ending in 5338</h2>
                 </div>
                 <div class="primary-card-container"></div>
-                <!-- <span class="prime-card">Primary Payment Method</span> -->
+
                 <div id="card-details">
                   <div class="details-item" id="card-holder">
                     <p>Card Holder</p>
-                    <p id="fullname">John Doe</p>
+                    <p id="fullname"></p>
                   </div>
                   <div class="details-item" id="expiration-date">
                     <p>Expiration Date</p>
-                    <p>05/2025</p>
+                    <p id="expiry"></p>
                   </div>
                   <div class="details-item" id="billingAddress">
-                    <p>Billing Address</p>
-                    <p>123 Main St, Anytown, ST 12345</p>
+                    <p id="billing-address">Billing Address</p>
+                    <p></p>
                   </div>
                 </div>
                 <div id="recent-trans">
