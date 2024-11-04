@@ -312,33 +312,49 @@ closePopMenu.addEventListener("click", () => {
   closePopupMenu(".add-card-menu");
 });
 
-// Delete card on file
-document.addEventListener("DOMContentLoaded", () => {
-  const cardOptions = document.querySelectorAll(".card-options");
-  cardOptions.forEach((option) => {
-    const trashBtn = option.querySelector("i.fa-regular.fa-trash-can");
-    if (trashBtn) {
-      trashBtn.addEventListener("click", () => {
-        const cardWrapper = option.closest(".card-wrapper");
-
-        if (cardWrapper) {
-          cardWrapper.remove();
-        }
-      });
-    } else {
-      console.log("Trash button found in this option.");
+document.addEventListener("click", (e) => {
+  if (e.target.matches(".delete-card i")) {
+    const cardWrapper = e.target.closest(".card-wrapper");
+    if (cardWrapper) {
+      cardWrapper.remove();
     }
-  });
+  }
 });
+// Delete card on file
+// document.addEventListener("click", () => {
+//   const cardOptions = document.querySelectorAll(".card-options");
+//   console.log("Card Options: ", cardOptions);
+//   cardOptions.forEach((option) => {
+//     const trashBtn = option.querySelector(
+//       ".delete-card i.fa-regular.fa-trash-can"
+//     );
+//     if (trashBtn) {
+//       console.log("The trash button is here");
+//       console.log("Trash Button:", trashBtn);
+//     }
+//     if (trashBtn) {
+//       trashBtn.addEventListener("click", () => {
+//         const cardWrapper = option.closest(".card-wrapper");
+//         console.log("Card Wrapper:", cardWrapper);
 
-// Closes dropdown menu
+//         if (cardWrapper) {
+//           cardWrapper.remove();
+//         }
+//       });
+//     } else {
+//       console.log("Trash button found in this option.");
+//     }
+//   });
+// });
+
+// Closes dropdown menu when click outside of menu
 document.addEventListener("click", (event) => {
   closeDropdown(event, "select-year", "year-header", "yearIcon");
   closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon");
   closeDropdown(event, "year-selection", "filter");
 });
 
-// Constants
+// Add Card functionality
 const ADD_CARD_BTN_SELECTOR = ".addCard-btn";
 const CARD_LIST_SELECTOR = ".card-list";
 const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
@@ -358,11 +374,13 @@ const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
   </div>
 `;
 
-// Initialize add card button
-const addCardBtn = document.querySelector(ADD_CARD_BTN_SELECTOR);
-// if (addCardBtn) {
-//   addCardBtn.addEventListener("click", handleAddCard);
-// }
+const closeBtnForDetails = document.querySelector(
+  ".view-details-menu .close-button"
+);
+// console.log(closeBtnForDetails);
+closeBtnForDetails.addEventListener("click", () => {
+  closePopupMenu(".view-details-menu");
+});
 
 function handleAddCard() {
   // Get form values
@@ -1233,7 +1251,6 @@ const elements = {
   walletAmount: document.querySelector(".wallet-amount")
 };
 
-console.log(elements.viewCardDetails);
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
 let selectAmount = 0;
 let walletBalance = 0;
@@ -1379,15 +1396,3 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
     // replace alert with pop up notification
   }
 });
-
-const closeBtnForDetails = document.querySelector(
-  ".view-details-menu .close-button"
-);
-// console.log(closeBtnForDetails);
-closeBtnForDetails.addEventListener("click", () => {
-  closePopupMenu(".view-details-menu");
-});
-
-// Example usuage:
-const primaryPaymentMethod = document.querySelector(".prime-card");
-console.log(primaryPaymentMethod);
