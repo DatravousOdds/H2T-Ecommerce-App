@@ -194,6 +194,7 @@ function showSuccess(message) {
   }, 3000);
 }
 
+/* Add card Popup Functionality */
 // Form Validation and Formatting
 const cardForm = document.getElementById("add-card");
 const cardNumber = document.getElementById("cardNumber");
@@ -292,14 +293,6 @@ cardForm.addEventListener("submit", (e) => {
   closePopupMenu(".add-card-menu");
 });
 
-// View Details UI functionality
-const editCard = document.getElementById("edit-card");
-if (editCard) {
-  editCard.addEventListener("click", () => {
-    console.log("Edit Card was click");
-  });
-}
-
 const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
 
@@ -311,7 +304,7 @@ closePopMenu.addEventListener("click", () => {
   // popupMenu.classList.remove("active");
   closePopupMenu(".add-card-menu");
 });
-
+// Event Listener for deleting card on file
 document.addEventListener("click", (e) => {
   if (e.target.matches(".delete-card i")) {
     const cardWrapper = e.target.closest(".card-wrapper");
@@ -320,32 +313,14 @@ document.addEventListener("click", (e) => {
     }
   }
 });
-// Delete card on file
-// document.addEventListener("click", () => {
-//   const cardOptions = document.querySelectorAll(".card-options");
-//   console.log("Card Options: ", cardOptions);
-//   cardOptions.forEach((option) => {
-//     const trashBtn = option.querySelector(
-//       ".delete-card i.fa-regular.fa-trash-can"
-//     );
-//     if (trashBtn) {
-//       console.log("The trash button is here");
-//       console.log("Trash Button:", trashBtn);
-//     }
-//     if (trashBtn) {
-//       trashBtn.addEventListener("click", () => {
-//         const cardWrapper = option.closest(".card-wrapper");
-//         console.log("Card Wrapper:", cardWrapper);
 
-//         if (cardWrapper) {
-//           cardWrapper.remove();
-//         }
-//       });
-//     } else {
-//       console.log("Trash button found in this option.");
-//     }
-//   });
-// });
+// View Details UI functionality
+const editCard = document.getElementById("edit-card");
+if (editCard) {
+  editCard.addEventListener("click", () => {
+    console.log("Edit Card was click");
+  });
+}
 
 // Closes dropdown menu when click outside of menu
 document.addEventListener("click", (event) => {
