@@ -172,6 +172,15 @@ function showError(element, message) {
   }, 3000);
 }
 
+function removeError(element) {
+  element.classList.remove("error");
+  const errorMessage = element.parentElement.querySelector(".error-message");
+  console.log("Error Messasge: ", errorMessage);
+  if (errorMessage) {
+    errorMessage.remove();
+  }
+}
+
 function showSuccess(message) {
   const successDiv = document.createElement("div");
   successDiv.className = "success-message";
@@ -185,9 +194,6 @@ function showSuccess(message) {
   }, 3000);
 }
 
-const addNewCard = document.getElementById("add-new-card");
-const closePopMenu = document.getElementById("closePopup");
-
 // Form Validation and Formatting
 const cardForm = document.getElementById("add-card");
 const cardNumber = document.getElementById("cardNumber");
@@ -200,47 +206,102 @@ cardNumber.addEventListener("input", (e) => {
   value = value.replace(/(\d{4})(?=\d)/g, "$1 ");
   value = value.substring(0, 19);
   e.target.value = value;
+  removeError(cardNumber);
 });
 
+// CVV Formatting
 cvv.addEventListener("input", (e) => {
   let value = e.target.value.replace(/\D/g, "");
   value = value.substring(0, 4);
   e.target.value = value;
+  removeError(cvv);
 });
 
 // Expiry Date Validation
 expiry.addEventListener("input", (e) => {
   const currentDate = new Date();
-
   const selectedDate = new Date(e.target.value);
+  removeError(expiry);
 
   if (selectedDate < currentDate) {
-    expiry.setCustomValidity("Please select a future date");
-  } else {
-    expiry.setCustomValidity("");
+    showError(expiry, "Please select a future date");
   }
 });
 
-// Form Submission
-cardForm.addEventListener("submit", function (e) {
+cardForm.addEventListener("submit", (e) => {
   e.preventDefault();
+  let hasError = false;
 
-  const holderName = document.getElementById("nameOnCard").value;
-  const cardNumber = document.getElementById("cardNumber").value;
-  const expiry = document.getElementById("input-expiry").value;
-  const billingAddress = document.getElementById("billing-address").value;
+  // Get form elements
+  const holderName = document.getElementById("nameOnCard");
+  const cardNumber = document.getElementById("cardNumber");
+  const cvv = document.getElementById("cvv");
+  const expiry = document.getElementById("input-expiry");
+  const billingAddress = document.getElementById("billing-address");
 
-  console.log(holderName);
-  console.log(cardNumber);
-  console.log(expiry);
-  console.log(billingAddress);
+  // Validate Name
+  if (!holderName.value.trim()) {
+    showError(holderName, "Card holder name is required");
+    hasError = true;
+  }
+  // Validate Card Number
+  if (
+    !cardNumber.value.trim() ||
+    cardNumber.value.replace(/\s/g, "").length < 16
+  ) {
+    showError(cardNumber, "Valid card number is required (16 digits)");
+    hasError = true;
+  }
 
-  document.getElementById("fullName").textContent = holderName;
-  document.getElementById("expiry").textContent = expiry;
-  document.getElementById("billing-address").textContent = billingAddress;
+  // Validate CVV
+  if (!cvv.value.trim() || cvv.value.length < 3) {
+    showError(cvv, "Valid CVV is required (3-4 digits)");
+    hasError = true;
+  }
+  // Validate Expiry
+  if (!expiry.value.trim()) {
+    showError(expiry, "Expiry date is required");
+    hasError = true;
+  }
 
-  closePopupMenu(".add-card-popup");
+  // Validate Billing Address
+  if (!billingAddress.value.trim()) {
+    showError(billingAddress, "Billing address is required");
+    hasError = true;
+  }
+
+  // If there are any errors, don't submit
+  if (hasError) {
+    return;
+  }
+
+  // card header ui
+  const cardEnding = document.getElementById("card-ending");
+  // console.log(cardEnding);
+  cardEnding.textContent = `Visa Debit ending in ${cardNumber.value.slice(-4)}`;
+
+  // If validation passes, update the display
+  document.getElementById("card-holder").textContent = holderName.value;
+  document.getElementById("expiry").textContent = expiry.value;
+  document.querySelector(".billingAddress").textContent = billingAddress.value;
+
+  // add to db then add div container
+  handleAddCard();
+
+  // Close popup
+  closePopupMenu(".add-card-menu");
 });
+
+// View Details UI functionality
+const editCard = document.getElementById("edit-card");
+if (editCard) {
+  editCard.addEventListener("click", () => {
+    console.log("Edit Card was click");
+  });
+}
+
+const addNewCard = document.getElementById("add-new-card");
+const closePopMenu = document.getElementById("closePopup");
 
 addNewCard.addEventListener("click", () => {
   console.log("add card was click");
@@ -273,7 +334,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Closes dropdown menu
-document.addEventListener("click", (eventa) => {
+document.addEventListener("click", (event) => {
   closeDropdown(event, "select-year", "year-header", "yearIcon");
   closeDropdown(event, "dropdown-menu", "statement-header", "statementIcon");
   closeDropdown(event, "year-selection", "filter");
@@ -299,9 +360,9 @@ const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
 
 // Initialize add card button
 const addCardBtn = document.querySelector(ADD_CARD_BTN_SELECTOR);
-if (addCardBtn) {
-  addCardBtn.addEventListener("click", handleAddCard);
-}
+// if (addCardBtn) {
+//   addCardBtn.addEventListener("click", handleAddCard);
+// }
 
 function handleAddCard() {
   // Get form values
@@ -316,68 +377,6 @@ function handleAddCard() {
   // Get the last 4 digits of the card
   const lastFourDigits = newCard.cardNumber.slice(-4);
 
-  // Update the view details menu
-  // const viewDetailsMenu = document.querySelector(".view-details-menu");
-  // viewDetailsMenu.innerHTML = `
-  //   <div id="details-container" class="details-container">
-  //     <div class="header-wrapper">
-  //       <h1 id="popup-title">Card Details</h1>
-  //       <button class="close-button">
-  //         <i class="fa-solid fa-xmark"></i>
-  //       </button>
-  //     </div>
-
-  //     <div id="card-info">
-  //       <i class="fa-solid fa-wallet"></i>
-  //       <h2 id="card-ending">Visa Debit ending in ${lastFourDigits}</h2>
-  //     </div>
-  //     <div class="primary-card-container"></div>
-
-  //     <div id="card-details">
-  //       <div class="details-item" id="card-holder">
-  //         <p>Card Holder</p>
-  //         <p id="fullname">${newCard.cardHolder}</p>
-  //       </div>
-  //       <div class="details-item" id="expiration-date">
-  //         <p>Expiration Date</p>
-  //         <p>${newCard.expirationDate}</p>
-  //       </div>
-  //       <div class="details-item" id="billingAddress">
-  //         <p>Billing Address</p>
-  //         <p>${newCard.billingAddress}</p>
-  //       </div>
-  //     </div>
-  //     <div id="recent-trans">
-  //       <p class="label">Recent Transactions</p>
-  //       <div class="transactions">
-  //         <div id="r-trans">
-  //           <div class="trans">
-  //             <p>Running Shoes - Blue</p>
-  //             <p>$129.99</p>
-  //           </div>
-  //           <div class="trans">
-  //             <p>Running Shoes - Blue</p>
-  //             <p>$89.99</p>
-  //           </div>
-  //           <div class="trans">
-  //             <p>Running Shoes - Blue</p>
-  //             <p>$159.99</p>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //     <div class="card-details-controls">
-  //       <button id="edit-card" class="control-button">
-  //         <i class="fa-solid fa-pen"></i>
-  //         <p>Edit Card</p>
-  //       </button>
-  //       <button id="remove-card" class="control-button">
-  //         <i class="fa-regular fa-trash-can"></i>
-  //         <p>Remove Card</p>
-  //       </button>
-  //     </div>
-  //   </div>`;
-
   // Update card list if CARD_LIST_SELECTOR and CARD_WRAPPER_TEMPLATE are defined
   const cardList = document.querySelector(CARD_LIST_SELECTOR);
   if (cardList && typeof CARD_WRAPPER_TEMPLATE === "function") {
@@ -386,6 +385,7 @@ function handleAddCard() {
       lastFourDigits
     );
     cardList.insertAdjacentHTML("afterbegin", newCardHTML);
+    closePopupMenu(".add-card-menu");
   }
 }
 
@@ -621,13 +621,7 @@ class PaymentCardManager {
 }
 
 // Initialize PaymentCardManager instance
-try {
-  const paymentManager = new PaymentCardManager();
-  // Make instance available globally for debugging
-  window.paymentManager = paymentManager;
-} catch (error) {
-  console.error("Failed to initialize PaymentCardManager:", error);
-}
+const paymentManager = new PaymentCardManager();
 
 // Profile actions: website link validation
 url.addEventListener("change", () => {
