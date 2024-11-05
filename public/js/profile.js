@@ -447,21 +447,11 @@ class PaymentCardManager {
     });
   }
 
-  openViewDetails(button) {
-    console.log("Opening view details");
-    this.showPopup(button);
-  }
-
   showPopup(button) {
-    console.log(button);
-    console.log("Popup", this.popup);
-    console.log("IS popup open?", this.isPopupOpen);
     if (!this.popup || this.isPopupOpen) {
-      console.log("Popup already open or not found");
       return;
     }
 
-    console.log("Showing popup");
     this.isPopupOpen = true;
     this.popup.style.display = "flex"; // Ensure popup is visible
 
@@ -504,6 +494,11 @@ class PaymentCardManager {
       },
       { once: true }
     ); // Use once: true to automatically remove the listener
+  }
+
+  openViewDetails(button) {
+    console.log("Opening view details");
+    this.showPopup(button);
   }
 
   setDefaultCard(button) {
