@@ -483,7 +483,7 @@ p {
   transition: all 0.3s ease-in-out;
 }
 
-/* success added funds notification */
+/* notifications styles */
 .payment-nofication {
   position: fixed;
   top: 20px;
@@ -494,6 +494,16 @@ p {
 
 .payment-nofication.show {
   right: 20px; /* Slide in from right */
+}
+
+.notification-container.success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.notification-container.error {
+  background-color: #f44336;
+  color: white;
 }
 
 .notification-container {
@@ -508,14 +518,13 @@ p {
 }
 
 .notification-container i {
-  color: #4caf50;
   font-size: 20px;
 }
 
-.amount-text {
+.amount-text,
+.error-text {
   margin: 0;
-  color: #333;
-  font-size: 16px;
+  color: white;
 }
 
 /* Optional animation for check icon */
