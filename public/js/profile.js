@@ -1325,31 +1325,62 @@ class PaymentNotification {
   }
 
   success(amount, type = "deposit") {
-
-    
     this.notification.textContent = "";
-    
+
     const container = document.createElement("div");
-    container.classList.add("notification-container");
+    container.classList.add("notification-container", "success");
+
     this.notification.appendChild(container);
 
     const icon = document.createElement("i");
-    icon.classList.add("fa-solid", "fa-mark");
-    icon.setAttribute("aria-hidden="true"");
+    icon.classList.add("fa-solid", "fa-circle-check");
+    icon.setAttribute("aria-hidden", "true");
+
     const p = document.createElement("p");
     p.classList.add("amount-text");
-    p.textContent = `${amount} has been added to your wallet`
+
+    // Set appropriate message based on transaction type
+    if (type === "deposit") {
+      p.textContent = `$${amount.toFixed(2)} has been added to your wallet`;
+    } else if (type === "withdraw") {
+      p.textContent = `$${amount.toFixed(
+        2
+      )} has been withdrawn from your wallet`;
+    }
+
+    container.appendChild(icon);
+    container.appendChild(p);
+    this.notification.appendChild(container);
+
+    // Show notification
+    this.show();
+  }
+
+  error(message) {
+    this.notification.textContent = "";
+
+    const container = document.createElement("div");
+    container.classList.add("notification-container", "error");
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid", "fa-circle-xmark");
+    icon.setAttribute("aria-hidden", "true");
+
+    const p = document.createElement("p");
+    p.classList.add("error-text");
+    p.textContent = message;
+
+    container.appendChild(icon);
+    container.appendChild(p);
+    this.notification.appendChild(container);
+
+    this.show();
   }
 
   show(amount) {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
-
-    const amountText = this.notification.querySelector(".amount-text");
-    amountText.textContent = `$${amount.toFixed(
-      2
-    )} has been added to your wallet`;
 
     this.notification.classList.add("show");
 
@@ -1365,13 +1396,13 @@ class PaymentNotification {
   }
 }
 
-const paymentNotification = new PaymentNotification();
+const nofication = new PaymentNotification();
 
 // Add Funds Button
 elements.addFundsButton.addEventListener("click", () => {
   const amount = parseFloat(elements.fundsBalance?.value) || 0;
+  nofication.success(amount, "deposit");
   updateBalance(amount, "add");
-  paymentNotification.show(amount);
   closePopupMenu(".add-funds-menu");
 });
 
@@ -1380,11 +1411,10 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   const amount = parseFloat(elements.withdrawAmount?.value) || 0;
   console.log(amount);
   if (amount <= walletBalance) {
+    nofication.success(amount, "withdraw");
     updateBalance(amount, "withdraw");
-    alert("You have successfully withdraw " + amount + " .");
     closePopupMenu(".popup-overlay");
   } else {
-    alert("insufficient funds");
-    // replace alert with pop up notification
+    nofication.error("insufficient funds");
   }
 });
