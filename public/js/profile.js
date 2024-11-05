@@ -569,14 +569,6 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// View Details UI functionality
-const editCard = document.getElementById("edit-card");
-if (editCard) {
-  editCard.addEventListener("click", () => {
-    console.log("Edit Card was click");
-  });
-}
-
 // Closes dropdown menu when click outside of menu
 document.addEventListener("click", (event) => {
   closeDropdown(event, "select-year", "year-header", "yearIcon");
@@ -607,7 +599,7 @@ const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
 const closeBtnForDetails = document.querySelector(
   ".view-details-menu .close-button"
 );
-// console.log(closeBtnForDetails);
+
 closeBtnForDetails.addEventListener("click", () => {
   closePopupMenu(".view-details-menu");
 });
