@@ -501,6 +501,11 @@ p {
   color: white;
 }
 
+.notification-container.withdraw {
+  background-color: #2563eb;
+  color: white;
+}
+
 .notification-container.error {
   background-color: #f44336;
   color: white;
@@ -564,10 +569,6 @@ p {
 
 .amount-btn:hover {
   background: #e5e7eb;
-}
-
-.amount-btn.selected {
-  background-color: #2563eb;
 }
 
 .confirm-withdraw-btn {
@@ -2086,6 +2087,7 @@ h6 {
 .hover-scale:hover {
   transform: scale(2);
 }
+
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
   .header-info h3 {
@@ -2313,6 +2315,40 @@ h6 {
   }
 
   /* View details popup */
+
+  .edit-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 4px 0;
+  }
+
+  .edit-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
+
+  .expiry-inputs select {
+    width: calc(50% - 5px);
+  }
+
+  textarea.edit-input {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .control-button.cancel-edit {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .control-button.cancel-edit:hover {
+    background-color: #c82333;
+  }
+
   #view-details .details-container {
     padding: 1rem;
     margin: 1rem;

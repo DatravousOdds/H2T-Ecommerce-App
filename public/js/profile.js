@@ -229,6 +229,7 @@ expiry.addEventListener("input", (e) => {
   }
 });
 
+// Add card event Listener
 cardForm.addEventListener("submit", (e) => {
   e.preventDefault();
   let hasError = false;
@@ -291,6 +292,260 @@ cardForm.addEventListener("submit", (e) => {
 
   // Close popup
   closePopupMenu(".add-card-menu");
+});
+class CardEditor {
+  constructor() {
+    // View details elements
+    this.viewDetailsMenu = document.getElementById("view-details");
+    this.editButton = document.getElementById("edit-card");
+    this.cardHolder = document.getElementById("card-holder");
+    this.expiryDate = document.getElementById("expiry");
+    this.billingAddress = document.querySelector(".billingAddress");
+
+    // Bind event listeners
+    this.editButton.addEventListener("click", (e) => this.enableEditing(e));
+
+    // Track editing state
+    this.isEditing = false;
+  }
+
+  enableEditing(event) {
+    // Prevent event propagation
+    event.stopPropagation();
+
+    if (this.isEditing) return;
+
+    this.isEditing = true;
+
+    const removeCardBtn = document.getElementById("remove-card");
+    if (removeCardBtn) {
+      removeCardBtn.style.display = "none";
+    }
+
+    // Change edit button to save button
+    this.editButton.innerHTML = `
+      <i class="fa-solid fa-check"></i>
+      <p>Save Changes</p>
+    `;
+    // this.editButton.id = "save-changes";
+
+    // Transform card holder to input
+    const holderInput = this.createInput(
+      this.cardHolder.textContent,
+      "text",
+      "card-holder-input",
+      "Card Holder Name"
+    );
+    this.cardHolder.replaceWith(holderInput);
+
+    // Transform expiry to month/year inputs
+    const [month, year] = this.expiryDate.textContent.split("/");
+    const expiryContainer = document.createElement("div");
+    expiryContainer.className = "expiry-inputs";
+    expiryContainer.style.display = "flex";
+    expiryContainer.style.gap = "10px";
+
+    const monthInput = this.createSelect(
+      month,
+      "month-input",
+      Array.from({ length: 12 }, (_, i) => {
+        const num = (i + 1).toString().padStart(2, "0");
+        return { value: num, text: num };
+      })
+    );
+
+    const yearInput = this.createSelect(
+      year,
+      "year-input",
+      Array.from({ length: 10 }, (_, i) => {
+        const num = (new Date().getFullYear() + i).toString();
+        return { value: num, text: num };
+      })
+    );
+
+    expiryContainer.appendChild(monthInput);
+    expiryContainer.appendChild(yearInput);
+    this.expiryDate.replaceWith(expiryContainer);
+
+    // Transform billing address to textarea
+    const addressInput = this.createTextArea(
+      this.billingAddress.textContent,
+      "billing-address-input",
+      "Billing Address"
+    );
+    this.billingAddress.replaceWith(addressInput);
+
+    // Add save and cancel buttons
+    this.editButton.removeEventListener("click", (e) => this.enableEditing(e));
+    this.editButton.addEventListener("click", (e) => this.saveChanges(e));
+
+    // Add cancel button
+    const cancelButton = document.createElement("button");
+    cancelButton.className = "control-button cancel-edit";
+    cancelButton.innerHTML = `
+      <i class="fa-solid fa-xmark"></i>
+      <p>Cancel</p>
+    `;
+    cancelButton.addEventListener("click", (e) => this.cancelEditing(e));
+
+    this.editButton.parentNode.insertBefore(
+      cancelButton,
+      this.editButton.nextSibling
+    );
+  }
+
+  createInput(value, type, id, placeholder) {
+    const input = document.createElement("input");
+    input.type = type;
+    input.id = id;
+    input.value = value;
+    input.placeholder = placeholder;
+    input.className = "edit-input";
+    return input;
+  }
+
+  createSelect(value, id, options) {
+    const select = document.createElement("select");
+    select.id = id;
+    select.className = "edit-input";
+
+    options.forEach((option) => {
+      const optionElement = document.createElement("option");
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      optionElement.selected = option.value === value;
+      select.appendChild(optionElement);
+    });
+
+    return select;
+  }
+
+  createTextArea(value, id, placeholder) {
+    const textarea = document.createElement("textarea");
+    textarea.id = id;
+    textarea.value = value;
+    textarea.placeholder = placeholder;
+    textarea.className = "edit-input";
+    textarea.rows = 3;
+    return textarea;
+  }
+
+  saveChanges(event) {
+    event.stopPropagation();
+
+    // Get updated values
+    const newHolder = document.getElementById("card-holder-input").value;
+    const newMonth = document.getElementById("month-input").value;
+    const newYear = document.getElementById("year-input").value;
+    const newAddress = document.getElementById("billing-address-input").value;
+
+    // Validate inputs
+    if (!this.validateInputs(newHolder, newMonth, newYear, newAddress)) {
+      return;
+    }
+
+    // Update the display elements
+    const newHolderElement = document.createElement("p");
+    newHolderElement.id = "card-holder";
+    newHolderElement.textContent = newHolder;
+
+    const newExpiryElement = document.createElement("p");
+    newExpiryElement.id = "expiry";
+    newExpiryElement.textContent = `${newMonth}/${newYear}`;
+
+    const newAddressElement = document.createElement("p");
+    newAddressElement.className = "billingAddress";
+    newAddressElement.textContent = newAddress;
+
+    // Replace inputs with updated elements
+    document.getElementById("card-holder-input").replaceWith(newHolderElement);
+    document.querySelector(".expiry-inputs").replaceWith(newExpiryElement);
+    document
+      .getElementById("billing-address-input")
+      .replaceWith(newAddressElement);
+
+    // Reset edit button
+    this.resetEditButton();
+
+    // Remove cancel button
+    document.querySelector(".cancel-edit")?.remove();
+
+    // Update state
+    this.isEditing = false;
+
+    // Show success notification (assuming you have the PaymentNotification class)
+    const notification = new PaymentNotification();
+    notification.success("Card details updated successfully");
+  }
+
+  cancelEditing(event) {
+    event.stopPropagation();
+    // Restore original elements
+    const holderElement = document.createElement("p");
+    holderElement.id = "card-holder";
+    holderElement.textContent = this.cardHolder.textContent;
+
+    const expiryElement = document.createElement("p");
+    expiryElement.id = "expiry";
+    expiryElement.textContent = this.expiryDate.textContent;
+
+    const addressElement = document.createElement("p");
+    addressElement.className = "billingAddress";
+    addressElement.textContent = this.billingAddress.textContent;
+
+    // Replace inputs with original elements
+    document.getElementById("card-holder-input")?.replaceWith(holderElement);
+    document.querySelector(".expiry-inputs")?.replaceWith(expiryElement);
+    document
+      .getElementById("billing-address-input")
+      ?.replaceWith(addressElement);
+
+    // Reset edit button
+    this.resetEditButton();
+
+    // Remove cancel button
+    document.querySelector(".cancel-edit")?.remove();
+
+    // Update state
+    this.isEditing = false;
+  }
+
+  validateInputs(holder, month, year, address) {
+    if (!holder.trim()) {
+      this.showError("Card holder name is required");
+      return false;
+    }
+
+    if (!address.trim()) {
+      this.showError("Billing address is required");
+      return false;
+    }
+
+    return true;
+  }
+
+  showError(message) {
+    const notification = new PaymentNotification();
+    notification.error(message);
+  }
+
+  resetEditButton() {
+    this.editButton.innerHTML = `
+      <i class="fa-solid fa-pen"></i>
+      <p>Edit Card</p>
+    `;
+
+    const removeCardBtn = document.getElementById("remove-card");
+    if (!removeCardBtn) {
+      removeCardBtn.style.display = "flex";
+    }
+    // this.editButton.removeEventListener("click", () => this.saveChanges());
+    this.editButton.addEventListener("click", (e) => this.enableEditing(e));
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const cardEditor = new CardEditor();
 });
 
 const addNewCard = document.getElementById("add-new-card");
@@ -364,7 +619,7 @@ function handleAddCard() {
     cvv: document.getElementById("cvv").value,
     cardNumber: document.getElementById("cardNumber").value,
     expirationDate: document.getElementById("expiry").value,
-    billingAddress: document.getElementById("billingAddress").value
+    billingAddress: document.getElementById("billingAddress").value,
   };
 
   // Get the last 4 digits of the card
@@ -1061,7 +1316,7 @@ profileSection.forEach((section) => {
     });
   });
 
-  // Handle edit button click
+  // Handle edit button click | Profile
   edit.forEach((btn) => {
     btn.addEventListener("click", () => {
       // console.log("edit button was clicked!");
@@ -1085,7 +1340,7 @@ profileSection.forEach((section) => {
     });
   });
 
-  // Handle cancel button click
+  // Handle cancel button click | Profile
   cancelBtn.forEach((btn) => {
     btn.addEventListener("click", () => {
       console.log("The Id is:", btn.id);
@@ -1096,7 +1351,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -1111,7 +1366,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -1144,7 +1399,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -1177,7 +1432,7 @@ profileSection.forEach((section) => {
     });
   });
 
-  // Hides the cta buttons by default
+  // Hides the cta buttons by default | Profile
   allActionButtons.forEach((action) => {
     action.style.display = "none";
   });
@@ -1218,7 +1473,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
@@ -1323,6 +1578,9 @@ class PaymentNotification {
     this.notification.textContent = "";
 
     const container = document.createElement("div");
+    if (type === "withdraw") {
+      container.classList.add("notification-container", "withdraw");
+    }
     container.classList.add("notification-container", "success");
 
     this.notification.appendChild(container);
@@ -1391,12 +1649,12 @@ class PaymentNotification {
   }
 }
 
-const nofication = new PaymentNotification();
+const notification = new PaymentNotification();
 
 // Add Funds Button
 elements.addFundsButton.addEventListener("click", () => {
   const amount = parseFloat(elements.fundsBalance?.value) || 0;
-  nofication.success(amount, "deposit");
+  notification.success(amount, "deposit");
   updateBalance(amount, "add");
   closePopupMenu(".add-funds-menu");
 });
@@ -1406,10 +1664,10 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   const amount = parseFloat(elements.withdrawAmount?.value) || 0;
   console.log(amount);
   if (amount <= walletBalance) {
-    nofication.success(amount, "withdraw");
+    notification.success(amount, "withdraw");
     updateBalance(amount, "withdraw");
     closePopupMenu(".popup-overlay");
   } else {
-    nofication.error("insufficient funds");
+    notification.error("insufficient funds");
   }
 });
