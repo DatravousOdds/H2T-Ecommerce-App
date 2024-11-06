@@ -357,7 +357,7 @@ function handleAddCard() {
     cvv: document.getElementById("cvv").value,
     cardNumber: document.getElementById("cardNumber").value,
     expirationDate: document.getElementById("expiry").value,
-    billingAddress: document.getElementById("billingAddress").value,
+    billingAddress: document.getElementById("billingAddress").value
   };
 
   // Get the last 4 digits of the card
@@ -695,7 +695,6 @@ closeBtn.addEventListener("click", () => {
   document.body.classList.remove("no-scroll");
 });
 
-// Add this to your profile.js file
 const uploadBackgroundBtn = document.getElementById("upload-background-btn");
 const removeBackgroundBtn = document.getElementById("remove-background-btn");
 const backgroundElement = document.querySelector(".profile-background");
@@ -714,13 +713,17 @@ removeBackgroundBtn.addEventListener("click", () => {
 backgroundInput.addEventListener("change", (e) => {
   console.log("Background input changed");
   const file = e.target.files[0];
-  handleBackgroundUpload(file);
+  console.log(file);
+  if (file) {
+    handleBackgroundUpload(file);
+  }
+  // Reset the file input value so the same file can be selected again
+  backgroundInput.value = "";
 });
 
 function handleBackgroundUpload(file) {
   // set maximum file size
   const maxFileSize = 5 * 1024 * 1024; // 5MB
-
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
   if (!allowedTypes.includes(file.type)) {
@@ -733,20 +736,27 @@ function handleBackgroundUpload(file) {
     return;
   }
 
-  // TODO: upload file to firebase
-
   // Create FileReader to read the file
   const reader = new FileReader();
 
   reader.onload = function (event) {
-    backgroundElement.style.backgroundImage = `url(${event.target.result})`;
+    // Ensure we're setting a new URL each time
+    const imageUrl = `url("${event.target.result}")`;
+    backgroundElement.style.backgroundImage = imageUrl;
   };
 
   reader.readAsDataURL(file);
+
+  removeBackgroundBtn.style.display = "inline";
+  uploadBackgroundBtn.style.display = "none";
 }
 
 function handleBackgroundRemove() {
   backgroundElement.style.backgroundImage = "none";
+  // Reset the file input value
+  backgroundInput.value = "";
+  removeBackgroundBtn.style.display = "none";
+  uploadBackgroundBtn.style.display = "inline";
 }
 
 // UserCard action: click
@@ -1143,7 +1153,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username",
+          "profile-username"
         ];
 
         personalFormIds.forEach((id) => {
@@ -1158,7 +1168,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError",
+          "usernameError"
         ];
 
         personalErrorIds.forEach((id) => {
@@ -1191,7 +1201,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError",
+          "addressError"
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -1265,7 +1275,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount"),
+  walletAmount: document.querySelector(".wallet-amount")
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];

@@ -113,7 +113,12 @@
                     <i class="fa-solid fa-image"></i>
                     Change Background
                   </button>
-                  <button id="remove-background-btn" type="button">
+                  <button
+                    id="remove-background-btn"
+                    class="hidden"
+                    type="button"
+                    style="display: none"
+                  >
                     <i class="fa-solid fa-trash"></i>
                     Remove
                   </button>
@@ -121,8 +126,8 @@
 
                 <div id="pfp-section" class="pfp-img">
                   <img
-                    src="/images/1.png"
-                    alt="profile picture"
+                    src="/images/default-avatar.svg"
+                    alt="Default profile picture"
                     id="profile-picture"
                   />
                 </div>
@@ -137,12 +142,12 @@
                     </div>
                     <div id="wrapper-row" class="wrapper-row">
                       <p id="username">@sara.almasi</p>
-                      <img
-                        id="verified-img"
-                        src="/images/auth.png"
-                        width="30px"
-                        alt=""
-                      />
+                      <div id="verified-img-container">
+                        <div id="verified-tag" class="verified-tag">
+                          <i class="fa-solid fa-shield"></i>
+                          Verified
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <!-- User Stats Section -->
@@ -1166,7 +1171,7 @@
           </div>
 
           <!-- Payment Methods Selection-->
-          
+
           <div class="container">
             <!-- Payment Method Selection -->
             <div class="select-method-card" id="methodSelection">
