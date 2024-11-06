@@ -181,18 +181,18 @@ function removeError(element) {
   }
 }
 
-function showSuccess(message) {
-  const successDiv = document.createElement("div");
-  successDiv.className = "success-message";
-  successDiv.textContent = message;
+// function showSuccess(message) {
+//   const successDiv = document.createElement("div");
+//   successDiv.className = "success-message";
+//   successDiv.textContent = message;
 
-  const formElement = document.getElementById("add-card");
-  formElement.insertBefore(successDiv, formElement.firstChild);
+//   const formElement = document.getElementById("add-card");
+//   formElement.insertBefore(successDiv, formElement.firstChild);
 
-  setTimeout(() => {
-    successDiv.remove();
-  }, 3000);
-}
+//   setTimeout(() => {
+//     successDiv.remove();
+//   }, 3000);
+// }
 
 /* Add card Popup Functionality */
 // Form Validation and Formatting
@@ -1462,4 +1462,70 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   } else {
     notification.error("insufficient funds");
   }
+});
+
+// ... existing code ...
+
+// Add these element references
+const methodSelection = document.querySelector(".select-method-card");
+const card_form = document.querySelector("#card-form");
+const bankForm = document.querySelector("#bank-form");
+const successCard = document.querySelector("#successCard");
+
+// ... rest of the event listener code ...
+
+// Define functions
+function showCardForm() {
+  methodSelection.style.display = "none";
+  card_form.style.display = "block";
+}
+
+function showBankForm() {
+  methodSelection.style.display = "none";
+  bankForm.style.display = "block";
+}
+
+function showMethodSelection() {
+  methodSelection.style.display = "block";
+  card_form.style.display = "none";
+  bankForm.style.display = "none";
+  successCard.style.display = "none";
+}
+
+function showSuccess(e) {
+  e.preventDefault();
+  methodSelection.style.display = "none";
+  card_form.style.display = "none";
+  bankForm.style.display = "none";
+  successCard.style.display = "block";
+}
+
+function resetFlow() {
+  showMethodSelection();
+}
+
+// Add event listeners when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  // Payment options
+  document
+    .querySelector(".payment-option:nth-child(1)")
+    .addEventListener("click", showCardForm);
+  document
+    .querySelector(".payment-option:nth-child(2)")
+    .addEventListener("click", showBankForm);
+
+  // Back button
+  document
+    .querySelector(".back-button")
+    .addEventListener("click", showMethodSelection);
+
+  // Form submission
+  document
+    .querySelector("#card-form form")
+    .addEventListener("submit", showSuccess);
+
+  // Done button
+  document
+    .querySelector("#successCard .button")
+    .addEventListener("click", resetFlow);
 });

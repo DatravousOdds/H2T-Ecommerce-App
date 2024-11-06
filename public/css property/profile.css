@@ -1,5 +1,15 @@
 :root {
   --padding-medium: 10px 10px;
+  --primary: #ff0000;
+  --primary-dark: #cc0000;
+  --primary-light: #ffebeb;
+  --black: #000000;
+  --white: #ffffff;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
 }
 
 /* CSS */
@@ -1133,6 +1143,272 @@ p {
   justify-content: center;
   font-weight: 600;
   text-transform: capitalize;
+}
+
+/* Payment Method Selection Card */
+
+#payment-information.container {
+  max-width: 480px;
+  margin: 40px auto;
+}
+.select-method-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  margin-bottom: 24px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.card-subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.payment-options {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-option:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.payment-option.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.option-icon {
+  width: 48px;
+  height: 48px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-icon i {
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.option-details {
+  flex: 1;
+}
+
+.option-title {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.option-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Form Styles */
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.form-card.active {
+  display: block;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 24px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.back-button:hover {
+  background: #f3f4f6;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.secure-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f5f5ff;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.secure-badge i {
+  color: #4f46e5;
+}
+
+.secure-text {
+  font-size: 0.875rem;
+  color: red;
+  font-weight: 500;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.button-primary {
+  background: red;
+  color: white;
+}
+
+.button-primary:hover {
+  background: red;
+}
+
+/* Bank Account Form Specific */
+.bank-info {
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.bank-info-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.bank-detail {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.875rem;
+}
+
+.bank-detail-label {
+  color: #6b7280;
+}
+
+.bank-detail-value {
+  color: #111827;
+  font-weight: 500;
+}
+
+/* Success State */
+.success-card {
+  text-align: center;
+  padding: 40px 24px;
+  display: none;
+}
+
+.success-card.active {
+  display: block;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  background: #f5f5ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.success-icon i {
+  font-size: 2rem;
+  color: #4f46e5;
+}
+
+.success-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.success-message {
+  color: #6b7280;
+  margin-bottom: 24px;
 }
 
 .profile-section label {
