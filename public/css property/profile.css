@@ -730,7 +730,10 @@ p {
 /* View Card Details  */
 
 #card-details {
-  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
 }
 
 #view-details .details-container {
@@ -766,7 +769,20 @@ p {
 }
 
 #view-details .details-item {
-  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#view-details .details-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.details-item i {
+  font-size: 1.25rem;
+  color: #6b7280;
 }
 
 #view-details .details-item p:first-child {
@@ -900,11 +916,6 @@ p {
 }
 
 /* Reviews Section */
-
-#review-content {
-  width: 500px;
-  /* height: 32%; */
-}
 
 .review-card {
   border-bottom: 2px solid #d6d6d6;
@@ -1184,9 +1195,9 @@ p {
 
 #profile-inner-wrapper {
   display: flex;
-  /* flex-direction: column; */
-  /* align-items: center; */
-  /* justify-content: center; */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 24px;
   flex-wrap: wrap;
 }
@@ -1198,9 +1209,86 @@ p {
   width: 100%;
 }
 
-.payment-wrapper {
-  max-width: 975px;
+.pfp {
+  position: relative;
+  padding: 20px;
+}
+
+.profile-background {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 135px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px 8px 0 0;
+  z-index: 0;
+}
+
+.profile-background-overlay {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 31%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.1)
+  );
+  z-index: 1;
+}
+
+.background-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+
+.background-actions button {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.background-actions button:hover {
+  background: white;
+}
+
+#pfp-section-1 {
+  position: relative;
+  z-index: 2;
+}
+
+.pfp-img {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20px;
+}
+
+#profile-picture {
+  border: 4px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-wrapper {
+  max-width: 100%;
+  width: 70%;
   height: 100%;
   /* border: 1px solid #d9d9d9; */
   border-radius: 12px;
@@ -1215,8 +1303,8 @@ p {
   box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   padding: 10px 24px;
-  max-width: 975px;
-  width: 100%;
+  max-width: 100%;
+  width: 70%;
   /* border: 2px solid #d9d9d9; */
   margin: 20px 20px;
   border-radius: 12px;
@@ -1945,7 +2033,7 @@ h6 {
 
 .pfp {
   display: block;
-  width: 500px;
+  width: 70%;
   max-width: 100%;
   margin-bottom: 1rem;
   /* height: 544px; */
@@ -2669,9 +2757,5 @@ h6 {
 
   .profile-section label {
     font-size: 18px;
-  }
-
-  #shipping-data {
-    order: 1;
   }
 }

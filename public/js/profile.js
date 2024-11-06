@@ -293,260 +293,6 @@ cardForm.addEventListener("submit", (e) => {
   // Close popup
   closePopupMenu(".add-card-menu");
 });
-class CardEditor {
-  constructor() {
-    // View details elements
-    this.viewDetailsMenu = document.getElementById("view-details");
-    this.editButton = document.getElementById("edit-card");
-    this.cardHolder = document.getElementById("card-holder");
-    this.expiryDate = document.getElementById("expiry");
-    this.billingAddress = document.querySelector(".billingAddress");
-
-    // Bind event listeners
-    this.editButton.addEventListener("click", (e) => this.enableEditing(e));
-
-    // Track editing state
-    this.isEditing = false;
-  }
-
-  enableEditing(event) {
-    // Prevent event propagation
-    event.stopPropagation();
-
-    if (this.isEditing) return;
-
-    this.isEditing = true;
-
-    const removeCardBtn = document.getElementById("remove-card");
-    if (removeCardBtn) {
-      removeCardBtn.style.display = "none";
-    }
-
-    // Change edit button to save button
-    this.editButton.innerHTML = `
-      <i class="fa-solid fa-check"></i>
-      <p>Save Changes</p>
-    `;
-    // this.editButton.id = "save-changes";
-
-    // Transform card holder to input
-    const holderInput = this.createInput(
-      this.cardHolder.textContent,
-      "text",
-      "card-holder-input",
-      "Card Holder Name"
-    );
-    this.cardHolder.replaceWith(holderInput);
-
-    // Transform expiry to month/year inputs
-    const [month, year] = this.expiryDate.textContent.split("/");
-    const expiryContainer = document.createElement("div");
-    expiryContainer.className = "expiry-inputs";
-    expiryContainer.style.display = "flex";
-    expiryContainer.style.gap = "10px";
-
-    const monthInput = this.createSelect(
-      month,
-      "month-input",
-      Array.from({ length: 12 }, (_, i) => {
-        const num = (i + 1).toString().padStart(2, "0");
-        return { value: num, text: num };
-      })
-    );
-
-    const yearInput = this.createSelect(
-      year,
-      "year-input",
-      Array.from({ length: 10 }, (_, i) => {
-        const num = (new Date().getFullYear() + i).toString();
-        return { value: num, text: num };
-      })
-    );
-
-    expiryContainer.appendChild(monthInput);
-    expiryContainer.appendChild(yearInput);
-    this.expiryDate.replaceWith(expiryContainer);
-
-    // Transform billing address to textarea
-    const addressInput = this.createTextArea(
-      this.billingAddress.textContent,
-      "billing-address-input",
-      "Billing Address"
-    );
-    this.billingAddress.replaceWith(addressInput);
-
-    // Add save and cancel buttons
-    this.editButton.removeEventListener("click", (e) => this.enableEditing(e));
-    this.editButton.addEventListener("click", (e) => this.saveChanges(e));
-
-    // Add cancel button
-    const cancelButton = document.createElement("button");
-    cancelButton.className = "control-button cancel-edit";
-    cancelButton.innerHTML = `
-      <i class="fa-solid fa-xmark"></i>
-      <p>Cancel</p>
-    `;
-    cancelButton.addEventListener("click", (e) => this.cancelEditing(e));
-
-    this.editButton.parentNode.insertBefore(
-      cancelButton,
-      this.editButton.nextSibling
-    );
-  }
-
-  createInput(value, type, id, placeholder) {
-    const input = document.createElement("input");
-    input.type = type;
-    input.id = id;
-    input.value = value;
-    input.placeholder = placeholder;
-    input.className = "edit-input";
-    return input;
-  }
-
-  createSelect(value, id, options) {
-    const select = document.createElement("select");
-    select.id = id;
-    select.className = "edit-input";
-
-    options.forEach((option) => {
-      const optionElement = document.createElement("option");
-      optionElement.value = option.value;
-      optionElement.textContent = option.text;
-      optionElement.selected = option.value === value;
-      select.appendChild(optionElement);
-    });
-
-    return select;
-  }
-
-  createTextArea(value, id, placeholder) {
-    const textarea = document.createElement("textarea");
-    textarea.id = id;
-    textarea.value = value;
-    textarea.placeholder = placeholder;
-    textarea.className = "edit-input";
-    textarea.rows = 3;
-    return textarea;
-  }
-
-  saveChanges(event) {
-    event.stopPropagation();
-
-    // Get updated values
-    const newHolder = document.getElementById("card-holder-input").value;
-    const newMonth = document.getElementById("month-input").value;
-    const newYear = document.getElementById("year-input").value;
-    const newAddress = document.getElementById("billing-address-input").value;
-
-    // Validate inputs
-    if (!this.validateInputs(newHolder, newMonth, newYear, newAddress)) {
-      return;
-    }
-
-    // Update the display elements
-    const newHolderElement = document.createElement("p");
-    newHolderElement.id = "card-holder";
-    newHolderElement.textContent = newHolder;
-
-    const newExpiryElement = document.createElement("p");
-    newExpiryElement.id = "expiry";
-    newExpiryElement.textContent = `${newMonth}/${newYear}`;
-
-    const newAddressElement = document.createElement("p");
-    newAddressElement.className = "billingAddress";
-    newAddressElement.textContent = newAddress;
-
-    // Replace inputs with updated elements
-    document.getElementById("card-holder-input").replaceWith(newHolderElement);
-    document.querySelector(".expiry-inputs").replaceWith(newExpiryElement);
-    document
-      .getElementById("billing-address-input")
-      .replaceWith(newAddressElement);
-
-    // Reset edit button
-    this.resetEditButton();
-
-    // Remove cancel button
-    document.querySelector(".cancel-edit")?.remove();
-
-    // Update state
-    this.isEditing = false;
-
-    // Show success notification (assuming you have the PaymentNotification class)
-    const notification = new PaymentNotification();
-    notification.success("Card details updated successfully");
-  }
-
-  cancelEditing(event) {
-    event.stopPropagation();
-    // Restore original elements
-    const holderElement = document.createElement("p");
-    holderElement.id = "card-holder";
-    holderElement.textContent = this.cardHolder.textContent;
-
-    const expiryElement = document.createElement("p");
-    expiryElement.id = "expiry";
-    expiryElement.textContent = this.expiryDate.textContent;
-
-    const addressElement = document.createElement("p");
-    addressElement.className = "billingAddress";
-    addressElement.textContent = this.billingAddress.textContent;
-
-    // Replace inputs with original elements
-    document.getElementById("card-holder-input")?.replaceWith(holderElement);
-    document.querySelector(".expiry-inputs")?.replaceWith(expiryElement);
-    document
-      .getElementById("billing-address-input")
-      ?.replaceWith(addressElement);
-
-    // Reset edit button
-    this.resetEditButton();
-
-    // Remove cancel button
-    document.querySelector(".cancel-edit")?.remove();
-
-    // Update state
-    this.isEditing = false;
-  }
-
-  validateInputs(holder, month, year, address) {
-    if (!holder.trim()) {
-      this.showError("Card holder name is required");
-      return false;
-    }
-
-    if (!address.trim()) {
-      this.showError("Billing address is required");
-      return false;
-    }
-
-    return true;
-  }
-
-  showError(message) {
-    const notification = new PaymentNotification();
-    notification.error(message);
-  }
-
-  resetEditButton() {
-    this.editButton.innerHTML = `
-      <i class="fa-solid fa-pen"></i>
-      <p>Edit Card</p>
-    `;
-
-    const removeCardBtn = document.getElementById("remove-card");
-    if (!removeCardBtn) {
-      removeCardBtn.style.display = "flex";
-    }
-    // this.editButton.removeEventListener("click", () => this.saveChanges());
-    this.editButton.addEventListener("click", (e) => this.enableEditing(e));
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const cardEditor = new CardEditor();
-});
 
 const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
@@ -948,6 +694,60 @@ closeBtn.addEventListener("click", () => {
   reviewModal.style.display = "none";
   document.body.classList.remove("no-scroll");
 });
+
+// Add this to your profile.js file
+const uploadBackgroundBtn = document.getElementById("upload-background-btn");
+const removeBackgroundBtn = document.getElementById("remove-background-btn");
+const backgroundElement = document.querySelector(".profile-background");
+const backgroundInput = document.getElementById("background-input");
+
+uploadBackgroundBtn.addEventListener("click", () => {
+  console.log("Upload background clicked");
+  console.log(backgroundElement);
+  backgroundInput.click();
+});
+
+removeBackgroundBtn.addEventListener("click", () => {
+  handleBackgroundRemove();
+});
+
+backgroundInput.addEventListener("change", (e) => {
+  console.log("Background input changed");
+  const file = e.target.files[0];
+  handleBackgroundUpload(file);
+});
+
+function handleBackgroundUpload(file) {
+  // set maximum file size
+  const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(file.type)) {
+    console.error("Invalid file type");
+    return;
+  }
+
+  if (file.size > maxFileSize) {
+    console.error("File too large");
+    return;
+  }
+
+  // TODO: upload file to firebase
+
+  // Create FileReader to read the file
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    backgroundElement.style.backgroundImage = `url(${event.target.result})`;
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function handleBackgroundRemove() {
+  backgroundElement.style.backgroundImage = "none";
+}
 
 // UserCard action: click
 uploadBtn.addEventListener("click", () => {
