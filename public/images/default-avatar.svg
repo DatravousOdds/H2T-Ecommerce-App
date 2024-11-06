@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="50" fill="#E5E7EB"/>
+  
+  <!-- Avatar figure -->
+  <g fill="#9CA3AF">
+    <!-- Head -->
+    <circle cx="50" cy="40" r="15"/>
+    
+    <!-- Body -->
+    <path d="M50 60 
+             Q 25 60 20 85
+             H 80
+             Q 75 60 50 60
+             Z"/>
+  </g>
+</svg>
