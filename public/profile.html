@@ -673,7 +673,6 @@
                       <p>Review 3: Lorem ipsum dolor sit</p>
                       <p>Review 3: Lorem ipsum dolor sit</p>
                       <p>Review 3: Lorem ipsum dolor sit</p>
-                      <p>Review 3: Lorem ipsum dolor sit</p>
                     </div>
                   </div>
                 </div>
@@ -736,7 +735,7 @@
             </div>
           </div>
 
-          <!-- cards on file-->
+          <!-- Cards on File -->
           <div class="inner-wrapper" id="cards-on-file">
             <h2>Cards on File</h2>
             <div id="card-list" class="card-list">
@@ -1059,7 +1058,7 @@
               </div>
             </div>
           </div>
-          <!-- Payment reports and taxes -->
+          <!-- Payments Reports and Taxes -->
           <div class="inner-wrapper" id="payments-reports">
             <div class="filter-container">
               <div class="dropdown-section-sm">
@@ -1163,6 +1162,120 @@
                   <b>Not available for Aug 2024</b>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Payment Methods Selection-->
+          
+          <div class="container">
+            <!-- Payment Method Selection -->
+            <div class="select-method-card" id="methodSelection">
+              <div class="card-header">
+                <h1 class="card-title">Add Payment Method</h1>
+                <p class="card-subtitle">Choose how you'd like to pay</p>
+              </div>
+
+              <div class="payment-options">
+                <div class="payment-option">
+                  <div class="option-icon">
+                    <i class="fa-regular fa-credit-card"></i>
+                  </div>
+                  <div class="option-details">
+                    <div class="option-title">Credit or Debit Card</div>
+                    <div class="option-description">
+                      Pay with Visa, Mastercard, or other cards
+                    </div>
+                  </div>
+                </div>
+
+                <div class="payment-option">
+                  <div class="option-icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                  </div>
+                  <div class="option-details">
+                    <div class="option-title">Bank Account</div>
+                    <div class="option-description">
+                      Connect your bank account directly
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Credit Card Form -->
+            <div class="form-card" id="card-form">
+              <button class="back-button">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+              </button>
+
+              <div class="card-header">
+                <h1 class="card-title">Add Card</h1>
+                <p class="card-subtitle">Enter your card information</p>
+              </div>
+
+              <div class="secure-badge">
+                <i class="fa-solid fa-lock"></i>
+                <span class="secure-text"
+                  >Your payment info is stored securely</span
+                >
+              </div>
+
+              <form>
+                <div class="form-group">
+                  <label class="form-label">Card Number</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="1234 5678 9012 3456"
+                  />
+                </div>
+
+                <div class="input-row">
+                  <div class="form-group">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="text" class="form-input" placeholder="MM/YY" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Security Code</label>
+                    <input type="text" class="form-input" placeholder="CVC" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Name on Card</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Enter cardholder name"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Billing Address</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Enter your address"
+                  />
+                </div>
+
+                <button type="submit" class="button button-primary">
+                  Add Card
+                </button>
+              </form>
+            </div>
+
+            <!-- Success State -->
+            <div class="form-card success-card" id="successCard">
+              <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <h2 class="success-title">Payment Method Added</h2>
+              <p class="success-message">
+                Your payment method has been successfully added to your account
+              </p>
+              <button class="button button-primary">Done</button>
             </div>
           </div>
         </div>
