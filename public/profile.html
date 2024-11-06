@@ -5,6 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
 
     <link rel="stylesheet" href="css property/style2.css" />
     <link rel="stylesheet" href="css property/profile.css" />
@@ -90,6 +94,31 @@
             <div id="profile-inner-wrapper">
               <!-- Profile Picture Section -->
               <div id="pfp-data" class="pfp profile-section">
+                <!-- Profile Background -->
+                <div class="profile-background">
+                  <!--- Background will be set via JS -->
+                </div>
+
+                <div class="profile-background-overlay">
+                  <!-- Gradient overlay for better text visibility -->
+                </div>
+                <div class="background-actions">
+                  <input
+                    type="file"
+                    id="background-input"
+                    accept="image/*"
+                    style="display: none"
+                  />
+                  <button id="upload-background-btn" type="button">
+                    <i class="fa-solid fa-image"></i>
+                    Change Background
+                  </button>
+                  <button id="remove-background-btn" type="button">
+                    <i class="fa-solid fa-trash"></i>
+                    Remove
+                  </button>
+                </div>
+
                 <div id="pfp-section" class="pfp-img">
                   <img
                     src="/images/1.png"
@@ -955,20 +984,42 @@
 
                 <div id="card-details">
                   <div class="details-item">
-                    <p>Card Holder</p>
-                    <p id="card-holder"></p>
+                    <i class="fa-solid fa-credit-card"></i>
+                    <div>
+                      <p class="details-label">Card Holder</p>
+                      <p id="card-holder"></p>
+                    </div>
                   </div>
                   <div class="details-item" id="expiration-date">
-                    <p>Expiration Date</p>
-                    <p id="expiry"></p>
+                    <i class="fa-solid fa-calendar"></i>
+                    <div>
+                      <p class="details-label">Expiration Date</p>
+                      <p id="expiry"></p>
+                    </div>
                   </div>
                   <div class="details-item" id="billingAddress">
-                    <p>Billing Address</p>
-                    <p class="billingAddress"></p>
+                    <i class="fa-solid fa-location-dot"></i>
+                    <div>
+                      <p class="details-label">Billing Address</p>
+                      <p class="billingAddress"></p>
+                    </div>
                   </div>
                 </div>
+
+                <div id="processing-fees">
+                  <h3>Processing Fees</h3>
+                  <div>
+                    <p>$0.00</p>
+                  </div>
+                </div>
+
+                <!-- Recent Transactions -->
                 <div id="recent-trans">
-                  <p class="label">Recent Transactions</p>
+                  <div>
+                    <i class="fa-solid fa-receipt"></i>
+                    <h3 class="label">Recent Transactions</h3>
+                  </div>
+
                   <div class="transactions">
                     <div id="r-trans">
                       <div class="trans">
@@ -987,13 +1038,15 @@
                   </div>
                 </div>
                 <div class="card-details-controls">
-                  <button id="edit-card" class="control-button">
-                    <i class="fa-solid fa-pen"></i>
-                    <p>Edit Card</p>
+                  <button
+                    type="button"
+                    class="button button-ghost"
+                    id="cancelUpdate"
+                  >
+                    Cancel
                   </button>
-                  <button id="remove-card" class="control-button">
-                    <i class="fa-regular fa-trash-can"></i>
-                    <p>Remove Card</p>
+                  <button type="submit" class="button button-primary">
+                    Update Card Information
                   </button>
                 </div>
               </div>
