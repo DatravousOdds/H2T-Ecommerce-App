@@ -298,12 +298,12 @@ const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
 
 addNewCard.addEventListener("click", () => {
-  openPopupMenu(".add-card-menu");
+  openPopupMenu(".payment-method-popup");
 });
 
 closePopMenu.addEventListener("click", () => {
   // popupMenu.classList.remove("active");
-  closePopupMenu(".add-card-menu");
+  closePopupMenu(".payment-method-popup");
 });
 // Event Listener for deleting card on file
 document.addEventListener("click", (e) => {
@@ -1474,8 +1474,11 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   }
 });
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> f035b3f37d1e044554c8c9fa93503238f90e13dc
 // Add these element references
 const methodSelection = document.querySelector(".select-method-card");
 const card_form = document.querySelector("#card-form");
