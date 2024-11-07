@@ -288,7 +288,7 @@ nav ul li a:hover {
 
 /* search bar */
 
-form {
+.search_box form {
   display: flex;
   justify-content: space-between;
   border-radius: 9px;
@@ -1631,7 +1631,7 @@ footer .rights {
 }
 
 @media (max-width: 1658px) {
-  form {
+  .search_box form {
     width: 50%;
   }
 
@@ -1661,7 +1661,6 @@ footer .rights {
 }
 
 @media (max-width: 1040px) {
-
   .image-custom {
     width: 70%;
   }
@@ -1879,13 +1878,12 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
-
   .image-custom {
     width: 70%;
   }
 
   #product1 .pro {
-    width:100%;
+    width: 100%;
     height: 100%;
   }
 
@@ -2071,9 +2069,6 @@ footer .rights {
 }
 
 @media (max-width: 477px) {
-
- 
-
   #menu {
     width: 100%;
     height: 100%;
@@ -2124,7 +2119,6 @@ footer .rights {
   #feature .fe-box:hover {
     transform: scale(1);
   }
-
 }
 
 /* Screen for smartphones */
