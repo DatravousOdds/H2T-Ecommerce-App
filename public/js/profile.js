@@ -298,12 +298,12 @@ const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
 
 addNewCard.addEventListener("click", () => {
-  openPopupMenu(".add-card-menu");
+  openPopupMenu(".payment-method-popup");
 });
 
 closePopMenu.addEventListener("click", () => {
   // popupMenu.classList.remove("active");
-  closePopupMenu(".add-card-menu");
+  closePopupMenu(".payment-method-popup");
 });
 // Event Listener for deleting card on file
 document.addEventListener("click", (e) => {
@@ -1474,15 +1474,11 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   }
 });
 
-// ... existing code ...
-
 // Add these element references
 const methodSelection = document.querySelector(".select-method-card");
 const card_form = document.querySelector("#card-form");
 const bankForm = document.querySelector("#bank-form");
 const successCard = document.querySelector("#successCard");
-
-// ... rest of the event listener code ...
 
 // Define functions
 function showCardForm() {

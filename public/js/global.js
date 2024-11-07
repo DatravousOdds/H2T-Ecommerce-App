@@ -1,5 +1,3 @@
-
-
 // function to generate countries
 export const generateCountries = (apiUrl, selectId) => {
   fetch(apiUrl)
@@ -268,7 +266,12 @@ export function validateForm(formElement) {
   return isValid; // Return true if valid, false if there are errors
 }
 
-export function closeDropdown(event, dropdownId, headerId, iconId) {
+export function closeDropdown(
+  event,
+  dropdownId,
+  headerId = null,
+  iconId = null
+) {
   const dropdownContent = document.getElementById(dropdownId);
   const header = document.getElementById(headerId);
   const icon = iconId ? document.getElementById(iconId) : null; // check if an idea has been provided
