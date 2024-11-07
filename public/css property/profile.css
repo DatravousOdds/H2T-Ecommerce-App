@@ -197,7 +197,7 @@ p {
   color: red;
 }
 
-.form-group {
+#shippingInformation .form-group {
   gap: 1rem;
   display: flex;
 }
@@ -1000,6 +1000,55 @@ p {
   gap: 1rem;
 }
 
+/* Payment Method Popup */
+.payment-method-popup {
+  position: fixed;
+  width: 100%;
+  display: flex;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-method-popup.active {
+  display: flex;
+}
+
+.select-method-card {
+  position: relative;
+  background-color: white;
+  width: 90%;
+  max-width: 480px;
+  margin: 0 auto;
+  border-radius: 12px;
+  padding: 24px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Add smooth scrollbar for webkit browsers */
+.select-method-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.select-method-card::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.select-method-card::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.select-method-card::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 /* error message styles */
 .error-msg {
   color: red;
@@ -1165,10 +1214,6 @@ p {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.card-header {
-  margin-bottom: 24px;
-}
-
 .card-title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -1218,22 +1263,22 @@ p {
   justify-content: center;
 }
 
-.option-icon i {
+#methodSelection .option-icon i {
   font-size: 1.5rem;
   color: var(--primary);
 }
 
-.option-details {
+#methodSelection .option-details {
   flex: 1;
 }
 
-.option-title {
+#methodSelection .option-title {
   font-weight: 500;
   color: #111827;
   margin-bottom: 4px;
 }
 
-.option-description {
+#methodSelection .option-description {
   font-size: 0.875rem;
   color: #6b7280;
 }
@@ -1269,7 +1314,7 @@ p {
   background: #f3f4f6;
 }
 
-.form-group {
+.form-card .form-group {
   margin-bottom: 20px;
 }
 
@@ -1313,13 +1358,13 @@ p {
   align-items: center;
   gap: 8px;
   padding: 12px;
-  background: #f5f5ff;
+  background: #fff5f5;
   border-radius: 6px;
   margin-bottom: 24px;
 }
 
 .secure-badge i {
-  color: #4f46e5;
+  color: #e54646;
 }
 
 .secure-text {
@@ -2135,6 +2180,9 @@ h6 {
 }
 
 /* Ulities Classes */
+.mb-24 {
+  margin-bottom: 24px;
+}
 
 .hidden {
   display: none;
