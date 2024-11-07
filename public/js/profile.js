@@ -1474,7 +1474,7 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   }
 });
 
-// ... existing code ...
+
 
 // Add these element references
 const methodSelection = document.querySelector(".select-method-card");
@@ -1482,7 +1482,7 @@ const card_form = document.querySelector("#card-form");
 const bankForm = document.querySelector("#bank-form");
 const successCard = document.querySelector("#successCard");
 
-// ... rest of the event listener code ...
+
 
 // Define functions
 function showCardForm() {
