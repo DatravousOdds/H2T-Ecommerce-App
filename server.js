@@ -11,7 +11,7 @@ const nodemailer = require("nodemailer");
 let serviceAccount = require("./ecom-website-94d87-firebase-adminsdk-uzg8o-a9f385696e.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccount)
 });
 
 let db = admin.firestore();
@@ -31,7 +31,7 @@ const secretKeyId = process.env.aws_secret_access_key;
 aws.config.update({
   region,
   accessKeyId,
-  secretKeyId,
+  secretKeyId
 });
 
 // init s3
@@ -48,7 +48,7 @@ async function generateUrl() {
     Bucket: bucketName,
     Key: imgName,
     Expires: 300, //300 ms
-    ContentType: "image/jpeg",
+    ContentType: "image/jpeg"
   };
   const uploadURL = await s3.getSignedUrlPromise("putObject", params);
   return uploadURL;
@@ -96,7 +96,7 @@ app.get("/login", (req, res) => {
 
 //profile route
 app.get("/profile", (req, res) => {
-  res.sendFile(path.join(staticPth, "profile.html"))
+  res.sendFile(path.join(staticPth, "profile.html"));
 });
 
 //signup route
@@ -141,7 +141,7 @@ app.post("/signup", (req, res) => {
                 res.json({
                   name: req.body.name,
                   email: req.body.email,
-                  seller: req.body.seller,
+                  seller: req.body.seller
                 });
               });
           });
@@ -176,7 +176,7 @@ app.post("/login", (req, res) => {
             return res.json({
               name: data.name,
               email: data.email,
-              seller: data.seller,
+              seller: data.seller
             });
           } else {
             return res.json({ alert: "password in incorrect" });
@@ -212,7 +212,7 @@ app.post("/seller", (req, res) => {
         db.collection("users")
           .doc(email)
           .update({
-            seller: true,
+            seller: true
           })
           .then((data) => {
             res.json(true);
@@ -251,7 +251,7 @@ app.post("/add-product", (req, res) => {
     tac,
     email,
     draft,
-    id,
+    id
   } = req.body;
 
   // validation
@@ -260,7 +260,7 @@ app.post("/add-product", (req, res) => {
       return res.json({ alert: "enter product name" });
     } else if (shortDes.length > 100 || shortDes.length < 10) {
       return res.json({
-        alert: "short description must be between 10 or 100 characters long",
+        alert: "short description must be between 10 or 100 characters long"
       });
     } else if (!des.length) {
       return res.json({ alert: "enter details description about the product" });
@@ -276,7 +276,7 @@ app.post("/add-product", (req, res) => {
       return res.json({ alert: "you should have at least 20 items in stock" });
     } else if (!tags.length) {
       return res.json({
-        alert: "enter few tags to help ranking your prodcut in search",
+        alert: "enter few tags to help ranking your prodcut in search"
       });
     } else if (!tac) {
       return res.json({ alert: "you must agree to term and conditions" });
@@ -371,8 +371,8 @@ app.post("/order", (req, res) => {
     service: "gmail",
     auth: {
       user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
-    },
+      pass: process.env.PASSWORD
+    }
   });
 
   const mailOption = {
@@ -438,7 +438,7 @@ app.post("/order", (req, res) => {
 
 </body>
 </html>
-        `,
+        `
   };
 
   let docName = email + Math.floor(Math.random() * 123719287419824);
@@ -449,7 +449,7 @@ app.post("/order", (req, res) => {
       transporter.sendMail(mailOption, (err, info) => {
         if (err) {
           res.json({
-            alert: "opps! it looks like some error occured. Try again",
+            alert: "opps! it looks like some error occured. Try again"
           });
         } else {
           res.json({ alert: "your order has been placed " });
@@ -467,7 +467,7 @@ app.use((req, res) => {
   res.redirect("/404");
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
   console.log(`listening on port ${port}.......`);

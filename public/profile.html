@@ -756,8 +756,7 @@
               </div>
             </div>
 
-            <!-- Add card popup menu -->
-            <div
+            
               id="addCard-modal"
               class="add-card-menu"
               role="dialog"
@@ -1171,12 +1170,23 @@
           </div>
 
           <!-- Payment Methods Selection-->
-
           <div class="payment-method-popup">
             <div class="select-method-card" id="methodSelection">
-              <div class="card-header">
-                <h1 class="card-title">Add Payment Method</h1>
-                <p class="card-subtitle">Choose how you'd like to pay</p>
+              <div class="mb-24 space-between">
+                <div>
+                  <h1 class="card-title">Add Payment Method</h1>
+                  <p class="card-subtitle">Choose how you'd like to pay</p>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    class="close"
+                    id="closePopup"
+                    aria-label="Close popup"
+                  >
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                  </button>
+                </div>
               </div>
 
               <div class="payment-options">
