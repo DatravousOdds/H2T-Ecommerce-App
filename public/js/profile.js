@@ -242,6 +242,8 @@ const successCard = document.querySelector("#successCard");
 
 // Card Number Formatting
 const cardNumber = document.querySelector("#cardForm #cardNumber");
+const expiry = document.querySelector("#cardForm #expiry");
+const cvv = document.querySelector("#cardForm #cvv");
 if (cardNumber) {
   cardNumber.addEventListener("input", (e) => {
     // Remove all non-digit characters
@@ -254,14 +256,16 @@ if (cardNumber) {
   });
 }
 
-const cvv = document.querySelector("#cardForm #cvv");
+// CVV Formatting
+
 if (cvv) {
   cvv.addEventListener("input", (e) => {
     e.target.value = e.target.value.replace(/\D/g, "").substring(0, 4);
   });
 }
 
-const expiry = document.querySelector("#cardForm #expiry");
+// Expiry Formatting
+
 if (expiry) {
   expiry.addEventListener("input", (e) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -287,6 +291,23 @@ if (expiry) {
     }
 
     e.target.value = e.target.value.substring(0, 7);
+  });
+}
+
+const routingNumber = document.querySelector("#bankForm #routingNumber");
+const accountNumber = document.querySelector("#bankForm #accountNumber");
+
+if (routingNumber) {
+  routingNumber.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").substring(0, 9);
+    e.target.value = e.target.value.substring(0, 9);
+  });
+}
+
+if (accountNumber) {
+  accountNumber.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").substring(0, 12);
+    e.target.value = e.target.value.substring(0, 12);
   });
 }
 
@@ -470,7 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", resetFlow);
 });
 
-const addNewCard = document.getElementById("add-new-card");
+const addNewCard = document.querySelector(".add-card");
 const closePopMenu = document.getElementById("closePopup");
 
 addNewCard.addEventListener("click", () => {
@@ -500,14 +521,40 @@ document.addEventListener("click", (event) => {
 });
 
 // Add Card functionality
-// const ADD_CARD_BTN_SELECTOR = ".addCard-btn";
+
 const CARD_LIST_SELECTOR = ".card-list";
 const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits, expiry) => `
   <div class="card-wrapper">
     <div class="payment-card">
-    <i class="fa-brands fa-cc-discover"></i>
-      <p class="default-paragraph">${name} ****${lastFourDigits}</p>
-      <p class="default-paragraph">${expiry}</p>
+      <div class="card-icon">
+        <i class="fa-brands fa-cc-discover"></i>
+      </div>
+      <div class="card-inner">
+        <p class="default-paragraph card-name">${name} ****${lastFourDigits}</p>
+        <p class="default-paragraph card-expiry">Expires on ${expiry}</p>
+      </div>
+    </div>
+    <div class="card-options">
+      <div class="edit-container">
+        <button type="button" class="edit-card" aria-label="Edit Card">Edit</button>
+      </div>
+      <div class="delete-card">
+        <i class="fa-regular fa-trash-can" aria-label="Delete Card"></i>
+      </div>
+    </div>
+  </div>
+`;
+
+const BANK_WRAPPER_TEMPLATE = (nameOfBank, accountType, lastFourDigits) => `
+  <div class="card-wrapper">
+    <div class="payment-card">
+      <div class="bank-icon">
+        <i class="fa-solid fa-building-columns"></i>
+      </div>
+      <div class="card-inner">
+        <p class="default-paragraph bank-name" >${nameOfBank}</p>
+        <p class="default-paragraph account-type">${accountType} ****${lastFourDigits}</p>
+      </div>
     </div>
     <div class="card-options">
       <div class="edit-container">
@@ -532,11 +579,11 @@ function handleAddCard(event) {
   event.preventDefault(); // Prevent default form submission
   // Get form values
   const newCard = {
-    cardHolder: document.getElementById("nameOnCard").value,
-    cvv: document.getElementById("cvv").value,
-    cardNumber: document.getElementById("cardNumber").value,
-    expirationDate: document.getElementById("expiry").value,
-    billingAddress: document.getElementById("billingAddress").value,
+    cardHolder: document.querySelector("#cardForm #nameOnCard").value,
+    cvv: document.querySelector("#cardForm #cvv").value,
+    cardNumber: document.querySelector("#cardForm #cardNumber").value,
+    expirationDate: document.querySelector("#cardForm #expiry").value,
+    billingAddress: document.querySelector("#cardForm #billingAddress").value,
   };
 
   // Get the last 4 digits of the card
@@ -561,7 +608,21 @@ function handleAddBank(event) {
     accountHolderName: document.getElementById("accountHolderName").value,
     routingNumber: document.getElementById("routingNumber").value,
     accountNumber: document.getElementById("accountNumber").value,
+    accountType: document.querySelector("#bankForm .bank-detail-value")
+      .textContent,
   };
+
+  const lastFourDigits = newBank.accountNumber.slice(-4);
+
+  const cardList = document.querySelector(CARD_LIST_SELECTOR);
+  const newBankHTML = BANK_WRAPPER_TEMPLATE(
+    newBank.accountHolderName,
+    newBank.accountType,
+    lastFourDigits
+  );
+
+  cardList.insertAdjacentHTML("afterbegin", newBankHTML);
+  closePopupMenu(".add-card-menu");
 }
 
 class PaymentCardManager {

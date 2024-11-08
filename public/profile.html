@@ -744,9 +744,9 @@
             <h2>Cards on File</h2>
             <div id="card-list" class="card-list">
               <!-- COF Container-->
-              <div class="card-wrapper">
+              <div class="card-wrapper add-card">
                 <div>
-                  <p class="default-paragraph">Add cards or bank accounts</p>
+                  <p class="default-paragraph">Add card or bank account</p>
                 </div>
 
                 <div class="card-options" id="add-new-card">
@@ -1136,11 +1136,21 @@
                 <div class="input-row">
                   <div class="form-group">
                     <label class="form-label">Expiry Date</label>
-                    <input id="expiry" type="text" class="form-input" placeholder="MM/YY" />
+                    <input
+                      id="expiry"
+                      type="text"
+                      class="form-input"
+                      placeholder="MM/YY"
+                    />
                   </div>
                   <div class="form-group">
                     <label class="form-label">Security Code</label>
-                    <input id="cvv" type="text" class="form-input" placeholder="CVC" />
+                    <input
+                      id="cvv"
+                      type="text"
+                      class="form-input"
+                      placeholder="CVC"
+                    />
                   </div>
                 </div>
 
@@ -1250,6 +1260,60 @@
               <button class="button button-primary">Done</button>
             </div>
           </div>
+
+          <!-- Security Verification Modal -->
+          <div class="modal-overlay" id="securityVerification">
+            <div class="modal-container">
+              <div class="modal-header">
+                <h2>Security Verification</h2>
+              </div>
+
+              <div class="security-message">
+                <div class="security-icon">
+                  <i class="fa-solid fa-lock"></i>
+                </div>
+                <div class="security-text">
+                  <p class="default-paragraph">
+                    <strong>Secure Card Update Process</strong>
+                  </p>
+                  <p class="default-paragraph">
+                    To protect your account, please enter your password to
+                    verify your identity
+                  </p>
+                </div>
+              </div>
+              <div class="security-process-status">
+                <div class="status-icon">
+                  <div class="status-icon-circle">1</div>
+                  <p class="security-status-text">Password</p>
+                </div>
+                <div class="status-line"></div>
+                <div class="status-icon">
+                  <div class="status-icon-circle">2</div>
+                  <p class="security-status-text">Verification Code</p>
+                </div>
+                <div class="status-line"></div>
+                <div class="status-icon">
+                  <div class="status-icon-circle">3</div>
+                  <p class="security-status-text">Update</p>
+                </div>
+              </div>
+              <div class="security-password">
+                <label class="form-label">Enter your password</label>
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  class="form-input"
+                />
+              </div>
+
+              <div class="security-controls">
+                <button class="button button-ghost btn-cancel">Cancel</button>
+                <button class="button button-primary">Continue</button>
+              </div>
+            </div>
+          </div>
+          <!-- End of Security Verification Modal -->
         </div>
         <!-- Favorites Content-->
         <div class="tab" id="favorites">Favorites</div>
