@@ -350,7 +350,8 @@ closeBtnForDetails.addEventListener("click", () => {
   closePopupMenu(".view-details-menu");
 });
 
-function handleAddCard() {
+function handleAddCard(event) {
+  event.preventDefault(); // Prevent default form submission
   // Get form values
   const newCard = {
     cardHolder: document.getElementById("nameOnCard").value,
@@ -1523,8 +1524,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Back button
   document
-    .querySelector(".back-button")
-    .addEventListener("click", showMethodSelection);
+    .querySelectorAll(".back-button")
+    .forEach((btn) => btn.addEventListener("click", showMethodSelection));
 
   // Form submission
   document
