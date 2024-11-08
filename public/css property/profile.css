@@ -2310,6 +2310,11 @@ h6 {
   align-items: center;
 }
 
+.stmt-wrapper p {
+  margin: 0;
+  padding: 0;
+}
+
 .card-list {
   display: flex;
   align-items: center;
@@ -2588,6 +2593,7 @@ h6 {
   }
 
   #reivew-content .rating-breakdown {
+    flex: 1;
     padding: 24px 0px;
   }
 
