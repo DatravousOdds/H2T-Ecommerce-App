@@ -695,6 +695,8 @@ closeBtn.addEventListener("click", () => {
   document.body.classList.remove("no-scroll");
 });
 
+
+/* Background actions */
 const uploadBackgroundBtn = document.getElementById("upload-background-btn");
 const removeBackgroundBtn = document.getElementById("remove-background-btn");
 const backgroundElement = document.querySelector(".profile-background");
@@ -759,7 +761,7 @@ function handleBackgroundRemove() {
   uploadBackgroundBtn.style.display = "inline";
 }
 
-// UserCard action: click
+/* UserCard actions */
 uploadBtn.addEventListener("click", () => {
   if (fileInput) {
     fileInput.click();
