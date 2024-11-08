@@ -254,7 +254,7 @@
                   <!-- Edit Button -->
                   <div class="edit-info-header">
                     <div class="edit-info">
-                      <p>Edit</p>
+                      <p class="default-paragraph">Edit</p>
                       <i class="fa-regular fa-pen-to-square"></i>
                     </div>
                   </div>
@@ -746,7 +746,7 @@
               <!-- COF Container-->
               <div class="card-wrapper">
                 <div>
-                  <p>Add cards or bank accounts</p>
+                  <p class="default-paragraph">Add cards or bank accounts</p>
                 </div>
 
                 <div class="card-options" id="add-new-card">
@@ -960,7 +960,7 @@
                   <span class="filter-icon" id="filter-icon">
                     <i class="fa-solid fa-filter"></i>
                   </span>
-                  <p>Filter</p>
+                  <p class="default-paragraph">Filter</p>
                 </div>
 
                 <!-- Dropdown Menu for small  -->
@@ -980,7 +980,7 @@
                   <span class="dropdown-icon" id="yearIcon"
                     ><i class="fa-solid fa-angle-down"></i
                   ></span>
-                  <p class="selected-year">2024</p>
+                  <p class="selected-year default-paragraph">2024</p>
                 </div>
 
                 <!-- Dropdown section for Year -->
@@ -1169,12 +1169,12 @@
 
             <!-- Bank Form -->
             <div class="form-card" id="bankForm">
-              <button class="back-button" onclick="showMethodSelection()">
+              <button class="back-button">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back
               </button>
 
-              <div class="card-header">
+              <div class="mb-24">
                 <h1 class="card-title">Link Bank Account</h1>
                 <p class="card-subtitle">Enter your bank account details</p>
               </div>
@@ -1186,7 +1186,7 @@
                 >
               </div>
 
-              <form onsubmit="showSuccess(event)">
+              <form>
                 <div class="form-group">
                   <label class="form-label">Account Holder Name</label>
                   <input
@@ -1238,7 +1238,7 @@
                 <i class="fa-solid fa-check"></i>
               </div>
               <h2 class="success-title">Payment Method Added</h2>
-              <p class="success-message">
+              <p class="success-message mb-24">
                 Your payment method has been successfully added to your account
               </p>
               <button class="button button-primary">Done</button>

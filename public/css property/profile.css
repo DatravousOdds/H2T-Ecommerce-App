@@ -180,9 +180,9 @@ button:disabled {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
 }
 
-p {
-  padding: 0 !important;
-  margin: 0 !important;
+.default-paragraph {
+  padding: 0;
+  margin: 0;
 }
 
 .wrapper-row {
@@ -1298,6 +1298,9 @@ p {
   background: white;
   border-radius: 12px;
   padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   display: none;
 }
@@ -1395,12 +1398,12 @@ p {
 }
 
 .button-primary {
-  background: red;
-  color: white;
+  background: var(--primary);
+  color: var(--white);
 }
 
 .button-primary:hover {
-  background: red;
+  background: var(--primary-dark);
 }
 
 /* Bank Account Form Specific */
@@ -1414,7 +1417,7 @@ p {
 .bank-info-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--black);
   margin-bottom: 12px;
 }
 
@@ -1423,6 +1426,7 @@ p {
   justify-content: space-between;
   padding: 8px 0;
   font-size: 0.875rem;
+  border-bottom: 1px solid var(--gray-200);
 }
 
 .bank-detail-label {
@@ -2134,7 +2138,7 @@ h6 {
 }
 
 /* Close Button */
-.close {
+/* .close {
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -2142,14 +2146,14 @@ h6 {
   color: #666;
   border-radius: 12px;
   transition: all 0.2s ease;
-}
+} */
 
-.close:hover,
+/* .close:hover,
 .close:focus {
   color: black;
   text-decoration: none;
   cursor: pointer;
-}
+} */
 
 .close:hover,
 #methodSelection .close:hover {
@@ -2169,7 +2173,7 @@ h6 {
   font-size: 0.875rem;
 }
 
-.success-message {
+#successCard .success-message {
   color: #28a745;
   background-color: #e8f5e9;
   padding: 1rem;

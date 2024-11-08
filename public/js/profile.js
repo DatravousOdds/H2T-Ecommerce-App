@@ -695,7 +695,6 @@ closeBtn.addEventListener("click", () => {
   document.body.classList.remove("no-scroll");
 });
 
-
 /* Background actions */
 const uploadBackgroundBtn = document.getElementById("upload-background-btn");
 const removeBackgroundBtn = document.getElementById("remove-background-btn");
@@ -1479,7 +1478,7 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
 // Add these element references
 const methodSelection = document.querySelector(".select-method-card");
 const card_form = document.querySelector("#card-form");
-const bankForm = document.querySelector("#bank-form");
+const bankForm = document.querySelector("#bankForm");
 const successCard = document.querySelector("#successCard");
 
 // Define functions
