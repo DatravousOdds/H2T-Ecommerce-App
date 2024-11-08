@@ -755,7 +755,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Add Fund popup Menu-->
           <div id="addFunds-modal" class="add-funds-menu">
             <div class="funds-container">
@@ -1163,6 +1163,71 @@
 
                 <button type="submit" class="button button-primary">
                   Add Card
+                </button>
+              </form>
+            </div>
+
+            <!-- Bank Form -->
+            <div class="form-card" id="bankForm">
+              <button class="back-button" onclick="showMethodSelection()">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+              </button>
+
+              <div class="card-header">
+                <h1 class="card-title">Link Bank Account</h1>
+                <p class="card-subtitle">Enter your bank account details</p>
+              </div>
+
+              <div class="secure-badge">
+                <i class="fa-solid fa-lock"></i>
+                <span class="secure-text"
+                  >Your banking info is stored securely</span
+                >
+              </div>
+
+              <form onsubmit="showSuccess(event)">
+                <div class="form-group">
+                  <label class="form-label">Account Holder Name</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Routing Number</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Enter 9-digit routing number"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Account Number</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Enter account number"
+                  />
+                </div>
+
+                <div class="bank-info">
+                  <div class="bank-info-title">Account Information</div>
+                  <div class="bank-detail">
+                    <span class="bank-detail-label">Account Type</span>
+                    <span class="bank-detail-value">Checking</span>
+                  </div>
+                  <div class="bank-detail">
+                    <span class="bank-detail-label">Bank</span>
+                    <span class="bank-detail-value">Sample Bank</span>
+                  </div>
+                </div>
+
+                <button type="submit" class="button button-primary">
+                  Link Account
                 </button>
               </form>
             </div>
