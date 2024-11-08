@@ -1122,10 +1122,11 @@
                 >
               </div>
 
-              <form>
+              <form id="cardForm">
                 <div class="form-group">
                   <label class="form-label">Card Number</label>
                   <input
+                    id="cardNumber"
                     type="text"
                     class="form-input"
                     placeholder="1234 5678 9012 3456"
@@ -1135,17 +1136,18 @@
                 <div class="input-row">
                   <div class="form-group">
                     <label class="form-label">Expiry Date</label>
-                    <input type="text" class="form-input" placeholder="MM/YY" />
+                    <input id="expiry" type="text" class="form-input" placeholder="MM/YY" />
                   </div>
                   <div class="form-group">
                     <label class="form-label">Security Code</label>
-                    <input type="text" class="form-input" placeholder="CVC" />
+                    <input id="cvv" type="text" class="form-input" placeholder="CVC" />
                   </div>
                 </div>
 
                 <div class="form-group">
                   <label class="form-label">Name on Card</label>
                   <input
+                    id="nameOnCard"
                     type="text"
                     class="form-input"
                     placeholder="Enter cardholder name"
@@ -1155,6 +1157,7 @@
                 <div class="form-group">
                   <label class="form-label">Billing Address</label>
                   <input
+                    id="billingAddress"
                     type="text"
                     class="form-input"
                     placeholder="Enter your address"
@@ -1169,7 +1172,7 @@
 
             <!-- Bank Form -->
             <div class="form-card" id="bankForm">
-              <button class="back-button">
+              <button type="button" class="back-button">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back
               </button>
@@ -1186,10 +1189,11 @@
                 >
               </div>
 
-              <form>
+              <form id="bank-form">
                 <div class="form-group">
                   <label class="form-label">Account Holder Name</label>
                   <input
+                    id="accountHolderName"
                     type="text"
                     class="form-input"
                     placeholder="Enter your name"
@@ -1199,6 +1203,7 @@
                 <div class="form-group">
                   <label class="form-label">Routing Number</label>
                   <input
+                    id="routingNumber"
                     type="text"
                     class="form-input"
                     placeholder="Enter 9-digit routing number"
@@ -1208,6 +1213,7 @@
                 <div class="form-group">
                   <label class="form-label">Account Number</label>
                   <input
+                    id="accountNumber"
                     type="text"
                     class="form-input"
                     placeholder="Enter account number"
