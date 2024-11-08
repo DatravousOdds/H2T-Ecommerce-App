@@ -195,104 +195,280 @@ function removeError(element) {
 // }
 
 /* Add card Popup Functionality */
+
+function validateCardForm(element, errorMessage, options = {}) {
+  const value = element.value.trim();
+  if (
+    !value ||
+    (options.minLength && value.length < options.minLength) ||
+    (options.maxLength && value.length > options.maxLength)
+  ) {
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "error-message";
+    errorDiv.textContent = errorMessage;
+    element.parentElement.appendChild(errorDiv);
+    element.classList.add("error");
+    return true;
+  }
+  return false;
+}
+
+function validateExpiry(element, errorMessage) {
+  const value = element.value.trim();
+
+  const expiryDate = new Date(value);
+  console.log(expiryDate);
+
+  const today = new Date();
+  console.log(today);
+
+  if (expiryDate < today || !value) {
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "error-message";
+    errorDiv.textContent = errorMessage;
+    element.parentElement.appendChild(errorDiv);
+    element.classList.add("error");
+    return true;
+  }
+  return false;
+}
 // Form Validation and Formatting
-const cardForm = document.getElementById("add-card");
-const cardNumber = document.getElementById("cardNumber");
-const cvv = document.getElementById("cvv");
-const expiry = document.getElementById("expiry");
+// Add these element references
+const methodSelection = document.querySelector(".select-method-card");
+const card_form = document.querySelector("#card-form");
+const cardForm = document.querySelector("#cardForm");
+const bankForm = document.querySelector("#bankForm");
+const successCard = document.querySelector("#successCard");
 
 // Card Number Formatting
-// cardNumber.addEventListener("input", (e) => {
-//   let value = e.target.value.replace(/\D/g, "");
-//   value = value.replace(/(\d{4})(?=\d)/g, "$1 ");
-//   value = value.substring(0, 19);
-//   e.target.value = value;
-//   removeError(cardNumber);
-// });
+const cardNumber = document.querySelector("#cardForm #cardNumber");
+if (cardNumber) {
+  cardNumber.addEventListener("input", (e) => {
+    // Remove all non-digit characters
+    let value = e.target.value.replace(/\D/g, "");
+    // Insert spaces every 4 digits
+    value = value.replace(/(\d{4})(?=\d)/g, "$1 ");
+    // Limit to 19 digits
+    value = value.substring(0, 19);
+    e.target.value = value;
+  });
+}
 
-// // CVV Formatting
-// cvv.addEventListener("input", (e) => {
-//   let value = e.target.value.replace(/\D/g, "");
-//   value = value.substring(0, 4);
-//   e.target.value = value;
-//   removeError(cvv);
-// });
+const cvv = document.querySelector("#cardForm #cvv");
+if (cvv) {
+  cvv.addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").substring(0, 4);
+  });
+}
 
-// // Expiry Date Validation
-// expiry.addEventListener("input", (e) => {
-//   const currentDate = new Date();
-//   const selectedDate = new Date(e.target.value);
-//   removeError(expiry);
+const expiry = document.querySelector("#cardForm #expiry");
+if (expiry) {
+  expiry.addEventListener("input", (e) => {
+    let value = e.target.value.replace(/\D/g, "");
 
-//   if (selectedDate < currentDate) {
-//     showError(expiry, "Please select a future date");
-//   }
-// });
+    let month = value.substring(0, 2);
+    // console.log("Month: ", month);
 
-// // Add card event Listener
-// cardForm.addEventListener("submit", (e) => {
-//   e.preventDefault();
-//   let hasError = false;
+    let year = value.substring(2, 6);
+    // console.log("Year: ", year);
 
-//   // Get form elements
-//   const holderName = document.getElementById("nameOnCard");
-//   const cardNumber = document.getElementById("cardNumber");
-//   const cvv = document.getElementById("cvv");
-//   const expiry = document.getElementById("input-expiry");
-//   const billingAddress = document.getElementById("billing-address");
+    if (month.length === 1 && parseInt(month) > 1) {
+      month = "0" + month;
+      console.log("Month: ", month);
+    }
+    if (parseInt(month) > 12) {
+      month = "12";
+    }
 
-//   // Validate Name
-//   if (!holderName.value.trim()) {
-//     showError(holderName, "Card holder name is required");
-//     hasError = true;
-//   }
-//   // Validate Card Number
-//   if (
-//     !cardNumber.value.trim() ||
-//     cardNumber.value.replace(/\s/g, "").length < 16
-//   ) {
-//     showError(cardNumber, "Valid card number is required (16 digits)");
-//     hasError = true;
-//   }
+    if (value.length > 2) {
+      e.target.value = `${month}/${year}`;
+    } else if (value.length === 2) {
+      e.target.value = month;
+    }
 
-//   // Validate CVV
-//   if (!cvv.value.trim() || cvv.value.length < 3) {
-//     showError(cvv, "Valid CVV is required (3-4 digits)");
-//     hasError = true;
-//   }
-//   // Validate Expiry
-//   if (!expiry.value.trim()) {
-//     showError(expiry, "Expiry date is required");
-//     hasError = true;
-//   }
+    e.target.value = e.target.value.substring(0, 7);
+  });
+}
 
-//   // Validate Billing Address
-//   if (!billingAddress.value.trim()) {
-//     showError(billingAddress, "Billing address is required");
-//     hasError = true;
-//   }
+if (cardForm) {
+  cardForm.addEventListener("submit", (e) => {
+    e.preventDefault(); // Prevent form submission immediately
+    let hasError = false;
 
-//   // If there are any errors, don't submit
-//   if (hasError) {
-//     return;
-//   }
+    // Get form elements with null checks
+    const formElements = {
+      nameOnCard: document.querySelector("#cardForm #nameOnCard"),
+      cardNumber: document.querySelector("#cardForm #cardNumber"),
+      cvv: document.querySelector("#cardForm #cvv"),
+      expiry: document.querySelector("#cardForm #expiry"),
+      billingAddress: document.querySelector("#cardForm #billingAddress"),
+    };
 
-//   // card header ui
-//   const cardEnding = document.getElementById("card-ending");
-//   // console.log(cardEnding);
-//   cardEnding.textContent = `Visa Debit ending in ${cardNumber.value.slice(-4)}`;
+    // Clear any existing errors
+    const errorMessages = document.querySelectorAll(".error-message");
+    errorMessages.forEach((msg) => msg.remove());
 
-//   // If validation passes, update the display
-//   document.getElementById("card-holder").textContent = holderName.value;
-//   document.getElementById("expiry").textContent = expiry.value;
-//   document.querySelector(".billingAddress").textContent = billingAddress.value;
+    // Clear error styles
+    const errorStyles = document.querySelectorAll(".error");
+    errorStyles.forEach((style) => style.remove());
 
-//   // add to db then add div container
-//   handleAddCard();
+    // Remove error class from all inputs
+    Object.values(formElements).forEach((input) => {
+      if (input) input.classList.remove("error");
+    });
 
-//   // Close popup
-//   closePopupMenu(".add-card-menu");
-// });
+    // Validation becomes much cleaner:
+    hasError |= validateCardForm(
+      formElements.cardNumber,
+      "Please enter a valid card number (16 digits)",
+      { minLength: 19, maxLength: 19 }
+    );
+    hasError |= validateCardForm(
+      formElements.cvv,
+      "Please enter a valid CVV (3-4 digits)",
+      { minLength: 3, maxLength: 4 }
+    );
+    hasError |= validateCardForm(
+      formElements.nameOnCard,
+      "Please enter the cardholder name"
+    );
+    hasError |= validateCardForm(
+      formElements.billingAddress,
+      "Please enter a billing address"
+    );
+    hasError |= validateExpiry(
+      formElements.expiry,
+      "Please enter an expiry date",
+      { minLength: 7, maxLength: 7 }
+    );
+
+    if (!hasError) {
+      showSuccess(e);
+      handleAddCard(e);
+    } else {
+      // Explicitly prevent form submission if there are errors
+      e.preventDefault();
+      return false;
+    }
+  });
+}
+
+if (bankForm) {
+  bankForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const formElements = {
+      accountHolderName: document.querySelector("#bankForm #accountHolderName"),
+      routingNumber: document.querySelector("#bankForm #routingNumber"),
+      accountNumber: document.querySelector("#bankForm #accountNumber"),
+    };
+
+    let hasError = false;
+
+    const errorMessages = document.querySelectorAll(".error-message");
+    errorMessages.forEach((msg) => msg.remove());
+
+    Object.values(formElements).forEach((input) => {
+      if (input) input.classList.remove("error");
+    });
+
+    hasError |= validateCardForm(
+      formElements.accountNumber,
+      "Please enter a valid account number (8-12 digits)",
+      { minLength: 8, maxLength: 12 }
+    );
+
+    hasError |= validateCardForm(
+      formElements.routingNumber,
+      "Please enter a valid routing number (9 digits)",
+      { minLength: 9, maxLength: 9 }
+    );
+
+    hasError |= validateCardForm(
+      formElements.accountHolderName,
+      "Please enter an account holder name"
+    );
+
+    if (!hasError) {
+      showSuccess(e);
+      handleAddBank(e);
+    } else {
+      e.preventDefault();
+      return false;
+    }
+  });
+}
+
+function clearFormErrors(form) {
+  if (!form) return;
+
+  const errorMessages = form.querySelectorAll(".error-message");
+  errorMessages.forEach((msg) => msg.remove());
+
+  const inputElements = form.querySelectorAll("input");
+  inputElements.forEach((input) => input.classList.remove("error"));
+
+  if (form instanceof HTMLFormElement) form.reset();
+}
+// Define functions
+function showCardForm() {
+  methodSelection.style.display = "none";
+  card_form.style.display = "block";
+}
+
+function showBankForm() {
+  methodSelection.style.display = "none";
+  bankForm.style.display = "block";
+}
+
+function showMethodSelection() {
+  methodSelection.style.display = "block";
+  card_form.style.display = "none";
+  bankForm.style.display = "none";
+  successCard.style.display = "none";
+}
+
+function showSuccess() {
+  methodSelection.style.display = "none";
+  card_form.style.display = "none";
+  bankForm.style.display = "none";
+  successCard.style.display = "block";
+}
+
+function resetFlow() {
+  showMethodSelection();
+}
+
+// Add event listeners when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  // Payment options
+  const cardOption = document.querySelector(".payment-option:nth-child(1)");
+
+  const bankOption = document.querySelector(".payment-option:nth-child(2)");
+
+  cardOption.addEventListener("click", () => {
+    clearFormErrors(bankForm);
+    showCardForm();
+  });
+  bankOption.addEventListener("click", () => {
+    clearFormErrors(cardForm);
+    showBankForm();
+  });
+
+  // Back button
+  document.querySelectorAll(".back-button").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      clearFormErrors(cardForm);
+      clearFormErrors(bankForm);
+      showMethodSelection();
+    })
+  );
+
+  // Done button
+  document
+    .querySelector("#successCard .button")
+    .addEventListener("click", resetFlow);
+});
 
 const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
@@ -305,6 +481,7 @@ closePopMenu.addEventListener("click", () => {
   // popupMenu.classList.remove("active");
   closePopupMenu(".payment-method-popup");
 });
+
 // Event Listener for deleting card on file
 document.addEventListener("click", (e) => {
   if (e.target.matches(".delete-card i")) {
@@ -325,11 +502,12 @@ document.addEventListener("click", (event) => {
 // Add Card functionality
 // const ADD_CARD_BTN_SELECTOR = ".addCard-btn";
 const CARD_LIST_SELECTOR = ".card-list";
-const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits) => `
+const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits, expiry) => `
   <div class="card-wrapper">
     <div class="payment-card">
-      <p>${name} ending in ${lastFourDigits}</p>
-      <i class="fa-brands fa-cc-discover"></i>
+    <i class="fa-brands fa-cc-discover"></i>
+      <p class="default-paragraph">${name} ****${lastFourDigits}</p>
+      <p class="default-paragraph">${expiry}</p>
     </div>
     <div class="card-options">
       <div class="edit-container">
@@ -369,11 +547,21 @@ function handleAddCard(event) {
   if (cardList && typeof CARD_WRAPPER_TEMPLATE === "function") {
     const newCardHTML = CARD_WRAPPER_TEMPLATE(
       newCard.cardHolder,
-      lastFourDigits
+      lastFourDigits,
+      newCard.expirationDate
     );
     cardList.insertAdjacentHTML("afterbegin", newCardHTML);
     closePopupMenu(".add-card-menu");
   }
+}
+
+function handleAddBank(event) {
+  event.preventDefault();
+  const newBank = {
+    accountHolderName: document.getElementById("accountHolderName").value,
+    routingNumber: document.getElementById("routingNumber").value,
+    accountNumber: document.getElementById("accountNumber").value,
+  };
 }
 
 class PaymentCardManager {
@@ -1474,66 +1662,4 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   } else {
     notification.error("insufficient funds");
   }
-});
-
-// Add these element references
-const methodSelection = document.querySelector(".select-method-card");
-const card_form = document.querySelector("#card-form");
-const bankForm = document.querySelector("#bankForm");
-const successCard = document.querySelector("#successCard");
-
-// Define functions
-function showCardForm() {
-  methodSelection.style.display = "none";
-  card_form.style.display = "block";
-}
-
-function showBankForm() {
-  methodSelection.style.display = "none";
-  bankForm.style.display = "block";
-}
-
-function showMethodSelection() {
-  methodSelection.style.display = "block";
-  card_form.style.display = "none";
-  bankForm.style.display = "none";
-  successCard.style.display = "none";
-}
-
-function showSuccess(e) {
-  e.preventDefault();
-  methodSelection.style.display = "none";
-  card_form.style.display = "none";
-  bankForm.style.display = "none";
-  successCard.style.display = "block";
-}
-
-function resetFlow() {
-  showMethodSelection();
-}
-
-// Add event listeners when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  // Payment options
-  document
-    .querySelector(".payment-option:nth-child(1)")
-    .addEventListener("click", showCardForm);
-  document
-    .querySelector(".payment-option:nth-child(2)")
-    .addEventListener("click", showBankForm);
-
-  // Back button
-  document
-    .querySelectorAll(".back-button")
-    .forEach((btn) => btn.addEventListener("click", showMethodSelection));
-
-  // Form submission
-  document
-    .querySelector("#card-form form")
-    .addEventListener("submit", showSuccess);
-
-  // Done button
-  document
-    .querySelector("#successCard .button")
-    .addEventListener("click", resetFlow);
 });
