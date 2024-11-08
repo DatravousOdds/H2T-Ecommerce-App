@@ -1818,12 +1818,44 @@ h6 {
   cursor: pointer;
 }
 
+.card-wrapper.add-card {
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+  min-width: 90%;
+  cursor: pointer;
+  gap: 1rem;
+  border-radius: 4px;
+  border-width: 3px;
+  border-style: dashed;
+  border-color: rgb(217, 217, 217);
+  border-image: initial;
+  padding: 10px;
+  margin: 20px;
+  transition: 0.2s ease-in-out;
+}
+
 .card-wrapper:hover {
   background-color: #f0f0f0;
 }
 
 .card-wrapper p {
   font-weight: 500;
+}
+
+.card-wrapper .card-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0;
+  color: #1f2937;
+}
+
+.card-wrapper .card-expiry {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 600;
 }
 
 .card-wrapper .card-options {
@@ -1839,8 +1871,33 @@ h6 {
   align-items: center;
 }
 
-.card-wrapper .card-inner p {
-  font-size: 16px;
+.card-wrapper .card-icon {
+  font-size: 24px;
+}
+
+.card-wrapper .bank-icon i {
+  font-size: 1.5rem;
+}
+
+.card-wrapper .bank-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0;
+  color: #1f2937;
+}
+
+.card-wrapper .account-type {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0;
+  color: #6b7280;
+}
+
+.card-wrapper .card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
 }
 
 .card-options {
@@ -1852,7 +1909,7 @@ h6 {
 }
 
 .card-options i {
-  font-size: 32px;
+  font-size: 1rem;
   cursor: pointer;
   transition: 0.2s ease-in-out;
 }
@@ -1873,6 +1930,136 @@ h6 {
   background-color: #c05558;
   color: white;
   transition: 0.2s ease-in-out;
+}
+
+/* Security Verification Modal */
+
+#securityVerification .modal-container {
+  padding: 1rem;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  overflow: hidden;
+}
+
+#securityVerification .modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+#securityVerification .modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+#securityVerification .security-message {
+  border: 1px solid #fee2e2;
+  border-radius: 8px;
+  background-color: #fef3f2;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+#securityVerification .security-icon i {
+  margin-top: 3px;
+  color: #dc262e;
+}
+
+#securityVerification .security-text p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+#securityVerification .security-process-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  margin: 32px 0;
+}
+
+#securityVerification .security-process-status::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e5e7eb;
+  z-index: 1;
+}
+
+#securityVerification .security-status-text {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#securityVerification .status-icon-circle {
+  z-index: 2;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+#securityVerification .status-icon-circle.active {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+#securityVerification .security-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+#securityVerification .security-password {
+  margin-bottom: 1rem;
+}
+
+#securityVerification .security-password .form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+#securityVerification .security-password .form-input:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+#securityVerification .btn-cancel {
+  background-color: transparent;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  cursor: pointer;
+}
+
+#securityVerification .btn-cancel:hover {
+  background-color: #f3f4f6;
 }
 
 .payment-section input {
