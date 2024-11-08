@@ -2307,6 +2307,8 @@ h6 {
 }
 
 .card-list {
+  display: flex;
+  align-items: center;
   width: 100%;
 }
 .filter-container .filter-1 {

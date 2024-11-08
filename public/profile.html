@@ -677,7 +677,6 @@
                       <p>Review 3: Lorem ipsum dolor sit</p>
                       <p>Review 3: Lorem ipsum dolor sit</p>
                       <p>Review 3: Lorem ipsum dolor sit</p>
-                      <p>Review 3: Lorem ipsum dolor sit</p>
                     </div>
                   </div>
                 </div>
@@ -755,313 +754,201 @@
                 </div>
               </div>
             </div>
+          </div>
+          
+          <!-- Add Fund popup Menu-->
+          <div id="addFunds-modal" class="add-funds-menu">
+            <div class="funds-container">
+              <div class="header-wrapper">
+                <h3 class="funds-title">Amount</h3>
 
-            
-              id="addCard-modal"
-              class="add-card-menu"
-              role="dialog"
-              aria-labelledby="modalTitle"
-            >
-              <div id="add-card-popup" class="add-card-popup">
-                <div class="addCardHeader">
-                  <div class="header-wrapper">
-                    <h2 id="modalTitle">Add a Card</h2>
-                    <p>Enter your card details to add a new payment method.</p>
-                  </div>
-                  <!-- Changed from <i> to <button> for better accessibility -->
-                  <button
-                    type="button"
-                    class="close"
-                    id="closePopup"
-                    aria-label="Close popup"
-                  >
-                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                  </button>
-                </div>
-
-                <hr />
-                <!-- Added novalidate to handle custom validation -->
-                <form action="" id="add-card" novalidate>
-                  <div class="input-group">
-                    <div class="margin-right">
-                      <label for="nameOnCard">Name on card</label>
-                      <input
-                        type="text"
-                        id="nameOnCard"
-                        name="nameOnCard"
-                        placeholder="Enter your name on the card"
-                        required
-                        autocomplete="cc-name"
-                        minlength="2"
-                      />
-                      <!-- Added error message container -->
-                      <div class="error-message" id="nameError"></div>
-                    </div>
-                    <div class="margin-right">
-                      <label for="cvv">CVV</label>
-                      <input
-                        type="text"
-                        id="cvv"
-                        name="cvv"
-                        placeholder="123"
-                        required
-                        maxlength="4"
-                        pattern="\d{3,4}"
-                        autocomplete="cc-csc"
-                        inputmode="numeric"
-                      />
-                      <div class="error-message" id="cvvError"></div>
-                    </div>
-                  </div>
-                  <div class="input-group">
-                    <div class="margin-right">
-                      <label for="cardNumber">Card number</label>
-                      <input
-                        type="text"
-                        id="cardNumber"
-                        name="cardNumber"
-                        placeholder="1234 5678 1234 5678"
-                        required
-                        pattern="\d{4}\s\d{4}\s\d{4}\s\d{4}"
-                        autocomplete="cc-number"
-                        inputmode="numeric"
-                      />
-                      <div class="error-message" id="cardError"></div>
-                    </div>
-                    <div class="margin-right">
-                      <label for="input-expiry">Expiry</label>
-                      <input
-                        type="month"
-                        id="input-expiry"
-                        name="input-expiry"
-                        required
-                        autocomplete="cc-exp"
-                        min="${new Date().toISOString().slice(0, 7)}"
-                      />
-                      <div class="error-message" id="expiryError"></div>
-                    </div>
-                  </div>
-                  <div class="input-group">
-                    <div class="margin-right">
-                      <label for="billing-address">Billing Address</label>
-                      <input
-                        type="text"
-                        id="billing-address"
-                        name="billing-address"
-                        autocomplete="street-address"
-                        placeholder="Enter your billing address"
-                        required
-                        minlength="5"
-                      />
-                      <div class="error-message" id="addressError"></div>
-                    </div>
-                  </div>
-                  <!-- Moved submit button inside form -->
-                  <div class="addCardOptions space-between">
-                    <button
-                      type="submit"
-                      class="addCard-btn reg-btn"
-                      id="submitButton"
-                    >
-                      Add card
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <!-- Add Fund popup Menu-->
-            <div id="addFunds-modal" class="add-funds-menu">
-              <div class="funds-container">
-                <div class="header-wrapper">
-                  <h3 class="funds-title">Amount</h3>
-
-                  <button class="close-button">
-                    <i class="fa-solid fa-xmark"></i>
-                  </button>
-                </div>
-
-                <hr />
-                <div class="funds-balance">
-                  <input
-                    id="funds-balance"
-                    class="funds-input"
-                    value="0.00"
-                    type="text"
-                  />
-                  <div class="currency-dropdown">
-                    <select class="currency-select" id="currency">
-                      <option value="">USD</option>
-                      <option value="">EUR</option>
-                      <option value="">GBP</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="wallet-info">
-                  You have
-                  <span class="wallet-amount">$0.00</span> available in your
-                  wallet.
-                </p>
-
-                <div class="from-account" id="from-account">
-                  <select id="paymentMethod">
-                    <option value="1">💳 Visa ending in 4242</option>
-                    <option value="2">💳 Mastercard ending in 1234</option>
-                    <option value="3">
-                      🏦 From Chase account ending in 9233
-                    </option>
-                    <option value="4">
-                      🏦 From Bank of America account ending in 5678
-                    </option>
-                  </select>
-                </div>
-
-                <p class="quick-amounts-title">Quick amounts</p>
-
-                <div id="quick-amounts-container" class="quick-amounts"></div>
-
-                <button id="add-funds-btn">Add Funds</button>
-              </div>
-            </div>
-
-            <!-- Withdraw popup Menu -->
-            <div class="popup-overlay" id="withdrawPopup">
-              <div class="withdraw-container">
-                <button
-                  class="close-button"
-                  id="popup-close-btn"
-                  aria-label="Close popup"
-                >
+                <button class="close-button">
                   <i class="fa-solid fa-xmark"></i>
                 </button>
-
-                <h1 class="withdraw-title">Withdraw Funds</h1>
-                <p class="withdraw-subtitle">
-                  Enter the amount you wish to withdraw from your wallet
-                </p>
-
-                <label class="amount-label">Amount</label>
-                <div class="amount-input-wrapper">
-                  <input
-                    type="number"
-                    class="amount-input"
-                    value="0.00"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                  />
-                  <span class="currency-indicator">USD</span>
-                </div>
-
-                <p class="available-balance">
-                  Available balance:
-                  <span id="available-balance">$0.00 USD</span>
-                </p>
-
-                <div class="quick-amounts">
-                  <button class="amount-btn">$10</button>
-                  <button class="amount-btn">$25</button>
-                  <button class="amount-btn">$50</button>
-                  <button class="amount-btn">$75</button>
-                  <button class="amount-btn">$100</button>
-                </div>
-
-                <button class="confirm-withdraw-btn">Confirm Withdrawal</button>
               </div>
-            </div>
 
-            <!-- View details popup menu-->
-            <div class="view-details-menu" id="view-details">
-              <div id="details-container" class="details-container">
-                <div class="header-wrapper">
-                  <h1 id="popup-title">Card Details</h1>
-                  <button class="close-button">
-                    <i class="fa-solid fa-xmark"></i>
-                  </button>
-                </div>
-
-                <div id="card-info">
-                  <i class="fa-solid fa-wallet"></i>
-                  <h2 id="card-ending">Visa Debit ending in 5338</h2>
-                </div>
-                <div class="primary-card-container"></div>
-
-                <div id="card-details">
-                  <div class="details-item">
-                    <i class="fa-solid fa-credit-card"></i>
-                    <div>
-                      <p class="details-label">Card Holder</p>
-                      <p id="card-holder"></p>
-                    </div>
-                  </div>
-                  <div class="details-item" id="expiration-date">
-                    <i class="fa-solid fa-calendar"></i>
-                    <div>
-                      <p class="details-label">Expiration Date</p>
-                      <p id="expiry"></p>
-                    </div>
-                  </div>
-                  <div class="details-item" id="billingAddress">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <div>
-                      <p class="details-label">Billing Address</p>
-                      <p class="billingAddress"></p>
-                    </div>
-                  </div>
-                </div>
-
-                <div id="processing-fees">
-                  <h3>Processing Fees</h3>
-                  <div>
-                    <p>$0.00</p>
-                  </div>
-                </div>
-
-                <!-- Recent Transactions -->
-                <div id="recent-trans">
-                  <div>
-                    <i class="fa-solid fa-receipt"></i>
-                    <h3 class="label">Recent Transactions</h3>
-                  </div>
-
-                  <div class="transactions">
-                    <div id="r-trans">
-                      <div class="trans">
-                        <p>Running Shoes - Blue</p>
-                        <p>$129.99</p>
-                      </div>
-                      <div class="trans">
-                        <p>Running Shoes - Blue</p>
-                        <p>$89.99</p>
-                      </div>
-                      <div class="trans">
-                        <p>Running Shoes - Blue</p>
-                        <p>$159.99</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="card-details-controls">
-                  <button
-                    type="button"
-                    class="button button-ghost"
-                    id="cancelUpdate"
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" class="button button-primary">
-                    Update Card Information
-                  </button>
+              <hr />
+              <div class="funds-balance">
+                <input
+                  id="funds-balance"
+                  class="funds-input"
+                  value="0.00"
+                  type="text"
+                />
+                <div class="currency-dropdown">
+                  <select class="currency-select" id="currency">
+                    <option value="">USD</option>
+                    <option value="">EUR</option>
+                    <option value="">GBP</option>
+                  </select>
                 </div>
               </div>
+              <p class="wallet-info">
+                You have
+                <span class="wallet-amount">$0.00</span> available in your
+                wallet.
+              </p>
+
+              <div class="from-account" id="from-account">
+                <select id="paymentMethod">
+                  <option value="1">💳 Visa ending in 4242</option>
+                  <option value="2">💳 Mastercard ending in 1234</option>
+                  <option value="3">
+                    🏦 From Chase account ending in 9233
+                  </option>
+                  <option value="4">
+                    🏦 From Bank of America account ending in 5678
+                  </option>
+                </select>
+              </div>
+
+              <p class="quick-amounts-title">Quick amounts</p>
+
+              <div id="quick-amounts-container" class="quick-amounts"></div>
+
+              <button id="add-funds-btn">Add Funds</button>
             </div>
-            <!-- Payment Notification -->
-            <div class="payment-nofication" id="payment-notification">
-              <div class="notification-container">
-                <i class="fa-solid fa-check"></i>
-                <p class="amount-text">$50.00 has been added to your wallet</p>
+          </div>
+
+          <!-- Withdraw popup Menu -->
+          <div class="popup-overlay" id="withdrawPopup">
+            <div class="withdraw-container">
+              <button
+                class="close-button"
+                id="popup-close-btn"
+                aria-label="Close popup"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+
+              <h1 class="withdraw-title">Withdraw Funds</h1>
+              <p class="withdraw-subtitle">
+                Enter the amount you wish to withdraw from your wallet
+              </p>
+
+              <label class="amount-label">Amount</label>
+              <div class="amount-input-wrapper">
+                <input
+                  type="number"
+                  class="amount-input"
+                  value="0.00"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                />
+                <span class="currency-indicator">USD</span>
+              </div>
+
+              <p class="available-balance">
+                Available balance:
+                <span id="available-balance">$0.00 USD</span>
+              </p>
+
+              <div class="quick-amounts">
+                <button class="amount-btn">$10</button>
+                <button class="amount-btn">$25</button>
+                <button class="amount-btn">$50</button>
+                <button class="amount-btn">$75</button>
+                <button class="amount-btn">$100</button>
+              </div>
+
+              <button class="confirm-withdraw-btn">Confirm Withdrawal</button>
+            </div>
+          </div>
+
+          <!-- View details popup menu-->
+          <div class="view-details-menu" id="view-details">
+            <div id="details-container" class="details-container">
+              <div class="header-wrapper">
+                <h1 id="popup-title">Card Details</h1>
+                <button class="close-button">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <div id="card-info">
+                <i class="fa-solid fa-wallet"></i>
+                <h2 id="card-ending">Visa Debit ending in 5338</h2>
+              </div>
+              <div class="primary-card-container"></div>
+
+              <div id="card-details">
+                <div class="details-item">
+                  <i class="fa-solid fa-credit-card"></i>
+                  <div>
+                    <p class="details-label">Card Holder</p>
+                    <p id="card-holder"></p>
+                  </div>
+                </div>
+                <div class="details-item" id="expiration-date">
+                  <i class="fa-solid fa-calendar"></i>
+                  <div>
+                    <p class="details-label">Expiration Date</p>
+                    <p id="expiry"></p>
+                  </div>
+                </div>
+                <div class="details-item" id="billingAddress">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <div>
+                    <p class="details-label">Billing Address</p>
+                    <p class="billingAddress"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div id="processing-fees">
+                <h3>Processing Fees</h3>
+                <div>
+                  <p>$0.00</p>
+                </div>
+              </div>
+
+              <!-- Recent Transactions -->
+              <div id="recent-trans">
+                <div>
+                  <i class="fa-solid fa-receipt"></i>
+                  <h3 class="label">Recent Transactions</h3>
+                </div>
+
+                <div class="transactions">
+                  <div id="r-trans">
+                    <div class="trans">
+                      <p>Running Shoes - Blue</p>
+                      <p>$129.99</p>
+                    </div>
+                    <div class="trans">
+                      <p>Running Shoes - Blue</p>
+                      <p>$89.99</p>
+                    </div>
+                    <div class="trans">
+                      <p>Running Shoes - Blue</p>
+                      <p>$159.99</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-details-controls">
+                <button
+                  type="button"
+                  class="button button-ghost"
+                  id="cancelUpdate"
+                >
+                  Cancel
+                </button>
+                <button type="submit" class="button button-primary">
+                  Update Card Information
+                </button>
               </div>
             </div>
           </div>
+          <!-- Payment Notification -->
+          <div class="payment-nofication" id="payment-notification">
+            <div class="notification-container">
+              <i class="fa-solid fa-check"></i>
+              <p class="amount-text">$50.00 has been added to your wallet</p>
+            </div>
+          </div>
+
           <!-- Payments Reports and Taxes -->
           <div class="inner-wrapper" id="payments-reports">
             <div class="filter-container">

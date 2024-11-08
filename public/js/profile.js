@@ -202,97 +202,97 @@ const cvv = document.getElementById("cvv");
 const expiry = document.getElementById("expiry");
 
 // Card Number Formatting
-cardNumber.addEventListener("input", (e) => {
-  let value = e.target.value.replace(/\D/g, "");
-  value = value.replace(/(\d{4})(?=\d)/g, "$1 ");
-  value = value.substring(0, 19);
-  e.target.value = value;
-  removeError(cardNumber);
-});
+// cardNumber.addEventListener("input", (e) => {
+//   let value = e.target.value.replace(/\D/g, "");
+//   value = value.replace(/(\d{4})(?=\d)/g, "$1 ");
+//   value = value.substring(0, 19);
+//   e.target.value = value;
+//   removeError(cardNumber);
+// });
 
-// CVV Formatting
-cvv.addEventListener("input", (e) => {
-  let value = e.target.value.replace(/\D/g, "");
-  value = value.substring(0, 4);
-  e.target.value = value;
-  removeError(cvv);
-});
+// // CVV Formatting
+// cvv.addEventListener("input", (e) => {
+//   let value = e.target.value.replace(/\D/g, "");
+//   value = value.substring(0, 4);
+//   e.target.value = value;
+//   removeError(cvv);
+// });
 
-// Expiry Date Validation
-expiry.addEventListener("input", (e) => {
-  const currentDate = new Date();
-  const selectedDate = new Date(e.target.value);
-  removeError(expiry);
+// // Expiry Date Validation
+// expiry.addEventListener("input", (e) => {
+//   const currentDate = new Date();
+//   const selectedDate = new Date(e.target.value);
+//   removeError(expiry);
 
-  if (selectedDate < currentDate) {
-    showError(expiry, "Please select a future date");
-  }
-});
+//   if (selectedDate < currentDate) {
+//     showError(expiry, "Please select a future date");
+//   }
+// });
 
-// Add card event Listener
-cardForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  let hasError = false;
+// // Add card event Listener
+// cardForm.addEventListener("submit", (e) => {
+//   e.preventDefault();
+//   let hasError = false;
 
-  // Get form elements
-  const holderName = document.getElementById("nameOnCard");
-  const cardNumber = document.getElementById("cardNumber");
-  const cvv = document.getElementById("cvv");
-  const expiry = document.getElementById("input-expiry");
-  const billingAddress = document.getElementById("billing-address");
+//   // Get form elements
+//   const holderName = document.getElementById("nameOnCard");
+//   const cardNumber = document.getElementById("cardNumber");
+//   const cvv = document.getElementById("cvv");
+//   const expiry = document.getElementById("input-expiry");
+//   const billingAddress = document.getElementById("billing-address");
 
-  // Validate Name
-  if (!holderName.value.trim()) {
-    showError(holderName, "Card holder name is required");
-    hasError = true;
-  }
-  // Validate Card Number
-  if (
-    !cardNumber.value.trim() ||
-    cardNumber.value.replace(/\s/g, "").length < 16
-  ) {
-    showError(cardNumber, "Valid card number is required (16 digits)");
-    hasError = true;
-  }
+//   // Validate Name
+//   if (!holderName.value.trim()) {
+//     showError(holderName, "Card holder name is required");
+//     hasError = true;
+//   }
+//   // Validate Card Number
+//   if (
+//     !cardNumber.value.trim() ||
+//     cardNumber.value.replace(/\s/g, "").length < 16
+//   ) {
+//     showError(cardNumber, "Valid card number is required (16 digits)");
+//     hasError = true;
+//   }
 
-  // Validate CVV
-  if (!cvv.value.trim() || cvv.value.length < 3) {
-    showError(cvv, "Valid CVV is required (3-4 digits)");
-    hasError = true;
-  }
-  // Validate Expiry
-  if (!expiry.value.trim()) {
-    showError(expiry, "Expiry date is required");
-    hasError = true;
-  }
+//   // Validate CVV
+//   if (!cvv.value.trim() || cvv.value.length < 3) {
+//     showError(cvv, "Valid CVV is required (3-4 digits)");
+//     hasError = true;
+//   }
+//   // Validate Expiry
+//   if (!expiry.value.trim()) {
+//     showError(expiry, "Expiry date is required");
+//     hasError = true;
+//   }
 
-  // Validate Billing Address
-  if (!billingAddress.value.trim()) {
-    showError(billingAddress, "Billing address is required");
-    hasError = true;
-  }
+//   // Validate Billing Address
+//   if (!billingAddress.value.trim()) {
+//     showError(billingAddress, "Billing address is required");
+//     hasError = true;
+//   }
 
-  // If there are any errors, don't submit
-  if (hasError) {
-    return;
-  }
+//   // If there are any errors, don't submit
+//   if (hasError) {
+//     return;
+//   }
 
-  // card header ui
-  const cardEnding = document.getElementById("card-ending");
-  // console.log(cardEnding);
-  cardEnding.textContent = `Visa Debit ending in ${cardNumber.value.slice(-4)}`;
+//   // card header ui
+//   const cardEnding = document.getElementById("card-ending");
+//   // console.log(cardEnding);
+//   cardEnding.textContent = `Visa Debit ending in ${cardNumber.value.slice(-4)}`;
 
-  // If validation passes, update the display
-  document.getElementById("card-holder").textContent = holderName.value;
-  document.getElementById("expiry").textContent = expiry.value;
-  document.querySelector(".billingAddress").textContent = billingAddress.value;
+//   // If validation passes, update the display
+//   document.getElementById("card-holder").textContent = holderName.value;
+//   document.getElementById("expiry").textContent = expiry.value;
+//   document.querySelector(".billingAddress").textContent = billingAddress.value;
 
-  // add to db then add div container
-  handleAddCard();
+//   // add to db then add div container
+//   handleAddCard();
 
-  // Close popup
-  closePopupMenu(".add-card-menu");
-});
+//   // Close popup
+//   closePopupMenu(".add-card-menu");
+// });
 
 const addNewCard = document.getElementById("add-new-card");
 const closePopMenu = document.getElementById("closePopup");
@@ -357,7 +357,7 @@ function handleAddCard() {
     cvv: document.getElementById("cvv").value,
     cardNumber: document.getElementById("cardNumber").value,
     expirationDate: document.getElementById("expiry").value,
-    billingAddress: document.getElementById("billingAddress").value
+    billingAddress: document.getElementById("billingAddress").value,
   };
 
   // Get the last 4 digits of the card
@@ -1153,7 +1153,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -1168,7 +1168,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -1201,7 +1201,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -1275,7 +1275,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
@@ -1474,18 +1474,11 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
   }
 });
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> f035b3f37d1e044554c8c9fa93503238f90e13dc
 // Add these element references
 const methodSelection = document.querySelector(".select-method-card");
 const card_form = document.querySelector("#card-form");
 const bankForm = document.querySelector("#bank-form");
 const successCard = document.querySelector("#successCard");
-
-
 
 // Define functions
 function showCardForm() {
