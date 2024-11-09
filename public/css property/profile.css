@@ -2078,6 +2078,12 @@ h6 {
   text-align: center;
 }
 
+.security-code .otp-input:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
 .payment-section input {
   flex-basis: 48%;
   padding: 8px 8px;
