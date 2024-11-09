@@ -2029,7 +2029,7 @@ h6 {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  padding: 20px;
+  padding: 20px 0px;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -2060,6 +2060,43 @@ h6 {
 
 #securityVerification .btn-cancel:hover {
   background-color: #f3f4f6;
+}
+
+#securityVerification .card-number {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+#securityVerification .card-type {
+  font-weight: 500;
+  color: #111827;
+}
+
+#securityVerification .current-card-update {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+#securityVerification .input-note {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+#securityVerification .form-group {
+  margin-bottom: 24px;
+}
+
+#securityVerification .form-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 20px 0px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .security-code {
