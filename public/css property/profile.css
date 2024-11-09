@@ -1934,6 +1934,19 @@ h6 {
 
 /* Security Verification Modal */
 
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
 #securityVerification .modal-container {
   padding: 1rem;
   width: 100%;
@@ -1942,6 +1955,7 @@ h6 {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   margin: 20px auto;
   overflow: hidden;
+  background-color: #fefefe;
 }
 
 #securityVerification .modal-header {
