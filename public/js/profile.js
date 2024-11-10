@@ -181,19 +181,6 @@ function removeError(element) {
   }
 }
 
-// function showSuccess(message) {
-//   const successDiv = document.createElement("div");
-//   successDiv.className = "success-message";
-//   successDiv.textContent = message;
-
-//   const formElement = document.getElementById("add-card");
-//   formElement.insertBefore(successDiv, formElement.firstChild);
-
-//   setTimeout(() => {
-//     successDiv.remove();
-//   }, 3000);
-// }
-
 /* Add card Popup Functionality */
 
 function validateCardForm(element, errorMessage, options = {}) {
@@ -233,6 +220,7 @@ function validateExpiry(element, errorMessage) {
   return false;
 }
 // Form Validation and Formatting
+
 // Add these element references
 const methodSelection = document.querySelector(".select-method-card");
 const card_form = document.querySelector("#card-form");
@@ -576,13 +564,67 @@ closeBtnForDetails.addEventListener("click", () => {
 });
 
 /* View Details Functionality */
+
+const updateCardBtn = document.querySelector("#updateCard");
+const continueBtn = document.querySelector("#continueBtn");
 const cardHolder = document.querySelector(".view-details-menu #card-holder");
 const expirationDate = document.querySelector(".view-details-menu #expiry");
 const billingAddress = document.querySelector(
   ".view-details-menu #billingAddress"
 );
+const verifyBtn = document.querySelector("#verifyBtn");
+const backUpdateBtn = document.querySelector("#backUpdateBtn");
+const securityVerification1 = document.querySelector("#securityVerification1");
+const securityVerification2 = document.querySelector("#securityVerification2");
+const securityVerification3 = document.querySelector("#securityVerification3");
 
-console.log(cardHolder, expirationDate, billingAddress);
+const statusCircles = document.querySelectorAll(
+  "#securityVerification1 .status-icon-circle"
+);
+
+const statusCircle1 = document.querySelectorAll(
+  "#securityVerification2 .status-icon-circle"
+);
+
+const statusCircle3 = document.querySelectorAll(
+  "#securityVerification3 .status-icon-circle"
+);
+
+updateCardBtn.addEventListener("click", () => {
+  closePopupMenu(".view-details-menu");
+  securityVerification1.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  statusCircles[0].classList.add("active");
+});
+
+continueBtn.addEventListener("click", () => {
+  securityVerification1.classList.add("hidden");
+  securityVerification2.classList.remove("hidden");
+  document.body.style.overflow = "";
+  statusCircle1[0].classList.add("active");
+  statusCircle1[1].classList.add("active");
+});
+
+backBtn.addEventListener("click", () => {
+  securityVerification2.classList.add("hidden");
+  securityVerification1.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  statusCircle1.forEach((circle) => circle.classList.remove("active"));
+});
+
+verifyBtn.addEventListener("click", () => {
+  securityVerification2.classList.add("hidden");
+  securityVerification3.classList.remove("hidden");
+  statusCircle3.forEach((circle) => circle.classList.add("active"));
+  document.body.style.overflow = "";
+});
+
+backUpdateBtn.addEventListener("click", () => {
+  securityVerification3.classList.add("hidden");
+  securityVerification2.classList.remove("hidden");
+  statusCircle3[2].classList.remove("active");
+  document.body.style.overflow = "";
+});
 
 function handleAddCard(event) {
   event.preventDefault(); // Prevent default form submission
