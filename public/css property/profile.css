@@ -753,6 +753,16 @@ button:disabled {
   margin: 1.5rem 0;
 }
 
+#view-details .label {
+  font-size: 1.1rem;
+}
+
+#view-details .fee-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
 #view-details .details-container {
   background-color: white;
   border: 1px solid #d6d6d6;
@@ -760,8 +770,64 @@ button:disabled {
   border-radius: 12px;
   max-width: 32rem;
   width: 100%;
+  margin: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Add subtle shadow */
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-height: calc(100vh - 4rem); /* Prevent overflow on small screens */
+  overflow-y: auto;
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+#view-details .details-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+#view-details .details-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+#view-details .details-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out;
+}
+
+#view-details .details-container::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+#view-details .processing-fees-header {
+  display: flex;
+  gap: 1rem;
+}
+
+#view-details .processing-fees {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem 0;
+}
+
+#view-details .r-trans {
+  margin-bottom: 1.5rem 0;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+#view-details .recent-trans-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#view-details .trans {
+  display: flex;
+  justify-content: space-between;
+  padding: 0, 5rem 0;
 }
 
 #view-details .header-wrapper {
@@ -866,8 +932,6 @@ button:disabled {
 }
 
 #view-details #recent-trans .label {
-  color: #6b7280;
-  font-size: 0.875rem;
   margin-bottom: 0.75rem;
 }
 
@@ -1452,7 +1516,7 @@ button:disabled {
 .success-icon {
   width: 64px;
   height: 64px;
-  background: #f5f5ff;
+  background: var(--primary-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1462,7 +1526,7 @@ button:disabled {
 
 .success-icon i {
   font-size: 2rem;
-  color: #4f46e5;
+  color: var(--primary);
 }
 
 .success-title {
@@ -1942,12 +2006,14 @@ h6 {
   right: 0;
   bottom: 0;
   z-index: 999;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 
-#securityVerification .modal-container {
+#securityVerification1 .modal-container,
+#securityVerification2 .modal-container,
+#securityVerification3 .modal-container {
   padding: 1rem;
   width: 100%;
   max-width: 500px;
@@ -1958,19 +2024,41 @@ h6 {
   background-color: #fefefe;
 }
 
-#securityVerification .modal-header {
+#securityVerification3 .modal-container {
+  overflow: auto;
+  height: 90vh;
+  scrollbar-width: thin;
+  scrollbar-color: #6b7280 #e5e7eb;
+}
+
+#securityVerification3 .modal-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+#securityVerification3 .modal-container::-webkit-scrollbar-thumb {
+  background-color: #6b7280;
+  border-radius: 12px;
+}
+
+#securityVerification1 .modal-header,
+#securityVerification2 .modal-header,
+#securityVerification3 .modal-header {
   display: flex;
   justify-content: center;
   align-items: center;
   border-bottom: 1px solid #e5e7eb;
 }
 
-#securityVerification .modal-header h2 {
+#securityVerification1 .modal-header h2,
+#securityVerification2 .modal-header h2,
+#securityVerification3 .modal-header h2 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-#securityVerification .security-message {
+#securityVerification1 .security-message,
+#securityVerification2 .security-message,
+#securityVerification3 .security-message {
   border: 1px solid #fee2e2;
   border-radius: 8px;
   background-color: #fef3f2;
@@ -1981,17 +2069,23 @@ h6 {
   padding: 1rem;
 }
 
-#securityVerification .security-icon i {
+#securityVerification1 .security-icon i,
+#securityVerification2 .security-icon i,
+#securityVerification3 .security-icon i {
   margin-top: 3px;
   color: #dc262e;
 }
 
-#securityVerification .security-text p {
+#securityVerification1 .security-text p,
+#securityVerification2 .security-text p,
+#securityVerification3 .security-text p {
   font-size: 14px;
   color: #6b7280;
 }
 
-#securityVerification .security-process-status {
+#securityVerification1 .security-process-status,
+#securityVerification2 .security-process-status,
+#securityVerification3 .security-process-status {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2000,7 +2094,9 @@ h6 {
   margin: 32px 0;
 }
 
-#securityVerification .security-process-status::before {
+#securityVerification1 .security-process-status::before,
+#securityVerification2 .security-process-status::before,
+#securityVerification3 .security-process-status::before {
   content: "";
   position: absolute;
   top: 15px;
@@ -2011,14 +2107,18 @@ h6 {
   z-index: 1;
 }
 
-#securityVerification .security-status-text {
+#securityVerification1 .security-status-text,
+#securityVerification2 .security-status-text,
+#securityVerification3 .security-status-text {
   font-size: 14px;
   color: #6b7280;
   text-align: center;
   white-space: nowrap;
 }
 
-#securityVerification .status-icon-circle {
+#securityVerification1 .status-icon-circle,
+#securityVerification2 .status-icon-circle,
+#securityVerification3 .status-icon-circle {
   z-index: 2;
   position: relative;
   width: 32px;
@@ -2033,13 +2133,17 @@ h6 {
   margin-bottom: 8px;
 }
 
-#securityVerification .status-icon-circle.active {
+#securityVerification1 .status-icon-circle.active,
+#securityVerification2 .status-icon-circle.active,
+#securityVerification3 .status-icon-circle.active {
   background-color: #ef4444;
   border-color: #ef4444;
   color: white;
 }
 
-#securityVerification .security-controls {
+#securityVerification1 .security-controls,
+#securityVerification2 .security-controls,
+#securityVerification3 .security-controls {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -2047,11 +2151,15 @@ h6 {
   border-top: 1px solid #e5e7eb;
 }
 
-#securityVerification .security-password {
+#securityVerification1 .security-password,
+#securityVerification2 .security-password,
+#securityVerification3 .security-password {
   margin-bottom: 1rem;
 }
 
-#securityVerification .security-password .form-input {
+#securityVerification1 .security-password .form-input,
+#securityVerification2 .security-password .form-input,
+#securityVerification3 .security-password .form-input {
   width: 100%;
   padding: 12px;
   border: 1px solid #e5e7eb;
@@ -2059,34 +2167,46 @@ h6 {
   font-size: 0.875rem;
 }
 
-#securityVerification .security-password .form-input:focus {
+#securityVerification1 .security-password .form-input:focus,
+#securityVerification2 .security-password .form-input:focus,
+#securityVerification3 .security-password .form-input:focus {
   outline: none;
   border-color: #ef4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-#securityVerification .btn-cancel {
+#securityVerification1 .btn-cancel,
+#securityVerification2 .btn-cancel,
+#securityVerification3 .btn-cancel {
   background-color: transparent;
   border: 1px solid #e5e7eb;
   color: #374151;
   cursor: pointer;
 }
 
-#securityVerification .btn-cancel:hover {
+#securityVerification1 .btn-cancel:hover,
+#securityVerification2 .btn-cancel:hover,
+#securityVerification3 .btn-cancel:hover {
   background-color: #f3f4f6;
 }
 
-#securityVerification .card-number {
+#securityVerification1 .card-number,
+#securityVerification2 .card-number,
+#securityVerification3 .card-number {
   color: #6b7280;
   font-size: 0.875rem;
 }
 
-#securityVerification .card-type {
+#securityVerification1 .card-type,
+#securityVerification2 .card-type,
+#securityVerification3 .card-type {
   font-weight: 500;
   color: #111827;
 }
 
-#securityVerification .current-card-update {
+#securityVerification1 .current-card-update,
+#securityVerification2 .current-card-update,
+#securityVerification3 .current-card-update {
   display: flex;
   gap: 1rem;
   align-items: center;
@@ -2096,16 +2216,22 @@ h6 {
   border-radius: 8px;
 }
 
-#securityVerification .input-note {
+#securityVerification1 .input-note,
+#securityVerification2 .input-note,
+#securityVerification3 .input-note {
   font-size: 0.875rem;
   color: #6b7280;
 }
 
-#securityVerification .form-group {
+#securityVerification1 .form-group,
+#securityVerification2 .form-group,
+#securityVerification3 .form-group {
   margin-bottom: 24px;
 }
 
-#securityVerification .form-controls {
+#securityVerification1 .form-controls,
+#securityVerification2 .form-controls,
+#securityVerification3 .form-controls {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -2113,14 +2239,18 @@ h6 {
   border-top: 1px solid #e5e7eb;
 }
 
-.security-code {
+#securityVerification1 .security-code,
+#securityVerification2 .security-code,
+#securityVerification3 .security-code {
   display: flex;
   gap: 1rem;
   justify-content: center;
   margin-bottom: 1rem;
 }
 
-.security-code .otp-input {
+#securityVerification1 .security-code .otp-input,
+#securityVerification2 .security-code .otp-input,
+#securityVerification3 .security-code .otp-input {
   width: 40px;
   height: 40px;
   border: 1px solid #e5e7eb;
@@ -2129,7 +2259,9 @@ h6 {
   text-align: center;
 }
 
-.security-code .otp-input:focus {
+#securityVerification1 .security-code .otp-input:focus,
+#securityVerification2 .security-code .otp-input:focus,
+#securityVerification3 .security-code .otp-input:focus {
   outline: none;
   border-color: #ef4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
@@ -2986,6 +3118,21 @@ h6 {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  .card-wrapper.add-card {
+    width: 100%;
+    min-width: 70%;
+    flex-direction: row;
+  }
+
+  .view-details-menu .details-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .view-details-menu .card-details {
+    grid-template-columns: 1fr;
+  }
+
   #add-card-popup {
     width: 85%; /* Reduced from 90% */
     padding: 1.25rem;
