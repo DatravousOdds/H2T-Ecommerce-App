@@ -593,29 +593,35 @@ const statusCircle3 = document.querySelectorAll(
   "#securityVerification3 .status-icon-circle"
 );
 
-// Reset status circles
+function showViewDetailsMenu() {
+  viewDetailsMenu.style.display = "flex";
+  viewDetailsMenu.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function hideViewDetailsMenu() {
+  viewDetailsMenu.style.display = "none";
+  viewDetailsMenu.classList.remove("active");
+  document.body.style.overflow = "";
+}
+
 function resetVerificationState() {
-  // Hide all verification modals
   securityVerification1.classList.add("hidden");
   securityVerification2.classList.add("hidden");
   securityVerification3.classList.add("hidden");
 
-  // Reset status circles
   statusCircles.forEach((circle) => circle.classList.remove("active"));
   statusCircle1.forEach((circle) => circle.classList.remove("active"));
   statusCircle3.forEach((circle) => circle.classList.remove("active"));
-
-  document.body.style.overflow = "";
 }
 
 // Continue to step 1 of verification
 updateCardBtn.addEventListener("click", () => {
-  closePopupMenu(".view-details-menu");
-  // resetVerificationState();
+  hideViewDetailsMenu();
+  resetVerificationState();
   securityVerification1.classList.remove("hidden");
   document.body.style.overflow = "hidden";
   statusCircles[0].classList.add("active");
-  document.body.style.overflow = "hidden";
 });
 
 // Continue to step 2 of verification
@@ -624,6 +630,7 @@ continueBtn.addEventListener("click", () => {
   securityVerification2.classList.remove("hidden");
   statusCircle1[0].classList.add("active");
   statusCircle1[1].classList.add("active");
+  document.body.style.overflow = "hidden";
 });
 
 // Back to view details menu
@@ -631,9 +638,8 @@ backToViewDetailsBtn.addEventListener("click", (e) => {
   e.preventDefault();
   e.stopPropagation();
   securityVerification1.classList.add("hidden");
-  viewDetailsMenu.classList.add("active");
-  viewDetailsMenu.style.display = "flex";
-  statusCircle1.forEach((circle) => circle.classList.remove("active"));
+  showViewDetailsMenu();
+  statusCircles.forEach((circle) => circle.classList.remove("active"));
 });
 
 // Continue to step 3 of verification
@@ -641,6 +647,7 @@ verifyBtn.addEventListener("click", () => {
   securityVerification2.classList.add("hidden");
   securityVerification3.classList.remove("hidden");
   statusCircle3.forEach((circle) => circle.classList.add("active"));
+  document.body.style.overflow = "hidden";
 });
 
 // Back to step 1 of verification
@@ -660,6 +667,8 @@ backToStepTwoView.addEventListener("click", (e) => {
   securityVerification2.classList.remove("hidden");
   statusCircle3[2].classList.remove("active");
 });
+
+console.log(progressWidth);
 
 function handleAddCard(event) {
   event.preventDefault(); // Prevent default form submission
@@ -785,10 +794,10 @@ class PaymentCardManager {
       return;
     }
 
-    resetVerificationState();
-
     this.isPopupOpen = true;
     this.popup.style.display = "flex"; // Ensure popup is visible
+
+    resetVerificationState();
 
     // Use requestAnimationFrame for smooth animation
     requestAnimationFrame(() => {
@@ -816,18 +825,18 @@ class PaymentCardManager {
     this.popup.classList.remove("active");
 
     // Wait for transition to complete before hiding
-    this.popup.addEventListener(
-      "transitionend",
-      () => {
-        this.popup.style.display = "none";
-        document.body.style.overflow = "";
-        this.activeCard = null;
-        this.popup.querySelector(".primary-card")?.remove();
-        this.isPopupOpen = false;
-        resetVerificationState();
-      },
-      { once: true }
-    ); // Use once: true to automatically remove the listener
+    // this.popup.addEventListener(
+    //   "transitionend",
+    //   () => {
+    //     this.popup.style.display = "none";
+    //     document.body.style.overflow = "";
+    //     this.activeCard = null;
+    //     this.popup.querySelector(".primary-card")?.remove();
+    //     this.isPopupOpen = false;
+    //     resetVerificationState();
+    //   },
+    //   { once: true }
+    // ); // Use once: true to automatically remove the listener
   }
 
   openViewDetails(button) {
