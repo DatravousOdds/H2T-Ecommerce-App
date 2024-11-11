@@ -564,16 +564,19 @@ closeBtnForDetails.addEventListener("click", () => {
 });
 
 /* View Details Functionality */
-
 const updateCardBtn = document.querySelector("#updateCard");
-const continueBtn = document.querySelector("#continueBtn");
+const continueBtn = document.querySelector("#step-1-verify-continue");
 const cardHolder = document.querySelector(".view-details-menu #card-holder");
 const expirationDate = document.querySelector(".view-details-menu #expiry");
 const billingAddress = document.querySelector(
   ".view-details-menu #billingAddress"
 );
+const backToViewDetailsBtn = document.querySelector("#step-1-verify-back");
+const cancelBtn = document.querySelectorAll(".btn-cancel");
 const verifyBtn = document.querySelector("#verifyBtn");
-const backUpdateBtn = document.querySelector("#backUpdateBtn");
+const viewDetailsMenu = document.querySelector(".view-details-menu");
+const backToStepOneView = document.querySelector("#backBtn");
+const backToStepTwoView = document.querySelector("#backUpdateBtn");
 const securityVerification1 = document.querySelector("#securityVerification1");
 const securityVerification2 = document.querySelector("#securityVerification2");
 const securityVerification3 = document.querySelector("#securityVerification3");
@@ -590,40 +593,72 @@ const statusCircle3 = document.querySelectorAll(
   "#securityVerification3 .status-icon-circle"
 );
 
+// Reset status circles
+function resetVerificationState() {
+  // Hide all verification modals
+  securityVerification1.classList.add("hidden");
+  securityVerification2.classList.add("hidden");
+  securityVerification3.classList.add("hidden");
+
+  // Reset status circles
+  statusCircles.forEach((circle) => circle.classList.remove("active"));
+  statusCircle1.forEach((circle) => circle.classList.remove("active"));
+  statusCircle3.forEach((circle) => circle.classList.remove("active"));
+
+  document.body.style.overflow = "";
+}
+
+// Continue to step 1 of verification
 updateCardBtn.addEventListener("click", () => {
   closePopupMenu(".view-details-menu");
+  // resetVerificationState();
   securityVerification1.classList.remove("hidden");
   document.body.style.overflow = "hidden";
   statusCircles[0].classList.add("active");
+  document.body.style.overflow = "hidden";
 });
 
+// Continue to step 2 of verification
 continueBtn.addEventListener("click", () => {
   securityVerification1.classList.add("hidden");
   securityVerification2.classList.remove("hidden");
-  document.body.style.overflow = "";
   statusCircle1[0].classList.add("active");
   statusCircle1[1].classList.add("active");
 });
 
-backBtn.addEventListener("click", () => {
-  securityVerification2.classList.add("hidden");
-  securityVerification1.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
+// Back to view details menu
+backToViewDetailsBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  securityVerification1.classList.add("hidden");
+  viewDetailsMenu.classList.add("active");
+  viewDetailsMenu.style.display = "flex";
   statusCircle1.forEach((circle) => circle.classList.remove("active"));
 });
 
+// Continue to step 3 of verification
 verifyBtn.addEventListener("click", () => {
   securityVerification2.classList.add("hidden");
   securityVerification3.classList.remove("hidden");
   statusCircle3.forEach((circle) => circle.classList.add("active"));
-  document.body.style.overflow = "";
 });
 
-backUpdateBtn.addEventListener("click", () => {
+// Back to step 1 of verification
+backToStepOneView.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  securityVerification2.classList.add("hidden");
+  securityVerification1.classList.remove("hidden");
+  statusCircles[1].classList.remove("active");
+});
+
+// Back to step 2 of verification
+backToStepTwoView.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
   securityVerification3.classList.add("hidden");
   securityVerification2.classList.remove("hidden");
   statusCircle3[2].classList.remove("active");
-  document.body.style.overflow = "";
 });
 
 function handleAddCard(event) {
@@ -746,9 +781,11 @@ class PaymentCardManager {
   }
 
   showPopup(button) {
-    if (!this.popup || this.isPopupOpen) {
+    if (!this.popup) {
       return;
     }
+
+    resetVerificationState();
 
     this.isPopupOpen = true;
     this.popup.style.display = "flex"; // Ensure popup is visible
@@ -759,9 +796,7 @@ class PaymentCardManager {
       document.body.style.overflow = "hidden";
 
       const cardWrapper = button.closest(".card-wrapper");
-      const isDefault = this.isDefaultCard(cardWrapper);
-
-      if (isDefault) {
+      if (this.isDefaultCard(cardWrapper)) {
         this.showPrimaryTag();
       }
 
@@ -789,6 +824,7 @@ class PaymentCardManager {
         this.activeCard = null;
         this.popup.querySelector(".primary-card")?.remove();
         this.isPopupOpen = false;
+        resetVerificationState();
       },
       { once: true }
     ); // Use once: true to automatically remove the listener
