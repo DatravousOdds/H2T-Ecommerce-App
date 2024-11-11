@@ -944,13 +944,6 @@
               </div>
               <div class="card-details-controls">
                 <button
-                  type="button"
-                  class="button button-ghost"
-                  id="cancelUpdate"
-                >
-                  Cancel
-                </button>
-                <button
                   id="updateCard"
                   type="submit"
                   class="button button-primary"
@@ -1327,8 +1320,13 @@
               </div>
 
               <div class="security-controls">
-                <button class="button button-ghost btn-cancel">Cancel</button>
-                <button id="continueBtn" class="button button-primary">
+                <button id="step-1-verify-back" class="button button-ghost">
+                  Back
+                </button>
+                <button
+                  id="step-1-verify-continue"
+                  class="button button-primary"
+                >
                   Continue
                 </button>
               </div>
@@ -1387,9 +1385,7 @@
               </div>
 
               <div class="security-controls">
-                <button id="backBtn" class="button button-ghost btn-cancel">
-                  Back
-                </button>
+                <button id="backBtn" class="button button-ghost">Back</button>
                 <button id="verifyBtn" class="button button-primary">
                   Verify
                 </button>
@@ -1477,10 +1473,7 @@
                   <input type="text" class="form-input" />
                 </div>
                 <div class="form-controls">
-                  <button
-                    id="backUpdateBtn"
-                    class="button button-ghost btn-cancel"
-                  >
+                  <button id="backUpdateBtn" class="button button-ghost">
                     Back
                   </button>
                   <button id="updateCardBtn" class="button button-primary">
