@@ -310,7 +310,7 @@ if (cardForm) {
       cardNumber: document.querySelector("#cardForm #cardNumber"),
       cvv: document.querySelector("#cardForm #cvv"),
       expiry: document.querySelector("#cardForm #expiry"),
-      billingAddress: document.querySelector("#cardForm #billingAddress")
+      billingAddress: document.querySelector("#cardForm #billingAddress"),
     };
 
     // Clear any existing errors
@@ -369,7 +369,7 @@ if (bankForm) {
     const formElements = {
       accountHolderName: document.querySelector("#bankForm #accountHolderName"),
       routingNumber: document.querySelector("#bankForm #routingNumber"),
-      accountNumber: document.querySelector("#bankForm #accountNumber")
+      accountNumber: document.querySelector("#bankForm #accountNumber"),
     };
 
     let hasError = false;
@@ -668,8 +668,6 @@ backToStepTwoView.addEventListener("click", (e) => {
   statusCircle3[2].classList.remove("active");
 });
 
-console.log(progressWidth);
-
 function handleAddCard(event) {
   event.preventDefault(); // Prevent default form submission
   // Get form values
@@ -678,7 +676,8 @@ function handleAddCard(event) {
     cvv: document.querySelector("#cardForm #cvv").value,
     cardNumber: document.querySelector("#cardForm #cardNumber").value,
     expirationDate: document.querySelector("#cardForm #expiry").value,
-    billingAddress: document.querySelector("#cardForm #billingAddress").value
+    billingAddress: document.querySelector("#cardForm #billingAddress").value,
+    cardEnding: document.querySelector("#card-ending"),
   };
 
   // Get the last 4 digits of the card
@@ -699,6 +698,8 @@ function handleAddCard(event) {
   cardHolder.textContent = newCard.cardHolder;
   expirationDate.textContent = newCard.expirationDate;
   billingAddress.textContent = newCard.billingAddress;
+  newCard.cardEnding.textContent = `Visa Debit ending in ${lastFourDigits}`;
+  console.log(newCard.cardEnding);
 }
 
 function handleAddBank(event) {
@@ -708,7 +709,7 @@ function handleAddBank(event) {
     routingNumber: document.getElementById("routingNumber").value,
     accountNumber: document.getElementById("accountNumber").value,
     accountType: document.querySelector("#bankForm .bank-detail-value")
-      .textContent
+      .textContent,
   };
 
   const lastFourDigits = newBank.accountNumber.slice(-4);
@@ -722,6 +723,9 @@ function handleAddBank(event) {
 
   cardList.insertAdjacentHTML("afterbegin", newBankHTML);
   closePopupMenu(".add-card-menu");
+
+  newBank.cardEnding.textContent = `Bank Account ending in ${lastFourDigits}`;
+  
 }
 
 class PaymentCardManager {
@@ -1504,7 +1508,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -1519,7 +1523,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -1552,7 +1556,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -1626,7 +1630,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
