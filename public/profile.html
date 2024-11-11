@@ -868,7 +868,7 @@
 
               <div id="card-info">
                 <i class="fa-solid fa-wallet"></i>
-                <h2 id="card-ending">Visa Debit ending in 5338</h2>
+                <h2 id="card-ending"></h2>
               </div>
               <div class="primary-card-container"></div>
 
@@ -953,6 +953,96 @@
               </div>
             </div>
           </div>
+
+          <!-- Bank Details popup menu-->
+          <div class="bank-modal-overlay" id="view-bank-details">
+            <div id="details-container" class="details-container">
+              <div class="header-wrapper">
+                <h1 id="popup-title">Bank Details</h1>
+                <button type="button" class="close-button">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <div id="bank-info" class="bank-info">
+                <i class="fa-solid fa-building-columns"></i>
+                <div class="bank-info-wrapper">
+                  <p id="bank-type" class="default-paragraph">Chase Bank</p>
+                  <p id="bank-ending" class="default-paragraph">
+                    Checking Account ending in 1234
+                  </p>
+                </div>
+              </div>
+
+              <div id="bank-details" class="bank-details">
+                <div class="details-item">
+                  <label class="details-label">Account Holder</label>
+                  <p id="account-holder" class="default-paragraph"></p>
+                </div>
+                <div class="details-item">
+                  <label class="details-label">Routing Number</label>
+                  <p id="routing-number" class="default-paragraph"></p>
+                </div>
+                <div class="details-item">
+                  <label class="details-label">Account Number</label>
+                  <p id="account-number" class="default-paragraph"></p>
+                </div>
+                <div class="details-item">
+                  <label class="details-label">Account Type</label>
+                  <p id="account-type" class="default-paragraph"></p>
+                </div>
+              </div>
+
+              <div class="security-info">
+                <div class="security-info-header">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <p>
+                    For security, full account details are partially hidden.
+                    Contact support if you need to verify your information.
+                  </p>
+                </div>
+              </div>
+
+              <h3>Recent Activity</h3>
+              <div id="recent-activity" class="recent-activity">
+                <div class="activity-item">
+                  <div class="activity-item-wrapper">
+                    <label class="details-label">Withdrawal</label>
+                    <label class="detail-value">$100.00 USD</label>
+                  </div>
+                  <div class="activity-item-wrapper">
+                    <p class="default-paragraph">03/01/2024</p>
+                    <p class="default-paragraph">Completed</p>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-item-wrapper">
+                    <label class="details-label">Withdrawal</label>
+                    <label class="detail-value">$100.00 USD</label>
+                  </div>
+                  <div class="activity-item-wrapper">
+                    <p class="default-paragraph">03/01/2024</p>
+                    <p class="default-paragraph">Completed</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="view-all-activity">
+                <a href="#">View Full Transaction History</a>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </div>
+
+              <div class="bank-details-controls">
+                <button type="button" class="button button-primary">
+                  Edit Account Details
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Bank Details popup menu-->
+
           <!-- Payment Notification -->
           <div class="payment-nofication" id="payment-notification">
             <div class="notification-container">
