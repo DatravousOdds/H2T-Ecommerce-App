@@ -534,8 +534,8 @@ const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits, expiry) => `
 `;
 
 const BANK_WRAPPER_TEMPLATE = (nameOfBank, accountType, lastFourDigits) => `
-  <div class="card-wrapper">
-    <div class="payment-card">
+  <div class="card-wrapper bank-card">
+    <div class="payment-card" id="bank-account">
       <div class="bank-icon">
         <i class="fa-solid fa-building-columns"></i>
       </div>
@@ -668,6 +668,29 @@ backToStepTwoView.addEventListener("click", (e) => {
   statusCircle3[2].classList.remove("active");
 });
 
+// Bank Details View Elements
+const bankType = document.querySelector("#view-bank-details #bank-type");
+const bankEnding = document.querySelector("#view-bank-details #bank-ending");
+const accountHolder = document.querySelector(
+  "#view-bank-details #account-holder"
+);
+const bankRoutingNumber = document.querySelector(
+  "#view-bank-details #routing-number"
+);
+const bankAccountNumber = document.querySelector(
+  "#view-bank-details #account-number"
+);
+const bankAccountType = document.querySelector(
+  "#view-bank-details #account-type"
+);
+const bankDetailsCloseBtn = document.querySelector(
+  "#view-bank-details .close-button"
+);
+
+bankDetailsCloseBtn.addEventListener("click", () => {
+  closePopupMenu(".bank-modal-overlay");
+});
+
 function handleAddCard(event) {
   event.preventDefault(); // Prevent default form submission
   // Get form values
@@ -710,6 +733,8 @@ function handleAddBank(event) {
     accountNumber: document.getElementById("accountNumber").value,
     accountType: document.querySelector("#bankForm .bank-detail-value")
       .textContent,
+    bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
+      .textContent,
   };
 
   const lastFourDigits = newBank.accountNumber.slice(-4);
@@ -724,18 +749,27 @@ function handleAddBank(event) {
   cardList.insertAdjacentHTML("afterbegin", newBankHTML);
   closePopupMenu(".add-card-menu");
 
-  newBank.cardEnding.textContent = `Bank Account ending in ${lastFourDigits}`;
-  
+  // Update bank details view
+  bankEnding.textContent = `Bank Account ending in ${lastFourDigits}`;
+  accountHolder.textContent = newBank.accountHolderName;
+  bankRoutingNumber.textContent = newBank.routingNumber;
+  bankAccountNumber.textContent = newBank.accountNumber;
+  bankAccountType.textContent = newBank.accountType;
+  bank.textContent = newBank.bank;
 }
 
 class PaymentCardManager {
   constructor() {
     // Initialize class properties
     this.cardsContainer = document.querySelector("#cards-on-file");
+    this.bankPopup = document.querySelector("#view-bank-details");
     this.popup = document.querySelector(".view-details-menu");
     this.closeButton = document.querySelector(
       ".view-details-menu .close-button"
-    ); // Update close button selector
+    );
+    this.bankCloseBtn = document.querySelector(
+      "#view-bank-details .close-button"
+    );
     this.activeCard = null;
     this.isPopupOpen = false; // Add state tracking
 
@@ -744,7 +778,7 @@ class PaymentCardManager {
       return;
     }
 
-    if (!this.popup) {
+    if (!this.popup || !this.bankPopup) {
       console.error("Popup element not found");
       return;
     }
@@ -762,6 +796,10 @@ class PaymentCardManager {
     // Add close button listener if it exists
     if (this.closeButton) {
       this.closeButton.addEventListener("click", this.handleClosePopup);
+    }
+
+    if (this.bankCloseBtn) {
+      this.bankCloseBtn.addEventListener("click", this.handleClosePopup);
     }
   }
 
@@ -785,6 +823,7 @@ class PaymentCardManager {
     document.addEventListener("click", (event) => {
       if (
         this.isPopupOpen &&
+        !this.bankPopup.contains(event.target) &&
         !this.popup.contains(event.target) &&
         !event.target.matches(".view-card-details")
       ) {
@@ -794,21 +833,23 @@ class PaymentCardManager {
   }
 
   showPopup(button) {
-    if (!this.popup) {
+    const cardWrapper = button.closest(".card-wrapper");
+    const isBankAccount = cardWrapper.classList.contains("bank-card");
+    const popup = isBankAccount ? this.bankPopup : this.popup;
+    if (!popup) {
       return;
     }
 
     this.isPopupOpen = true;
-    this.popup.style.display = "flex"; // Ensure popup is visible
+    popup.style.display = "flex"; // Ensure popup is visible
 
     resetVerificationState();
 
     // Use requestAnimationFrame for smooth animation
     requestAnimationFrame(() => {
-      this.popup.classList.add("active");
+      popup.classList.add("active");
       document.body.style.overflow = "hidden";
 
-      const cardWrapper = button.closest(".card-wrapper");
       if (this.isDefaultCard(cardWrapper)) {
         this.showPrimaryTag();
       }
@@ -824,23 +865,11 @@ class PaymentCardManager {
       return;
     }
 
-    console.log("Closing popup");
-    document.removeEventListener("keydown", this.bindEscapeHandler);
-    this.popup.classList.remove("active");
-
-    // Wait for transition to complete before hiding
-    // this.popup.addEventListener(
-    //   "transitionend",
-    //   () => {
-    //     this.popup.style.display = "none";
-    //     document.body.style.overflow = "";
-    //     this.activeCard = null;
-    //     this.popup.querySelector(".primary-card")?.remove();
-    //     this.isPopupOpen = false;
-    //     resetVerificationState();
-    //   },
-    //   { once: true }
-    // ); // Use once: true to automatically remove the listener
+    [this.popup, this.bankPopup].forEach((popup) => {
+      console.log("Closing popup");
+      document.removeEventListener("keydown", this.bindEscapeHandler);
+      popup.classList.remove("active");
+    });
   }
 
   openViewDetails(button) {
