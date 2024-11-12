@@ -845,17 +845,16 @@ class PaymentCardManager {
 
     resetVerificationState();
 
+    this.removePrimaryTag(popup);
+
+    if (cardWrapper.querySelector(".default-card")) {
+      this.showPrimaryTag(popup);
+    }
+
     // Use requestAnimationFrame for smooth animation
     requestAnimationFrame(() => {
       popup.classList.add("active");
       document.body.style.overflow = "hidden";
-
-      if (this.isDefaultCard(cardWrapper)) {
-        this.showPrimaryTag();
-      }
-
-      this.activeCard = cardWrapper;
-      document.addEventListener("keydown", this.bindEscapeHandler);
     });
   }
 
@@ -866,9 +865,13 @@ class PaymentCardManager {
     }
 
     [this.popup, this.bankPopup].forEach((popup) => {
-      console.log("Closing popup");
-      document.removeEventListener("keydown", this.bindEscapeHandler);
-      popup.classList.remove("active");
+      if (popup) {
+        console.log("Closing popup");
+        document.removeEventListener("keydown", this.bindEscapeHandler);
+        popup.classList.remove("active");
+        // Clean up primary tag
+        this.removePrimaryTag(popup);
+      }
     });
   }
 
@@ -961,15 +964,25 @@ class PaymentCardManager {
     return cardWrapper?.querySelector(".default-card") !== null;
   }
 
-  showPrimaryTag() {
-    const container = this.popup.querySelector(".primary-card-container");
-    if (!container || container.querySelector(".primary-card")) return;
+  showPrimaryTag(popup) {
+    const container = popup.querySelector(".primary-card-container");
+    if (!container) return;
+
+    const existingTag = popup.querySelector(".primary-card");
+    if (existingTag) return;
 
     const primaryTag = document.createElement("div");
     primaryTag.className = "primary-card";
     primaryTag.textContent = "Primary Payment Method";
     primaryTag.setAttribute("aria-label", "Primary payment method indicator");
     container.appendChild(primaryTag);
+  }
+
+  removePrimaryTag(popup) {
+    const primaryTag = this.popup.querySelector(".primary-card");
+    if (primaryTag) {
+      primaryTag.remove();
+    }
   }
 
   updatePopupView(isDefault) {

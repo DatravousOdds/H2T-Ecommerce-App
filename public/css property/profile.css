@@ -945,10 +945,21 @@ button:disabled {
 }
 
 .primary-card {
-  padding: 10px;
-  border-radius: 8px;
-  background: #000;
-  color: white;
+  font-weight: 500;
+  font-size: 13px;
+  width: 50%;
+  margin-bottom: 1.5rem;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.primary-card::before {
+  content: "•";
+  color: #059669;
+  font-size: 18px;
+  margin-right: 4px;
 }
 
 #bio-section .btn-wrapper #remove-btn:hover {
