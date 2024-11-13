@@ -971,6 +971,55 @@ button:disabled {
   margin-right: 4px;
 }
 
+/* Edit Bank Form */
+.edit-bank-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.3s ease-in-out;
+}
+
+#edit-bank-details .edit-bank-container {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 480px;
+  width: 100%;
+  height: ;
+}
+
+#edit-bank-details .edit-bank-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+#edit-bank-details .edit-bank-alert {
+  background-color: #fef6f6;
+  border: 1px solid #f0b4b4;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#edit-bank-details .edit-bank-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
 #bio-section .btn-wrapper #remove-btn:hover {
   box-shadow: rgba(0, 0, 0, 0.03) 0px 4px 4px 0px;
   background-color: #202124;
