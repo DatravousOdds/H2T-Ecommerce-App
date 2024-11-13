@@ -994,7 +994,41 @@ button:disabled {
   border-radius: 12px;
   max-width: 480px;
   width: 100%;
-  height: ;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Edit Bank Form */
+#edit-bank-details .form-section {
+  margin-bottom: 1.5rem;
+}
+
+#edit-bank-details .section-title {
+  font-weight: 600;
+}
+
+#edit-bank-details .account-type-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+#edit-bank-details .account-type-buttons button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background-color: transparent;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+#edit-bank-details .account-type-button.active {
+  background-color: #eff6ff;
+  border-color: #dbeafe;
+  color: #111827;
 }
 
 #edit-bank-details .edit-bank-header {
@@ -1004,14 +1038,94 @@ button:disabled {
   margin-bottom: 1.5rem;
 }
 
+#edit-bank-details .form-group {
+  margin-bottom: 1.5rem;
+}
+
+#edit-bank-details .form-group label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: #374151;
+}
+
+#edit-bank-details .form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+#edit-bank-details .form-input:focus {
+  outline: transparent;
+  border-color: var(--primary-color);
+}
+
 #edit-bank-details .edit-bank-alert {
-  background-color: #fef6f6;
-  border: 1px solid #f0b4b4;
+  font-size: 0.875rem;
+  color: #6b7280;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  margin-bottom: 1.5rem;
+  border: 1px solid #d1d5db;
+}
+
+#edit-bank-details .bank-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+#edit-bank-details .bank-info {
+  background-color: #f9fafb;
   padding: 1rem;
   border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+#edit-bank-details .close-button {
+  padding: 0.5rem;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+#edit-bank-details .edit-bank-header {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+#edit-bank-details .edit-bank-title {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+#edit-bank-details .close-button:hover {
+  color: #373737;
+  background-color: #f3f4f6;
+}
+
+#edit-bank-details .bank-icon-wrapper {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 #edit-bank-details .edit-bank-footer {
