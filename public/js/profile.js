@@ -695,11 +695,11 @@ function handleAddCard(event) {
   event.preventDefault(); // Prevent default form submission
   // Get form values
   const newCard = {
-    cardHolder: document.querySelector("#cardForm #nameOnCard").value,
-    cvv: document.querySelector("#cardForm #cvv").value,
-    cardNumber: document.querySelector("#cardForm #cardNumber").value,
-    expirationDate: document.querySelector("#cardForm #expiry").value,
-    billingAddress: document.querySelector("#cardForm #billingAddress").value,
+    cardHolder: document.querySelector("#cardForm #nameOnCard")?.value,
+    cvv: document.querySelector("#cardForm #cvv")?.value,
+    cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
+    expirationDate: document.querySelector("#cardForm #expiry")?.value,
+    billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
     cardEnding: document.querySelector("#card-ending"),
   };
 
@@ -722,7 +722,7 @@ function handleAddCard(event) {
   expirationDate.textContent = newCard.expirationDate;
   billingAddress.textContent = newCard.billingAddress;
   newCard.cardEnding.textContent = `Visa Debit ending in ${lastFourDigits}`;
-  console.log(newCard.cardEnding);
+  // console.log(newCard.cardEnding);
 }
 
 function handleAddBank(event) {
