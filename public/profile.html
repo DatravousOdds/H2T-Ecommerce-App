@@ -1040,7 +1040,130 @@
           </div>
 
           <!-- Edit Bank Details popup menu-->
+          <div class="edit-bank-details-menu" id="edit-bank-details">
+            <div class="edit-bank-container">
+              <!-- Modal Header -->
+              <div class="edit-bank-header">
+                <h2 class="edit-bank-title">Edit Bank Account</h2>
+                <button class="close-button">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
 
+              <!-- Modal Content -->
+              <div class="edit-bank-content">
+                <!-- Bank Info Section -->
+                <div class="bank-info">
+                  <div class="bank-icon-wrapper">
+                    <div class="bank-icon">🏦</div>
+                    <div>
+                      <h3 class="section-title">Chase Bank</h3>
+                      <p class="default-paragraph">
+                        Account ending in ****4532
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="edit-bank-alert">
+                  <span>ℹ️</span>
+                  <p>
+                    For security, some account details cannot be modified.
+                    Please contact your bank directly for changes to sensitive
+                    information.
+                  </p>
+                </div>
+                <form id="edit-bank-form">
+                  <!-- Account Type Section -->
+                  <div class="form-section">
+                    <label class="form-label">Account Holder Name</label>
+                    <div class="account-type-buttons">
+                      <button class="account-type-button">Checking</button>
+                      <button class="account-type-button">Savings</button>
+                    </div>
+                  </div>
+                  <!-- Account Nickname Section -->
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label" for="nickname"
+                        >Account Nickname (Optional)</label
+                      >
+                      <input
+                        type="text"
+                        id="nickname"
+                        class="form-input"
+                        placeholder="e.g., Personal Checking"
+                      />
+                    </div>
+                  </div>
+                  <!-- Billing Address Section -->
+                  <div class="form-section">
+                    <h3 class="section-title">Billing Address</h3>
+
+                    <div class="form-group">
+                      <label class="form-label" for="street"
+                        >Street Address</label
+                      >
+                      <input
+                        type="text"
+                        id="street"
+                        class="form-input"
+                        value="123 Main St"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="apt"
+                        >Apt, Suite, etc. (optional)</label
+                      >
+                      <input
+                        type="text"
+                        id="apt"
+                        class="form-input"
+                        value="Apt 4B"
+                      />
+                    </div>
+
+                    <div class="address-grid">
+                      <div class="form-group">
+                        <label class="form-label" for="city">City</label>
+                        <input
+                          type="text"
+                          id="city"
+                          class="form-input"
+                          value="New York"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label" for="state">State</label>
+                        <input
+                          type="text"
+                          id="state"
+                          class="form-input"
+                          value="NY"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="zip">ZIP Code</label>
+                      <input
+                        type="text"
+                        id="zip"
+                        class="form-input"
+                        value="10001"
+                      />
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Modal Footer -->
+              <div class="edit-bank-footer">
+                <button class="button button-secondary">Cancel</button>
+                <button class="button button-primary">Save Changes</button>
+              </div>
+            </div>
+          </div>
           <!-- Payment Notification -->
           <div class="payment-nofication" id="payment-notification">
             <div class="notification-container">

@@ -944,6 +944,15 @@ button:disabled {
   border-bottom: 1px solid #e5e7eb;
 }
 
+.bank-details .details-item p {
+  font-weight: 500;
+}
+
+.bank-details .activity-item-wrapper {
+  font-weight: 500;
+  font-size: 13px;
+}
+
 .primary-card {
   font-weight: 500;
   font-size: 13px;
