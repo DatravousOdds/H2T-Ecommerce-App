@@ -757,6 +757,7 @@ button:disabled {
 
 #view-details .label {
   font-size: 1.1rem;
+  margin: 0;
 }
 
 #view-details .fee-item {
@@ -804,6 +805,7 @@ button:disabled {
 #view-details .processing-fees-header {
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 #view-details .processing-fees {
@@ -867,7 +869,6 @@ button:disabled {
 
 .details-item i {
   font-size: 1.25rem;
-  color: #6b7280;
 }
 
 #view-details .details-item p:first-child {
@@ -885,6 +886,11 @@ button:disabled {
   align-items: center;
   gap: 1rem;
   margin-bottom: 24px;
+}
+
+#view-details #card-info h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 #view-details .card-details-controls {
