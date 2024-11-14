@@ -668,6 +668,13 @@ backToStepTwoView.addEventListener("click", (e) => {
   statusCircle3[2].classList.remove("active");
 });
 
+// Edit Bank Details
+const editBankDetailsBtn = document.querySelector("#edit-bank-details-btn");
+editBankDetailsBtn.addEventListener("click", () => {
+  closePopupMenu(".bank-modal-overlay");
+  openPopupMenu(".edit-bank-overlay");
+});
+
 // Bank Details View Elements
 const bankType = document.querySelector("#view-bank-details #bank-type");
 const bankEnding = document.querySelector("#view-bank-details #bank-ending");
@@ -706,6 +713,13 @@ function handleAddCard(event) {
   // Get the last 4 digits of the card
   const lastFourDigits = newCard.cardNumber.slice(-4);
 
+  const cardNumber = document.querySelector(
+    "#securityVerification3 .card-number"
+  );
+  const cardNumberId = document.querySelector("#card-number");
+  cardNumber.textContent = `ending in ${lastFourDigits}`;
+  cardNumberId.value = `**** **** **** ${lastFourDigits}`;
+
   // Update card list if CARD_LIST_SELECTOR and CARD_WRAPPER_TEMPLATE are defined
   const cardList = document.querySelector(CARD_LIST_SELECTOR);
   if (cardList && typeof CARD_WRAPPER_TEMPLATE === "function") {
@@ -722,7 +736,6 @@ function handleAddCard(event) {
   expirationDate.textContent = newCard.expirationDate;
   billingAddress.textContent = newCard.billingAddress;
   newCard.cardEnding.textContent = `Visa Debit ending in ${lastFourDigits}`;
-  // console.log(newCard.cardEnding);
 }
 
 function handleAddBank(event) {
@@ -1397,10 +1410,8 @@ dropdownSection.forEach((section) => {
   const toggle = section.querySelector(".dropdown-header");
 
   toggle.addEventListener("click", () => {
-    console.log("Dropdown clicked!");
     // Hide all other dropdown menus
     document.querySelectorAll(".dropdown-menu").forEach((otherMenu) => {
-      console.log(otherMenu);
       if (otherMenu !== menu) {
         otherMenu.classList.remove("active");
 

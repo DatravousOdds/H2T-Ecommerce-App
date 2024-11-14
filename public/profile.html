@@ -1005,8 +1005,8 @@
               <div id="recent-activity" class="recent-activity">
                 <div class="activity-item">
                   <div class="activity-item-wrapper">
-                    <label class="details-label">Withdrawal</label>
-                    <label class="detail-value">$100.00 USD</label>
+                    <label class="details-label font-500">Withdrawal</label>
+                    <label class="detail-value font-500">-100.00 USD</label>
                   </div>
                   <div class="activity-item-wrapper">
                     <p class="default-paragraph">03/01/2024</p>
@@ -1015,23 +1015,29 @@
                 </div>
                 <div class="activity-item">
                   <div class="activity-item-wrapper">
-                    <label class="details-label">Withdrawal</label>
-                    <label class="detail-value">$100.00 USD</label>
+                    <label class="details-label font-500">Deposit</label>
+                    <label class="detail-value font-500 deposit"
+                      >+1250.00 USD</label
+                    >
                   </div>
                   <div class="activity-item-wrapper">
                     <p class="default-paragraph">03/01/2024</p>
-                    <p class="default-paragraph">Completed</p>
+                    <p class="default-paragraph">Pending</p>
                   </div>
                 </div>
               </div>
 
               <div class="view-all-activity">
-                <a href="#">View Full Transaction History</a>
+                <a href="#" target="_blank">View Full Transaction History</a>
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
               </div>
 
               <div class="bank-details-controls">
-                <button type="button" class="button button-primary">
+                <button
+                  type="button"
+                  class="button button-primary"
+                  id="edit-bank-details-btn"
+                >
                   Edit Account Details
                   <i class="fa-solid fa-arrow-right"></i>
                 </button>
@@ -1642,6 +1648,7 @@
                 <div class="form-group">
                   <label class="form-label">Card Number</label>
                   <input
+                    id="card-number"
                     type="text"
                     class="form-input"
                     value="**** **** **** 5338"
