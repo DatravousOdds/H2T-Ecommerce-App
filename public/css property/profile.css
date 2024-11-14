@@ -939,10 +939,6 @@ button:disabled {
   border-bottom: none;
 }
 
-#view-details #recent-trans .label {
-  margin-bottom: 0.75rem;
-}
-
 #view-details .trans {
   align-items: center;
   display: flex;
