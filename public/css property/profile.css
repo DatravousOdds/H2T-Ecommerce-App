@@ -983,30 +983,29 @@ button:disabled {
   align-items: center;
   justify-content: center;
   z-index: 999;
-  opacity: 1;
-  visibility: visible;
+  opacity: 0;
+  visibility: hidden;
   transition: all 0.3s ease-in-out;
 }
 
 #edit-bank-details .edit-bank-container {
   background: #fff;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 12px;
   max-width: 480px;
   width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
+  max-width: 28rem;
+  max-height: 90vh;
 }
 
 /* Edit Bank Form */
 #edit-bank-details .form-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 #edit-bank-details .section-title {
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 #edit-bank-details .account-type-buttons {
@@ -1028,18 +1027,18 @@ button:disabled {
 #edit-bank-details .account-type-button.active {
   background-color: #eff6ff;
   border-color: #dbeafe;
-  color: #111827;
+  color: #1e40af;
 }
 
 #edit-bank-details .edit-bank-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 #edit-bank-details .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 #edit-bank-details .form-group label {
@@ -1070,7 +1069,7 @@ button:disabled {
   padding: 0.75rem;
   border-radius: 8px;
   display: flex;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   border: 1px solid #d1d5db;
 }
 
@@ -1089,11 +1088,11 @@ button:disabled {
   background-color: #f9fafb;
   padding: 1rem;
   border-radius: 8px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 #edit-bank-details .close-button {
-  padding: 0.5rem;
+  padding: 0px 8px;
   background-color: transparent;
   border: none;
   border-radius: 8px;
@@ -1103,7 +1102,6 @@ button:disabled {
 }
 
 #edit-bank-details .edit-bank-header {
-  padding-bottom: 1rem;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
@@ -2685,8 +2683,6 @@ h6 {
   border-radius: 25px;
 }
 
-/* The Modal (background) */
-
 /* Disable body scroll */
 .no-scroll {
   overflow: hidden;
@@ -2891,24 +2887,6 @@ h6 {
 #add-card input::placeholder {
   color: #999;
 }
-
-/* Close Button */
-/* .close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  padding: 0.5rem;
-  color: #666;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-} */
-
-/* .close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-} */
 
 .close:hover,
 #methodSelection .close:hover {
@@ -3480,6 +3458,18 @@ h6 {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  /* Edit Bank Details */
+  #edit-bank-details .edit-bank-container {
+    padding: 1rem;
+    max-width: 28rem;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  #edit-bank-details .edit-bank-overlay {
+    padding: 0;
+  }
+
   .card-wrapper.add-card {
     width: 100%;
     min-width: 70%;
