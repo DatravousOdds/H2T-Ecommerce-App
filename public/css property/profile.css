@@ -298,6 +298,7 @@ button:disabled {
 }
 
 #bio-section .btn-wrapper {
+  width: 100%;
   display: none;
   flex-direction: column;
 }
