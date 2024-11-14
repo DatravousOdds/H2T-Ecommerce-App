@@ -1046,7 +1046,6 @@ button:disabled {
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
   display: block;
-  color: #374151;
 }
 
 #edit-bank-details .form-input {
@@ -3276,6 +3275,32 @@ h6 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  /* Withdraw Funds Popup */
+  #withdraw-funds .withdraw-container {
+    width: 90%;
+  }
+
+  /* Add Card Form */
+  .form-card form {
+    width: 100%;
+  }
+
+  .form-card {
+    width: 90%;
+    padding: 1rem;
+  }
+
+  /* Wallet Balance */
+  #wallet-balance .usd h4 {
+    font-size: 1.25rem;
+  }
+
+  /* Card on file */
+  .card-wrapper.add-card {
+    min-width: 100%;
+    width: 100%;
+  }
+
   .header-info h3 {
     font-size: 18px;
   }
@@ -3397,6 +3422,7 @@ h6 {
   }
 
   .payment-wrapper {
+    width: 100%;
     flex-direction: column;
   }
   .inner-wrapper {
@@ -3861,6 +3887,17 @@ h6 {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+  .section-p1 {
+    padding: 0px 0px !important;
+  }
+
+  .payment-wrapper {
+    width: 100%;
+  }
+  .inner-wrapper {
+    width: 100%;
+  }
+
   .tab {
     width: 75%;
   }
