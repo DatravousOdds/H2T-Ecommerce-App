@@ -727,7 +727,8 @@ button:disabled {
 .add-funds-menu.active,
 .add-card-menu.active,
 .view-details-menu.active,
-.bank-modal-overlay.active {
+.bank-modal-overlay.active,
+.edit-bank-overlay.active {
   opacity: 1;
   visibility: visible;
   background-color: rgba(0, 0, 0, 0.5);
@@ -2941,9 +2942,17 @@ h6 {
   padding: 12px 0px;
 }
 
+.deposit {
+  color: green;
+}
+
 .inline {
   display: flex !important;
   align-items: center;
+}
+
+.font-500 {
+  font-weight: 500;
 }
 
 .rotate {
