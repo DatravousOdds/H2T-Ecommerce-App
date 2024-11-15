@@ -710,31 +710,43 @@
             <div class="inner-wrapper" id="payouts">
               <div id="payouts-container">
                 <h4>Upcoming Payouts</h4>
-                <h1>$0.00</h1>
-                <p>Collected from order(s)</p>
+                <h1>$492.48</h1>
+                <p class="default-paragraph">Collected from order(s)</p>
               </div>
-              <!-- payments section-1 -->
-              <div class="inner-wrapper" id="payment-section-1">
-                <div class="card-type">
-                  <div class="card-text">
-                    <span class="logo">
-                      <img src="images/mastercard.png" alt="credit card logo" />
-                      <h5>Master Card</h5>
-                    </span>
-                    <img src="images/chip-1.webp" alt="chip" class="chip" />
+              <!-- Filters -->
+              <div id="payouts-filters">
+                <select id="payouts-filter">
+                  <option value="all">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                </select>
+                <button id="payouts-filter-btn">
+                  <i class="fa-solid fa-filter"></i>
+                  Filter
+                </button>
+              </div>
+
+              <!-- Payouts List -->
+              <div id="payouts-list">
+                <div class="payouts-item">
+                  <div class="payouts-item-wrapper">
+                    <p class="default-paragraph">Order #1234567890</p>
+                    <p class="default-paragraph">03/01/2024</p>
+                  </div>
+                  <div class="payouts-item-wrapper space-between">
+                    <p class="default-paragraph">$123.45</p>
+                    <p class="status default-paragraph">Completed</p>
                   </div>
                 </div>
-                <div class="card-info">
-                  <div class="card-name-number">
-                    <h6>Card Number</h6>
-                    <h5 class="number">**** **** **** 9569</h5>
-                    <h5 class="name">Datravous Odds</h5>
-                  </div>
-                  <div class="valid-date">
-                    <h6>Valid Thru</h6>
-                    <h5>08/23</h5>
-                  </div>
-                </div>
+              </div>
+              <div id="payouts-tooltip">
+                <i class="fa-regular fa-clock"></i>
+                <p class="default-paragraph">
+                  Payouts are typically processed within 2-3 business days
+                </p>
               </div>
             </div>
           </div>
