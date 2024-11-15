@@ -2633,6 +2633,12 @@ h6 {
 
 /* Payouts Styles */
 
+.view-all-payouts {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
 #payouts .inner-wrapper {
   background-color: white;
   border-radius: 16px;
