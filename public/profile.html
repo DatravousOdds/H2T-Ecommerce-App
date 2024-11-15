@@ -1208,6 +1208,9 @@
                   <ul id="sm-list" class="list-options">
                     <li class="options">Clear All Filter</li>
                     <li class="options">Reset</li>
+                    <li class="options">Refunds</li>
+                    <li class="options">Platform Fees</li>
+                    <li class="options">High Volume (>$1000)</li>
                   </ul>
                 </div>
               </div>
@@ -1217,19 +1220,19 @@
                   class="default-button filter-1 dropdown-header"
                   id="year-header"
                 >
+                  <i class="fa-regular fa-calendar"></i>
+                  <p class="selected-year default-paragraph">2024</p>
                   <span class="dropdown-icon" id="yearIcon"
                     ><i class="fa-solid fa-angle-down"></i
                   ></span>
-                  <p class="selected-year default-paragraph">2024</p>
                 </div>
 
                 <!-- Dropdown section for Year -->
                 <div id="select-year" class="year-dropdown">
                   <ul id="list" class="">
                     <li class="options">2024</li>
-                    <li class="options">2025</li>
-                    <li class="options">2026</li>
-                    <li class="options">2027</li>
+                    <li class="options">2023</li>
+                    <li class="options">2022</li>
                   </ul>
                 </div>
               </div>
@@ -1238,10 +1241,12 @@
             <!-- Dropdown section for 'Statements' with toggle icon -->
             <div class="dropdown-section" id="dropdown-toggle">
               <div class="dropdown-header inline">
-                <h4 class="p1" id="statement-header">Statements</h4>
-                <span class="dropdown-icon" id="statementIcon"
-                  ><i class="fa-solid fa-angle-down"></i
-                ></span>
+                <div class="dropdown-header-wrapper">
+                  <h4 class="p1" id="statement-header">Monthly Statements</h4>
+                  <span class="dropdown-icon" id="statementIcon"
+                    ><i class="fa-solid fa-angle-down"></i
+                  ></span>
+                </div>
               </div>
 
               <!-- Statements-->
@@ -1249,8 +1254,13 @@
                 <div>
                   <div class="stmt-wrapper">
                     <div class="inner-wrapper stmt">
-                      <p>Feb Statements</p>
-                      <i class="fa-solid fa-file-arrow-down"></i>
+                      <div class="stmt-icon">
+                        <i class="fa-regular fa-file-lines"></i>
+                      </div>
+                      <div class="statement-text-wrapper">
+                        <p>Jan Statements</p>
+                        <p class="default-paragraph">2024</p>
+                      </div>
                     </div>
                     <div><a href="#">View Details</a></div>
                   </div>
@@ -1259,8 +1269,13 @@
                 <div>
                   <div class="stmt-wrapper">
                     <div class="inner-wrapper stmt">
-                      <p>Feb Statements</p>
-                      <i class="fa-solid fa-file-arrow-down"></i>
+                      <div class="stmt-icon">
+                        <i class="fa-regular fa-file-lines"></i>
+                      </div>
+                      <div class="statement-text-wrapper">
+                        <p>Jan Statements</p>
+                        <p class="default-paragraph">2024</p>
+                      </div>
                     </div>
                     <div><a href="#">View Details</a></div>
                   </div>
@@ -1269,10 +1284,14 @@
                 <div>
                   <div class="stmt-wrapper">
                     <div class="inner-wrapper stmt">
-                      <p>Feb Statements</p>
-                      <i class="fa-solid fa-file-arrow-down"></i>
+                      <div class="stmt-icon">
+                        <i class="fa-regular fa-file-lines"></i>
+                      </div>
+                      <div class="statement-text-wrapper">
+                        <p>Jan Statements</p>
+                        <p class="default-paragraph">2024</p>
+                      </div>
                     </div>
-
                     <div><a href="#">View Details</a></div>
                   </div>
                 </div>
