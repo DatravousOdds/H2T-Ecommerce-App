@@ -1778,6 +1778,26 @@ elements.addFundsCloseBtn.addEventListener("click", () =>
   closePopupMenu(".add-funds-menu")
 );
 
+// Payment Method Validation Utilities
+class PaymentValidation {
+  constructor() {
+    this.cardType = {
+      visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+      mastercard: /^5[1-5][0-9]{14}$/,
+      amex: /^3[47][0-9]{13}$/,
+      discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+      diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+      jcb: /^(?:2131|1800|35\d{3})\d{11}$/,
+    };
+  }
+
+  validateCardNumber(cardNumber) {
+
+    // Remove all non-digit characters
+    const cleaned = cardNumber.replace(/\s/g, "");
+}
+
+
 class PaymentNotification {
   constructor() {
     this.notification = document.querySelector(".payment-nofication");
