@@ -294,3 +294,326 @@ export function closeDropdown(
     }
   }
 }
+
+// Payment Method Validation Utilities
+class PaymentValidation {
+  constructor() {
+    this.cardTypes = {
+      visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+      mastercard: /^5[1-5][0-9]{14}$/,
+      amex: /^3[47][0-9]{13}$/,
+      discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/
+    };
+  }
+
+  validateCardNumber(cardNumber) {
+    // Remove all non-digit characters
+    const cleaned = cardNumber.replace(/\D/g, "");
+
+    // Check if empty or not the right length
+    if (!cleaned || cleaned.length < 13 || cleaned.length > 19) {
+      return {
+        isValid: false,
+        error: "Card number must be between 13 and 19 digits"
+      };
+    }
+
+    // Luhn Algorithm Implementation
+    let sum = 0;
+    let isEven = false;
+
+    // Loop through values starting from the rightmost side
+    for (let i = cleaned.length - 1; i >= 0; i--) {
+      let digit = parseInt(cleaned.charAt(i), 10);
+
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+
+      sum += digit;
+      isEven = !isEven;
+    }
+
+    // Determine card type
+    let cardType = null;
+    for (const [type, regex] of Object.entries(this.cardTypes)) {
+      if (regex.test(cleaned)) {
+        cardType = type;
+        break;
+      }
+    }
+
+    return {
+      isValid: sum % 10 === 0,
+      cardType,
+      error: sum % 10 === 0 ? null : "Invalid card number"
+    };
+  }
+
+  validateExpiryDate(month, year) {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-based
+
+    // Convert to numbers and validate format
+    const expMonth = parseInt(month, 10);
+    const expYear = parseInt(year, 10);
+
+    if (isNaN(expMonth) || isNaN(expYear)) {
+      return {
+        isValid: false,
+        error: "Invalid expiration date format"
+      };
+    }
+
+    // Validate month range
+    if (expMonth < 1 || expMonth > 12) {
+      return {
+        isValid: false,
+        error: "Invalid month"
+      };
+    }
+
+    // Check if card is expired
+    if (
+      expYear < currentYear ||
+      (expYear === currentYear && expMonth < currentMonth)
+    ) {
+      return {
+        isValid: false,
+        error: "Card has expired"
+      };
+    }
+
+    // Check if date is too far in the future (optional)
+    if (expYear > currentYear + 10) {
+      return {
+        isValid: false,
+        error: "Expiration date too far in the future"
+      };
+    }
+
+    return {
+      isValid: true,
+      error: null
+    };
+  }
+
+  validateCVV(cvv, cardType = "default") {
+    // Remove any non-digit characters
+    const cleaned = cvv.replace(/\D/g, "");
+
+    // Determine required length based on card type
+    const requiredLength = cardType.toLowerCase() === "amex" ? 4 : 3;
+
+    if (cleaned.length !== requiredLength) {
+      return {
+        isValid: false,
+        error: `CVV must be ${requiredLength} digits`
+      };
+    }
+
+    return {
+      isValid: true,
+      error: null
+    };
+  }
+
+  validatePostalCode(postalCode, country = "US") {
+    const postalRegexes = {
+      US: /^\d{5}(-\d{4})?$/,
+      CA: /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/,
+      UK: /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i
+    };
+
+    const regex = postalRegexes[country] || /^[A-Za-z0-9\s-]{3,10}$/;
+
+    return {
+      isValid: regex.test(postalCode),
+      error: regex.test(postalCode) ? null : "Invalid postal code format"
+    };
+  }
+
+  validateBankAccount(accountNumber) {
+    // Remove spaces and special characters
+    const cleaned = accountNumber.replace(/[\s-]/g, "");
+
+    // Check length (most bank accounts are between 8 and 17 digits)
+    if (cleaned.length < 8 || cleaned.length > 17) {
+      return {
+        isValid: false,
+        error: "Account number must be between 8 and 17 digits"
+      };
+    }
+
+    // Check if contains only digits
+    if (!/^\d+$/.test(cleaned)) {
+      return {
+        isValid: false,
+        error: "Account number must contain only digits"
+      };
+    }
+
+    return {
+      isValid: true,
+      error: null
+    };
+  }
+
+  validateRoutingNumber(routingNumber) {
+    // Remove any non-digit characters
+    const cleaned = routingNumber.replace(/\D/g, "");
+
+    // Check if it's exactly 9 digits
+    if (cleaned.length !== 9) {
+      return {
+        isValid: false,
+        error: "Routing number must be 9 digits"
+      };
+    }
+
+    // Implement ABA routing number validation algorithm
+    let sum = 0;
+    for (let i = 0; i < cleaned.length; i++) {
+      let digit = parseInt(cleaned.charAt(i), 10);
+      if (i % 3 === 0) {
+        sum += digit * 3;
+      } else if (i % 3 === 1) {
+        sum += digit * 7;
+      } else {
+        sum += digit;
+      }
+    }
+
+    return {
+      isValid: sum !== 0 && sum % 10 === 0,
+      error: sum % 10 === 0 ? null : "Invalid routing number"
+    };
+  }
+}
+
+// Security Utilities
+class PaymentSecurity {
+  constructor() {
+    this.lastAttempt = null;
+    this.attemptCount = 0;
+    this.maxAttempts = 3;
+    this.cooldownPeriod = 15 * 60 * 1000; // 15 minutes in milliseconds
+  }
+
+  validateAttempt() {
+    const now = Date.now();
+
+    // Check if in cooldown period
+    if (this.lastAttempt && now - this.lastAttempt < this.cooldownPeriod) {
+      const remainingTime = Math.ceil(
+        (this.cooldownPeriod - (now - this.lastAttempt)) / 1000 / 60
+      );
+      return {
+        allowed: false,
+        error: `Too many attempts. Please try again in ${remainingTime} minutes.`
+      };
+    }
+
+    // Reset if outside cooldown period
+    if (this.lastAttempt && now - this.lastAttempt >= this.cooldownPeriod) {
+      this.attemptCount = 0;
+    }
+
+    // Update attempt count
+    this.attemptCount++;
+    this.lastAttempt = now;
+
+    // Check if exceeded max attempts
+    if (this.attemptCount > this.maxAttempts) {
+      return {
+        allowed: false,
+        error: "Maximum attempts exceeded. Please try again later."
+      };
+    }
+
+    return {
+      allowed: true,
+      error: null
+    };
+  }
+
+  validateTransaction(amount, userProfile) {
+    const checks = {
+      amount: this.validateTransactionAmount(amount, userProfile),
+      velocity: this.checkTransactionVelocity(userProfile),
+      location: this.validateLocation(userProfile)
+    };
+
+    const failed = Object.values(checks).filter((check) => !check.isValid);
+
+    return {
+      isValid: failed.length === 0,
+      errors: failed.map((f) => f.error),
+      requiresVerification: amount > 1000 || failed.length > 0
+    };
+  }
+
+  validateTransactionAmount(amount, userProfile) {
+    const dailyLimit = userProfile.dailyLimit || 2000;
+    const dailyTotal =
+      userProfile.dailyTransactions?.reduce((sum, tx) => sum + tx.amount, 0) ||
+      0;
+
+    if (dailyTotal + amount > dailyLimit) {
+      return {
+        isValid: false,
+        error: "Transaction would exceed daily limit"
+      };
+    }
+
+    return {
+      isValid: true,
+      error: null
+    };
+  }
+
+  checkTransactionVelocity(userProfile) {
+    const timeWindow = 5 * 60 * 1000; // 5 minutes
+    const maxTransactions = 3;
+    const now = Date.now();
+
+    const recentTransactions = (userProfile.transactions || []).filter(
+      (tx) => now - tx.timestamp < timeWindow
+    );
+
+    return {
+      isValid: recentTransactions.length < maxTransactions,
+      error:
+        recentTransactions.length >= maxTransactions
+          ? "Too many transactions in a short period"
+          : null
+    };
+  }
+
+  validateLocation(userProfile) {
+    // This would integrate with a real geolocation service
+    const lastLocation = userProfile.lastLocation;
+    const currentLocation = userProfile.currentLocation;
+
+    // Simplified distance check (would use proper geolocation in production)
+    const isSuspiciousLocation =
+      lastLocation &&
+      currentLocation &&
+      Math.abs(lastLocation.lat - currentLocation.lat) > 10;
+
+    return {
+      isValid: !isSuspiciousLocation,
+      error: isSuspiciousLocation ? "Unusual location detected" : null
+    };
+  }
+}
+
+// Usage Example:
+const validator = new PaymentValidation();
+const security = new PaymentSecurity();
+
+export { PaymentValidation, PaymentSecurity };
