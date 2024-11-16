@@ -310,7 +310,7 @@ if (cardForm) {
       cardNumber: document.querySelector("#cardForm #cardNumber"),
       cvv: document.querySelector("#cardForm #cvv"),
       expiry: document.querySelector("#cardForm #expiry"),
-      billingAddress: document.querySelector("#cardForm #billingAddress"),
+      billingAddress: document.querySelector("#cardForm #billingAddress")
     };
 
     // Clear any existing errors
@@ -369,7 +369,7 @@ if (bankForm) {
     const formElements = {
       accountHolderName: document.querySelector("#bankForm #accountHolderName"),
       routingNumber: document.querySelector("#bankForm #routingNumber"),
-      accountNumber: document.querySelector("#bankForm #accountNumber"),
+      accountNumber: document.querySelector("#bankForm #accountNumber")
     };
 
     let hasError = false;
@@ -707,7 +707,7 @@ function handleAddCard(event) {
     cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
     expirationDate: document.querySelector("#cardForm #expiry")?.value,
     billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
-    cardEnding: document.querySelector("#card-ending"),
+    cardEnding: document.querySelector("#card-ending")
   };
 
   // Get the last 4 digits of the card
@@ -747,7 +747,7 @@ function handleAddBank(event) {
     accountType: document.querySelector("#bankForm .bank-detail-value")
       .textContent,
     bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
-      .textContent,
+      .textContent
   };
 
   const lastFourDigits = newBank.accountNumber.slice(-4);
@@ -1561,7 +1561,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username",
+          "profile-username"
         ];
 
         personalFormIds.forEach((id) => {
@@ -1576,7 +1576,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError",
+          "usernameError"
         ];
 
         personalErrorIds.forEach((id) => {
@@ -1609,7 +1609,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError",
+          "addressError"
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -1683,7 +1683,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount"),
+  walletAmount: document.querySelector(".wallet-amount")
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
@@ -1787,16 +1787,100 @@ class PaymentValidation {
       amex: /^3[47][0-9]{13}$/,
       discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
       diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
-      jcb: /^(?:2131|1800|35\d{3})\d{11}$/,
+      jcb: /^(?:2131|1800|35\d{3})\d{11}$/
     };
   }
 
   validateCardNumber(cardNumber) {
-
     // Remove all non-digit characters
-    const cleaned = cardNumber.replace(/\s/g, "");
-}
+    const cleaned = cardNumber.replace(/\D/g, "");
+    console.log("cleaned", cleaned);
 
+    if (!!cleaned || cleaned.length < 13 || cleaned.length > 19) {
+      return {
+        isValid: false,
+        error: "Card number must be between 13 and 19 digits"
+      };
+    }
+
+    // Luhn Algorithm Implementation
+    let sum = 0;
+    let isEven = false;
+
+    for (let i = cleaned.length - 1; i >= 0; i--) {
+      let digit = parseInt(cleaned.charAt(i));
+      console.log("digit", digit);
+
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+      sum += digit;
+      isEven = !isEven;
+    }
+    console.log("sum", sum);
+
+    // Determine card type
+    let cardType = null;
+    for (const [type, regex] of Object.entries(this.cardType)) {
+      if (regex.test(cleaned)) {
+        cardType = type;
+        break;
+      }
+    }
+
+    return {
+      isValid: sum % 10 === 0,
+      cardType,
+      error: sum % 10 === 0 ? null : "Invalid card number"
+    };
+  }
+
+  validateExpiryDate(month, year) {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+
+    // Testing
+    console.log("month", month);
+    console.log("year", year);
+    console.log("currentMonth", currentMonth);
+    console.log("currentYear", currentYear);
+
+    const expMonth = parseInt(month, 10);
+    const expYear = parseInt(year, 10);
+
+    console.log("expMonth", expMonth);
+    console.log("expYear", expYear);
+
+    if (isNaN(expMonth) || isNaN(expYear)) {
+      return {
+        isValid: false,
+        error: "Invalid expiry date"
+      };
+    }
+
+    // Validate month range
+    if (expMonth < 1 || expMonth > 12) {
+      return {
+        isValid: false,
+        error: "Invalid month"
+      };
+    }
+
+    if (
+      expYear < currentYear ||
+      (expYear === currentYear && expMonth < currentMonth)
+    ) {
+      return {
+        isValid: false,
+        error: "Card has expired"
+      };
+    }
+  }
+}
 
 class PaymentNotification {
   constructor() {
