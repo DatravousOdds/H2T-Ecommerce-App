@@ -296,6 +296,7 @@ button:disabled {
   display: flex;
   justify-content: center;
   width: 100%;
+  padding-bottom: 12px;
 }
 
 #bio-section .btn-wrapper {
@@ -2664,9 +2665,9 @@ h6 {
 }
 
 .view-all-payouts a {
-  color: #000000;
   font-weight: 500;
-  text-decoration: none;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 #payouts .inner-wrapper {
@@ -3184,6 +3185,10 @@ h6 {
   margin-bottom: 24px;
 }
 
+.font-600 {
+  font-weight: 600;
+}
+
 .hidden {
   display: none;
 }
@@ -3358,6 +3363,7 @@ h6 {
   font-weight: 600;
   border-radius: 12px;
   font-size: 0.85rem;
+  cursor: pointer;
   background-color: transparent;
   border: 2px solid green;
   color: green;
@@ -3401,9 +3407,24 @@ h6 {
 }
 
 #wallet-balance .header-wrapper {
-  gap: 7rem;
+  gap: 20rem;
   display: flex;
   align-items: center;
+}
+
+.wallet-activity p:nth-child(1),
+.pending-activity p:nth-child(1) {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.wallet-info {
+  width: 100%;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+  display: flex;
+  gap: 16rem;
 }
 
 .balance-label {
