@@ -692,17 +692,45 @@
             <!-- Wallet Balance -->
             <div class="inner-wrapper" id="wallet-balance">
               <div class="usd">
-                <h4>Wallet Balance</h4>
+                <!-- Header with update status-->
+                <div class="header-wrapper">
+                  <h4>Wallet Balance</h4>
+                  <span class="update-status">
+                    <i class="fa-solid fa-clock"></i>
+                    Last updated 12 hours ago
+                  </span>
+                </div>
+
+                <!-- Currency Container-->
                 <div class="usd-wrapper">
                   <div class="usd-img">
                     <img src="images/flag.jpg" alt="" />
                   </div>
-                  <p>USD</p>
+                  <div class="currency-info">
+                    <p>USD</p>
+                    <span class="currency-status">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      Active
+                    </span>
+                  </div>
                 </div>
-                <h1 id="act-wallet-balance">$0.00</h1>
+
+                <!-- Balance display-->
+                <div class="balance-wrapper">
+                  <h1 id="act-wallet-balance">$0.00</h1>
+                  <p class="balance-label">Available balance</p>
+                </div>
+
+                <!-- Button Container-->
                 <div class="btn-wrapper">
-                  <button class="withdraw" id="widthdraw">Withdraw</button>
-                  <button class="add-funds" id="add-funds">Add Funds</button>
+                  <button class="withdraw" id="widthdraw">
+                    <i class="fa-solid fa-arrow-down"></i>
+                    Withdraw
+                  </button>
+                  <button class="add-funds" id="add-funds">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Funds
+                  </button>
                 </div>
               </div>
             </div>
