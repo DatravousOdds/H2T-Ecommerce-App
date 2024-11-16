@@ -295,6 +295,7 @@ button:disabled {
   gap: 12px;
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 #bio-section .btn-wrapper {
@@ -365,11 +366,31 @@ button:disabled {
 }
 
 .usd .btn-wrapper button {
+  flex: 1;
   padding: 10px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 #wallet-balance .usd h4 {
-  font-size: 32px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.update-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .funds-container {
@@ -1952,6 +1973,9 @@ button:disabled {
 
 #waller-balance .usd .usd-wrapper {
   padding: 12px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 #waller-balance .usd h1 {
@@ -2896,6 +2920,9 @@ h6 {
 
 .usd-wrapper p {
   font-size: 1.5rem;
+  font-weight: 500;
+  color: #374151;
+  margin: 0;
 }
 
 /* Style for the social media icon */
@@ -3323,7 +3350,7 @@ h6 {
   align-items: center;
   flex-direction: column;
   padding: 10px;
-  gap: 2rem;
+  gap: 20px;
 }
 
 .usd .btn-wrapper .add-funds,
@@ -3338,25 +3365,55 @@ h6 {
 }
 
 .usd .btn-wrapper .add-funds:hover {
-  background-color: green;
-  color: #fff;
+  background-color: #f0fdf4;
+  transform: translateY(-1px);
+}
+
+.usd .btn-wrapper .add-funds:active {
+  transform: translateY(0);
 }
 
 .usd .btn-wrapper .withdraw {
   border-radius: 12px;
   font-weight: 600;
-  border: transparent;
+  border: none;
   color: white;
-  background-color: #4a73c7;
+  background-color: #2563eb;
   transition: 0.2s ease-out;
 }
 
 .usd .btn-wrapper .withdraw:hover {
-  background-color: #6a91e1;
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
 }
 
-.usd .btn-wrapper button {
-  padding: 8px 32px;
+.btn-wrapper .withdraw:active {
+  transform: translateY(0);
+}
+
+/* Balance Display */
+#act-wallet-balance {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  position: relative;
+}
+
+#wallet-balance .header-wrapper {
+  gap: 7rem;
+  display: flex;
+  align-items: center;
+}
+
+.balance-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+#act-wallet-balance:hover {
+  color: #2563eb;
 }
 
 .usd-img img {
@@ -3364,18 +3421,37 @@ h6 {
   width: 80px;
   height: 80px;
   border-radius: 100%;
+  object-fit: cover;
 }
 
-/* .withdraw {
-  border: transparent;
-  color: white;
-  background-color: #4a73c7;
-} */
+/* Current Balance */
+.currency-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.currency-status {
+  gap: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #059669;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background-color: #def7ec;
+}
+
+.currency-status i {
+  font-size: 16px;
+}
 
 .add-funds {
-  border: transparent;
-  color: white;
-  background-color: #04cd53;
+  border: 2px solid #059669 !important  ;
+  color: #059669 !important;
+  background-color: white !important;
 }
 
 .pfp {
@@ -3548,9 +3624,17 @@ h6 {
     padding: 1rem;
   }
 
+  #wallet-balance {
+    height: 100% !important;
+    max-height: 80% !important;
+  }
+
   /* Wallet Balance */
   #wallet-balance .usd h4 {
     font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
   }
 
   /* Card on file */
@@ -3639,6 +3723,7 @@ h6 {
 
   .usd .btn-wrapper button {
     padding: 12px 24px;
+    width: 100%;
   }
 
   #left-navigation {
@@ -4056,7 +4141,7 @@ h6 {
   .btn-wrapper {
     gap: 12px;
     display: flex;
-    justify-content: center;
+    margin-top: 8px;
   }
 
   .nav-wrapper {
