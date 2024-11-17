@@ -3397,6 +3397,28 @@ h6 {
   transform: translateY(0);
 }
 
+/* Payouts */
+.view-all-payouts-container {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
+  padding-bottom: 12px;
+}
+
+.view-all-payouts-list {
+  display: flex;
+  margin-top: 12px;
+  justify-content: space-between;
+}
+
+.view-all-payouts-list .filter-payouts {
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
 /* Balance Display */
 #act-wallet-balance {
   font-size: 2rem;

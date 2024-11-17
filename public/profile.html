@@ -800,6 +800,104 @@
                   Payouts are typically processed within 2-3 business days
                 </p>
               </div>
+
+              <!-- View All Payouts Menu-->
+              <div id="view-all-payouts-menu" class="view-all-payouts-menu">
+                <div class="view-all-payouts-container">
+                  <div class="view-all-payouts-header">
+                    <h4>All Payouts</h4>
+                    <button
+                      type="button"
+                      id="close-view-all-payouts"
+                      class="close-button"
+                    >
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                  <div class="view-all-payouts-list">
+                    <div class="total-amount">
+                      <p class="default-paragraph">Total Amount</p>
+                      <p class="default-paragraph">$492.48</p>
+                    </div>
+                    <div class="completed-payouts">
+                      <p class="default-paragraph">Completed</p>
+                      <p class="default-paragraph">2</p>
+                    </div>
+                    <div class="pending-payouts">
+                      <p class="default-paragraph">Pending</p>
+                      <p class="default-paragraph">1</p>
+                    </div>
+                    <div class="processing-payouts">
+                      <p class="default-paragraph">Processing</p>
+                      <p class="default-paragraph">1</p>
+                    </div>
+                  </div>
+                  <div class="filter-payouts">
+                    <div class="search-bar">
+                      <input type="text" placeholder="Search payouts" />
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div class="filter-dropdown">
+                      <select id="payouts-filter">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                      </select>
+                    </div>
+                    <div class="sort-dropdown">
+                      <select id="payouts-sort">
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                      </select>
+                    </div>
+                    <div class="export-payouts">
+                      <button id="export-payouts-btn">
+                        <i class="fa-solid fa-file-csv"></i>
+                        Export
+                      </button>
+                    </div>
+                  </div>
+                  <div class="filter-payout-header">
+                    <div class="filter-payout-item">
+                      <p class="default-paragraph">Date</p>
+                      <i class="fa-solid fa-sort"></i>
+                    </div>
+                    <div class="filter-payout-item">
+                      <p class="default-paragraph">Order #</p>
+                    </div>
+                    <div class="filter-payout-item">
+                      <p class="default-paragraph">Amount</p>
+                      <i class="fa-solid fa-sort"></i>
+                    </div>
+                    <div class="filter-payout-item">
+                      <p class="default-paragraph">Status</p>
+                    </div>
+                    <div class="filter-payout-item">
+                      <p class="default-paragraph">Processing Date</p>
+                    </div>
+                  </div>
+                  <div class="filter-payout-list">
+                    <div class="filter-payout-item">
+                      <p class="default-paragraph">03/01/2024</p>
+                      <p class="default-paragraph">Order #1234567890</p>
+                      <p class="default-paragraph">Sale</p>
+                      <p class="default-paragraph">$123.45</p>
+                      <p class="default-paragraph">Completed</p>
+                      <p class="default-paragraph">-</p>
+                    </div>
+                  </div>
+                  <div class="payouts-tooltip">
+                    <div class="tooltip-wrapper">
+                      <i class="fa-solid fa-circle-info"></i>
+                      <p class="default-paragraph">
+                        Payouts are typically processed within 2-3 business days
+                      </p>
+                    </div>
+                    <div class="tooltip-close">
+                      <button type="button" class="close-button">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
