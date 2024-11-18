@@ -185,6 +185,11 @@ function removeError(element) {
 
 function validateCardForm(element, errorMessage, options = {}) {
   const value = element.value.trim();
+  const existingError = element.parentElement.querySelector(".error-message");
+  if (existingError) {
+    existingError.remove();
+  }
+
   if (
     !value ||
     (options.minLength && value.length < options.minLength) ||
@@ -197,6 +202,7 @@ function validateCardForm(element, errorMessage, options = {}) {
     element.classList.add("error");
     return true;
   }
+  element.classList.remove("error");
   return false;
 }
 
@@ -313,18 +319,22 @@ if (cardForm) {
       billingAddress: document.querySelector("#cardForm #billingAddress")
     };
 
+    if (!formElements) {
+      console.error("Form elements not found");
+      return;
+    }
     // Clear any existing errors
     const errorMessages = document.querySelectorAll(".error-message");
     errorMessages.forEach((msg) => msg.remove());
 
     // Clear error styles
-    const errorStyles = document.querySelectorAll(".error");
-    errorStyles.forEach((style) => style.remove());
+    // const errorStyles = document.querySelectorAll(".error");
+    // errorStyles.forEach((style) => style.remove());
 
-    // Remove error class from all inputs
-    Object.values(formElements).forEach((input) => {
-      if (input) input.classList.remove("error");
-    });
+    // // Remove error class from all inputs
+    // Object.values(formElements).forEach((input) => {
+    //   if (input) input.classList.remove("error");
+    // });
 
     // Validation becomes much cleaner:
     hasError |= validateCardForm(
@@ -354,10 +364,6 @@ if (cardForm) {
     if (!hasError) {
       showSuccess(e);
       handleAddCard(e);
-    } else {
-      // Explicitly prevent form submission if there are errors
-      e.preventDefault();
-      return false;
     }
   });
 }
@@ -1009,6 +1015,21 @@ class PaymentCardManager {
     }
   }
 }
+
+// Payouts Event Listeners
+const viewPayoutsBtn = document.querySelector(".view-all-payouts-link");
+const viewPayoutsMenu = document.querySelector(".view-all-payouts-menu");
+const closePayoutsMenu = document.getElementById("close-view-all-payouts");
+
+console.log("closePayoutsMenu", closePayoutsMenu);
+
+viewPayoutsBtn.addEventListener("click", () => {
+  viewPayoutsMenu.style.display = "flex";
+});
+
+closePayoutsMenu.addEventListener("click", () => {
+  viewPayoutsMenu.style.display = "none";
+});
 
 // Initialize PaymentCardManager instance
 const paymentManager = new PaymentCardManager();
