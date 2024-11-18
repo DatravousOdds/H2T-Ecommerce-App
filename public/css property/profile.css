@@ -4299,7 +4299,7 @@ h6 {
 
   .wallet-info {
     width: 100%;
-    gap: 10rem;
+    gap: 6rem;
   }
 
   #bio-section {
@@ -4418,10 +4418,19 @@ h6 {
   }
 
   .payment-wrapper .inner-wrapper {
-    width: 70%;
+    width: 95%;
   }
 
   #cards-on-file {
+    width: 100%;
+  }
+
+  .tab {
+    width: 100%;
+    min-width: 65%;
+  }
+
+  .card-wrapper.add-card {
     width: 100%;
   }
 
@@ -4439,7 +4448,7 @@ h6 {
   }
 
   .payment-wrapper {
-    align-items: ;
+    align-items: center;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -4533,5 +4542,13 @@ h6 {
 
   .profile-section label {
     font-size: 18px;
+  }
+
+  #wallet-balance .header-wrapper {
+    gap: 19rem;
+  }
+
+  .wallet-info {
+    gap: 15rem;
   }
 }
