@@ -454,6 +454,18 @@ function resetFlow() {
   showMethodSelection();
 }
 
+const accountTypeButtons = document.querySelectorAll(
+  "#edit-bank-details .account-type-buttons .account-type-button"
+);
+
+if (accountTypeButtons) {
+  accountTypeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      button.classList.add("active");
+    });
+  });
+}
+
 // Add event listeners when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   // Payment options
