@@ -416,7 +416,10 @@ button:disabled {
 
 .funds-container .close-button {
   border: none;
+  border-radius: 8px;
+  padding: 0px 8px;
   background-color: transparent;
+  cursor: pointer;
   font-size: larger;
 }
 
@@ -427,11 +430,11 @@ button:disabled {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 8px;
   transition: all 0.2s ease-in-out;
 }
 
@@ -445,6 +448,12 @@ button:disabled {
   align-items: center;
   gap: 1rem;
   justify-content: space-between;
+}
+
+.funds-container .wallet-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .funds-balance .funds-input {
@@ -543,6 +552,11 @@ button:disabled {
 
 .notification-container.withdraw {
   background-color: #2563eb;
+  color: white;
+}
+
+.notification-container.update {
+  background-color: #2196f3;
   color: white;
 }
 
@@ -3576,6 +3590,7 @@ h6 {
 /* Payouts Table */
 .filter-payout-list .filter-payout-item {
   display: grid;
+  gap: 6rem;
   grid-template-columns: repeat(6, 1fr);
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
@@ -3850,6 +3865,13 @@ h6 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  .primary-card {
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   /* Wallet Balance */
   #wallet-balance .header-wrapper {
     gap: 4rem;
@@ -4286,6 +4308,10 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  .filter-payout-list .filter-payout-item {
+    grid-template-columns: repeat(6, 15.1%);
+  }
+
   #pfp-data,
   #profile-data,
   #shipping-data,
