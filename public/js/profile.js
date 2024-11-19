@@ -316,7 +316,7 @@ if (cardForm) {
       cardNumber: document.querySelector("#cardForm #cardNumber"),
       cvv: document.querySelector("#cardForm #cvv"),
       expiry: document.querySelector("#cardForm #expiry"),
-      billingAddress: document.querySelector("#cardForm #billingAddress")
+      billingAddress: document.querySelector("#cardForm #billingAddress"),
     };
 
     if (!formElements) {
@@ -375,7 +375,7 @@ if (bankForm) {
     const formElements = {
       accountHolderName: document.querySelector("#bankForm #accountHolderName"),
       routingNumber: document.querySelector("#bankForm #routingNumber"),
-      accountNumber: document.querySelector("#bankForm #accountNumber")
+      accountNumber: document.querySelector("#bankForm #accountNumber"),
     };
 
     let hasError = false;
@@ -715,79 +715,22 @@ const bankDetailsCloseBtn = document.querySelector(
 bankDetailsCloseBtn.addEventListener("click", () => {
   closePopupMenu(".bank-modal-overlay");
 });
+// Edit Bank Account Validation
+const editBankAccountForm = document.querySelector("#edit-bank-form");
+const streetAddress = document.querySelector("#edit-bank-form #street");
+const city = document.querySelector("#edit-bank-form #city");
+const state = document.querySelector("#edit-bank-form #state");
+const editBankAccountCancelBtn = document.querySelector(
+  ".edit-bank-footer button:first-child"
+);
+const editBankAccountMenuCloseBtn = document.querySelector(
+  ".edit-bank-header button"
+);
 
-function handleAddCard(event) {
-  event.preventDefault(); // Prevent default form submission
-  // Get form values
-  const newCard = {
-    cardHolder: document.querySelector("#cardForm #nameOnCard")?.value,
-    cvv: document.querySelector("#cardForm #cvv")?.value,
-    cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
-    expirationDate: document.querySelector("#cardForm #expiry")?.value,
-    billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
-    cardEnding: document.querySelector("#card-ending")
-  };
-
-  // Get the last 4 digits of the card
-  const lastFourDigits = newCard.cardNumber.slice(-4);
-
-  const cardNumber = document.querySelector(
-    "#securityVerification3 .card-number"
-  );
-  const cardNumberId = document.querySelector("#card-number");
-  cardNumber.textContent = `ending in ${lastFourDigits}`;
-  cardNumberId.value = `**** **** **** ${lastFourDigits}`;
-
-  // Update card list if CARD_LIST_SELECTOR and CARD_WRAPPER_TEMPLATE are defined
-  const cardList = document.querySelector(CARD_LIST_SELECTOR);
-  if (cardList && typeof CARD_WRAPPER_TEMPLATE === "function") {
-    const newCardHTML = CARD_WRAPPER_TEMPLATE(
-      newCard.cardHolder,
-      lastFourDigits,
-      newCard.expirationDate
-    );
-    cardList.insertAdjacentHTML("afterbegin", newCardHTML);
-    closePopupMenu(".add-card-menu");
-  }
-
-  cardHolder.textContent = newCard.cardHolder;
-  expirationDate.textContent = newCard.expirationDate;
-  billingAddress.textContent = newCard.billingAddress;
-  newCard.cardEnding.textContent = `Visa Debit ending in ${lastFourDigits}`;
-}
-
-function handleAddBank(event) {
-  event.preventDefault();
-  const newBank = {
-    accountHolderName: document.getElementById("accountHolderName").value,
-    routingNumber: document.getElementById("routingNumber").value,
-    accountNumber: document.getElementById("accountNumber").value,
-    accountType: document.querySelector("#bankForm .bank-detail-value")
-      .textContent,
-    bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
-      .textContent
-  };
-
-  const lastFourDigits = newBank.accountNumber.slice(-4);
-
-  const cardList = document.querySelector(CARD_LIST_SELECTOR);
-  const newBankHTML = BANK_WRAPPER_TEMPLATE(
-    newBank.accountHolderName,
-    newBank.accountType,
-    lastFourDigits
-  );
-
-  cardList.insertAdjacentHTML("afterbegin", newBankHTML);
-  closePopupMenu(".add-card-menu");
-
-  // Update bank details view
-  bankEnding.textContent = `Bank Account ending in ${lastFourDigits}`;
-  accountHolder.textContent = newBank.accountHolderName;
-  bankRoutingNumber.textContent = newBank.routingNumber;
-  bankAccountNumber.textContent = newBank.accountNumber;
-  bankAccountType.textContent = newBank.accountType;
-  bank.textContent = newBank.bank;
-}
+const saveChangesBtn = document.querySelector(
+  ".edit-bank-footer #saveChangesBtn"
+);
+const editBankOverlay = document.querySelector(".edit-bank-overlay");
 
 class PaymentCardManager {
   constructor() {
@@ -1028,12 +971,142 @@ class PaymentCardManager {
   }
 }
 
+function handleAddCard(event) {
+  event.preventDefault(); // Prevent default form submission
+  // Get form values
+  const newCard = {
+    cardHolder: document.querySelector("#cardForm #nameOnCard")?.value,
+    cvv: document.querySelector("#cardForm #cvv")?.value,
+    cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
+    expirationDate: document.querySelector("#cardForm #expiry")?.value,
+    billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
+    cardEnding: document.querySelector("#card-ending"),
+  };
+
+  // Get the last 4 digits of the card
+  const lastFourDigits = newCard.cardNumber.slice(-4);
+
+  const cardNumber = document.querySelector(
+    "#securityVerification3 .card-number"
+  );
+  const cardNumberId = document.querySelector("#card-number");
+  cardNumber.textContent = `ending in ${lastFourDigits}`;
+  cardNumberId.value = `**** **** **** ${lastFourDigits}`;
+
+  // Update card list if CARD_LIST_SELECTOR and CARD_WRAPPER_TEMPLATE are defined
+  const cardList = document.querySelector(CARD_LIST_SELECTOR);
+  if (cardList && typeof CARD_WRAPPER_TEMPLATE === "function") {
+    const newCardHTML = CARD_WRAPPER_TEMPLATE(
+      newCard.cardHolder,
+      lastFourDigits,
+      newCard.expirationDate
+    );
+    cardList.insertAdjacentHTML("afterbegin", newCardHTML);
+    closePopupMenu(".add-card-menu");
+  }
+
+  cardHolder.textContent = newCard.cardHolder;
+  expirationDate.textContent = newCard.expirationDate;
+  billingAddress.textContent = newCard.billingAddress;
+  newCard.cardEnding.textContent = `Visa Debit ending in ${lastFourDigits}`;
+}
+
+function handleAddBank(event) {
+  event.preventDefault();
+  const newBank = {
+    accountHolderName: document.getElementById("accountHolderName").value,
+    routingNumber: document.getElementById("routingNumber").value,
+    accountNumber: document.getElementById("accountNumber").value,
+    accountType: document.querySelector("#bankForm .bank-detail-value")
+      ?.textContent,
+    bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
+      ?.textContent,
+  };
+
+  const lastFourDigits = newBank.accountNumber.slice(-4);
+
+  const cardList = document.querySelector(CARD_LIST_SELECTOR);
+  const newBankHTML = BANK_WRAPPER_TEMPLATE(
+    newBank.accountHolderName,
+    newBank.accountType,
+    lastFourDigits
+  );
+
+  cardList.insertAdjacentHTML("afterbegin", newBankHTML);
+  closePopupMenu(".add-card-menu");
+
+  // Update bank details view
+  bankEnding.textContent = `Bank Account ending in ${lastFourDigits}`;
+  accountHolder.textContent = newBank.accountHolderName;
+  bankRoutingNumber.textContent = newBank.routingNumber;
+  bankAccountNumber.textContent = newBank.accountNumber;
+  bankAccountType.textContent = newBank.accountType;
+  // bank.textContent = newBank.bank;
+}
+
+function validateEditBankAccountForm() {
+  let isValid = true;
+
+  clearFormErrors();
+
+  if (streetAddress.value.trim() === "") {
+    showError(streetAddress, "Street address is required");
+    isValid = false;
+  }
+  if (city.value.trim() === "") {
+    showError(city, "City is required");
+    isValid = false;
+  }
+
+  if (state.value.trim() === "") {
+    showError(state, "State is required");
+    isValid = false;
+  } else if (!/^[A-Z]{2}$/.test(state.value.trim().toUpperCase())) {
+    showError(state, "Invalid state abbreviation");
+    isValid = false;
+  }
+  return isValid;
+}
+
+// Event Listeners
+editBankAccountMenuCloseBtn.addEventListener("click", () => {
+  editBankOverlay.classList.remove("active");
+  editBankOverlay.style.display = "none";
+  document.body.style.overflow = "auto";
+});
+
+saveChangesBtn.addEventListener("click", () => {
+  validateEditBankAccountForm();
+});
+editBankAccountForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  if (validateEditBankAccountForm()) {
+    console.log("Form is valid");
+
+    // TODO: Send form data to server
+
+    // TODO: Show success message
+    const notification = new PaymentNotification();
+    notification.success(
+      "Bank account information updated successfully",
+      "update"
+    );
+
+    // TODO: Close popup
+    closePopupMenu(".edit-bank-overlay");
+  }
+});
+
+editBankAccountCancelBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  closePopupMenu(".edit-bank-overlay");
+});
+
 // Payouts Event Listeners
 const viewPayoutsBtn = document.querySelector(".view-all-payouts-link");
 const viewPayoutsMenu = document.querySelector(".view-all-payouts-menu");
 const closePayoutsMenu = document.getElementById("close-view-all-payouts");
-
-console.log("closePayoutsMenu", closePayoutsMenu);
 
 viewPayoutsBtn.addEventListener("click", () => {
   viewPayoutsMenu.style.display = "flex";
@@ -1594,7 +1667,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -1609,7 +1682,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -1642,7 +1715,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -1715,8 +1788,8 @@ const elements = {
   confirmWithdrawBtn: document.querySelector(".confirm-withdraw-btn"),
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
-  addFundsCloseBtn: document.querySelector(".close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  addFundsCloseBtn: document.querySelector(".funds-container .close-button"),
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
@@ -1817,31 +1890,43 @@ class PaymentNotification {
     this.timeout = null;
   }
 
-  success(amount, type = "deposit") {
+  success(msg, type = "deposit") {
     this.notification.textContent = "";
 
     const container = document.createElement("div");
-    if (type === "withdraw") {
-      container.classList.add("notification-container", "withdraw");
-    }
-    container.classList.add("notification-container", "success");
+    container.classList.add("notification-container");
 
-    this.notification.appendChild(container);
+    // Add class based on type of notification
+    switch (type) {
+      case "withdraw":
+        container.classList.add("withdraw");
+        break;
+      case "update":
+        container.classList.add("update");
+        break;
+      default:
+        container.classList.add("success");
+    }
+
+    // this.notification.appendChild(container);
 
     const icon = document.createElement("i");
     icon.classList.add("fa-solid", "fa-circle-check");
     icon.setAttribute("aria-hidden", "true");
 
     const p = document.createElement("p");
+    p.classList.add("notification-text");
     p.classList.add("amount-text");
 
     // Set appropriate message based on transaction type
-    if (type === "deposit") {
-      p.textContent = `$${amount.toFixed(2)} has been added to your wallet`;
-    } else if (type === "withdraw") {
-      p.textContent = `$${amount.toFixed(
-        2
-      )} has been withdrawn from your wallet`;
+    if (type === "deposit" || type === "withdraw") {
+      const amount = typeof msg === "string" ? parseFloat(msg) : msg;
+      p.textContent =
+        type === "deposit"
+          ? `$${amount.toFixed(2)} has been added to your wallet`
+          : `$${amount.toFixed(2)} has been withdrawn from your wallet`;
+    } else if (type === "update") {
+      p.textContent = msg;
     }
 
     container.appendChild(icon);

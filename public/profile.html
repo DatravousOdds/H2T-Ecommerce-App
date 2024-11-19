@@ -980,15 +980,18 @@
           <!-- Withdraw popup Menu -->
           <div class="popup-overlay" id="withdrawPopup">
             <div class="withdraw-container">
-              <button
-                class="close-button"
-                id="popup-close-btn"
-                aria-label="Close popup"
-              >
-                <i class="fa-solid fa-xmark"></i>
-              </button>
+              <div class="header-wrapper">
+                <h1 class="withdraw-title">Withdraw Funds</h1>
+                <button
+                  type="button"
+                  class="close-button"
+                  id="popup-close-btn"
+                  aria-label="Close popup"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
 
-              <h1 class="withdraw-title">Withdraw Funds</h1>
               <p class="withdraw-subtitle">
                 Enter the amount you wish to withdraw from your wallet
               </p>
@@ -1279,6 +1282,7 @@
                         class="form-input"
                         value="123 Main St"
                         placeholder="Street Address"
+                        required
                       />
                     </div>
 
@@ -1300,6 +1304,7 @@
                           class="form-input"
                           value="New York"
                           placeholder="City"
+                          required
                         />
                       </div>
                       <div class="form-group">
@@ -1309,17 +1314,25 @@
                           class="form-input"
                           value="NY"
                           placeholder="State"
+                          required
                         />
                       </div>
                     </div>
                   </div>
+                  <!-- Modal Footer -->
+                  <div class="edit-bank-footer">
+                    <button type="reset" class="button button-secondary">
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      id="saveChangesBtn"
+                      class="button button-primary"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
                 </form>
-              </div>
-
-              <!-- Modal Footer -->
-              <div class="edit-bank-footer">
-                <button class="button button-secondary">Cancel</button>
-                <button class="button button-primary">Save Changes</button>
               </div>
             </div>
           </div>
