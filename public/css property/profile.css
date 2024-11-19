@@ -3201,7 +3201,16 @@ h6 {
   }
 }
 
-/* Ulities Classes */
+/* Utility Classes */
+
+.inner-wrapper-div {
+  padding: 12px 24px;
+  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  width: 100%;
+  border-radius: 12px;
+  transition: 0.2s ease-in-out;
+}
 
 .margin-bottom-0 {
   margin-bottom: 0;
@@ -3863,8 +3872,53 @@ h6 {
   transform: scale(2);
 }
 
+/* Selling Styles */
+
+.selling-section .title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selling-section {
+  margin-top: 1rem;
+  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  display: grid;
+}
+
+.selling-tabs {
+  display: flex;
+  gap: 1rem;
+  border-radius: 8px;
+  background-color: #d6d6d661;
+  padding: 12px;
+  align-items: center;
+}
+
+.selling-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.selling-label.active {
+  background-color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  .selling-section {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 0.5rem;
+  }
+
+  .selling-tabs {
+    margin-bottom: 1rem;
+  }
+
   .primary-card {
     padding: 4px 12px;
     display: flex;
@@ -4105,6 +4159,11 @@ h6 {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  /* Selling Styles */
+  .selling-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   /* Edit Bank Details */
   #edit-bank-details .edit-bank-container {
     padding: 1rem;
@@ -4531,6 +4590,12 @@ h6 {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+  /* Selling Styles */
+  .selling-section {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
   #wallet-balance .header-wrapper {
     gap: 4rem;
   }
@@ -4562,6 +4627,10 @@ h6 {
 }
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
+  .selling-section {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
   .rating-breakdown .rating-process .rating-bar {
     width: 79%;
   }
