@@ -2658,7 +2658,7 @@ h6 {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   cursor: pointer;
 }
 
@@ -3218,6 +3218,10 @@ h6 {
 
 .mb-24 {
   margin-bottom: 24px;
+}
+
+.mg-1 {
+  margin: 1rem;
 }
 
 .font-15 {
@@ -3811,6 +3815,8 @@ h6 {
 }
 
 .profile-section {
+  width: 100%;
+  max-width: 70%;
   box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   padding: 10px 24px;
@@ -3873,6 +3879,10 @@ h6 {
 }
 
 /* Selling Styles */
+
+.inner-wrapper p {
+  color: #4b5563;
+}
 
 .selling-section .title-wrapper {
   display: flex;
@@ -4629,7 +4639,7 @@ h6 {
 @media (min-width: 1200px) {
   .selling-section {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+    gap: 1rem;
   }
   .rating-breakdown .rating-process .rating-bar {
     width: 79%;
@@ -4640,7 +4650,7 @@ h6 {
   }
 
   #wallet-balance .header-wrapper {
-    gap: 19rem;
+    gap: 7rem;
   }
 
   .wallet-info {
