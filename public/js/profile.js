@@ -316,7 +316,7 @@ if (cardForm) {
       cardNumber: document.querySelector("#cardForm #cardNumber"),
       cvv: document.querySelector("#cardForm #cvv"),
       expiry: document.querySelector("#cardForm #expiry"),
-      billingAddress: document.querySelector("#cardForm #billingAddress"),
+      billingAddress: document.querySelector("#cardForm #billingAddress")
     };
 
     if (!formElements) {
@@ -375,7 +375,7 @@ if (bankForm) {
     const formElements = {
       accountHolderName: document.querySelector("#bankForm #accountHolderName"),
       routingNumber: document.querySelector("#bankForm #routingNumber"),
-      accountNumber: document.querySelector("#bankForm #accountNumber"),
+      accountNumber: document.querySelector("#bankForm #accountNumber")
     };
 
     let hasError = false;
@@ -980,7 +980,7 @@ function handleAddCard(event) {
     cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
     expirationDate: document.querySelector("#cardForm #expiry")?.value,
     billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
-    cardEnding: document.querySelector("#card-ending"),
+    cardEnding: document.querySelector("#card-ending")
   };
 
   // Get the last 4 digits of the card
@@ -1020,7 +1020,7 @@ function handleAddBank(event) {
     accountType: document.querySelector("#bankForm .bank-detail-value")
       ?.textContent,
     bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
-      ?.textContent,
+      ?.textContent
   };
 
   const lastFourDigits = newBank.accountNumber.slice(-4);
@@ -1667,7 +1667,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username",
+          "profile-username"
         ];
 
         personalFormIds.forEach((id) => {
@@ -1682,7 +1682,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError",
+          "usernameError"
         ];
 
         personalErrorIds.forEach((id) => {
@@ -1715,7 +1715,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError",
+          "addressError"
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -1789,7 +1789,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".funds-container .close-button"),
-  walletAmount: document.querySelector(".wallet-amount"),
+  walletAmount: document.querySelector(".wallet-amount")
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
