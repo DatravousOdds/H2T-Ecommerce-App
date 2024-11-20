@@ -3203,6 +3203,10 @@ h6 {
 
 /* Utility Classes */
 
+.font-15 {
+  font-size: 1.5rem;
+}
+
 .warning {
   color: orange;
 }
