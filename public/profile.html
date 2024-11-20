@@ -727,7 +727,7 @@
                     <i class="fa-solid fa-cart-shopping"></i>
                   </div>
 
-                  <h1>1,234</h1>
+                  <h1 class="font-600">1,234</h1>
                   <p class="margin-bottom-0 blue">+123 in the last 30 days</p>
                 </div>
                 <div class="seller-rate inner-wrapper-div">
@@ -736,7 +736,7 @@
                     <i class="fa-solid fa-star"></i>
                   </div>
 
-                  <h1 class="font">4.5</h1>
+                  <h1 class="font-600">4.5</h1>
                   <p class="margin-bottom-0 green">+0.2 from last month</p>
                 </div>
               </div>
@@ -750,11 +750,17 @@
               </div>
               <!-- Recent Activity Section -->
               <div class="recent-activity-container inner-wrapper-div mg-1">
-                <h1>Recent Activity</h1>
+                <div class="recent-activity-header">
+                  <h1>Recent Activity</h1>
+                  <div class="view-all">
+                    <a>View All</a>
+                  </div>
+                </div>
+
                 <div class="recent-activity-list">
                   <!-- code to display recent activity -->
                   <div class="recent-activity-item">
-                    <div class="recent-activity-icon">
+                    <div class="recent-activity-icon warning">
                       <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div class="recent-acivity-alert">
@@ -770,7 +776,7 @@
                     </div>
                   </div>
                   <div class="recent-activity-item">
-                    <div class="recent-activity-icon">
+                    <div class="recent-activity-icon received">
                       <i class="fa-solid fa-cart-shopping"></i>
                     </div>
                     <div class="recent-acivity-alert">
@@ -1275,7 +1281,7 @@
                 </div>
               </div>
 
-              <h3>Recent Activity</h3>
+              <h3 class="recent-activity-title">Recent Activity</h3>
               <div id="recent-activity" class="recent-activity">
                 <div class="activity-item">
                   <div class="activity-item-wrapper">
@@ -2036,6 +2042,7 @@
     <script src="js/footer.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/selling.js"></script>
+    <script src="js/Chart.js"></script>
     <script src="js/home.js"></script>
   </body>
 </html>
