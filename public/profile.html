@@ -687,24 +687,37 @@
         </div>
         <!-- Selling Content-->
         <div class="tab" id="selling">
-          <div class="selling-container inner-wrapper">
+          <div class="dashboard inner-wrapper">
             <div class="selling-header">
               <h1 class="font-600 font-15">Seller Dashboard</h1>
             </div>
-            <div class="selling-content">
-              <div class="selling-tabs">
-                <div class="selling-tab selling-label active" id="overview">
-                  Overview
-                </div>
-                <div class="selling-tab selling-label" id="products">
-                  Products
-                </div>
-                <div class="selling-tab selling-label" id="orders">Orders</div>
-                <div class="selling-tab selling-label" id="reviews">
-                  Reviews
-                </div>
-              </div>
-              <div class="selling-section" id="overview">
+            <!-- Overview Section -->
+            <section class="selling-content" id="overview">
+              <!-- Navigation-->
+              <nav class="nav-container">
+                <ul class="nav-menu">
+                  <li>
+                    <button class="nav-button active" data-tab="overview">
+                      Overview
+                    </button>
+                  </li>
+                  <li>
+                    <button class="nav-button" data-tab="products">
+                      Products
+                    </button>
+                  </li>
+                  <li>
+                    <button class="nav-button" data-tab="orders">Orders</button>
+                  </li>
+                  <li>
+                    <button class="nav-button" data-tab="reviews">
+                      Reviews
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+              <!-- Overview Section -->
+              <div class="selling-section">
                 <div class="total-revenue inner-wrapper-div">
                   <div class="title-wrapper">
                     <h2>Total Revenue</h2>
@@ -742,7 +755,7 @@
               </div>
               <!-- Selling Chart Section -->
               <div class="selling-chart-container inner-wrapper-div mg-1">
-                <h1 class="font-600 font-15">Sales Overview</h1>
+                <h2 class="font-600 font-15">Sales Overview</h2>
                 <div class="selling-chart">
                   <!-- code to display chart -->
                   <canvas id="salesChart" height="300"></canvas>
@@ -793,7 +806,22 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
+            <!-- Products Section -->
+            <section id="products" class="content-section">
+              <h2>Products Content</h2>
+              <!-- Products content goes here -->
+            </section>
+            <!-- Orders Section -->
+            <section id="orders" class="content-section">
+              <h2>Orders Content</h2>
+              <!-- Orders content goes here -->
+            </section>
+            <!-- Reviews Section -->
+            <section id="reviews" class="content-section">
+              <h2>Reviews Content</h2>
+              <!-- Reviews content goes here -->
+            </section>
           </div>
         </div>
         <!-- Payment Content-->
