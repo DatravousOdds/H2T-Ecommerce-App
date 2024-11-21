@@ -4235,6 +4235,14 @@ h6 {
   padding: 0 1rem;
 }
 
+.content-section.active {
+  display: block;
+}
+
+.content-section {
+  display: none;
+}
+
 /* Navigation buttons */
 .nav-button {
   padding: 1rem 0.25rem;
@@ -4256,6 +4264,26 @@ h6 {
 .nav-button.active {
   color: #2563eb;
   border-bottom-color: #2563eb;
+}
+
+/* Products Section */
+
+.products-header button {
+  background-color: transparent;
+  border: 1px solid #e5e7eb;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.products-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 /* Small devices (landscape phones, 576px and up) */

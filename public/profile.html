@@ -691,31 +691,37 @@
             <div class="selling-header">
               <h1 class="font-600 font-15">Seller Dashboard</h1>
             </div>
+            <!-- Navigation-->
+            <nav class="nav-container">
+              <ul class="nav-menu">
+                <li>
+                  <button
+                    type="button"
+                    class="nav-button active"
+                    data-tab="overview"
+                  >
+                    Overview
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="nav-button" data-tab="products">
+                    Products
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="nav-button" data-tab="orders">
+                    Orders
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="nav-button" data-tab="reviews">
+                    Reviews
+                  </button>
+                </li>
+              </ul>
+            </nav>
             <!-- Overview Section -->
-            <section class="selling-content" id="overview">
-              <!-- Navigation-->
-              <nav class="nav-container">
-                <ul class="nav-menu">
-                  <li>
-                    <button class="nav-button active" data-tab="overview">
-                      Overview
-                    </button>
-                  </li>
-                  <li>
-                    <button class="nav-button" data-tab="products">
-                      Products
-                    </button>
-                  </li>
-                  <li>
-                    <button class="nav-button" data-tab="orders">Orders</button>
-                  </li>
-                  <li>
-                    <button class="nav-button" data-tab="reviews">
-                      Reviews
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+            <section class="content-section active" id="overview">
               <!-- Overview Section -->
               <div class="selling-section">
                 <div class="total-revenue inner-wrapper-div">
@@ -809,7 +815,76 @@
             </section>
             <!-- Products Section -->
             <section id="products" class="content-section">
-              <h2>Products Content</h2>
+              <div class="inner-wrapper">
+                <div class="products-header">
+                  <div class="search-bar">
+                    <input type="text" placeholder="Search products" />
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </div>
+                  <div class="filter-dropdown">
+                    <button id="filter-btn">
+                      <i class="fa-solid fa-filter"></i>
+                      Filter
+                    </button>
+                  </div>
+                  <div class="trade-request">
+                    <button id="trade-request-btn">
+                      <i class="fa-solid fa-right-left"></i>
+                      Trade Request
+                    </button>
+                  </div>
+                  <div class="sell-to-us">
+                    <button id="sell-to-us-btn">
+                      <i class="fa-solid fa-dollar-sign"></i>
+                      Sell to us
+                    </button>
+                  </div>
+                  <div class="list-products">
+                    <button id="list-products-btn">
+                      <i class="fa-solid fa-plus"></i>
+                      List Products
+                    </button>
+                  </div>
+                </div>
+                <div class="products-overview">
+                  <!-- code to display products overview -->
+                  <div
+                    id="active-listings"
+                    class="active-listings inner-wrapper-div"
+                  >
+                    <div class="title-wrapper">
+                      <h2>Active Listings</h2>
+                      <i class="fa-solid fa-tag"></i>
+                    </div>
+                    <p>892</p>
+                  </div>
+                  <div id="trade-offers" class="trade-offers inner-wrapper-div">
+                    <div class="title-wrapper">
+                      <h2>Trade Offers</h2>
+                      <i class="fa-solid fa-tag"></i>
+                    </div>
+                    <p>892</p>
+                  </div>
+                  <div
+                    id="sell-to-us-requests"
+                    class="sell-to-us-requests inner-wrapper-div"
+                  >
+                    <div class="title-wrapper">
+                      <h2>Sell to Us Requests</h2>
+                      <i class="fa-solid fa-tag"></i>
+                    </div>
+                    <p>892</p>
+                  </div>
+                  <div id="total-sales" class="total-sales inner-wrapper-div">
+                    <div class="title-wrapper">
+                      <h2>Total Sales</h2>
+                      <i class="fa-solid fa-tag"></i>
+                    </div>
+                    <p>892</p>
+                  </div>
+                </div>
+              </div>
+
               <!-- Products content goes here -->
             </section>
             <!-- Orders Section -->
