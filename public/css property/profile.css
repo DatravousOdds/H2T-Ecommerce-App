@@ -4221,6 +4221,43 @@ h6 {
   }
 }
 
+/* Navigation container */
+.nav-container {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #fff;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 2rem;
+  list-style-type: none;
+  padding: 0 1rem;
+}
+
+/* Navigation buttons */
+.nav-button {
+  padding: 1rem 0.25rem;
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  color: #374151;
+  border-bottom-color: #e5e7eb;
+}
+
+.nav-button.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
   /* Selling Styles */
