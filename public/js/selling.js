@@ -17,3 +17,26 @@ sellingNavButtons.forEach((button) => {
     button.classList.add("active");
   });
 });
+
+// Filter Menu
+
+const filterButtons = document.querySelectorAll(".filter-btn");
+const filterSections = document.querySelectorAll("#products .content-section");
+console.log("filterSections", filterSections);
+
+console.log("filterButtons", filterButtons);
+
+filterButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    // Remove active class from all other filter items
+    filterButtons.forEach((btn) => btn.classList.remove("active"));
+    filterSections.forEach((section) => section.classList.remove("active"));
+    // Add active class to the clicked filter item
+    btn.classList.add("active");
+    const sectionId = btn.getAttribute("data-section");
+    console.log("sectionId", sectionId);
+    const sectionToShow = document.getElementById(sectionId);
+    // console.log("sectionToShow", sectionToShow);
+    // sectionToShow.classList.add("active");
+  });
+});

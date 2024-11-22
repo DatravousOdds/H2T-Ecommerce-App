@@ -4224,7 +4224,33 @@ h6 {
 /* Filter Menu */
 .filter-list {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
+  list-style-type: none;
+  padding: 0;
+  color: #6b7280;
+  margin-bottom: 0;
+}
+
+.filter-btn:hover {
+  color: #374151;
+  border-bottom-color: #e5e7eb;
+}
+
+.filter-btn.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.filter-btn {
+  padding: 1rem 0.25rem;
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 /* Navigation container */
