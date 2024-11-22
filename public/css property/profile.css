@@ -4221,6 +4221,12 @@ h6 {
   }
 }
 
+/* Filter Menu */
+.filter-list {
+  display: flex;
+  gap: 1rem;
+}
+
 /* Navigation container */
 .nav-container {
   margin-bottom: 1.5rem;
@@ -4268,6 +4274,51 @@ h6 {
 
 /* Products Section */
 
+.products-overview {
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.products-overview div {
+  flex: 1;
+}
+
+.products-overview .title-wrapper h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.products-overview .title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.products-overview p {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.products-overview .active-listings i {
+  color: #0ab80a;
+}
+
+.products-overview .trade-offers i {
+  color: #007bff;
+}
+
+.products-overview .sell-to-us-requests i {
+  color: #db0c7a;
+}
+
+.products-overview .total-sales i {
+  color: #0ab80a;
+}
+
 .products-header button {
   background-color: transparent;
   border: 1px solid #e5e7eb;
@@ -4288,6 +4339,10 @@ h6 {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  .products-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   /* Selling Styles */
   .selling-section {
     grid-template-columns: repeat(2, 1fr);
@@ -4496,6 +4551,22 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  /* Products Section */
+  .products-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .products-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+
+  .products-header .search-bar {
+    width: 100%;
+    flex: none;
+  }
+
   .filter-payout-list .filter-payout-item {
     grid-template-columns: repeat(6, 15.1%);
   }
