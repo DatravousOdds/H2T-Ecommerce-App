@@ -1835,6 +1835,10 @@ button:disabled {
   padding: 24px 10px;
 }
 
+.tab:nth-of-type(3) {
+  padding: 0;
+}
+
 #profile-inner-wrapper {
   display: flex;
   flex-direction: column;
@@ -3233,7 +3237,7 @@ h6 {
 }
 
 .mg-1 {
-  margin: 1rem;
+  margin: 1rem 0;
 }
 
 .font-15 {
@@ -4231,6 +4235,10 @@ h6 {
   margin-bottom: 0;
 }
 
+.products-header button i {
+  font-size: 1rem;
+}
+
 .filter-btn:hover {
   color: #374151;
   border-bottom-color: #e5e7eb;
@@ -4299,6 +4307,12 @@ h6 {
 }
 
 /* Products Section */
+
+#products {
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+}
 
 .products-overview {
   margin-bottom: 1rem;
@@ -4523,7 +4537,6 @@ h6 {
 
   .tab {
     width: 100% !important;
-
     flex-direction: column;
     gap: 16px;
     padding: 30px 50px;
@@ -4535,6 +4548,7 @@ h6 {
 
   .profile-section {
     flex-direction: column;
+    max-width: 100%;
   }
 
   #payments-reports,
@@ -4577,6 +4591,13 @@ h6 {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  /* Seller Dashboard Styles */
+
+  .dashboard {
+    width: 100%;
+    max-width: 100%;
+  }
+
   /* Products Section */
   .products-overview {
     grid-template-columns: repeat(2, 1fr);
@@ -4674,6 +4695,7 @@ h6 {
   .profile-section {
     flex-direction: column;
     gap: 5px;
+    max-width: 100%;
     /* margin: 10px; */
   }
 

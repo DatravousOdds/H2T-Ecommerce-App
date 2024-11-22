@@ -90,7 +90,7 @@
         </div>
 
         <!-- Profile Content-->
-        <div class="tab" id="profile">
+        <div class="tab active" id="profile">
           <div id="profile-wrapper">
             <div id="profile-inner-wrapper">
               <!-- Profile Picture Section -->
@@ -822,7 +822,7 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </div>
                   <div class="filter-dropdown">
-                    <button id="filter-btn">
+                    <button class="filter-btn">
                       <i class="fa-solid fa-filter"></i>
                       Filter
                     </button>
@@ -887,91 +887,129 @@
                 <div id="filter-menu" class="filter-menu nav-container">
                   <ul class="filter-list">
                     <li class="filter-item">
-                      <button type="button" class="filter-btn">All</button>
+                      <button
+                        type="button"
+                        data-section="all-products"
+                        class="filter-btn"
+                      >
+                        All
+                      </button>
                     </li>
                     <li class="filter-item">
-                      <button type="button" class="filter-btn">Active</button>
+                      <button
+                        type="button"
+                        data-section="active-products"
+                        class="filter-btn"
+                      >
+                        Active
+                      </button>
                     </li>
                     <li class="filter-item">
-                      <button type="button" class="filter-btn">
+                      <button
+                        type="button"
+                        data-section="for-trade-products"
+                        class="filter-btn"
+                      >
                         For Trade
                       </button>
                     </li>
                     <li class="filter-item">
-                      <button type="button" class="filter-btn">
+                      <button
+                        type="button"
+                        data-section="sell-to-us-products"
+                        class="filter-btn"
+                      >
                         Sell to Us
                       </button>
                     </li>
                     <li class="filter-item">
-                      <button type="button" class="filter-btn">
+                      <button
+                        type="button"
+                        data-section="pending-trades-products"
+                        class="filter-btn"
+                      >
                         Pending Trades
                       </button>
                     </li>
                     <li class="filter-item">
-                      <button type="button" class="filter-btn">
+                      <button
+                        type="button"
+                        data-section="out-of-stock-products"
+                        class="filter-btn"
+                      >
                         Out of Stock
                       </button>
                     </li>
                     <li class="filter-item">
-                      <button type="button" class="filter-btn">Draft</button>
+                      <button
+                        type="button"
+                        data-section="draft-products"
+                        class="filter-btn"
+                      >
+                        Draft
+                      </button>
                     </li>
                   </ul>
                 </div>
-                <!-- All products content goes here -->
-                <div
-                  class="all-products-content content-section active"
-                  data-section="all-products"
-                  id="all-products"
-                >
-                  <h2>All Products</h2>
-                </div>
-                <!-- Active products content goes here -->
-                <div
-                  class="active-products-content content-section"
-                  data-section="active-products"
-                  id="active-products"
-                >
-                  <h2>Active Products</h2>
-                </div>
-                <!-- For Trade products content goes here -->
-                <div
-                  class="for-trade-products-content content-section"
-                  data-section="for-trade-products"
-                  id="for-trade-products"
-                >
-                  <h2>For Trade Products</h2>
-                </div>
-                <!-- Sell to Us products content goes here -->
-                <div
-                  class="sell-to-us-products-content content-section"
-                  data-section="sell-to-us-products"
-                  id="sell-to-us-products"
-                >
-                  <h2>Sell to Us Products</h2>
-                </div>
-                <!-- Pending Trades products content goes here -->
-                <div
-                  class="pending-trades-products-content content-section"
-                  data-section="pending-trades-products"
-                  id="pending-trades-products"
-                >
-                  <h2>Pending Trades Products</h2>
-                </div>
-                <!-- Out of Stock products content goes here -->
-                <div
-                  class="out-of-stock-products-content content-section"
-                  data-section="out-of-stock-products"
-                  id="out-of-stock-products"
-                >
-                  <h2>Out of Stock Products</h2>
-                </div>
-                <!-- Draft products content goes here -->
-                <div
-                  class="draft-products-content content-section"
-                  data-section="draft-products"
-                  id="draft-products"
-                >
-                  <h2>Draft Products</h2>
+
+                <!-- Content Sections -->
+                <div class="products-content">
+                  <!-- All products content goes here -->
+                  <div
+                    class="all-products-content content-section active"
+                    data-section="all-products"
+                    id="all-products"
+                  >
+                    <h2>All Products</h2>
+                  </div>
+                  <!-- Active products content goes here -->
+                  <div
+                    class="active-products-content content-section"
+                    data-section="active-products"
+                    id="active-products"
+                  >
+                    <h2>Active Products</h2>
+                  </div>
+                  <!-- For Trade products content goes here -->
+                  <div
+                    class="for-trade-products-content content-section"
+                    data-section="for-trade-products"
+                    id="for-trade-products"
+                  >
+                    <h2>For Trade Products</h2>
+                  </div>
+                  <!-- Sell to Us products content goes here -->
+                  <div
+                    class="sell-to-us-products-content content-section"
+                    data-section="sell-to-us-products"
+                    id="sell-to-us-products"
+                  >
+                    <h2>Sell to Us Products</h2>
+                  </div>
+                  <!-- Pending Trades products content goes here -->
+                  <div
+                    class="pending-trades-products-content content-section"
+                    data-section="pending-trades-products"
+                    id="pending-trades-products"
+                  >
+                    <h2>Pending Trades Products</h2>
+                  </div>
+                  <!-- Out of Stock products content goes here -->
+                  <div
+                    class="out-of-stock-products-content content-section"
+                    data-section="out-of-stock-products"
+                    id="out-of-stock-products"
+                  >
+                    <h2>Out of Stock Products</h2>
+                  </div>
+                  <!-- Draft products content goes here -->
+                  <div
+                    class="draft-products-content content-section"
+                    data-section="draft-products"
+                    id="draft-products"
+                  >
+                    <h2>Draft Products</h2>
+                  </div>
                 </div>
               </div>
             </section>

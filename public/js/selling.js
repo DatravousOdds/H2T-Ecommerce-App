@@ -21,7 +21,9 @@ sellingNavButtons.forEach((button) => {
 // Filter Menu
 
 const filterButtons = document.querySelectorAll(".filter-btn");
-const filterSections = document.querySelectorAll("#products .content-section");
+const filterSections = document.querySelectorAll(
+  ".products-content .content-section"
+);
 console.log("filterSections", filterSections);
 
 console.log("filterButtons", filterButtons);
@@ -34,9 +36,10 @@ filterButtons.forEach((btn) => {
     // Add active class to the clicked filter item
     btn.classList.add("active");
     const sectionId = btn.getAttribute("data-section");
-    console.log("sectionId", sectionId);
-    const sectionToShow = document.getElementById(sectionId);
-    // console.log("sectionToShow", sectionToShow);
-    // sectionToShow.classList.add("active");
+    if (sectionId) {
+      const sectionToShow = document.getElementById(sectionId);
+
+      sectionToShow.classList.add("active");
+    }
   });
 });
