@@ -24,6 +24,7 @@ const filterButtons = document.querySelectorAll(".filter-btn");
 const filterSections = document.querySelectorAll(
   ".products-content .content-section"
 );
+
 console.log("filterSections", filterSections);
 
 console.log("filterButtons", filterButtons);
@@ -33,6 +34,7 @@ filterButtons.forEach((btn) => {
     // Remove active class from all other filter items
     filterButtons.forEach((btn) => btn.classList.remove("active"));
     filterSections.forEach((section) => section.classList.remove("active"));
+
     // Add active class to the clicked filter item
     btn.classList.add("active");
     const sectionId = btn.getAttribute("data-section");
