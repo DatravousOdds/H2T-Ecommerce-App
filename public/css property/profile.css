@@ -2928,6 +2928,7 @@ h6 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 #orders-filters select {
   /* margin-bottom: 1rem; */
@@ -2977,7 +2978,19 @@ h6 {
   font-size: 1rem;
 }
 
+.trend-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
 .trend-icon.up {
+  color: var(--success-green-600);
+}
+
+.trend-status.up {
   color: var(--success-green-600);
 }
 
@@ -4563,6 +4576,7 @@ h6 {
   -ms-overflow-style: none;
   scrollbar-width: none;
   border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
 }
 
 .nav-menu::-webkit-scrollbar {
@@ -4681,6 +4695,46 @@ h6 {
 .product-table-container {
   width: 100%;
   overflow-x: auto;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  background-color: var(--bg-white);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: system-ui, -apple-system, sans-serif;
+  white-space: nowrap;
+}
+
+.order-table th {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.search-wrapper {
+  position: relative;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.search-wrapper button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 .trend-arrow.up {

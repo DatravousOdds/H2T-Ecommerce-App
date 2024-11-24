@@ -1874,92 +1874,114 @@
                 role="region"
                 aria-label="Orders Statistics"
               >
-                <article id="total-orders" class="orders-wrapper inner-wrapper">
-                  <h2 id="total-orders-heading">Total Orders</h2>
+                <article id="total-orders" class="orders-wrapper">
+                  <h2 class="total-orders-heading">Total Orders</h2>
                   <div class="total-orders-info">
-                    <strong class="stat-number">1,234</strong>
-                    <div class="trend-icon up">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="trend-status">+10.5%</span>
+                    <div class="trend-indicator">
+                      <strong class="stat-number">1,234</strong>
+                      <div class="trend-icon up">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                      </div>
+                      <span class="trend-status up">+10.5%</span>
                     </div>
                   </div>
                   <p class="default-paragraph">Compared to last month</p>
                 </article>
-                <div id="total-revenue" class="orders-wrapper inner-wrapper">
-                  <h2>Total Revenue</h2>
+
+                <article id="total-revenue" class="orders-wrapper">
+                  <h2 class="revenue-heading">Total Revenue</h2>
                   <div class="total-revenue-info">
-                    <h1>$123.45</h1>
-                    <div class="trend-icon up">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="trend-status">+10.5%</span>
+                    <strong class="stat-number">$123.45</strong>
+                    <div class="trend-indicator">
+                      <div class="trend-icon up">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                      </div>
+                      <span class="trend-status up">+10.5%</span>
                     </div>
                   </div>
                   <p class="default-paragraph">last month</p>
-                </div>
-                <div
-                  id="average-order-value"
-                  class="orders-wrapper inner-wrapper"
-                >
-                  <h2>Average Order Value</h2>
+                </article>
+
+                <article id="average-order-value" class="orders-wrapper">
+                  <h2 class="average-orders-heading">Average Order Value</h2>
                   <div class="average-orders-info">
-                    <h1>$123.45</h1>
-                    <div class="trend-icon up">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="trend-status">+10.5%</span>
+                    <strong class="stat-number">$123.45</strong>
+                    <div class="trend-indicator">
+                      <div class="trend-icon up">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                      </div>
+                      <span class="trend-status up">+10.5%</span>
                     </div>
                   </div>
                   <p class="default-paragraph">last month</p>
-                </div>
-                <div id="pending-orders" class="orders-wrapper inner-wrapper">
-                  <h2>Pending Orders</h2>
+                </article>
+                <article id="pending-orders" class="orders-wrapper">
+                  <h2 class="pending-orders-heading">Pending Orders</h2>
                   <div class="pending-orders-info">
-                    <h1>23</h1>
-                    <div class="trend-icon down">
-                      <i class="fa-solid fa-arrow-trend-down"></i>
-                      <span class="trend-status">-5</span>
+                    <strong class="stat-number">23</strong>
+                    <div class="trend-indicator">
+                      <div class="trend-icon down">
+                        <i class="fa-solid fa-arrow-trend-down"></i>
+                      </div>
+                      <span class="trend-status down">-5</span>
                     </div>
                   </div>
                   <p class="default-paragraph">yesterday</p>
-                </div>
+                </article>
               </div>
               <!-- Filter Component -->
-              <div id="orders-filters" class="recent-orders-filters">
-                <select id="orders-filter" title="Orders Filter">
+              <form
+                id="orders-filters"
+                class="recent-orders-filters"
+                role="search"
+              >
+                <select
+                  id="orders-filter"
+                  name="timeFilter"
+                  title="Orders Filter"
+                >
                   <option value="all">Recent Orders</option>
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
                   <option value="month">This Month</option>
                   <option value="year">This Year</option>
                 </select>
-                <button id="orders-filter-btn">
+
+                <button
+                  type="button"
+                  id="orders-filter-btn"
+                  aria-label="Filter Orders"
+                >
                   <i class="fa-solid fa-filter"></i>
                   Filter
                 </button>
+
                 <div class="search-bar">
                   <input type="text" placeholder="Search orders" />
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
-              </div>
+              </form>
+
               <!-- Order Table -->
-              <div class="product-table-container">
-                <table class="product-table">
+              <div class="table-responsive">
+                <table class="product-table order-table">
                   <thead>
                     <tr>
-                      <th>ORDER ID</th>
+                      <th scope="col">ORDER ID</th>
                       <!-- Product image, name, draft info -->
-                      <th>DATE</th>
+                      <th scope="col">DATE</th>
                       <!-- Progress of listing completion -->
-                      <th>CUSTOMER</th>
+                      <th scope="col">CUSTOMER</th>
                       <!-- Required fields still needed -->
-                      <th>ITEMS</th>
+                      <th scope="col">ITEMS</th>
                       <!-- When draft was started -->
-                      <th>TOTAL</th>
+                      <th scope="col">TOTAL</th>
                       <!-- Last edit timestamp -->
-                      <th>STATUS</th>
+                      <th scope="col">STATUS</th>
                       <!-- Product category -->
-                      <th>PAYMENT</th>
+                      <th scope="col">PAYMENT</th>
                       <!-- Draft pricing -->
-                      <th>ACTIONS</th>
+                      <th scope="col">ACTIONS</th>
                       <!-- Edit, Publish, Delete etc -->
                     </tr>
                   </thead>
