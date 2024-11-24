@@ -1863,20 +1863,28 @@
             </section>
 
             <!-- Orders Section -->
-            <section id="orders" class="content-section">
-              <!-- Orders Container -->
-              <div class="orders-container">
-                <div id="total-orders" class="orders-wrapper inner-wrapper">
-                  <h2>Total Orders</h2>
+            <section
+              id="orders"
+              class="content-section"
+              aria-label="Orders Overview"
+            >
+              <!-- Orders Statistics Cards -->
+              <div
+                class="orders-container"
+                role="region"
+                aria-label="Orders Statistics"
+              >
+                <article id="total-orders" class="orders-wrapper inner-wrapper">
+                  <h2 id="total-orders-heading">Total Orders</h2>
                   <div class="total-orders-info">
-                    <h1>1,234</h1>
+                    <strong class="stat-number">1,234</strong>
                     <div class="trend-icon up">
                       <i class="fa-solid fa-arrow-trend-up"></i>
                       <span class="trend-status">+10.5%</span>
                     </div>
                   </div>
-                  <p class="default-paragraph">last month</p>
-                </div>
+                  <p class="default-paragraph">Compared to last month</p>
+                </article>
                 <div id="total-revenue" class="orders-wrapper inner-wrapper">
                   <h2>Total Revenue</h2>
                   <div class="total-revenue-info">
@@ -2009,90 +2017,185 @@
             </section>
             <!-- Analytics Section -->
             <section id="analytics" class="content-section">
-              <div class="analytics-header">
-                <div class="analytics-title">
-                  <h2>Analytics</h2>
-                  <span class="analytics-tooltip"
-                    >Track your store's performance and growth</span
-                  >
-                </div>
-                <!-- Filters -->
-                <div class="analytics-filters-container">
-                  <div class="analytics-filters">
-                    <select id="analytics-filter" title="Analytics Filter">
+              <!-- Analytics Header -->
+              <header class="analytics-header">
+                <div class="analytics-header-container">
+                  <div class="analytics-title-group">
+                    <h1 class="analytics-heading">Analytics</h1>
+                    <span class="analytics-tooltip"
+                      >Track your store's performance and growth</span
+                    >
+                  </div>
+                  <!-- Filters -->
+
+                  <div class="analytics-select">
+                    <select title="Analytics Filter">
                       <option value="all">Last 7 days</option>
                       <option value="today">Today</option>
                     </select>
                   </div>
-                  <div class="analytics-export">
-                    <button id="analytics-export-btn">
-                      <i class="fa-solid fa-file-csv"></i>
-                      Export
-                    </button>
-                  </div>
+
+                  <button
+                    type="button"
+                    aria-label="Export analytics data"
+                    id="analytics-export-btn"
+                    class="export-button"
+                  >
+                    <i class="fa-solid fa-file-csv"></i>
+                    Export
+                  </button>
                 </div>
-                <!-- Analytics content goes here -->
-              </div>
-              <!-- Total Revenue -->
-              <div class="inner-wrapper">
-                <div class="analytics-content">
-                  <i class="fa-solid fa-dollar-sign"></i>
-                  <div class="analytics-stats">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    <p class="default-paragraph">+10.5%</p>
+              </header>
+              <!-- Analytics Content -->
+              <section class="metrics-grid">
+                <!-- Total Revenue -->
+                <article class="metric-card">
+                  <div class="metric-header">
+                    <h2 class="metric-title">Total Revenue</h2>
+                    <i class="fa-solid fa-dollar-sign"></i>
                   </div>
-                </div>
-                <p class="default-paragraph">Total Revenue</p>
-                <h1>$123.45</h1>
-              </div>
-              <!-- Total Orders -->
-              <div class="inner-wrapper">
-                <div class="analytics-content">
-                  <i class="fa-solid fa-cart-shopping"></i>
-                  <div class="analytics-stats">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    <p class="default-paragraph">+10.5%</p>
+                  <div class="metric-value">
+                    <h1>$123.45</h1>
+                    <span class="metric-trend">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span class="metric-trend-status">+10.5%</span>
+                    </span>
                   </div>
-                </div>
-                <p class="default-paragraph">Total Orders</p>
-                <h1>1,234</h1>
-              </div>
-              <!-- Average Order Value -->
-              <div class="inner-wrapper">
-                <div class="analytics-content">
-                  <i class="fa-solid fa-dollar-sign"></i>
-                  <div class="analytics-stats">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    <p class="default-paragraph">+10.5%</p>
+                  <p class="default-paragraph metric-subtitle">last month</p>
+                </article>
+                <!-- Total Orders -->
+                <article class="metric-card">
+                  <div class="metric-header">
+                    <h2 class="metric-title">Total Orders</h2>
+                    <i class="fa-solid fa-cart-shopping"></i>
                   </div>
-                </div>
-                <p class="default-paragraph">Average Order Value</p>
-                <h1>$123.45</h1>
-              </div>
-              <!-- Active Customers   -->
-              <div class="inner-wrapper">
-                <div class="analytics-content">
-                  <i class="fa-solid fa-user"></i>
-                  <div class="analytics-stats">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    <p class="default-paragraph">+10.5%</p>
+                  <div class="metric-value">
+                    <h1>1,234</h1>
+                    <span class="metric-trend">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span class="metric-trend-status">+10.5%</span>
+                    </span>
                   </div>
-                </div>
-                <p class="default-paragraph">Active Customers</p>
-                <h1>123</h1>
-              </div>
+                  <p class="default-paragraph metric-subtitle">last month</p>
+                </article>
+                <!-- Average Order Value -->
+                <article class="metric-card">
+                  <div class="metric-header">
+                    <h2 class="metric-title">Average Order Value</h2>
+                    <i class="fa-solid fa-dollar-sign"></i>
+                  </div>
+                  <div class="metric-value">
+                    <h1>$123.45</h1>
+                    <span class="metric-trend">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span class="metric-trend-status">+10.5%</span>
+                    </span>
+                  </div>
+                  <p class="default-paragraph metric-subtitle">last month</p>
+                </article>
+                <!-- Active Customers   -->
+                <article class="metric-card">
+                  <div class="metric-header">
+                    <h2 class="metric-title">Active Customers</h2>
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div class="metric-value">
+                    <h1>123</h1>
+                    <span class="metric-trend">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span class="metric-trend-status">+10.5%</span>
+                    </span>
+                  </div>
+                  <p class="default-paragraph metric-subtitle">last month</p>
+                </article>
+              </section>
 
               <!-- Revenue Overview -->
-              <div class="inner-wrapper">
-                <div class="analytics-content-header">
-                  <div class="analytics-title">
-                    <h2>Revenue Overview</h2>
-                    <span class="analytics-tooltip"
+              <section class="chart-section">
+                <header class="chart-header">
+                  <div class="chart-title-group">
+                    <h2 class="chart-title">Revenue Overview</h2>
+                    <span class="chart-tooltip"
                       >Track your store's revenue and growth</span
                     >
                   </div>
+                  <div class="chart-filters">
+                    <select title="Analytics Filter">
+                      <option value="all">All Time</option>
+                      <option value="today">Today</option>
+                    </select>
+                  </div>
+                </header>
+
+                <!-- Chart goes here -->
+                <div class="chart-container">
+                  <canvas id="revenueChart"></canvas>
                 </div>
-              </div>
+              </section>
+              <!-- Sales by Category -->
+              <section class="chart-section">
+                <div class="chart-header">
+                  <div class="chart-title-group">
+                    <h2 class="chart-title">Sales by Category</h2>
+                    <span class="chart-tooltip"
+                      >Track your store's sales by category</span
+                    >
+                  </div>
+                </div>
+                <!-- Pie Chart goes here -->
+                <div class="chart-container">
+                  <canvas id="categoryChartPie"></canvas>
+                </div>
+                <!-- Legend goes here -->
+                <div class="category-legend">
+                  <div class="category-item">
+                    <span class="category-color"></span>
+                    <span class="category-name">Sneakers</span>
+                    <span class="category-percentage">20%</span>
+                  </div>
+                  <div class="category-item">
+                    <span class="category-color"></span>
+                    <span class="category-name">T-Shirts</span>
+                    <span class="category-percentage">20%</span>
+                  </div>
+                  <div class="category-item">
+                    <span class="category-color"></span>
+                    <span class="category-name">Hoodies</span>
+                    <span class="category-percentage">20%</span>
+                  </div>
+                  <div class="category-item">
+                    <span class="category-color"></span>
+                    <span class="category-name">Accessories</span>
+                    <span class="category-percentage">20%</span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Order Timeline   -->
+              <section class="chart-section">
+                <!-- Analytics Header -->
+                <div class="chart-header">
+                  <div class="chart-title-group">
+                    <h2 class="chart-title">Order Timeline</h2>
+                    <span class="chart-tooltip"
+                      >Track your store's order timeline</span
+                    >
+                  </div>
+                  <div class="chart-filters">
+                    <select title="Orders Filter">
+                      <option value="all">Daily</option>
+                      <option value="today">Today</option>
+                      <option value="week">This Week</option>
+                      <option value="month">This Month</option>
+                      <option value="year">This Year</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- Chart goes here -->
+                <div class="chart-container">
+                  <canvas id="orderTimelineBarChart"></canvas>
+                </div>
+              </section>
             </section>
           </div>
         </div>
@@ -3342,7 +3445,7 @@
     <script src="js/footer.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/selling.js"></script>
-    <script src="js/Chart.js"></script>
+    <script type="module" src="js/Chart.js"></script>
     <script src="js/home.js"></script>
   </body>
 </html>
