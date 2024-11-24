@@ -714,8 +714,8 @@
                   </button>
                 </li>
                 <li>
-                  <button type="button" class="nav-button" data-tab="reviews">
-                    Reviews
+                  <button type="button" class="nav-button" data-tab="analytics">
+                    Analytics
                   </button>
                 </li>
               </ul>
@@ -779,7 +779,7 @@
                 <div class="recent-activity-list">
                   <!-- code to display recent activity -->
                   <div class="recent-activity-item">
-                    <div class="recent-activity-icon warning">
+                    <div class="recent-activity-icon low-stock-alert">
                       <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div class="recent-acivity-alert">
@@ -787,7 +787,8 @@
                         Low Stock Alert
                       </p>
                       <p class="default-paragraph">
-                        Vintage Camera <span>(5 remaining)</span>
+                        Vintage Camera
+                        <span class="warning">(5 remaining)</span>
                       </p>
                       <p class="timestamp-activity default-paragraph">
                         2 hours ago
@@ -796,7 +797,7 @@
                   </div>
                   <div class="recent-activity-item">
                     <div class="recent-activity-icon received">
-                      <i class="fa-solid fa-cart-shopping"></i>
+                      <i class="fa-solid fa-bag-shopping"></i>
                     </div>
                     <div class="recent-acivity-alert">
                       <p class="default-paragraph activity-title">
@@ -813,39 +814,10 @@
                 </div>
               </div>
             </section>
+
             <!-- Products Section -->
             <section id="products" class="content-section">
-              <div class="inner-wrapper mx-width-100">
-                <div class="products-header">
-                  <div class="search-bar">
-                    <input type="text" placeholder="Search products" />
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                  </div>
-                  <div class="filter-dropdown">
-                    <button class="filter-btn">
-                      <i class="fa-solid fa-filter"></i>
-                      Filter
-                    </button>
-                  </div>
-                  <div class="trade-request">
-                    <button id="trade-request-btn">
-                      <i class="fa-solid fa-right-left"></i>
-                      Trade Request
-                    </button>
-                  </div>
-                  <div class="sell-to-us">
-                    <button id="sell-to-us-btn">
-                      <i class="fa-solid fa-dollar-sign"></i>
-                      Sell to us
-                    </button>
-                  </div>
-                  <div class="list-products">
-                    <button id="list-products-btn">
-                      <i class="fa-solid fa-plus"></i>
-                      List Products
-                    </button>
-                  </div>
-                </div>
+              <div class="mx-width-100">
                 <div class="products-overview">
                   <!-- code to display products overview -->
                   <div
@@ -881,6 +853,36 @@
                       <i class="fa-solid fa-arrow-trend-up"></i>
                     </div>
                     <p>$45,231.89</p>
+                  </div>
+                </div>
+                <div class="products-header">
+                  <div class="search-bar">
+                    <input type="text" placeholder="Search products" />
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </div>
+                  <div class="filter-dropdown">
+                    <button class="filter-btn">
+                      <i class="fa-solid fa-filter"></i>
+                      Filter
+                    </button>
+                  </div>
+                  <div class="trade-request">
+                    <button id="trade-request-btn">
+                      <i class="fa-solid fa-right-left"></i>
+                      Trade Request
+                    </button>
+                  </div>
+                  <div class="sell-to-us">
+                    <button id="sell-to-us-btn">
+                      <i class="fa-solid fa-dollar-sign"></i>
+                      Sell to us
+                    </button>
+                  </div>
+                  <div class="list-products">
+                    <button id="list-products-btn">
+                      <i class="fa-solid fa-plus"></i>
+                      List Products
+                    </button>
                   </div>
                 </div>
                 <!-- Filter Menu -->
@@ -1697,9 +1699,7 @@
                                 </div>
                                 <div class="product-details">
                                   <p class="product-name">Nike Dunk Low</p>
-                                  <p class="product-id">
-                                    Draft ID: #DFT-2024112
-                                  </p>
+                                  <p class="product-id">ID: #DFT-2024112</p>
                                 </div>
                               </div>
                             </td>
@@ -1865,33 +1865,57 @@
             <!-- Orders Section -->
             <section id="orders" class="content-section">
               <!-- Orders Container -->
-              <div class="inner-wrapper orders-container">
+              <div class="orders-container">
                 <div id="total-orders" class="orders-wrapper inner-wrapper">
                   <h2>Total Orders</h2>
-                  <h1>1,234</h1>
-                  <p class="default-paragraph">+20.1% from last month</p>
+                  <div class="total-orders-info">
+                    <h1>1,234</h1>
+                    <div class="trend-icon up">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span class="trend-status">+10.5%</span>
+                    </div>
+                  </div>
+                  <p class="default-paragraph">last month</p>
                 </div>
                 <div id="total-revenue" class="orders-wrapper inner-wrapper">
                   <h2>Total Revenue</h2>
-                  <h1>$45,231.89</h1>
-                  <p class="default-paragraph">+10.5% from last month</p>
+                  <div class="total-revenue-info">
+                    <h1>$123.45</h1>
+                    <div class="trend-icon up">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span class="trend-status">+10.5%</span>
+                    </div>
+                  </div>
+                  <p class="default-paragraph">last month</p>
                 </div>
                 <div
                   id="average-order-value"
                   class="orders-wrapper inner-wrapper"
                 >
                   <h2>Average Order Value</h2>
-                  <h1>$123.45</h1>
-                  <p class="default-paragraph">+20.1% from last month</p>
+                  <div class="average-orders-info">
+                    <h1>$123.45</h1>
+                    <div class="trend-icon up">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span class="trend-status">+10.5%</span>
+                    </div>
+                  </div>
+                  <p class="default-paragraph">last month</p>
                 </div>
                 <div id="pending-orders" class="orders-wrapper inner-wrapper">
                   <h2>Pending Orders</h2>
-                  <h1>23</h1>
-                  <p class="default-paragraph">-5 from yesterday</p>
+                  <div class="pending-orders-info">
+                    <h1>23</h1>
+                    <div class="trend-icon down">
+                      <i class="fa-solid fa-arrow-trend-down"></i>
+                      <span class="trend-status">-5</span>
+                    </div>
+                  </div>
+                  <p class="default-paragraph">yesterday</p>
                 </div>
               </div>
               <!-- Filter Component -->
-              <div id="orders-filters" class="orders-filters">
+              <div id="orders-filters" class="recent-orders-filters">
                 <select id="orders-filter" title="Orders Filter">
                   <option value="all">Recent Orders</option>
                   <option value="today">Today</option>
@@ -1899,175 +1923,176 @@
                   <option value="month">This Month</option>
                   <option value="year">This Year</option>
                 </select>
+                <button id="orders-filter-btn">
+                  <i class="fa-solid fa-filter"></i>
+                  Filter
+                </button>
                 <div class="search-bar">
                   <input type="text" placeholder="Search orders" />
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </div>
               </div>
               <!-- Order Table -->
-              <table class="product-table">
-                <thead>
-                  <tr>
-                    <th>ORDER ID</th>
-                    <!-- Product image, name, draft info -->
-                    <th>DATE</th>
-                    <!-- Progress of listing completion -->
-                    <th>CUSTOMER</th>
-                    <!-- Required fields still needed -->
-                    <th>ITEMS</th>
-                    <!-- When draft was started -->
-                    <th>TOTAL</th>
-                    <!-- Last edit timestamp -->
-                    <th>STATUS</th>
-                    <!-- Product category -->
-                    <th>PAYMENT</th>
-                    <!-- Draft pricing -->
-                    <th>ACTIONS</th>
-                    <!-- Edit, Publish, Delete etc -->
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="product-row">
-                    <td>
-                      <div class="product-info">
-                        <div class="product-details">
-                          <p class="product-id">Draft ID: #DFT-2024112</p>
+              <div class="product-table-container">
+                <table class="product-table">
+                  <thead>
+                    <tr>
+                      <th>ORDER ID</th>
+                      <!-- Product image, name, draft info -->
+                      <th>DATE</th>
+                      <!-- Progress of listing completion -->
+                      <th>CUSTOMER</th>
+                      <!-- Required fields still needed -->
+                      <th>ITEMS</th>
+                      <!-- When draft was started -->
+                      <th>TOTAL</th>
+                      <!-- Last edit timestamp -->
+                      <th>STATUS</th>
+                      <!-- Product category -->
+                      <th>PAYMENT</th>
+                      <!-- Draft pricing -->
+                      <th>ACTIONS</th>
+                      <!-- Edit, Publish, Delete etc -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="product-row">
+                      <td>
+                        <div class="product-info">
+                          <div class="product-details">
+                            <p class="product-id">Draft ID: #DFT-2024112</p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="completion-info">
-                        <div class="progress-bar">
-                          <div class="progress" style="width: 75%"></div>
+                      </td>
+                      <td>
+                        <div class="date-info">
+                          <span class="date">Nov 22, 2024</span>
                         </div>
-                        <span class="completion-text">75% Complete</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="missing-info">
-                        <ul class="missing-list">
-                          <li class="missing-item">
-                            <svg
-                              class="missing-icon"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              width="12"
-                              height="12"
-                            >
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <line x1="12" y1="8" x2="12" y2="12"></line>
-                              <line x1="12" y1="16" x2="12" y2="16"></line>
-                            </svg>
-                            Product Photos
-                          </li>
-                          <li class="missing-item">
-                            <svg
-                              class="missing-icon"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              width="12"
-                              height="12"
-                            >
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <line x1="12" y1="8" x2="12" y2="12"></line>
-                              <line x1="12" y1="16" x2="12" y2="16"></line>
-                            </svg>
-                            Description
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="date-info">
-                        <span class="date">Nov 22, 2024</span>
-                        <span class="time">2:30 PM</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="date-info">
-                        <span class="date">Nov 22, 2024</span>
-                        <span class="time">4:45 PM</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="category-info">
-                        <span class="category-badge">Sneakers</span>
-                        <span class="sub-category">Lifestyle</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="price-info">
-                        <span class="draft-price">$159.99</span>
-                        <span class="price-status">Not Published</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="action-buttons">
-                        <button
-                          class="action-button edit"
-                          aria-label="Edit Draft"
-                        >
-                          <svg
-                            class="action-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                          >
-                            <path
-                              d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                            ></path>
-                            <path
-                              d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                            ></path>
-                          </svg>
-                        </button>
-                        <button
-                          class="action-button publish"
-                          aria-label="Publish Draft"
-                        >
-                          <svg
-                            class="action-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                          >
-                            <path d="M12 20V10"></path>
-                            <path d="M18 14l-6-6-6 6"></path>
-                          </svg>
-                        </button>
-                        <button
-                          class="action-button delete"
-                          aria-label="Delete Draft"
-                        >
-                          <svg
-                            class="action-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                          >
-                            <path d="M3 6h18"></path>
-                            <path
-                              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                            ></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      </td>
+                      <td>
+                        <div class="customer-info">
+                          <span class="customer-name">John Doe</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="items-info">
+                          <span class="items">2</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="total-info">
+                          <span class="total">$159.99</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="status-info">
+                          <span class="status-badge pending">Pending</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="payment-info">
+                          <span class="payment-method">Credit Card</span>
+                          <span class="payment-status">Not Paid</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="action-buttons">
+                          <button class="action-button view">
+                            View Details
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </section>
-            <!-- Reviews Section -->
-            <section id="reviews" class="content-section">
-              <h2>Reviews Content</h2>
-              <!-- Reviews content goes here -->
+            <!-- Analytics Section -->
+            <section id="analytics" class="content-section">
+              <div class="analytics-header">
+                <div class="analytics-title">
+                  <h2>Analytics</h2>
+                  <span class="analytics-tooltip"
+                    >Track your store's performance and growth</span
+                  >
+                </div>
+                <!-- Filters -->
+                <div class="analytics-filters-container">
+                  <div class="analytics-filters">
+                    <select id="analytics-filter" title="Analytics Filter">
+                      <option value="all">Last 7 days</option>
+                      <option value="today">Today</option>
+                    </select>
+                  </div>
+                  <div class="analytics-export">
+                    <button id="analytics-export-btn">
+                      <i class="fa-solid fa-file-csv"></i>
+                      Export
+                    </button>
+                  </div>
+                </div>
+                <!-- Analytics content goes here -->
+              </div>
+              <!-- Total Revenue -->
+              <div class="inner-wrapper">
+                <div class="analytics-content">
+                  <i class="fa-solid fa-dollar-sign"></i>
+                  <div class="analytics-stats">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <p class="default-paragraph">+10.5%</p>
+                  </div>
+                </div>
+                <p class="default-paragraph">Total Revenue</p>
+                <h1>$123.45</h1>
+              </div>
+              <!-- Total Orders -->
+              <div class="inner-wrapper">
+                <div class="analytics-content">
+                  <i class="fa-solid fa-cart-shopping"></i>
+                  <div class="analytics-stats">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <p class="default-paragraph">+10.5%</p>
+                  </div>
+                </div>
+                <p class="default-paragraph">Total Orders</p>
+                <h1>1,234</h1>
+              </div>
+              <!-- Average Order Value -->
+              <div class="inner-wrapper">
+                <div class="analytics-content">
+                  <i class="fa-solid fa-dollar-sign"></i>
+                  <div class="analytics-stats">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <p class="default-paragraph">+10.5%</p>
+                  </div>
+                </div>
+                <p class="default-paragraph">Average Order Value</p>
+                <h1>$123.45</h1>
+              </div>
+              <!-- Active Customers   -->
+              <div class="inner-wrapper">
+                <div class="analytics-content">
+                  <i class="fa-solid fa-user"></i>
+                  <div class="analytics-stats">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <p class="default-paragraph">+10.5%</p>
+                  </div>
+                </div>
+                <p class="default-paragraph">Active Customers</p>
+                <h1>123</h1>
+              </div>
+
+              <!-- Revenue Overview -->
+              <div class="inner-wrapper">
+                <div class="analytics-content-header">
+                  <div class="analytics-title">
+                    <h2>Revenue Overview</h2>
+                    <span class="analytics-tooltip"
+                      >Track your store's revenue and growth</span
+                    >
+                  </div>
+                </div>
+              </div>
             </section>
           </div>
         </div>
