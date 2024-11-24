@@ -2868,12 +2868,18 @@ h6 {
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
-
-.orders-filters {
+#orders-filters select {
+  margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px;
+  border-radius: 8px;
   gap: 1rem;
+}
+
+.orders-wrapper h2 {
+  font-size: 1.5rem;
 }
 
 /* Responsive Adjustments */
@@ -4451,6 +4457,7 @@ h6 {
 .product-name {
   font-weight: 500;
   margin: 0;
+  white-space: nowrap;
 }
 
 .product-type {
