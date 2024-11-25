@@ -771,7 +771,7 @@
               <!-- Selling Chart Section -->
               <section class="chart-section" aria-label="Sales Overview">
                 <header>
-                  <h2>Sales Overview</h2>
+                  <h2 class="chart-title">Sales Overview</h2>
                 </header>
 
                 <div
@@ -787,7 +787,7 @@
               <!-- Recent Activity Section -->
               <div class="activity-section">
                 <header class="activity-header">
-                  <h2>Recent Activity</h2>
+                  <h2 class="chart-title">Recent Activity</h2>
                   <a href="#" class="view-all-link">View All</a>
                 </header>
 
@@ -3440,9 +3440,135 @@
           </div>
         </div>
         <!-- Favorites Content-->
-        <div class="tab" id="favorites">Favorites</div>
+        <div class="tab" id="favorites">
+          <main class="favorites-section" role="main">
+            <header class="favorites-header">
+              <h1>Your Favorites</h1>
+              <p>
+                Save your favorite items here. You can find them in your
+                favorites list anytime.
+              </p>
+            </header>
+
+            <section
+              class="favorites-content"
+              aria-labelledby="favorites-title"
+            >
+              <div class="empty-state">
+                <div class="no-favorites">
+                  <!--  svg heart icon -->
+                  <div class="icon-background"></div>
+                  <h2 class="emptyq-title">No favorites yet</h2>
+                  <p class="empty-message">
+                    Start adding some items to your favorites list
+                  </p>
+                </div>
+              </div>
+
+              <div class="favorite-grid" role="list" hidden>
+                <!-- Favorite items would be dynamically added here -->
+              </div>
+            </section>
+          </main>
+        </div>
         <!-- Notification Content-->
-        <div class="tab" id="notification">Notification</div>
+        <div class="tab" id="notification">
+          <section class="notification-settings">
+            <!-- Notification Header -->
+            <header class="settings-header">
+              <div class="icon-wrapper">
+                <i class="fa-solid fa-bell"></i>
+              </div>
+              <h1>Notification Settings</h1>
+            </header>
+            <!-- Notification Content -->
+            <div class="settings-content">
+              <header class="content-header">
+                <h2>Notification Preferences</h2>
+                <p class="default-paragraph description">
+                  Choose which notifications you'd like to receive
+                </p>
+              </header>
+
+              <!-- Notification Options -->
+              <div class="notification-options">
+                <!-- Order Updates -->
+                <div class="notification-item">
+                  <div class="item-content">
+                    <div class="icon-wrapper">
+                      <i class="fa-solid fa-box"></i>
+                    </div>
+                    <div class="text-content">
+                      <h3>Order Updates</h3>
+                      <p class="default-paragraph description">
+                        Receive updates about your orders
+                      </p>
+                    </div>
+                  </div>
+
+                  <label for="order-updates" class="toggle-switch">
+                    <input type="checkbox" id="order-updates" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <!-- Price Alerts -->
+                <div class="notification-item">
+                  <div class="item-content">
+                    <div class="icon-wrapper">
+                      <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
+                    <div class="text-content">
+                      <h3>Price Alerts</h3>
+                      <p class="default-paragraph description">
+                        Receive alerts when your favorite items go on sale
+                      </p>
+                    </div>
+                  </div>
+                  <label for="price-alerts" class="toggle-switch">
+                    <input type="checkbox" id="price-alerts" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <!-- Security Alerts -->
+                <div class="notification-item">
+                  <div class="item-content">
+                    <div class="icon-wrapper">
+                      <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div class="text-content">
+                      <h3>Security Alerts</h3>
+                      <p class="default-paragraph description">
+                        Receive alerts about your account security
+                      </p>
+                    </div>
+                  </div>
+                  <label for="security-alerts" class="toggle-switch">
+                    <input type="checkbox" id="security-alerts" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              <!-- Messages -->
+              <div class="notification-item">
+                <div class="item-content">
+                  <div class="icon-wrapper">
+                    <i class="fa-solid fa-envelope"></i>
+                  </div>
+                  <div class="text-content">
+                    <h3>Messages</h3>
+                    <p class="default-paragraph description">
+                      Receive messages about your account
+                    </p>
+                  </div>
+                </div>
+                <label for="messages-alerts" class="toggle-switch">
+                  <input type="checkbox" id="messages-alerts" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </section>
+        </div>
         <!-- Purchases Content-->
         <div class="tab" id="purchases">Purchases</div>
         <!-- Settings Content-->
