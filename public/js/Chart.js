@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
       {
-        label: "Revenue",
+        label: "Sales",
         data: [35231, 38420, 42150, 40280, 43900, 45231],
         borderColor: "#dc2626",
         backgroundColor: "rgba(220, 38, 38, 0.1)",
@@ -58,6 +58,11 @@ document.addEventListener("DOMContentLoaded", () => {
       {
         label: "Revenue",
         data: [35231, 38420, 42150, 40280, 43900, 45231],
+        backgroundColor: "rgba(220, 38, 38, 0.1)",
+        borderColor: "#dc2626",
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
       },
     ],
   };
