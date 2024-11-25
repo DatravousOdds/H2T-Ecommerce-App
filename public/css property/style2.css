@@ -1644,6 +1644,8 @@ footer .rights {
 @media (max-width: 1658px) {
   .search_box form {
     width: 50%;
+    height: 100%;
+    max-height: 60px;
   }
 
   .section-p1 {

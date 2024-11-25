@@ -1861,7 +1861,7 @@ button:disabled {
 .tab {
   gap: 10px;
   width: 100%;
-  max-width: 100%;
+  max-width: 80%;
   /* height: 100%; */
   flex-direction: column;
   /* border: 2px solid black; */
@@ -4819,7 +4819,7 @@ h6 {
 }
 
 .products-overview p {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 500;
   color: #111827;
 }
@@ -5218,9 +5218,19 @@ h6 {
 
 /* Notification Settings */
 
+#notification h3 {
+  font-size: 1rem;
+  margin: 0 !important;
+}
+
+#notification .description {
+  font-size: 1rem !important;
+  font-weight: 500;
+}
+
 #notification .notification-item {
   padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  /* border-bottom: 1px solid #e5e7eb; */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -5550,7 +5560,7 @@ h6 {
 @media (min-width: 768px) and (max-width: 991.98px) {
   .orders-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 
   .mx-width-100 {
