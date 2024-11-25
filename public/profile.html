@@ -723,288 +723,436 @@
             <!-- Overview Section -->
             <section class="content-section active" id="overview">
               <!-- Overview Section -->
-              <div class="selling-section">
-                <div class="total-revenue inner-wrapper-div">
-                  <div class="title-wrapper">
+              <section class="stat-grid" aria-label="Performance Metrics">
+                <article class="stat-card">
+                  <header class="card-header">
                     <h2>Total Revenue</h2>
                     <i class="fa-solid fa-dollar-sign blue"></i>
-                  </div>
-                  <h1 class="font-600">$45,231.89</h1>
-                  <p class="green margin-bottom-0">+20.1% from last month</p>
-                </div>
-                <div class="active-listing inner-wrapper-div">
-                  <div class="title-wrapper">
+                  </header>
+                  <p class="stat-value">$45,231.89</p>
+                  <p class="trend-indicator trend-positive">
+                    +20.1% from last month
+                  </p>
+                </article>
+                <article class="stat-card">
+                  <header class="card-header">
                     <h2>Active Listings</h2>
                     <i class="fa-solid fa-box blue"></i>
-                  </div>
-                  <h1 class="font-600">456</h1>
-                  <p class="blue">+19 new listings this month</p>
-                </div>
-                <div class="product-sold inner-wrapper-div">
-                  <div class="title-wrapper">
+                  </header>
+                  <p class="stat-value">456</p>
+                  <p class="trend-indicator trend-neutral">
+                    +19 new listings this month
+                  </p>
+                </article>
+                <article class="stat-card">
+                  <header class="card-header">
                     <h2>Products Sold</h2>
                     <i class="fa-solid fa-boxes-stacked blue"></i>
-                  </div>
+                  </header>
 
-                  <h1 class="font-600">1,234</h1>
-                  <p class="margin-bottom-0 blue">+123 in the last 30 days</p>
-                </div>
-                <div class="seller-rate inner-wrapper-div">
-                  <div class="title-wrapper">
+                  <p class="stat-value">1,234</p>
+                  <p class="trend-indicator trend-neutral">
+                    +123 in the last 30 days
+                  </p>
+                </article>
+                <article class="stat-card">
+                  <header class="card-header">
                     <h2>Seller Rating</h2>
                     <i class="fa-solid fa-star rating"></i>
-                  </div>
+                  </header>
 
-                  <h1 class="font-600">4.5</h1>
-                  <p class="margin-bottom-0 green">+0.2 from last month</p>
-                </div>
-              </div>
+                  <p class="stat-value">4.5</p>
+                  <p class="trend-indicator trend-positive">
+                    +0.2 from last month
+                  </p>
+                </article>
+              </section>
+
               <!-- Selling Chart Section -->
-              <div class="selling-chart-container inner-wrapper-div mg-1">
-                <h2 class="font-600 font-15">Sales Overview</h2>
-                <div class="selling-chart">
+              <section class="chart-section" aria-label="Sales Overview">
+                <header>
+                  <h2>Sales Overview</h2>
+                </header>
+
+                <div
+                  class="chart-container"
+                  role="img"
+                  aria-label="Sales trend chart"
+                >
                   <!-- code to display chart -->
                   <canvas id="salesChart" height="300"></canvas>
                 </div>
-              </div>
-              <!-- Recent Activity Section -->
-              <div class="recent-activity-container inner-wrapper-div mg-1">
-                <div class="recent-activity-header">
-                  <h1 class="font-600 font-15">Recent Activity</h1>
-                  <div class="view-all">
-                    <a>View All</a>
-                  </div>
-                </div>
+              </section>
 
-                <div class="recent-activity-list">
+              <!-- Recent Activity Section -->
+              <div class="activity-section">
+                <header class="activity-header">
+                  <h2>Recent Activity</h2>
+                  <a href="#" class="view-all-link">View All</a>
+                </header>
+
+                <div class="activity-list">
                   <!-- code to display recent activity -->
-                  <div class="recent-activity-item">
-                    <div class="recent-activity-icon low-stock-alert">
+                  <article class="activity-item">
+                    <div class="activity-icon icon-warning">
                       <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
-                    <div class="recent-acivity-alert">
-                      <p class="default-paragraph activity-title">
-                        Low Stock Alert
-                      </p>
-                      <p class="default-paragraph">
+                    <div class="activity-content">
+                      <p class="activity-title">Low Stock Alert</p>
+                      <p class="default-paragraph activity-detail">
                         Vintage Camera
-                        <span class="warning">(5 remaining)</span>
+                        <span class="warning-text">(5 remaining)</span>
                       </p>
-                      <p class="timestamp-activity default-paragraph">
-                        2 hours ago
-                      </p>
+                      <p class="activity-time default-paragraph">2 hours ago</p>
                     </div>
-                  </div>
-                  <div class="recent-activity-item">
-                    <div class="recent-activity-icon received">
+                  </article>
+                  <article class="activity-item">
+                    <div class="activity-icon icon-success">
                       <i class="fa-solid fa-bag-shopping"></i>
                     </div>
-                    <div class="recent-acivity-alert">
-                      <p class="default-paragraph activity-title">
-                        New Order Received
-                      </p>
-                      <p class="default-paragraph">
+                    <div class="activity-content">
+                      <p class="activity-title">New Order Received</p>
+                      <p class="activity-detail">
                         Leather Backpack <span>x2</span>
                       </p>
-                      <p class="timestamp-activity default-paragraph">
-                        5 hours ago
-                      </p>
+                      <p class="activity-time default-paragraph">5 hours ago</p>
                     </div>
-                  </div>
+                  </article>
                 </div>
               </div>
             </section>
 
             <!-- Products Section -->
-            <section id="products" class="content-section">
-              <div class="mx-width-100">
-                <div class="products-overview">
-                  <!-- code to display products overview -->
-                  <div
-                    id="active-listings"
-                    class="active-listings inner-wrapper-div"
+            <section
+              id="products"
+              class="content-section"
+              aria-label="Products Management"
+            >
+              <div class="products-overview" role="region">
+                <!-- code to display products overview -->
+                <article id="active-listings" class="stat-card">
+                  <header class="stat-header">
+                    <h2>Active Listings</h2>
+                    <i class="fa-solid fa-tag"></i>
+                  </header>
+                  <p class="stat-card-value">892</p>
+                </article>
+
+                <article id="trade-offers" class="stat-card">
+                  <header class="stat-header">
+                    <h2>Trade Offers</h2>
+                    <i class="fa-solid fa-right-left"></i>
+                  </header>
+                  <p class="stat-card-value">24</p>
+                </article>
+                <article id="sell-to-us-requests" class="stat-card">
+                  <header class="stat-header">
+                    <h2>Sell to Us Requests</h2>
+                    <i class="fa-solid fa-dollar-sign"></i>
+                  </header>
+                  <p class="stat-card-value">12</p>
+                </article>
+                <article id="total-sales" class="stat-card">
+                  <header class="stat-header">
+                    <h2>Total Sales</h2>
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                  </header>
+                  <p class="stat-card-value">$45,231.89</p>
+                </article>
+              </div>
+
+              <!-- Products Controls -->
+              <div class="products-header products-controls">
+                <form class="search-bar" role="search">
+                  <label class="visually-hidden product-search"
+                    >Search products</label
                   >
-                    <div class="title-wrapper">
-                      <h2>Active Listings</h2>
-                      <i class="fa-solid fa-tag"></i>
-                    </div>
-                    <p>892</p>
-                  </div>
-                  <div id="trade-offers" class="trade-offers inner-wrapper-div">
-                    <div class="title-wrapper">
-                      <h2>Trade Offers</h2>
-                      <i class="fa-solid fa-right-left"></i>
-                    </div>
-                    <p>24</p>
-                  </div>
-                  <div
-                    id="sell-to-us-requests"
-                    class="sell-to-us-requests inner-wrapper-div"
-                  >
-                    <div class="title-wrapper">
-                      <h2>Sell to Us Requests</h2>
-                      <i class="fa-solid fa-dollar-sign"></i>
-                    </div>
-                    <p>12</p>
-                  </div>
-                  <div id="total-sales" class="total-sales inner-wrapper-div">
-                    <div class="title-wrapper">
-                      <h2>Total Sales</h2>
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                    </div>
-                    <p>$45,231.89</p>
-                  </div>
-                </div>
-                <div class="products-header">
-                  <div class="search-bar">
-                    <input type="text" placeholder="Search products" />
+                  <div class="search-wrapper">
+                    <input
+                      type="text"
+                      id="product-search"
+                      placeholder="Search products"
+                      aria-label="Search products"
+                    />
                     <i class="fa-solid fa-magnifying-glass"></i>
                   </div>
+                </form>
+
+                <div class="action-buttons">
                   <div class="filter-dropdown">
-                    <button class="filter-btn">
+                    <button type="button" class="filter-btn">
                       <i class="fa-solid fa-filter"></i>
                       Filter
                     </button>
                   </div>
                   <div class="trade-request">
-                    <button id="trade-request-btn">
+                    <button type="button" id="trade-request-btn">
                       <i class="fa-solid fa-right-left"></i>
                       Trade Request
                     </button>
                   </div>
                   <div class="sell-to-us">
-                    <button id="sell-to-us-btn">
+                    <button type="button" id="sell-to-us-btn">
                       <i class="fa-solid fa-dollar-sign"></i>
                       Sell to us
                     </button>
                   </div>
                   <div class="list-products">
-                    <button id="list-products-btn">
+                    <button
+                      type="button"
+                      id="list-products-btn"
+                      class="btn-add"
+                    >
                       <i class="fa-solid fa-plus"></i>
                       List Products
                     </button>
                   </div>
                 </div>
-                <!-- Filter Menu -->
+              </div>
+
+              <!-- Filter Menu -->
+              <nav
+                id="filter-menu"
+                class="filter-menu dashboard-nav-container filter-nav"
+              >
+                <ul class="filter-list" role="tablist">
+                  <li role="presentation" class="filter-item">
+                    <button
+                      role="tab"
+                      aria-selected="true"
+                      type="button"
+                      data-section="all-products"
+                      class="filter-btn active"
+                    >
+                      All
+                    </button>
+                  </li>
+                  <li role="presentation" class="filter-item">
+                    <button
+                      role="tab"
+                      aria-selected="false"
+                      type="button"
+                      data-section="active-products"
+                      class="filter-btn"
+                    >
+                      Active
+                    </button>
+                  </li>
+                  <li role="presentation" class="filter-item">
+                    <button
+                      role="tab"
+                      aria-selected="false"
+                      type="button"
+                      data-section="for-trade-products"
+                      class="filter-btn"
+                    >
+                      For Trade
+                    </button>
+                  </li>
+                  <li role="presentation" class="filter-item">
+                    <button
+                      role="tab"
+                      aria-selected="false"
+                      type="button"
+                      data-section="sell-to-us-products"
+                      class="filter-btn"
+                    >
+                      Sell to Us
+                    </button>
+                  </li>
+                  <li role="presentation" class="filter-item">
+                    <button
+                      role="tab"
+                      aria-selected="false"
+                      type="button"
+                      data-section="pending-trades-products"
+                      class="filter-btn"
+                    >
+                      Pending Trades
+                    </button>
+                  </li>
+                  <li role="presentation" class="filter-item">
+                    <button
+                      role="tab"
+                      aria-selected="false"
+                      type="button"
+                      data-section="out-of-stock-products"
+                      class="filter-btn"
+                    >
+                      Out of Stock
+                    </button>
+                  </li>
+                  <li role="presentation" class="filter-item">
+                    <button
+                      role="tab"
+                      aria-selected="false"
+                      type="button"
+                      data-section="draft-products"
+                      class="filter-btn"
+                    >
+                      Draft
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+
+              <!-- Content Sections -->
+              <div class="products-content">
+                <!-- All products content goes here -->
                 <div
-                  id="filter-menu"
-                  class="filter-menu dashboard-nav-container"
+                  class="all-products-content content-section active"
+                  data-section="all-products"
+                  id="all-products"
                 >
-                  <ul class="filter-list">
-                    <li class="filter-item">
-                      <button
-                        type="button"
-                        data-section="all-products"
-                        class="filter-btn active"
-                      >
-                        All
-                      </button>
-                    </li>
-                    <li class="filter-item">
-                      <button
-                        type="button"
-                        data-section="active-products"
-                        class="filter-btn"
-                      >
-                        Active
-                      </button>
-                    </li>
-                    <li class="filter-item">
-                      <button
-                        type="button"
-                        data-section="for-trade-products"
-                        class="filter-btn"
-                      >
-                        For Trade
-                      </button>
-                    </li>
-                    <li class="filter-item">
-                      <button
-                        type="button"
-                        data-section="sell-to-us-products"
-                        class="filter-btn"
-                      >
-                        Sell to Us
-                      </button>
-                    </li>
-                    <li class="filter-item">
-                      <button
-                        type="button"
-                        data-section="pending-trades-products"
-                        class="filter-btn"
-                      >
-                        Pending Trades
-                      </button>
-                    </li>
-                    <li class="filter-item">
-                      <button
-                        type="button"
-                        data-section="out-of-stock-products"
-                        class="filter-btn"
-                      >
-                        Out of Stock
-                      </button>
-                    </li>
-                    <li class="filter-item">
-                      <button
-                        type="button"
-                        data-section="draft-products"
-                        class="filter-btn"
-                      >
-                        Draft
-                      </button>
-                    </li>
-                  </ul>
+                  <!-- code to display all products -->
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>PRODUCT</th>
+                          <th>LISTING TYPE</th>
+                          <th>CONDITION</th>
+                          <th>STOCK</th>
+                          <th>SALES PRICE</th>
+                          <th>TRADE VALUE</th>
+                          <th>SELL TO US</th>
+                          <th>ACTIONS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="product-row">
+                          <td>
+                            <div class="product-info">
+                              <img
+                                src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                                alt="Nike Air Max"
+                                class="product-image"
+                              />
+                              <div class="product-details">
+                                <p class="product-name">Nike Air Max</p>
+                                <p class="product-type">sneakers</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <span class="listing-badge">active</span>
+                          </td>
+                          <td>9/10</td>
+                          <td>15</td>
+                          <td>$199.99</td>
+                          <td>$150</td>
+                          <td>$120</td>
+                          <td>
+                            <button class="action-button">
+                              <svg
+                                class="action-icon"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                              >
+                                <circle cx="12" cy="12" r="1" />
+                                <circle cx="12" cy="5" r="1" />
+                                <circle cx="12" cy="19" r="1" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
-                <!-- Content Sections -->
-                <div class="products-content">
-                  <!-- All products content goes here -->
-                  <div
-                    class="all-products-content content-section active"
-                    data-section="all-products"
-                    id="all-products"
-                  >
-                    <!-- code to display all products -->
-                    <div class="product-table-container">
-                      <table class="product-table">
-                        <thead>
-                          <tr>
-                            <th>PRODUCT</th>
-                            <th>LISTING TYPE</th>
-                            <th>CONDITION</th>
-                            <th>STOCK</th>
-                            <th>SALES PRICE</th>
-                            <th>TRADE VALUE</th>
-                            <th>SELL TO US</th>
-                            <th>ACTIONS</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="product-row">
-                            <td>
-                              <div class="product-info">
-                                <img
-                                  src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                  alt="Nike Air Max"
-                                  class="product-image"
-                                />
-                                <div class="product-details">
-                                  <p class="product-name">Nike Air Max</p>
-                                  <p class="product-type">sneakers</p>
-                                </div>
+                <div
+                  class="active-products-content content-section"
+                  data-section="active-products"
+                  id="active-products"
+                >
+                  <!-- code to display active products -->
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>PRODUCT</th>
+                          <!-- Product image, name, SKU -->
+                          <th>CATEGORY</th>
+                          <!-- Product category/type -->
+                          <th>SIZE</th>
+                          <!-- Product size -->
+                          <th>CONDITION</th>
+                          <!-- Product condition rating -->
+                          <th>STOCK</th>
+                          <!-- Available quantity -->
+                          <th>RETAIL</th>
+                          <!-- Original retail price -->
+                          <th>LISTING PRICE</th>
+                          <!-- Current listing price -->
+                          <th>VIEWS</th>
+                          <!-- Product page views -->
+                          <th>LISTED</th>
+                          <!-- Listing date -->
+                          <th>ACTIONS</th>
+                          <!-- Edit, Pause, Delete etc -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="product-row">
+                          <td>
+                            <div class="product-info">
+                              <img
+                                src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                                alt="Jordan 1"
+                                class="product-image"
+                              />
+                              <div class="product-details">
+                                <p class="product-name">Air Jordan 1 High OG</p>
+                                <p class="product-sku">SKU: AJ1-HIGH-001</p>
                               </div>
-                            </td>
-                            <td>
-                              <span class="listing-badge">active</span>
-                            </td>
-                            <td>9/10</td>
-                            <td>15</td>
-                            <td>$199.99</td>
-                            <td>$150</td>
-                            <td>$120</td>
-                            <td>
-                              <button class="action-button">
+                            </div>
+                          </td>
+                          <td>
+                            <span class="category-badge">Sneakers</span>
+                          </td>
+                          <td>US 10</td>
+                          <td>
+                            <div class="condition-info">
+                              <span class="condition-badge new">New</span>
+                              <span class="condition-note">With Box</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="stock-info">
+                              <span class="stock-number">5</span>
+                              <span class="stock-status in-stock"
+                                >In Stock</span
+                              >
+                            </div>
+                          </td>
+                          <td>$180.00</td>
+                          <td>
+                            <div class="price-info">
+                              <span class="current-price">$220.00</span>
+                              <span class="price-trend positive">+22%</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="views-info">
+                              <span class="view-count">1,234</span>
+                              <span class="view-trend positive">↑12%</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="listing-date">
+                              <span class="date">Nov 22, 2024</span>
+                              <span class="time-listed">14 days</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <button
+                                class="action-button edit"
+                                aria-label="Edit Listing"
+                              >
                                 <svg
                                   class="action-icon"
                                   viewBox="0 0 24 24"
@@ -1012,53 +1160,271 @@
                                   stroke="currentColor"
                                   stroke-width="2"
                                 >
-                                  <circle cx="12" cy="12" r="1" />
-                                  <circle cx="12" cy="5" r="1" />
-                                  <circle cx="12" cy="19" r="1" />
+                                  <path
+                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                                  ></path>
+                                  <path
+                                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                                  ></path>
                                 </svg>
                               </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                              <button
+                                class="action-button pause"
+                                aria-label="Pause Listing"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <rect
+                                    x="6"
+                                    y="4"
+                                    width="4"
+                                    height="16"
+                                  ></rect>
+                                  <rect
+                                    x="14"
+                                    y="4"
+                                    width="4"
+                                    height="16"
+                                  ></rect>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button promote"
+                                aria-label="Promote Listing"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                                  ></polygon>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-
-                  <div
-                    class="active-products-content content-section"
-                    data-section="active-products"
-                    id="active-products"
-                  >
-                    <!-- code to display active products -->
-                    <div class="product-table-container">
-                      <table class="product-table">
-                        <thead>
-                          <tr>
-                            <th>PRODUCT</th>
-                            <!-- Product image, name, SKU -->
-                            <th>CATEGORY</th>
-                            <!-- Product category/type -->
-                            <th>SIZE</th>
-                            <!-- Product size -->
-                            <th>CONDITION</th>
-                            <!-- Product condition rating -->
-                            <th>STOCK</th>
-                            <!-- Available quantity -->
-                            <th>RETAIL</th>
-                            <!-- Original retail price -->
-                            <th>LISTING PRICE</th>
-                            <!-- Current listing price -->
-                            <th>VIEWS</th>
-                            <!-- Product page views -->
-                            <th>LISTED</th>
-                            <!-- Listing date -->
-                            <th>ACTIONS</th>
-                            <!-- Edit, Pause, Delete etc -->
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="product-row">
-                            <td>
+                </div>
+                <!-- For Trade products content goes here -->
+                <div
+                  class="for-trade-products-content content-section"
+                  data-section="for-trade-products"
+                  id="for-trade-products"
+                >
+                  <!-- code to display for trade products -->
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>PRODUCT</th>
+                          <!-- Product image, name, and category -->
+                          <th>SKU</th>
+                          <!-- Unique product identifier -->
+                          <th>STATUS</th>
+                          <!-- In stock, Low stock, Out of stock -->
+                          <th>CONDITION</th>
+                          <!-- New, Like New, Good, Fair etc -->
+                          <th>QTY</th>
+                          <!-- Current inventory quantity -->
+                          <th>RETAIL PRICE</th>
+                          <!-- Original/MSRP price -->
+                          <th>SALE PRICE</th>
+                          <!-- Current selling price -->
+                          <th>LAST UPDATED</th>
+                          <!-- Date of last inventory/price update -->
+                          <th>ACTIONS</th>
+                          <!-- Edit, Delete, View Details etc -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="product-row">
+                          <td>
+                            <div class="product-info">
+                              <img
+                                src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                                alt="Nike Air Max"
+                                class="product-image"
+                              />
+                              <div class="product-details">
+                                <p class="product-name">Nike Air Max</p>
+                                <p class="product-type">Athletic Shoes</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>NKE-AM-001</td>
+                          <td>
+                            <span class="status-badge in-stock">In Stock</span>
+                          </td>
+                          <td>New with Tags</td>
+                          <td>15</td>
+                          <td>$229.99</td>
+                          <td>$199.99</td>
+                          <td>2024-11-21</td>
+                          <td>
+                            <button
+                              class="action-button"
+                              aria-label="More options"
+                            >
+                              <svg
+                                class="action-icon"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                              >
+                                <circle cx="12" cy="12" r="1" />
+                                <circle cx="12" cy="5" r="1" />
+                                <circle cx="12" cy="19" r="1" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- Sell to Us products content goes here -->
+                <div
+                  class="sell-to-us-products-content content-section"
+                  data-section="sell-to-us-products"
+                  id="sell-to-us-products"
+                >
+                  <!-- code to display sell to us products -->
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>PRODUCT</th>
+                          <!-- Product image, name, and category -->
+                          <th>BRAND</th>
+                          <!-- Brand name -->
+                          <th>MARKET VALUE</th>
+                          <!-- Current market value -->
+                          <th>CONDITION</th>
+                          <!-- Product condition -->
+                          <th>OFFER PRICE</th>
+                          <!-- What we'll pay -->
+                          <th>TRADE VALUE</th>
+                          <!-- Store credit value -->
+                          <th>DEMAND</th>
+                          <!-- High, Medium, Low demand indicator -->
+                          <th>STATUS</th>
+                          <!-- Pending, Accepted, Rejected etc -->
+                          <th>ACTIONS</th>
+                          <!-- View Details, Accept, Reject etc -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="product-row">
+                          <td>
+                            <div class="product-info">
+                              <img
+                                src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                                alt="Jordan 1 Retro"
+                                class="product-image"
+                              />
+                              <div class="product-details">
+                                <p class="product-name">
+                                  Air Jordan 1 Retro High
+                                </p>
+                                <p class="product-type">Basketball Shoes</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>Nike</td>
+                          <td>$299.99</td>
+                          <td>
+                            <span class="condition-badge excellent">9/10</span>
+                          </td>
+                          <td>$180.00</td>
+                          <td>$220.00</td>
+                          <td>
+                            <span class="demand-badge high">High</span>
+                          </td>
+                          <td>
+                            <span class="status-badge pending">Pending</span>
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <button
+                                class="action-button primary"
+                                aria-label="Accept offer"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button danger"
+                                aria-label="Reject offer"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- Pending Trades products content goes here -->
+                <div
+                  class="pending-trades-products-content content-section"
+                  data-section="pending-trades-products"
+                  id="pending-trades-products"
+                >
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>TRADING</th>
+                          <!-- Items customer is trading in -->
+                          <th>TRADING VALUE</th>
+                          <!-- Value of trade-in items -->
+                          <th>REQUESTING</th>
+                          <!-- Items customer wants -->
+                          <th>RETAIL VALUE</th>
+                          <!-- Value of requested items -->
+                          <th>TRADE BALANCE</th>
+                          <!-- Difference to pay/receive -->
+                          <th>SUBMITTED</th>
+                          <!-- When trade was proposed -->
+                          <th>STATUS</th>
+                          <!-- Pending, Inspecting, Ready etc -->
+                          <th>ACTIONS</th>
+                          <!-- Accept, Reject, Message etc -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="product-row">
+                          <td>
+                            <div class="trade-items">
                               <div class="product-info">
                                 <img
                                   src="/images/Jordan 5 Retro Racer(9) 2.jpg"
@@ -1066,180 +1432,56 @@
                                   class="product-image"
                                 />
                                 <div class="product-details">
-                                  <p class="product-name">
-                                    Air Jordan 1 High OG
+                                  <p class="product-name">Air Jordan 1 High</p>
+                                  <p class="product-condition">
+                                    Condition: 9/10
                                   </p>
-                                  <p class="product-sku">SKU: AJ1-HIGH-001</p>
                                 </div>
                               </div>
-                            </td>
-                            <td>
-                              <span class="category-badge">Sneakers</span>
-                            </td>
-                            <td>US 10</td>
-                            <td>
-                              <div class="condition-info">
-                                <span class="condition-badge new">New</span>
-                                <span class="condition-note">With Box</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="stock-info">
-                                <span class="stock-number">5</span>
-                                <span class="stock-status in-stock"
-                                  >In Stock</span
-                                >
-                              </div>
-                            </td>
-                            <td>$180.00</td>
-                            <td>
-                              <div class="price-info">
-                                <span class="current-price">$220.00</span>
-                                <span class="price-trend positive">+22%</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="views-info">
-                                <span class="view-count">1,234</span>
-                                <span class="view-trend positive">↑12%</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="listing-date">
-                                <span class="date">Nov 22, 2024</span>
-                                <span class="time-listed">14 days</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="action-buttons">
-                                <button
-                                  class="action-button edit"
-                                  aria-label="Edit Listing"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path
-                                      d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                    ></path>
-                                    <path
-                                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                    ></path>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button pause"
-                                  aria-label="Pause Listing"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <rect
-                                      x="6"
-                                      y="4"
-                                      width="4"
-                                      height="16"
-                                    ></rect>
-                                    <rect
-                                      x="14"
-                                      y="4"
-                                      width="4"
-                                      height="16"
-                                    ></rect>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button promote"
-                                  aria-label="Promote Listing"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <polygon
-                                      points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                                    ></polygon>
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <!-- For Trade products content goes here -->
-                  <div
-                    class="for-trade-products-content content-section"
-                    data-section="for-trade-products"
-                    id="for-trade-products"
-                  >
-                    <!-- code to display for trade products -->
-                    <div class="product-table-container">
-                      <table class="product-table">
-                        <thead>
-                          <tr>
-                            <th>PRODUCT</th>
-                            <!-- Product image, name, and category -->
-                            <th>SKU</th>
-                            <!-- Unique product identifier -->
-                            <th>STATUS</th>
-                            <!-- In stock, Low stock, Out of stock -->
-                            <th>CONDITION</th>
-                            <!-- New, Like New, Good, Fair etc -->
-                            <th>QTY</th>
-                            <!-- Current inventory quantity -->
-                            <th>RETAIL PRICE</th>
-                            <!-- Original/MSRP price -->
-                            <th>SALE PRICE</th>
-                            <!-- Current selling price -->
-                            <th>LAST UPDATED</th>
-                            <!-- Date of last inventory/price update -->
-                            <th>ACTIONS</th>
-                            <!-- Edit, Delete, View Details etc -->
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="product-row">
-                            <td>
+                              <div class="additional-items">+2 more items</div>
+                            </div>
+                          </td>
+                          <td>$450.00</td>
+                          <td>
+                            <div class="trade-items">
                               <div class="product-info">
                                 <img
                                   src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                  alt="Nike Air Max"
+                                  alt="Yeezy 350"
                                   class="product-image"
                                 />
                                 <div class="product-details">
-                                  <p class="product-name">Nike Air Max</p>
-                                  <p class="product-type">Athletic Shoes</p>
+                                  <p class="product-name">Yeezy Boost 350</p>
+                                  <p class="product-condition">
+                                    Condition: New
+                                  </p>
                                 </div>
                               </div>
-                            </td>
-                            <td>NKE-AM-001</td>
-                            <td>
-                              <span class="status-badge in-stock"
-                                >In Stock</span
-                              >
-                            </td>
-                            <td>New with Tags</td>
-                            <td>15</td>
-                            <td>$229.99</td>
-                            <td>$199.99</td>
-                            <td>2024-11-21</td>
-                            <td>
+                            </div>
+                          </td>
+                          <td>$400.00</td>
+                          <td>
+                            <div class="balance-due positive">
+                              +$50.00
+                              <span class="balance-label">Store Credit</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="submission-info">
+                              <span class="date">Nov 22, 2024</span>
+                              <span class="time">14:30</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span class="status-badge pending"
+                              >Pending Review</span
+                            >
+                          </td>
+                          <td>
+                            <div class="action-buttons">
                               <button
-                                class="action-button"
-                                aria-label="More options"
+                                class="action-button view"
+                                aria-label="View Details"
                               >
                                 <svg
                                   class="action-icon"
@@ -1248,615 +1490,376 @@
                                   stroke="currentColor"
                                   stroke-width="2"
                                 >
-                                  <circle cx="12" cy="12" r="1" />
-                                  <circle cx="12" cy="5" r="1" />
-                                  <circle cx="12" cy="19" r="1" />
+                                  <path
+                                    d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                                  ></path>
+                                  <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
                               </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                              <button
+                                class="action-button message"
+                                aria-label="Message Customer"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                                  ></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button approve"
+                                aria-label="Approve Trade"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-                  <!-- Sell to Us products content goes here -->
-                  <div
-                    class="sell-to-us-products-content content-section"
-                    data-section="sell-to-us-products"
-                    id="sell-to-us-products"
-                  >
-                    <!-- code to display sell to us products -->
-                    <div class="product-table-container">
-                      <table class="product-table">
-                        <thead>
-                          <tr>
-                            <th>PRODUCT</th>
-                            <!-- Product image, name, and category -->
-                            <th>BRAND</th>
-                            <!-- Brand name -->
-                            <th>MARKET VALUE</th>
-                            <!-- Current market value -->
-                            <th>CONDITION</th>
-                            <!-- Product condition -->
-                            <th>OFFER PRICE</th>
-                            <!-- What we'll pay -->
-                            <th>TRADE VALUE</th>
-                            <!-- Store credit value -->
-                            <th>DEMAND</th>
-                            <!-- High, Medium, Low demand indicator -->
-                            <th>STATUS</th>
-                            <!-- Pending, Accepted, Rejected etc -->
-                            <th>ACTIONS</th>
-                            <!-- View Details, Accept, Reject etc -->
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="product-row">
-                            <td>
-                              <div class="product-info">
+                </div>
+                <!-- Out of Stock products content goes here -->
+                <div
+                  class="out-of-stock-products-content content-section"
+                  data-section="out-of-stock-products"
+                  id="out-of-stock-products"
+                >
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>PRODUCT</th>
+                          <!-- Product image, name, SKU -->
+                          <th>CATEGORY</th>
+                          <!-- Product category -->
+                          <th>LAST IN STOCK</th>
+                          <!-- Date last available -->
+                          <th>LAST PRICE</th>
+                          <!-- Price when last available -->
+                          <th>DEMAND</th>
+                          <!-- Current demand level -->
+                          <th>WAITLIST</th>
+                          <!-- Number of interested buyers -->
+                          <th>NOTIFICATIONS</th>
+                          <!-- Restock notifications -->
+                          <th>SUPPLIER</th>
+                          <!-- Supplier/Source info -->
+                          <th>ACTIONS</th>
+                          <!-- Restock, Archive, etc -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="product-row">
+                          <td>
+                            <div class="product-info">ORD-2024-1234</div>
+                          </td>
+                          <td>
+                            <div class="category-info">
+                              <span class="category-badge">Sneakers</span>
+                              <span class="sub-category">Basketball</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="stock-date">
+                              <span class="date">Nov 15, 2024</span>
+                              <span class="time-ago">7 days ago</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="price-info">
+                              <span class="last-price">$199.99</span>
+                              <span class="price-note">Sold Out at Retail</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="demand-info">
+                              <span class="demand-badge high">High Demand</span>
+                              <div class="demand-trend">
+                                <span class="trend-arrow up">↑</span>
+                                <span class="trend-value">32%</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="waitlist-info">
+                              <span class="waitlist-count">124</span>
+                              <span class="waitlist-label">people waiting</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="notification-info">
+                              <span class="notification-count">89</span>
+                              <span class="notification-status"
+                                >Subscribed</span
+                              >
+                            </div>
+                          </td>
+                          <td>
+                            <div class="supplier-info">
+                              <span class="supplier-name">Nike Direct</span>
+                              <span class="restock-estimate"
+                                >Expected: Dec 2024</span
+                              >
+                            </div>
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <button
+                                class="action-button restock"
+                                aria-label="Restock Product"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path d="M3 3v18h18"></path>
+                                  <path d="M18.4 8.64L18.4 15.36"></path>
+                                  <path d="M13.6 10.72L13.6 15.36"></path>
+                                  <path d="M8.8 12.8L8.8 15.36"></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button notify"
+                                aria-label="Send Notifications"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+                                  ></path>
+                                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button archive"
+                                aria-label="Archive Product"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path d="M21 8v13H3V8"></path>
+                                  <path d="M1 3h22v5H1z"></path>
+                                  <path d="M10 12h4"></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- Draft products content goes here -->
+                <div
+                  class="draft-products-content content-section"
+                  data-section="draft-products"
+                  id="draft-products"
+                >
+                  <div class="table-responsive">
+                    <table class="product-table">
+                      <thead>
+                        <tr>
+                          <th>PRODUCT</th>
+                          <!-- Product image, name, draft info -->
+                          <th>COMPLETION</th>
+                          <!-- Progress of listing completion -->
+                          <th>MISSING INFO</th>
+                          <!-- Required fields still needed -->
+                          <th>CREATED</th>
+                          <!-- When draft was started -->
+                          <th>MODIFIED</th>
+                          <!-- Last edit timestamp -->
+                          <th>CATEGORY</th>
+                          <!-- Product category -->
+                          <th>PRICE</th>
+                          <!-- Draft pricing -->
+                          <th>ACTIONS</th>
+                          <!-- Edit, Publish, Delete etc -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="product-row">
+                          <td>
+                            <div class="product-info">
+                              <div class="product-image-container">
                                 <img
                                   src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                  alt="Jordan 1 Retro"
+                                  alt="Draft Product"
                                   class="product-image"
                                 />
-                                <div class="product-details">
-                                  <p class="product-name">
-                                    Air Jordan 1 Retro High
-                                  </p>
-                                  <p class="product-type">Basketball Shoes</p>
-                                </div>
+                                <span class="draft-badge">Draft</span>
                               </div>
-                            </td>
-                            <td>Nike</td>
-                            <td>$299.99</td>
-                            <td>
-                              <span class="condition-badge excellent"
-                                >9/10</span
+                              <div class="product-details">
+                                <p class="product-name">Nike Dunk Low</p>
+                                <p class="product-id">ID: #DFT-2024112</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="completion-info">
+                              <div class="progress-bar">
+                                <div class="progress" style="width: 75%"></div>
+                              </div>
+                              <span class="completion-text">75% Complete</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="missing-info">
+                              <ul class="missing-list">
+                                <li class="missing-item">
+                                  <svg
+                                    class="missing-icon"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    width="12"
+                                    height="12"
+                                  >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line
+                                      x1="12"
+                                      y1="16"
+                                      x2="12"
+                                      y2="16"
+                                    ></line>
+                                  </svg>
+                                  Product Photos
+                                </li>
+                                <li class="missing-item">
+                                  <svg
+                                    class="missing-icon"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    width="12"
+                                    height="12"
+                                  >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line
+                                      x1="12"
+                                      y1="16"
+                                      x2="12"
+                                      y2="16"
+                                    ></line>
+                                  </svg>
+                                  Description
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="date-info">
+                              <span class="date">Nov 22, 2024</span>
+                              <span class="time">2:30 PM</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="date-info">
+                              <span class="date">Nov 22, 2024</span>
+                              <span class="time">4:45 PM</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="category-info">
+                              <span class="category-badge">Sneakers</span>
+                              <span class="sub-category">Lifestyle</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="price-info">
+                              <span class="draft-price">$159.99</span>
+                              <span class="price-status">Not Published</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <button
+                                class="action-button edit"
+                                aria-label="Edit Draft"
                               >
-                            </td>
-                            <td>$180.00</td>
-                            <td>$220.00</td>
-                            <td>
-                              <span class="demand-badge high">High</span>
-                            </td>
-                            <td>
-                              <span class="status-badge pending">Pending</span>
-                            </td>
-                            <td>
-                              <div class="action-buttons">
-                                <button
-                                  class="action-button primary"
-                                  aria-label="Accept offer"
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
                                 >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <polyline
-                                      points="20 6 9 17 4 12"
-                                    ></polyline>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button danger"
-                                  aria-label="Reject offer"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <!-- Pending Trades products content goes here -->
-                  <div
-                    class="pending-trades-products-content content-section"
-                    data-section="pending-trades-products"
-                    id="pending-trades-products"
-                  >
-                    <div class="product-table-container">
-                      <table class="product-table">
-                        <thead>
-                          <tr>
-                            <th>TRADING</th>
-                            <!-- Items customer is trading in -->
-                            <th>TRADING VALUE</th>
-                            <!-- Value of trade-in items -->
-                            <th>REQUESTING</th>
-                            <!-- Items customer wants -->
-                            <th>RETAIL VALUE</th>
-                            <!-- Value of requested items -->
-                            <th>TRADE BALANCE</th>
-                            <!-- Difference to pay/receive -->
-                            <th>SUBMITTED</th>
-                            <!-- When trade was proposed -->
-                            <th>STATUS</th>
-                            <!-- Pending, Inspecting, Ready etc -->
-                            <th>ACTIONS</th>
-                            <!-- Accept, Reject, Message etc -->
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="product-row">
-                            <td>
-                              <div class="trade-items">
-                                <div class="product-info">
-                                  <img
-                                    src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                    alt="Jordan 1"
-                                    class="product-image"
-                                  />
-                                  <div class="product-details">
-                                    <p class="product-name">
-                                      Air Jordan 1 High
-                                    </p>
-                                    <p class="product-condition">
-                                      Condition: 9/10
-                                    </p>
-                                  </div>
-                                </div>
-                                <div class="additional-items">
-                                  +2 more items
-                                </div>
-                              </div>
-                            </td>
-                            <td>$450.00</td>
-                            <td>
-                              <div class="trade-items">
-                                <div class="product-info">
-                                  <img
-                                    src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                    alt="Yeezy 350"
-                                    class="product-image"
-                                  />
-                                  <div class="product-details">
-                                    <p class="product-name">Yeezy Boost 350</p>
-                                    <p class="product-condition">
-                                      Condition: New
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td>$400.00</td>
-                            <td>
-                              <div class="balance-due positive">
-                                +$50.00
-                                <span class="balance-label">Store Credit</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="submission-info">
-                                <span class="date">Nov 22, 2024</span>
-                                <span class="time">14:30</span>
-                              </div>
-                            </td>
-                            <td>
-                              <span class="status-badge pending"
-                                >Pending Review</span
+                                  <path
+                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                                  ></path>
+                                  <path
+                                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                                  ></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button publish"
+                                aria-label="Publish Draft"
                               >
-                            </td>
-                            <td>
-                              <div class="action-buttons">
-                                <button
-                                  class="action-button view"
-                                  aria-label="View Details"
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
                                 >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path
-                                      d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                                    ></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button message"
-                                  aria-label="Message Customer"
+                                  <path d="M12 20V10"></path>
+                                  <path d="M18 14l-6-6-6 6"></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button delete"
+                                aria-label="Delete Draft"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
                                 >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path
-                                      d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-                                    ></path>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button approve"
-                                  aria-label="Approve Trade"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <polyline
-                                      points="20 6 9 17 4 12"
-                                    ></polyline>
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <!-- Out of Stock products content goes here -->
-                  <div
-                    class="out-of-stock-products-content content-section"
-                    data-section="out-of-stock-products"
-                    id="out-of-stock-products"
-                  >
-                    <div class="product-table-container">
-                      <table class="product-table">
-                        <thead>
-                          <tr>
-                            <th>PRODUCT</th>
-                            <!-- Product image, name, SKU -->
-                            <th>CATEGORY</th>
-                            <!-- Product category -->
-                            <th>LAST IN STOCK</th>
-                            <!-- Date last available -->
-                            <th>LAST PRICE</th>
-                            <!-- Price when last available -->
-                            <th>DEMAND</th>
-                            <!-- Current demand level -->
-                            <th>WAITLIST</th>
-                            <!-- Number of interested buyers -->
-                            <th>NOTIFICATIONS</th>
-                            <!-- Restock notifications -->
-                            <th>SUPPLIER</th>
-                            <!-- Supplier/Source info -->
-                            <th>ACTIONS</th>
-                            <!-- Restock, Archive, etc -->
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="product-row">
-                            <td>
-                              <div class="product-info">ORD-2024-1234</div>
-                            </td>
-                            <td>
-                              <div class="category-info">
-                                <span class="category-badge">Sneakers</span>
-                                <span class="sub-category">Basketball</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="stock-date">
-                                <span class="date">Nov 15, 2024</span>
-                                <span class="time-ago">7 days ago</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="price-info">
-                                <span class="last-price">$199.99</span>
-                                <span class="price-note"
-                                  >Sold Out at Retail</span
-                                >
-                              </div>
-                            </td>
-                            <td>
-                              <div class="demand-info">
-                                <span class="demand-badge high"
-                                  >High Demand</span
-                                >
-                                <div class="demand-trend">
-                                  <span class="trend-arrow up">↑</span>
-                                  <span class="trend-value">32%</span>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="waitlist-info">
-                                <span class="waitlist-count">124</span>
-                                <span class="waitlist-label"
-                                  >people waiting</span
-                                >
-                              </div>
-                            </td>
-                            <td>
-                              <div class="notification-info">
-                                <span class="notification-count">89</span>
-                                <span class="notification-status"
-                                  >Subscribed</span
-                                >
-                              </div>
-                            </td>
-                            <td>
-                              <div class="supplier-info">
-                                <span class="supplier-name">Nike Direct</span>
-                                <span class="restock-estimate"
-                                  >Expected: Dec 2024</span
-                                >
-                              </div>
-                            </td>
-                            <td>
-                              <div class="action-buttons">
-                                <button
-                                  class="action-button restock"
-                                  aria-label="Restock Product"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path d="M3 3v18h18"></path>
-                                    <path d="M18.4 8.64L18.4 15.36"></path>
-                                    <path d="M13.6 10.72L13.6 15.36"></path>
-                                    <path d="M8.8 12.8L8.8 15.36"></path>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button notify"
-                                  aria-label="Send Notifications"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path
-                                      d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
-                                    ></path>
-                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button archive"
-                                  aria-label="Archive Product"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path d="M21 8v13H3V8"></path>
-                                    <path d="M1 3h22v5H1z"></path>
-                                    <path d="M10 12h4"></path>
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <!-- Draft products content goes here -->
-                  <div
-                    class="draft-products-content content-section"
-                    data-section="draft-products"
-                    id="draft-products"
-                  >
-                    <div class="product-table-container">
-                      <table class="product-table">
-                        <thead>
-                          <tr>
-                            <th>PRODUCT</th>
-                            <!-- Product image, name, draft info -->
-                            <th>COMPLETION</th>
-                            <!-- Progress of listing completion -->
-                            <th>MISSING INFO</th>
-                            <!-- Required fields still needed -->
-                            <th>CREATED</th>
-                            <!-- When draft was started -->
-                            <th>MODIFIED</th>
-                            <!-- Last edit timestamp -->
-                            <th>CATEGORY</th>
-                            <!-- Product category -->
-                            <th>PRICE</th>
-                            <!-- Draft pricing -->
-                            <th>ACTIONS</th>
-                            <!-- Edit, Publish, Delete etc -->
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr class="product-row">
-                            <td>
-                              <div class="product-info">
-                                <div class="product-image-container">
-                                  <img
-                                    src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                    alt="Draft Product"
-                                    class="product-image"
-                                  />
-                                  <span class="draft-badge">Draft</span>
-                                </div>
-                                <div class="product-details">
-                                  <p class="product-name">Nike Dunk Low</p>
-                                  <p class="product-id">ID: #DFT-2024112</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="completion-info">
-                                <div class="progress-bar">
-                                  <div
-                                    class="progress"
-                                    style="width: 75%"
-                                  ></div>
-                                </div>
-                                <span class="completion-text"
-                                  >75% Complete</span
-                                >
-                              </div>
-                            </td>
-                            <td>
-                              <div class="missing-info">
-                                <ul class="missing-list">
-                                  <li class="missing-item">
-                                    <svg
-                                      class="missing-icon"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      stroke-width="2"
-                                      width="12"
-                                      height="12"
-                                    >
-                                      <circle cx="12" cy="12" r="10"></circle>
-                                      <line
-                                        x1="12"
-                                        y1="8"
-                                        x2="12"
-                                        y2="12"
-                                      ></line>
-                                      <line
-                                        x1="12"
-                                        y1="16"
-                                        x2="12"
-                                        y2="16"
-                                      ></line>
-                                    </svg>
-                                    Product Photos
-                                  </li>
-                                  <li class="missing-item">
-                                    <svg
-                                      class="missing-icon"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      stroke-width="2"
-                                      width="12"
-                                      height="12"
-                                    >
-                                      <circle cx="12" cy="12" r="10"></circle>
-                                      <line
-                                        x1="12"
-                                        y1="8"
-                                        x2="12"
-                                        y2="12"
-                                      ></line>
-                                      <line
-                                        x1="12"
-                                        y1="16"
-                                        x2="12"
-                                        y2="16"
-                                      ></line>
-                                    </svg>
-                                    Description
-                                  </li>
-                                </ul>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="date-info">
-                                <span class="date">Nov 22, 2024</span>
-                                <span class="time">2:30 PM</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="date-info">
-                                <span class="date">Nov 22, 2024</span>
-                                <span class="time">4:45 PM</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="category-info">
-                                <span class="category-badge">Sneakers</span>
-                                <span class="sub-category">Lifestyle</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="price-info">
-                                <span class="draft-price">$159.99</span>
-                                <span class="price-status">Not Published</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div class="action-buttons">
-                                <button
-                                  class="action-button edit"
-                                  aria-label="Edit Draft"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path
-                                      d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                    ></path>
-                                    <path
-                                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                    ></path>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button publish"
-                                  aria-label="Publish Draft"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path d="M12 20V10"></path>
-                                    <path d="M18 14l-6-6-6 6"></path>
-                                  </svg>
-                                </button>
-                                <button
-                                  class="action-button delete"
-                                  aria-label="Delete Draft"
-                                >
-                                  <svg
-                                    class="action-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path d="M3 6h18"></path>
-                                    <path
-                                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                                    ></path>
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                                  <path d="M3 6h18"></path>
+                                  <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                                  ></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -2037,6 +2040,7 @@
                 </table>
               </div>
             </section>
+
             <!-- Analytics Section -->
             <section id="analytics" class="content-section">
               <!-- Analytics Header -->
