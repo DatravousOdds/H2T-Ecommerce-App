@@ -1,4 +1,12 @@
 :root {
+  --primary-blue: #2563eb;
+  --success-green: #22c55e;
+  --warning-yellow: #f59e0b;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
   --padding-medium: 10px 10px;
   --primary: #ff0000;
   --primary-dark: #cc0000;
@@ -2986,6 +2994,14 @@ h6 {
   margin-bottom: 0.5rem;
 }
 
+.trend-positive {
+  color: var(--success-green-600) !important;
+}
+
+.trend-neutral {
+  color: var(--primary-blue-600) !important;
+}
+
 .trend-icon.up {
   color: var(--success-green-600);
 }
@@ -3386,12 +3402,6 @@ h6 {
 
 .hidden {
   display: none;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0px;
 }
 
 .deposit {
@@ -4035,17 +4045,16 @@ h6 {
 
 /* Selling Styles */
 
+.activity-section {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .recent-activity-icon {
   border-radius: 100%;
   padding: 10px;
-}
-
-.recent-activity-icon.low-stock-alert {
-  background-color: var(--alert-red-50);
-}
-
-.recent-activity-icon.low-stock-alert i {
-  color: var(--alert-red-600);
 }
 
 .recent-activity-icon.received {
@@ -4060,14 +4069,22 @@ h6 {
   color: var(--alert-red-600);
 }
 
-.recent-activity-container .recent-activity-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.recent-activity-header {
+.activity-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: var(--bg-white);
+}
+
+.activity-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4143,15 +4160,35 @@ h6 {
 
 /* Recent Activity Styles */
 
-.recent-activity-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.activity-content {
+  flex: 1;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: var(--text-gray-500);
 }
 
 .activity-title {
   font-weight: 600;
   color: #000;
+  margin-bottom: 0.25rem;
+}
+
+.activity-detail {
+  font-size: 14px;
+  color: var(--text-gray-500);
+  margin-bottom: 0.25rem;
+}
+
+.warning-text {
+  color: var(--alert-red-600);
+  font-weight: 500;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
 }
 
 /* Extra small devices (phones, <576px) */
@@ -4414,6 +4451,22 @@ h6 {
   margin-bottom: 0;
 }
 
+.filter-nav {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.filter-tab {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
 .products-header button i {
   font-size: 1rem;
 }
@@ -4564,6 +4617,7 @@ h6 {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
 .nav-menu {
@@ -4620,8 +4674,61 @@ h6 {
 .products-overview {
   margin-bottom: 1rem;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background-color: var(--bg-white);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-header h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-gray-500);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.stat-header h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.stat-header i {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #6b7280;
+}
+
+.stat-card-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #111827;
 }
 
 .products-overview div {
@@ -4660,6 +4767,31 @@ h6 {
 
 .products-overview .total-sales i {
   color: #0ab80a;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.action-buttons button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background: white;
+  font-size: 0.875rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-buttons button:hover {
+  background-color: #f3f4f6;
+  border-color: #e5e7eb;
 }
 
 .products-header button {
@@ -4704,17 +4836,47 @@ h6 {
   box-shadow: var(--shadow);
 }
 
-.order-table {
+.order-table,
+.product-table {
   width: 100%;
   border-collapse: collapse;
   font-family: system-ui, -apple-system, sans-serif;
   white-space: nowrap;
 }
 
-.order-table th {
+.order-table th,
+.product-table th {
   padding: 1rem;
   text-align: left;
+  font-weight: 500;
+  color: #4b5563;
+  background: var(--gray-50);
   border-bottom: 1px solid #e5e7eb;
+}
+
+.product-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-700);
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-add {
+  background-color: var(--primary-red) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+.product-info img {
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 0.25rem;
 }
 
 .search-wrapper {
