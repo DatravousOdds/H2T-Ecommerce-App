@@ -23,6 +23,40 @@
   --border-gray: #e5e7eb;
   --shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   --bg-white: #fff;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --radius-md: 4px;
+  --transition-base: 0.2s ease;
+  --text-gray-700: #374151;
+  --text-gray-500: #6b7280;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 0.75rem; /* 12px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+
+  /* Colors */
+  --color-primary: #ef4444; /* Red-500 */
+  --color-primary-hover: #dc2626; /* Red-600 */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+  --color-white: #ffffff;
+
+  /* Border Radius */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem; /* 8px */
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-base: all 0.2s ease-in-out;
 
   /* Border Colors */
   --border-gray-100: #f3f4f6; /* Gray 100 - Light borders */
@@ -5420,61 +5454,94 @@ input:checked + .slider:before {
 /* Purchases Section */
 .purchases-section {
   padding: var(--spacing-md);
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
 }
 
+/* Purchases Header */
 .purchases-header {
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.purchases-header h1 {
+.purchases-title {
   margin: 0;
   font-size: 1.5rem;
-  color: #111827;
   font-weight: 600;
+  color: var(--text-gray-900);
+  margin: 0;
 }
 
+/* Purchases Controls */
 .purchases-header .purchases-controls {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
 }
 
-.purchases-header .purchases-controls button {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: none;
-  border-radius: 4px;
-  background-color: var(--gray-200);
-  color: var(--black);
-  cursor: pointer;
-}
-
-.purchases-header .purchases-controls button:hover {
-  background-color: var(--primary-red);
-  color: var(--white);
-}
-
 .purchase-type-button {
   padding: var(--spacing-sm) var(--spacing-md);
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-base);
+  font-weight: 500;
 }
 
 .purchases-search {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  border: 1px solid var(--gray-200);
-  border-radius: 4px;
 }
 
 .purchases-search input {
-  border: none;
-  outline: none;
+  min-width: 250px;
   width: 100%;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-left: 3rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+}
+
+.purchases-search input:focus {
+  outline: none;
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 2px rgba(var(--primary-red-rgb), 0.2);
+}
+
+.purchases-search i {
+  position: absolute;
+  left: var(--spacing-sm);
+  color: var(--text-gray-700);
+}
+
+.filter-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--gray-200);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-gray-700);
+  transition: var(--transition-base);
+}
+
+.filter-button:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-gray-300);
+}
+
+.purchase-type {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
 }
 
 .purchase-type-button.active {
@@ -5491,9 +5558,9 @@ input:checked + .slider:before {
   margin-bottom: 1rem;
 }
 
-.content-header p {
+.content-header .description {
   margin: 0 !important;
-  color: #4b5563 !important;
+  color: var(--text-gray-500) !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
 }
@@ -5548,6 +5615,38 @@ input:checked + .slider:before {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  /* Purchases */
+
+  .purchases-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .purchases-header .purchases-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .purchases-search {
+    width: 100%;
+  }
+
+  .purchases-search input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filter-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .purchase-type {
+    overflow-x: auto;
+    padding-bottom: var(--spacing-md);
+  }
+
   .frequency-options {
     flex-direction: column;
     gap: var(--spacing-md);
