@@ -3595,8 +3595,8 @@
                       <i class="fa-solid fa-envelope"></i>
                       <p class="default-paragraph">Email Notifications</p>
                     </div>
-                    <label for="order-updates" class="toggle-switch">
-                      <input type="checkbox" id="order-updates" />
+                    <label for="email-notifications" class="toggle-switch">
+                      <input type="checkbox" id="email-notifications" />
                       <span class="slider"></span>
                     </label>
                   </div>
@@ -3626,7 +3626,70 @@
           </section>
         </div>
         <!-- Purchases Content-->
-        <div class="tab" id="purchases">Purchases</div>
+        <div class="tab" id="purchases">
+          <section class="purchases-section" role="main">
+            <header class="purchases-header">
+              <h1>Your Purchases</h1>
+              <div class="purchases-controls">
+                <form class="purchases-search">
+                  <input type="text" placeholder="Search purchases" />
+                  <button type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </form>
+                <button class="filter-button">
+                  <i class="fa-solid fa-filter"></i>
+                  Filter
+                </button>
+              </div>
+            </header>
+            <div class="purchases-content">
+              <div class="purchase-type">
+                <button class="purchase-type-button active">All</button>
+                <button class="purchase-type-button">Processing</button>
+                <button class="purchase-type-button">Shipped</button>
+                <button class="purchase-type-button">Delivered</button>
+                <button class="purchase-type-button">Cancelled</button>
+              </div>
+              <div class="purchase-list">
+                <!-- Purchase items would be dynamically added here -->
+                <div class="purchase-item">
+                  <!-- Purchase item details would be dynamically added here -->
+                  <div class="purchase-img">
+                    <img src="img/products/f1.png" alt="product image" />
+                  </div>
+                  <div class="purchase-info">
+                    <h3>Product Name</h3>
+                    <p class="default-paragraph">Nike Air Max</p>
+                    <p class="default-paragraph">Order #1234567890</p>
+                    <p class="default-paragraph">
+                      <strong>Quantity:</strong> 1
+                    </p>
+                    <p class="default-paragraph">
+                      <strong>Price:</strong> $100
+                    </p>
+                  </div>
+                  <div class="purchase-status">
+                    <p class="default-paragraph">Processing</p>
+                    <p class="default-paragraph">
+                      <strong>Expected Delivery:</strong> 2024-01-01
+                    </p>
+                    <div class="purchase-controls">
+                      <a href="#">
+                        <i class="fa-solid fa-eye"></i>
+                        View Details
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Recommended Purchases -->
+              <div class="recommended-purchases">
+                <!-- Recommended items would be dynamically added here -->
+              </div>
+            </div>
+          </section>
+        </div>
         <!-- Settings Content-->
         <div class="tab" id="settings">Settings</div>
       </div>
