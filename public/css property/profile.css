@@ -4199,7 +4199,7 @@ h6 {
 
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
   padding: 1rem;
 }
@@ -4586,7 +4586,7 @@ h6 {
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -4748,7 +4748,7 @@ h6 {
 .products-overview {
   margin-bottom: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
 }
 
@@ -5417,8 +5417,74 @@ input:checked + .slider:before {
   transform: translateX(20px);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Purchases Section */
+.purchases-section {
+  padding: var(--spacing-md);
+}
+
+.purchases-header {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.purchases-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.purchases-header .purchases-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.purchases-header .purchases-controls button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: 4px;
+  background-color: var(--gray-200);
+  color: var(--black);
+  cursor: pointer;
+}
+
+.purchases-header .purchases-controls button:hover {
+  background-color: var(--primary-red);
+  color: var(--white);
+}
+
+.purchase-type-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: 9999px;
+}
+
+.purchases-search {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+}
+
+.purchases-search input {
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: var(--spacing-sm);
+}
+
+.purchase-type-button.active {
+  background-color: var(--primary-red);
+  color: var(--white);
+}
+
+.purchase-type-button:hover {
+  background-color: var(--primary-red);
+  color: var(--white);
 }
 
 .content-header {
