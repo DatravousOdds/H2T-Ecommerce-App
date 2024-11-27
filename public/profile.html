@@ -3646,148 +3646,357 @@
             <div class="purchases-content">
               <nav class="purchase-type-nav">
                 <ul class="purchase-type-list">
-                  <li class="purchase-type-item active">All</li>
-                  <li class="purchase-type-item">Processing</li>
-                  <li class="purchase-type-item">Shipped</li>
-                  <li class="purchase-type-item">Delivered</li>
-                  <li class="purchase-type-item">Cancelled</li>
+                  <li
+                    data-section="all-purchases"
+                    class="purchase-type-item active"
+                    id="all-purchases"
+                  >
+                    All
+                  </li>
+                  <li
+                    data-section="processing-purchases"
+                    class="purchase-type-item"
+                    id="processing-purchases"
+                  >
+                    Processing
+                  </li>
+                  <li
+                    data-section="shipped-purchases"
+                    class="purchase-type-item"
+                    id="shipped-purchases"
+                  >
+                    Shipped
+                  </li>
+                  <li
+                    data-section="delivered-purchases"
+                    class="purchase-type-item"
+                    id="delivered-purchases"
+                  >
+                    Delivered
+                  </li>
+                  <li
+                    data-section="cancelled-purchases"
+                    class="purchase-type-item"
+                    id="cancelled-purchases"
+                  >
+                    Cancelled
+                  </li>
                 </ul>
               </nav>
-              <div class="purchase-list">
-                <!-- Purchase items would be dynamically added here -->
-                <div class="purchase-item">
-                  <!-- Purchase item details would be dynamically added here -->
-                  <div class="product-container">
-                    <div class="purchase-img">
-                      <img
-                        class="product-img"
-                        src="images/Jordan 5 Retro Racer(9).jpg"
-                        alt="product image"
-                      />
-                    </div>
-                    <div class="purchase-info">
-                      <h3 class="product-name">Nike Air Max</h3>
-                      <p class="default-paragraph">Order #1234567890</p>
-                      <div class="price-and-quantity">
-                        <p class="default-paragraph">Quantity: 1</p>
-                        <p class="default-paragraph">Price: $100</p>
+              <!-- All Purchases Content Section -->
+              <div
+                data-section="all-purchases"
+                class="purchases-content-section active"
+                id="all-purchases"
+              >
+                <div class="purchase-list">
+                  <!-- Purchase items would be dynamically added here -->
+                  <div class="purchase-item">
+                    <!-- Purchase item details would be dynamically added here -->
+                    <div class="product-container">
+                      <div class="purchase-img">
+                        <img
+                          class="product-img"
+                          src="images/Jordan 5 Retro Racer(9).jpg"
+                          alt="product image"
+                        />
+                      </div>
+                      <div class="purchase-info">
+                        <h3 class="product-name">Nike Air Max</h3>
+                        <p class="default-paragraph">Order #1234567890</p>
+                        <div class="price-and-quantity">
+                          <p class="default-paragraph">Quantity: 1</p>
+                          <p class="default-paragraph">Price: $100</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <!-- Purchase Status -->
-                  <div class="purchase-status">
-                    <div class="status-icon">
-                      <div class="status-icon-circle">
-                        <i class="fa-solid fa-box"></i>
-                        <p class="default-paragraph status-text processing">
-                          Processing
+                    <!-- Purchase Status -->
+                    <div class="purchase-status">
+                      <div class="status-icon">
+                        <div class="status-icon-circle">
+                          <i class="fa-solid fa-box"></i>
+                          <p class="default-paragraph status-text processing">
+                            Processing
+                          </p>
+                        </div>
+                        <p class="default-paragraph expected-date">
+                          <i class="fa-solid fa-calendar-days"></i>
+                          Expected: 2024-01-01
                         </p>
                       </div>
-                      <p class="default-paragraph expected-date">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        Expected: 2024-01-01
-                      </p>
-                    </div>
 
-                    <div class="purchase-controls">
-                      <a href="#">
-                        <i class="fa-solid fa-eye"></i>
-                        View Details
-                        <i class="fa-solid fa-chevron-right"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="purchase-item">
-                  <!-- Purchase item details would be dynamically added here -->
-                  <div class="product-container">
-                    <div class="purchase-img">
-                      <img
-                        class="product-img"
-                        src="images/Jordan 5 Retro Racer(9).jpg"
-                        alt="product image"
-                      />
-                    </div>
-                    <div class="purchase-info">
-                      <h3 class="product-name">Nike Air Max</h3>
-                      <p class="default-paragraph">Order #1234567890</p>
-                      <div class="price-and-quantity">
-                        <p class="default-paragraph">Quantity: 1</p>
-                        <p class="default-paragraph">Price: $100</p>
+                      <div class="purchase-controls">
+                        <a href="#">
+                          <i class="fa-solid fa-eye"></i>
+                          View Details
+                          <i class="fa-solid fa-chevron-right"></i>
+                        </a>
                       </div>
                     </div>
                   </div>
-                  <!-- Purchase Status -->
-                  <div class="purchase-status">
-                    <div class="status-icon">
-                      <div class="status-icon-circle">
-                        <i class="fa-solid fa-truck"></i>
-                        <p class="default-paragraph status-text shipped">
-                          Shipped
+                  <div class="purchase-item">
+                    <!-- Purchase item details would be dynamically added here -->
+                    <div class="product-container">
+                      <div class="purchase-img">
+                        <img
+                          class="product-img"
+                          src="images/Jordan 5 Retro Racer(9).jpg"
+                          alt="product image"
+                        />
+                      </div>
+                      <div class="purchase-info">
+                        <h3 class="product-name">Nike Air Max</h3>
+                        <p class="default-paragraph">Order #1234567890</p>
+                        <div class="price-and-quantity">
+                          <p class="default-paragraph">Quantity: 1</p>
+                          <p class="default-paragraph">Price: $100</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Purchase Status -->
+                    <div class="purchase-status">
+                      <div class="status-icon">
+                        <div class="status-icon-circle">
+                          <i class="fa-solid fa-truck"></i>
+                          <p class="default-paragraph status-text shipped">
+                            Shipped
+                          </p>
+                        </div>
+                        <p class="default-paragraph expected-date">
+                          <i class="fa-solid fa-calendar-days"></i>
+                          Expected: 2024-01-01
                         </p>
                       </div>
-                      <p class="default-paragraph expected-date">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        Expected: 2024-01-01
-                      </p>
-                    </div>
 
-                    <div class="purchase-controls">
-                      <a href="#">
-                        <i class="fa-solid fa-eye"></i>
-                        View Details
-                        <i class="fa-solid fa-chevron-right"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div class="purchase-item">
-                  <!-- Purchase item details would be dynamically added here -->
-                  <div class="product-container">
-                    <div class="purchase-img">
-                      <img
-                        class="product-img"
-                        src="images/Jordan 5 Retro Racer(9).jpg"
-                        alt="product image"
-                      />
-                    </div>
-                    <div class="purchase-info">
-                      <h3 class="product-name">Nike Air Max</h3>
-                      <p class="default-paragraph">Order #1234567890</p>
-                      <div class="price-and-quantity">
-                        <p class="default-paragraph">Quantity: 1</p>
-                        <p class="default-paragraph">Price: $100</p>
+                      <div class="purchase-controls">
+                        <a href="#">
+                          <i class="fa-solid fa-eye"></i>
+                          View Details
+                          <i class="fa-solid fa-chevron-right"></i>
+                        </a>
                       </div>
                     </div>
                   </div>
-                  <!-- Purchase Status -->
-                  <div class="purchase-status">
-                    <div class="status-icon">
-                      <div class="status-icon-circle">
-                        <i class="fa-solid fa-check"></i>
-                        <p class="default-paragraph status-text delivered">
-                          Delivered
+                  <div class="purchase-item">
+                    <!-- Purchase item details would be dynamically added here -->
+                    <div class="product-container">
+                      <div class="purchase-img">
+                        <img
+                          class="product-img"
+                          src="images/Jordan 5 Retro Racer(9).jpg"
+                          alt="product image"
+                        />
+                      </div>
+                      <div class="purchase-info">
+                        <h3 class="product-name">Nike Air Max</h3>
+                        <p class="default-paragraph">Order #1234567890</p>
+                        <div class="price-and-quantity">
+                          <p class="default-paragraph">Quantity: 1</p>
+                          <p class="default-paragraph">Price: $100</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Purchase Status -->
+                    <div class="purchase-status">
+                      <div class="status-icon">
+                        <div class="status-icon-circle">
+                          <i class="fa-solid fa-check"></i>
+                          <p class="default-paragraph status-text delivered">
+                            Delivered
+                          </p>
+                        </div>
+                        <p class="default-paragraph expected-date">
+                          <i class="fa-solid fa-calendar-days"></i>
+                          Expected: 2024-01-01
                         </p>
                       </div>
-                      <p class="default-paragraph expected-date">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        Expected: 2024-01-01
-                      </p>
-                    </div>
 
-                    <div class="purchase-controls">
-                      <a href="#">
-                        <i class="fa-solid fa-eye"></i>
-                        View Details
-                        <i class="fa-solid fa-chevron-right"></i>
-                      </a>
+                      <div class="purchase-controls">
+                        <a href="#">
+                          <i class="fa-solid fa-eye"></i>
+                          View Details
+                          <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- Recommended Purchases -->
-              <div class="recommended-purchases">
-                <!-- Recommended items would be dynamically added here -->
+              <!-- Processing Purchases Content Section -->
+              <div
+                data-section="processing-purchases"
+                class="purchases-content-section"
+                id="processing-purchases"
+              >
+                <!-- Processing items would be dynamically added here -->
+                <div class="purchase-list">
+                  <!-- Purchase items would be dynamically added here -->
+                  <div class="purchase-item">
+                    <!-- Purchase item details would be dynamically added here -->
+                    <div class="product-container">
+                      <div class="purchase-img">
+                        <img
+                          class="product-img"
+                          src="images/Jordan 5 Retro Racer(9).jpg"
+                          alt="product image"
+                        />
+                      </div>
+                      <div class="purchase-info">
+                        <h3 class="product-name">Nike Air Max</h3>
+                        <p class="default-paragraph">Order #1234567890</p>
+                        <div class="price-and-quantity">
+                          <p class="default-paragraph">Quantity: 1</p>
+                          <p class="default-paragraph">Price: $100</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Purchase Status -->
+                    <div class="purchase-status">
+                      <div class="status-icon">
+                        <div class="status-icon-circle">
+                          <i class="fa-solid fa-box"></i>
+                          <p class="default-paragraph status-text processing">
+                            Processing
+                          </p>
+                        </div>
+                        <p class="default-paragraph expected-date">
+                          <i class="fa-solid fa-calendar-days"></i>
+                          Expected: 2024-01-01
+                        </p>
+                      </div>
+
+                      <div class="purchase-controls">
+                        <a href="#">
+                          <i class="fa-solid fa-eye"></i>
+                          View Details
+                          <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="purchase-item">
+                    <!-- Purchase item details would be dynamically added here -->
+                    <div class="product-container">
+                      <div class="purchase-img">
+                        <img
+                          class="product-img"
+                          src="images/Jordan 5 Retro Racer(9).jpg"
+                          alt="product image"
+                        />
+                      </div>
+                      <div class="purchase-info">
+                        <h3 class="product-name">Nike Air Max</h3>
+                        <p class="default-paragraph">Order #1234567890</p>
+                        <div class="price-and-quantity">
+                          <p class="default-paragraph">Quantity: 1</p>
+                          <p class="default-paragraph">Price: $100</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Purchase Status -->
+                    <div class="purchase-status">
+                      <div class="status-icon">
+                        <div class="status-icon-circle">
+                          <i class="fa-solid fa-truck"></i>
+                          <p class="default-paragraph status-text shipped">
+                            Shipped
+                          </p>
+                        </div>
+                        <p class="default-paragraph expected-date">
+                          <i class="fa-solid fa-calendar-days"></i>
+                          Expected: 2024-01-01
+                        </p>
+                      </div>
+
+                      <div class="purchase-controls">
+                        <a href="#">
+                          <i class="fa-solid fa-eye"></i>
+                          View Details
+                          <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="purchase-item">
+                    <!-- Purchase item details would be dynamically added here -->
+                    <div class="product-container">
+                      <div class="purchase-img">
+                        <img
+                          class="product-img"
+                          src="images/Jordan 5 Retro Racer(9).jpg"
+                          alt="product image"
+                        />
+                      </div>
+                      <div class="purchase-info">
+                        <h3 class="product-name">Nike Air Max</h3>
+                        <p class="default-paragraph">Order #1234567890</p>
+                        <div class="price-and-quantity">
+                          <p class="default-paragraph">Quantity: 1</p>
+                          <p class="default-paragraph">Price: $100</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Purchase Status -->
+                    <div class="purchase-status">
+                      <div class="status-icon">
+                        <div class="status-icon-circle">
+                          <i class="fa-solid fa-check"></i>
+                          <p class="default-paragraph status-text delivered">
+                            Delivered
+                          </p>
+                        </div>
+                        <p class="default-paragraph expected-date">
+                          <i class="fa-solid fa-calendar-days"></i>
+                          Expected: 2024-01-01
+                        </p>
+                      </div>
+
+                      <div class="purchase-controls">
+                        <a href="#">
+                          <i class="fa-solid fa-eye"></i>
+                          View Details
+                          <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Shipped Purchases Content Section -->
+              <div
+                data-section="shipped-purchases"
+                class="purchases-content-section"
+                id="shipped-purchases"
+              >
+                <!-- Shipped items would be dynamically added here -->
+                <div class="purchase-list">
+                  <!-- Purchase items would be dynamically added here -->
+                  <p>No items found</p>
+                </div>
+              </div>
+              <!-- Delivered Purchases Content Section   -->
+              <div
+                data-section="delivered-purchases"
+                class="purchases-content-section"
+                id="delivered-purchases"
+              >
+                <!-- Delivered items would be dynamically added here -->
+                <div class="purchase-list">
+                  <!-- Purchase items would be dynamically added here -->
+                  <p>No items found</p>
+                </div>
+              </div>
+              <!-- Cancelled Purchases Content Section -->
+              <div
+                data-section="cancelled-purchases"
+                class="purchases-content-section"
+                id="cancelled-purchases"
+              >
+                <!-- Cancelled items would be dynamically added here -->
+                <div class="purchase-list">
+                  <!-- Purchase items would be dynamically added here -->
+                  <p>No items found</p>
+                </div>
               </div>
             </div>
           </section>
@@ -3822,6 +4031,7 @@
     <script src="js/footer.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/selling.js"></script>
+    <script src="js/purchases.js"></script>
     <script type="module" src="js/Chart.js"></script>
     <script src="js/home.js"></script>
   </body>

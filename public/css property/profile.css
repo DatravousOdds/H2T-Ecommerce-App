@@ -5590,6 +5590,14 @@ input:checked + .slider:before {
   gap: var(--spacing-sm);
 }
 
+.purchases-content-section {
+  display: none;
+}
+
+.purchases-content-section.active {
+  display: block;
+}
+
 .purchase-type-item {
   padding: var(--spacing-sm) var(--spacing-md);
   color: var(--text-gray-500);
