@@ -2034,8 +2034,7 @@ button:disabled {
 }
 
 .inner-wrapper {
-  box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
-    rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 10px 24px;
   max-width: 94%;
   width: 100%;
@@ -3055,6 +3054,10 @@ h6 {
 
 .trend-status.up {
   color: var(--success-green-600);
+}
+
+.trend-status.down {
+  color: var(--alert-red-600);
 }
 
 .trend-icon.down {
@@ -4659,6 +4662,10 @@ h6 {
   gap: 0.5rem;
 }
 
+.metric-value h1 {
+  font-size: 2rem;
+}
+
 .metric-trend {
   font-size: 0.875rem;
   color: var(--success-green-600);
@@ -5465,6 +5472,26 @@ input:checked + .slider:before {
 }
 
 /* Purchases Section */
+
+.purchase-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.price-and-quantity {
+  display: flex;
+  color: var(--text-gray-500);
+  gap: var(--spacing-sm);
+}
+
+.price-and-quantity p {
+  margin: 0 !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: 500 !important;
+  color: var(--text-gray-500) !important;
+}
+
 .purchases-section {
   padding: var(--spacing-md);
   max-width: 1280px;
@@ -5637,6 +5664,28 @@ input:checked + .slider:before {
   gap: var(--spacing-md);
 }
 
+.purchase-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  border: 1px solid var(--gray-200);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.purchase-controls:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.purchase-status .expected-date {
+  color: var(--text-gray-500) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: 500 !important;
+}
+
 .purchase-controls a {
   color: var(--primary-red);
   text-decoration: none;
@@ -5667,7 +5716,7 @@ input:checked + .slider:before {
 
 .purchase-item .product-container {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--spacing-md);
 }
 
