@@ -5577,21 +5577,36 @@ input:checked + .slider:before {
   border-color: var(--color-gray-300);
 }
 
-.purchase-type {
+.purchase-type-nav {
   display: flex;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--gray-200);
   flex-wrap: wrap;
+  margin-bottom: var(--spacing-md);
 }
 
-.purchase-type-button.active {
-  background-color: var(--primary-red);
-  color: var(--white);
+.purchase-type-list {
+  display: flex;
+  gap: var(--spacing-sm);
 }
 
-.purchase-type-button:hover {
-  background-color: var(--primary-red);
-  color: var(--white);
+.purchase-type-item {
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-gray-500);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-base);
+  font-size: var(--font-size-base);
+}
+
+.purchase-type-item.active {
+  border-bottom: 2px solid var(--primary-red);
+  color: var(--primary-red);
+}
+
+.purchase-type-item:hover {
+  border-bottom: 2px solid var(--gray-100);
+  cursor: pointer;
 }
 
 #purchases {
