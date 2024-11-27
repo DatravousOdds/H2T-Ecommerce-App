@@ -3635,20 +3635,24 @@
                   <input type="text" placeholder="Search purchases" />
                   <i class="fa-solid fa-magnifying-glass"></i>
                 </form>
-                <button class="filter-button">
-                  <i class="fa-solid fa-filter"></i>
-                  Filter
-                </button>
+                <div class="filter-controls">
+                  <button class="filter-button">
+                    <i class="fa-solid fa-filter"></i>
+                    Filter
+                  </button>
+                </div>
               </div>
             </header>
             <div class="purchases-content">
-              <div class="purchase-type">
-                <button class="purchase-type-button active">All</button>
-                <button class="purchase-type-button">Processing</button>
-                <button class="purchase-type-button">Shipped</button>
-                <button class="purchase-type-button">Delivered</button>
-                <button class="purchase-type-button">Cancelled</button>
-              </div>
+              <nav class="purchase-type-nav">
+                <ul class="purchase-type-list">
+                  <li class="purchase-type-item active">All</li>
+                  <li class="purchase-type-item">Processing</li>
+                  <li class="purchase-type-item">Shipped</li>
+                  <li class="purchase-type-item">Delivered</li>
+                  <li class="purchase-type-item">Cancelled</li>
+                </ul>
+              </nav>
               <div class="purchase-list">
                 <!-- Purchase items would be dynamically added here -->
                 <div class="purchase-item">
@@ -3662,15 +3666,12 @@
                       />
                     </div>
                     <div class="purchase-info">
-                      <h3 class="product-name">Product Name</h3>
-                      <p class="default-paragraph">Nike Air Max</p>
+                      <h3 class="product-name">Nike Air Max</h3>
                       <p class="default-paragraph">Order #1234567890</p>
-                      <p class="default-paragraph">
-                        <strong>Quantity:</strong> 1
-                      </p>
-                      <p class="default-paragraph">
-                        <strong>Price:</strong> $100
-                      </p>
+                      <div class="price-and-quantity">
+                        <p class="default-paragraph">Quantity: 1</p>
+                        <p class="default-paragraph">Price: $100</p>
+                      </div>
                     </div>
                   </div>
                   <!-- Purchase Status -->
@@ -3682,7 +3683,7 @@
                           Processing
                         </p>
                       </div>
-                      <p class="default-paragraph">
+                      <p class="default-paragraph expected-date">
                         <i class="fa-solid fa-calendar-days"></i>
                         Expected: 2024-01-01
                       </p>
@@ -3708,27 +3709,24 @@
                       />
                     </div>
                     <div class="purchase-info">
-                      <h3 class="product-name">Product Name</h3>
-                      <p class="default-paragraph">Nike Air Max</p>
+                      <h3 class="product-name">Nike Air Max</h3>
                       <p class="default-paragraph">Order #1234567890</p>
-                      <p class="default-paragraph">
-                        <strong>Quantity:</strong> 1
-                      </p>
-                      <p class="default-paragraph">
-                        <strong>Price:</strong> $100
-                      </p>
+                      <div class="price-and-quantity">
+                        <p class="default-paragraph">Quantity: 1</p>
+                        <p class="default-paragraph">Price: $100</p>
+                      </div>
                     </div>
                   </div>
                   <!-- Purchase Status -->
                   <div class="purchase-status">
                     <div class="status-icon">
                       <div class="status-icon-circle">
-                        <i class="fa-solid fa-box"></i>
+                        <i class="fa-solid fa-truck"></i>
                         <p class="default-paragraph status-text shipped">
                           Shipped
                         </p>
                       </div>
-                      <p class="default-paragraph">
+                      <p class="default-paragraph expected-date">
                         <i class="fa-solid fa-calendar-days"></i>
                         Expected: 2024-01-01
                       </p>
@@ -3754,27 +3752,24 @@
                       />
                     </div>
                     <div class="purchase-info">
-                      <h3 class="product-name">Product Name</h3>
-                      <p class="default-paragraph">Nike Air Max</p>
+                      <h3 class="product-name">Nike Air Max</h3>
                       <p class="default-paragraph">Order #1234567890</p>
-                      <p class="default-paragraph">
-                        <strong>Quantity:</strong> 1
-                      </p>
-                      <p class="default-paragraph">
-                        <strong>Price:</strong> $100
-                      </p>
+                      <div class="price-and-quantity">
+                        <p class="default-paragraph">Quantity: 1</p>
+                        <p class="default-paragraph">Price: $100</p>
+                      </div>
                     </div>
                   </div>
                   <!-- Purchase Status -->
                   <div class="purchase-status">
                     <div class="status-icon">
                       <div class="status-icon-circle">
-                        <i class="fa-solid fa-box"></i>
+                        <i class="fa-solid fa-check"></i>
                         <p class="default-paragraph status-text delivered">
                           Delivered
                         </p>
                       </div>
-                      <p class="default-paragraph">
+                      <p class="default-paragraph expected-date">
                         <i class="fa-solid fa-calendar-days"></i>
                         Expected: 2024-01-01
                       </p>
@@ -3798,7 +3793,11 @@
           </section>
         </div>
         <!-- Settings Content-->
-        <div class="tab" id="settings">Settings</div>
+        <div class="tab" id="settings">
+          <section class="settings-section" role="main">
+            <h1 class="settings-title">Settings</h1>
+          </section>
+        </div>
       </div>
     </section>
 
