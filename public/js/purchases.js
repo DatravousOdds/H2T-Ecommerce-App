@@ -19,3 +19,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+const orderDetailsMenu = document.querySelector(".order-details-menu");
+const closeOrderDetailsMenu = document.getElementById(
+  "close-order-details-menu"
+);
+const viewOrderDetailsButton = document.querySelectorAll(".purchase-controls");
+
+viewOrderDetailsButton.forEach((button) => {
+  button.addEventListener("click", () => {
+    orderDetailsMenu.classList.add("active");
+  });
+});
+
+closeOrderDetailsMenu.addEventListener("click", () => {
+  orderDetailsMenu.classList.remove("active");
+});
