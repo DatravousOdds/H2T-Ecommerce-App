@@ -3898,8 +3898,8 @@
                       <div class="status-icon">
                         <div class="status-icon-circle">
                           <i class="fa-solid fa-truck"></i>
-                          <p class="default-paragraph status-text shipped">
-                            Shipped
+                          <p class="default-paragraph status-text processing">
+                            Processing
                           </p>
                         </div>
                         <p class="default-paragraph expected-date">
@@ -3941,8 +3941,8 @@
                       <div class="status-icon">
                         <div class="status-icon-circle">
                           <i class="fa-solid fa-check"></i>
-                          <p class="default-paragraph status-text delivered">
-                            Delivered
+                          <p class="default-paragraph status-text processing">
+                            Processing
                           </p>
                         </div>
                         <p class="default-paragraph expected-date">
@@ -4000,6 +4000,106 @@
               </div>
             </div>
           </section>
+
+          <!-- Order Details Popup -->
+          <div class="order-details-menu">
+            <div class="order-details-container">
+              <div class="order-details-header">
+                <h2 id="order-details-title">Order Details</h2>
+                <button id="close-order-details-menu">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="order-details-content">
+                <!-- Order Details Content -->
+                <div class="order-details-subheader">
+                  <div class="order-details-subheader-left">
+                    <h3 class="order-details-subheader-title">
+                      Order #1234567890
+                    </h3>
+                    <p
+                      class="order-details-subheader-status status-text processing"
+                    >
+                      Status: Processing
+                    </p>
+                  </div>
+                  <div class="order-details-subheader-right">
+                    <p>Order Date: 2024-01-01</p>
+                  </div>
+                </div>
+                <div class="order-products-container">
+                  <!-- Order Products Container -->
+                  <div class="order-item">
+                    <!-- Order Item -->
+                    <img
+                      class="product-img"
+                      src="images/Jordan 5 Retro Racer(9).jpg"
+                      alt="product image"
+                    />
+                  </div>
+                  <div class="order-item-info">
+                    <h3 class="default-paragraph product-name">Nike Air Max</h3>
+                    <p class="default-paragraph product-size">Size: 10</p>
+                    <p class="default-paragraph product-color">Color: Red</p>
+                    <p class="default-paragraph product-quantity">
+                      Quantity: 1
+                    </p>
+                    <p class="default-paragraph product-price">Price: $100</p>
+                  </div>
+                </div>
+                <div class="order-shipping-info">
+                  <!-- Order Shipping Info -->
+                  <div class="order-shipping-info-container">
+                    <div class="order-shipping-info-header">
+                      <i class="fa-solid fa-location-dot"></i>
+                      <h3>Shipping Information</h3>
+                    </div>
+                    <div class="order-shipping-info-content">
+                      <p class="shipping-recipient">
+                        Shipping Recipient: John Doe
+                      </p>
+                      <p class="shipping-address">
+                        Shipping Address: 1234 Main St, Anytown, USA
+                      </p>
+                      <p class="shipping-date">Shipping Date: 2024-01-01</p>
+                    </div>
+                    <button class="track-order-btn">
+                      <i class="fa-solid fa-truck"></i>
+                      Track Order
+                    </button>
+                  </div>
+                  <div class="order-payment-details">
+                    <!-- Order Payment Details -->
+                    <div class="order-payment-details-header">
+                      <i class="fa-regular fa-credit-card"></i>
+                      <h3>Payment Details</h3>
+                    </div>
+                    <div class="order-payment-details-content">
+                      <p class="payment-method">Payment Method: Credit Card</p>
+                      <div class="order-pricing">
+                        <div class="order-subtotal space-between">
+                          <p>Subtotal:</p>
+                          <span>$100</span>
+                        </div>
+                        <div class="order-shipping space-between">
+                          <p>Shipping:</p>
+                          <span>$10</span>
+                        </div>
+                        <div class="order-tax space-between">
+                          <p>Tax:</p>
+                          <span>$10</span>
+                        </div>
+                      </div>
+                      <div class="order-total space-between">
+                        <p>Total:</p>
+                        <span>$110</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <!-- Settings Content-->
         <div class="tab" id="settings">
