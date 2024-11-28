@@ -3665,6 +3665,11 @@ h6 {
 
 /* Order Details */
 
+.order-details-menu.active {
+  opacity: 1;
+  visibility: visible;
+}
+
 .order-item-info h3 {
   font-size: var(--font-size-lg) !important;
   font-weight: 600 !important;
@@ -3695,6 +3700,9 @@ h6 {
   z-index: 9999;
   border-radius: var(--border-radius-md);
   width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .order-shipping-info-container {
