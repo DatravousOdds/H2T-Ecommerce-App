@@ -4099,8 +4099,173 @@
         </div>
         <!-- Settings Content-->
         <div class="tab" id="settings">
-          <section class="settings-section" role="main">
-            <h1 class="settings-title">Settings</h1>
+          <section class="settings" role="main">
+            <header class="settings__header">
+              <h1 class="settings__title">
+                <i class="fa-solid fa-gear"></i>
+                Settings
+              </h1>
+            </header>
+
+            <div class="settings__content">
+              <!-- Security Section -->
+              <div class="settings__section">
+                <header class="settings__section-header">
+                  <i class="fa-solid fa-lock"></i>
+                  <h2 class="settings__section-title">Security</h2>
+                </header>
+
+                <div class="settings__section-content">
+                  <!-- Two-Factor Authentication -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">
+                        Two-factor Authentication
+                      </h3>
+                      <p class="settings__item-description">
+                        Enable two-factor authentication to add an extra layer
+                        of security to your account.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <label class="toggle">
+                        <input type="checkbox" class="toggle__input" />
+                        <span class="toggle__slider"></span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Password Settings -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">Password</h3>
+                      <p class="settings__item-description">
+                        Change your password to keep your account secure.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <button class="button button--primary">
+                        Update Password
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notifications Section -->
+              <div class="settings__section">
+                <header class="settings__section-header">
+                  <i class="fa-solid fa-bell"></i>
+                  <h2 class="settings__section-title">Notifications</h2>
+                </header>
+                <div class="settings__section-content">
+                  <!-- Notification settings content here -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">New Releases</h3>
+                      <p class="settings__item-description">
+                        Receive notifications when new releases are available.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <label class="toggle">
+                        <input type="checkbox" class="toggle__input" />
+                        <span class="toggle__slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <!-- Price Drops -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">Price Drops</h3>
+                      <p class="settings__item-description">
+                        Receive notifications when price drops are available.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <label class="toggle">
+                        <input type="checkbox" class="toggle__input" />
+                        <span class="toggle__slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <!-- Sales & Promotions -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">Sales & Promotions</h3>
+                      <p class="settings__item-description">
+                        Receive notifications when sales and promotions are
+                        available.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <label class="toggle">
+                        <input type="checkbox" class="toggle__input" />
+                        <span class="toggle__slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <!-- Newsletter Subscriptions -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">
+                        Newsletter Subscriptions
+                      </h3>
+                      <p class="settings__item-description">
+                        Receive notifications when new products are available.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <label class="toggle">
+                        <input type="checkbox" class="toggle__input" />
+                        <span class="toggle__slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Display & Language Section -->
+              <div class="settings__section">
+                <header class="settings__section-header">
+                  <i class="fa-solid fa-display"></i>
+                  <h2 class="settings__section-title">Display & Language</h2>
+                </header>
+                <div class="settings__section-content">
+                  <!-- Display & language settings content here -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">Language</h3>
+                      <p class="settings__item-description">
+                        Change the language of the app.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <select class="select">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                      </select>
+                    </div>
+                  </div>
+                  <!-- Dark Mode -->
+                  <div class="settings__item">
+                    <div class="settings__item-info">
+                      <h3 class="settings__item-title">Dark Mode</h3>
+                      <p class="settings__item-description">
+                        Enable dark mode to reduce eye strain and improve
+                        readability.
+                      </p>
+                    </div>
+                    <div class="settings__item-control">
+                      <label class="toggle">
+                        <input type="checkbox" class="toggle__input" />
+                        <span class="toggle__slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </div>
