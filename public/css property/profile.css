@@ -393,6 +393,10 @@ button:disabled {
   padding-bottom: 12px;
 }
 
+.btn-wrapper button i {
+  font-size: 1rem !important;
+}
+
 #bio-section .btn-wrapper {
   width: 100%;
   display: none;
@@ -1362,6 +1366,61 @@ button:disabled {
 .user-review {
   display: flex;
   justify-content: space-between;
+}
+
+/* All Reviews */
+
+.review-item {
+  border-bottom: 1px solid #d6d6d6;
+  padding: 1rem 0px;
+}
+
+.review-item .review-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.review-item .review-header img {
+  border-radius: 32px;
+  width: 3rem;
+  height: 3rem;
+}
+
+.review-item .review-header p {
+  font-weight: 500;
+}
+
+.review-item .review-username {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #000;
+  margin: 0px;
+}
+
+.review-item .review-subheader-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.review-item .review-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.review-item .review-rating-value {
+  font-weight: 500;
+  margin: 0px;
+  font-size: 1rem;
+}
+
+.review-item .review-rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1rem;
+  color: #ffb400;
 }
 
 .website-link {
@@ -6087,6 +6146,7 @@ input:checked + .slider:before {
 .purchase-item {
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: var(--spacing-md);
   display: grid;
   gap: var(--spacing-md);
