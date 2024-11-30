@@ -1999,3 +1999,68 @@ elements.confirmWithdrawBtn?.addEventListener("click", () => {
     notification.error("insufficient funds");
   }
 });
+
+// Reviews functions
+const closeReviewMenu = document.querySelector(".review-close");
+const replyBtn = document.querySelectorAll(".reply-btn");
+const replyForm = document.querySelectorAll(".review__reply");
+const replyCancelBtn = document.querySelectorAll(".reply-controls .cancel-btn");
+
+replyBtn.forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    replyForm[index].classList.toggle("active");
+  });
+});
+
+console.log("replyCancelBtn", replyCancelBtn);
+
+replyCancelBtn.forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    replyForm[index].classList.remove("active");
+  });
+});
+
+closeReviewMenu.addEventListener("click", () => {
+  closePopupMenu(".review-menu");
+});
+
+// Reply form
+const replyTextarea = document.querySelectorAll(".reply-textarea");
+const replyForms = document.querySelectorAll(".reply-form");
+const replyContent = document.querySelectorAll(".reply-content");
+const reviewControls = document.querySelectorAll(
+  ".review__item .review-controls"
+);
+console.log("replyTextarea", replyTextarea);
+replyTextarea.forEach((textarea, index) => {
+  replyForms[index].addEventListener("submit", (e) => {
+    e.preventDefault();
+    console.log("textarea", textarea.value);
+    console.log("index", index);
+    replyContent[index].innerHTML = `
+    <div class="reply-content">
+      <div class="reply-details">
+        <div class="reply-header">
+          <div class="reply-user">
+            <img class="reply-avatar" src="images/user-2.png" alt="Your Avatar" />
+              <div class="user-timestamp">
+              <div class="reply-wrapper">
+                <p class="reply-username">Reseller</p>
+                <div class="seller-tag">
+                  <i class="fa-solid fa-check"></i>
+                  <p class="seller-text">Seller</p>
+                </div>
+              </div>
+                <p class="reply-timestamp">Just now</p>
+              </div>
+          </div>
+        </div>
+        <p class="reply-text">${textarea.value}</p>
+        <div class="reply-actions">
+          <button class="edit-reply">Edit</button>
+          <button class="delete-reply">Delete</button>
+        </div>
+      </div>`;
+    reviewControls[index].classList.remove("active");
+  });
+});
