@@ -593,14 +593,14 @@
                     </div>
 
                     <div class="rating-display">
-                      5.0
-                      <div>
+                      <div class="rating-stars">
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                       </div>
+                      <p class="rating-timestamp">2 days ago</p>
                     </div>
                   </div>
 
@@ -625,14 +625,14 @@
                     </div>
 
                     <div class="rating-display">
-                      5.0
-                      <div>
+                      <div class="rating-stars">
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                         <i class="fa-solid fa-star"></i>
                       </div>
+                      <p class="rating-timestamp">2 days ago</p>
                     </div>
                   </div>
 
@@ -692,14 +692,59 @@
                           </p>
                         </div>
                         <div class="review__controls">
-                          <button class="button-31">
+                          <button class="button-31 reply-btn">
                             <i class="fa-solid fa-reply"></i>
                             Reply
                           </button>
-                          <button class="button-31">
+                          <button class="button-31 like-btn">
                             <i class="fa-solid fa-heart"></i>
                             Like
                           </button>
+                          <div class="view__all__replies">
+                            View all replies (2)
+                          </div>
+                        </div>
+                        <!-- Reply Form -->
+                        <div class="review__reply">
+                          <div class="reply-content">
+                            <div class="replying-to">
+                              <img
+                                class="replying-to__avatar"
+                                src="images/user-2.png"
+                                alt="User Avatar"
+                              />
+                              <div class="replay__and__timestamp">
+                                <p class="replying-to__text">
+                                  Replying to
+                                  <span class="replying-to__username">
+                                    Alexander Rity
+                                  </span>
+                                </p>
+                                <p class="replying-to__timestamp">2 days ago</p>
+                              </div>
+                            </div>
+                            <form
+                              action=""
+                              class="reply-form"
+                              id="reply-form-1"
+                            >
+                              <textarea
+                                name="review-reply"
+                                id="review-reply"
+                                class="reply-textarea"
+                                placeholder="Write a reply..."
+                              ></textarea>
+                              <div class="reply-controls">
+                                <button
+                                  type="button"
+                                  class="button-31 cancel-btn"
+                                >
+                                  Cancel
+                                </button>
+                                <button class="button-31">Post Reply</button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
                       </div>
                       <div class="review__item">
@@ -733,14 +778,53 @@
                           </p>
                         </div>
                         <div class="review__controls">
-                          <button class="button-31">
+                          <button class="button-31 reply-btn">
                             <i class="fa-solid fa-reply"></i>
                             Reply
                           </button>
-                          <button class="button-31">
+                          <button class="button-31 like-btn">
                             <i class="fa-solid fa-heart"></i>
                             Like
                           </button>
+                          <div class="view__all__replies">
+                            View all replies (2)
+                          </div>
+                        </div>
+                        <!-- Reply Form -->
+                        <div class="review__reply">
+                          <div class="replying-to">
+                            <img
+                              class="replying-to__avatar"
+                              src="images/user-2.png"
+                              alt="User Avatar"
+                            />
+                            <div class="replay__and__timestamp">
+                              <p class="replying-to__text">
+                                Replying to
+                                <span class="replying-to__username">
+                                  Alexander Rity
+                                </span>
+                              </p>
+                              <p class="replying-to__timestamp">2 days ago</p>
+                            </div>
+                          </div>
+                          <form class="reply-form">
+                            <textarea
+                              name="review-reply"
+                              id="review-reply"
+                              class="reply-textarea"
+                              placeholder="Write a reply..."
+                            ></textarea>
+                            <div class="reply-controls">
+                              <button
+                                type="button"
+                                class="button-31 cancel-btn"
+                              >
+                                Cancel
+                              </button>
+                              <button class="button-31">Post Reply</button>
+                            </div>
+                          </form>
                         </div>
                       </div>
                       <div class="review__item">
@@ -774,14 +858,53 @@
                           </p>
                         </div>
                         <div class="review__controls">
-                          <button class="button-31">
+                          <button class="button-31 reply-btn">
                             <i class="fa-solid fa-reply"></i>
                             Reply
                           </button>
-                          <button class="button-31">
+                          <button class="button-31 like-btn">
                             <i class="fa-solid fa-heart"></i>
                             Like
                           </button>
+                          <div class="view__all__replies">
+                            View all replies (2)
+                          </div>
+                        </div>
+                        <!-- Reply Form -->
+                        <div class="review__reply">
+                          <div class="replying-to">
+                            <img
+                              class="replying-to__avatar"
+                              src="images/user-2.png"
+                              alt="User Avatar"
+                            />
+                            <div class="replay__and__timestamp">
+                              <p class="replying-to__text">
+                                Replying to
+                                <span class="replying-to__username">
+                                  Alexander Rity
+                                </span>
+                              </p>
+                              <p class="replying-to__timestamp">2 days ago</p>
+                            </div>
+                          </div>
+                          <form class="reply-form">
+                            <textarea
+                              name="review-reply"
+                              id="review-reply"
+                              class="reply-textarea"
+                              placeholder="Write a reply..."
+                            ></textarea>
+                            <div class="reply-controls">
+                              <button
+                                type="button"
+                                class="button-31 cancel-btn"
+                              >
+                                Cancel
+                              </button>
+                              <button class="button-31">Post Reply</button>
+                            </div>
+                          </form>
                         </div>
                       </div>
                     </div>
