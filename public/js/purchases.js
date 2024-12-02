@@ -1,3 +1,5 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
   const purchaseTypeNav = document.querySelector(".purchase-type-nav");
   const purchaseTypeItems = document.querySelectorAll(".purchase-type-item");

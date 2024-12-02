@@ -137,18 +137,26 @@
                 <div id="pfp-section-1">
                   <!-- Username Section -->
                   <div id="name-infor">
-                    <div id="timestamp-container" class="ts-container">
-                      <i class="fa-regular fa-calendar"></i>
-                      <h3 class="timestamp">Joined 2024</h3>
-                    </div>
-                    <div id="wrapper-row" class="wrapper-row">
-                      <p id="username">@sara.almasi</p>
-                      <div id="verified-img-container">
-                        <div id="verified-tag" class="verified-tag">
-                          <i class="fa-solid fa-shield"></i>
-                          Verified
+                    <div class="username-header">
+                      <div id="wrapper-row" class="wrapper-row">
+                        <p id="username">@sara.almasi</p>
+                        <div id="verified-img-container">
+                          <div id="verified-tag" class="verified-tag">
+                            <i class="fa-solid fa-shield"></i>
+                            Verified
+                          </div>
                         </div>
                       </div>
+                      <div id="timestamp-container" class="ts-container">
+                        <i class="fa-regular fa-calendar"></i>
+                        <h3 class="timestamp">Joined 2024</h3>
+                      </div>
+                    </div>
+                    <div class="share-btn">
+                      <button>
+                        <i class="fa-solid fa-share-nodes"></i>
+                        Share Profile
+                      </button>
                     </div>
                   </div>
                   <!-- User Stats Section -->
@@ -1049,6 +1057,76 @@
                   </article>
                 </div>
               </div>
+
+              <!-- View All Activity Popup Modal -->
+              <div class="view-all-activity-overlay">
+                <div class="view-all-activity">
+                  <header class="view-all-activity-header">
+                    <h2>Recent Activity</h2>
+                    <button class="close-view-all-activity">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </header>
+                  <div class="view-all-activity-content">
+                    <!-- code to display all activity -->
+                    <div class="activity-item">
+                      <div class="activity-icon icon-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                      </div>
+                      <div class="activity-header">
+                        <div class="activity-content">
+                          <p class="activity-title">Low Stock Alert</p>
+                          <p class="activity-detail">Vintage Camera</p>
+                          <span class="warning-text">(5 remaining)</span>
+                          <p class="order-number">Order #1234567890</p>
+                        </div>
+                        <div class="activity-timestamp">
+                          <p class="activity-time default-paragraph">
+                            2 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="activity-item">
+                      <div class="activity-icon icon-success">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                      </div>
+                      <div class="activity-header">
+                        <div class="activity-content">
+                          <p class="activity-title">New Order Received</p>
+                          <p class="activity-detail">
+                            Leather Backpack <span>x2</span>
+                          </p>
+                          <p class="order-number">Order #1234567890</p>
+                        </div>
+                        <div class="activity-timestamp">
+                          <p class="activity-time default-paragraph">
+                            5 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="activity-item">
+                      <div class="activity-icon icon-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                      </div>
+                      <div class="activity-header">
+                        <div class="activity-content">
+                          <p class="activity-title">Low Stock Alert</p>
+                          <p class="activity-detail">Vintage Camera</p>
+                          <span class="warning-text">(5 remaining)</span>
+                          <p class="order-number">Order #1234567890</p>
+                        </div>
+                        <div class="activity-timestamp">
+                          <p class="activity-time default-paragraph">
+                            2 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
 
             <!-- Products Section -->
@@ -1225,6 +1303,113 @@
                 </ul>
               </nav>
 
+              <!-- Trade Request Modal -->
+              <div class="trade-request-overlay">
+                <div class="trade-request-modal">
+                  <header class="trade-request-header">
+                    <h2>Trade Request</h2>
+                    <button class="close-trade-request">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </header>
+                  <div class="trade-request-content">
+                    <!-- code to display trade request content -->
+                    <div class="notice-text">
+                      <i class="fa-solid fa-triangle-exclamation"></i>
+                      <p class="notice-text-content">
+                        Notice: Authenticity checks will be performed on all
+                        items.
+                      </p>
+                    </div>
+                    <div class="trade-section">
+                      <!-- code to display trade section -->
+                      <div class="your-items">
+                        <p class="trade-section-title">Your Items</p>
+                        <div class="search-wrapper">
+                          <input
+                            type="text"
+                            id="trade-request-search"
+                            placeholder="Search products"
+                          />
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="product-card">
+                          <!-- code to display product card -->
+                          <img
+                            src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                            alt="Jordan 1"
+                            class="product-image"
+                          />
+                          <div class="product-details">
+                            <p class="product-name">Air Jordan 1 High OG</p>
+                            <p class="product-sku">SKU: AJ1-HIGH-001</p>
+                            <p class="product-condition">New with Tags</p>
+                            <p class="product-quantity">1</p>
+                            <p class="product-price">$220.00</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="their-items">
+                        <p class="trade-section-title">Items You Want</p>
+                        <div class="search-wrapper">
+                          <input
+                            type="text"
+                            id="trade-request-search"
+                            placeholder="Search products"
+                          />
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <div class="product-card">
+                          <!-- code to display product card -->
+                          <img
+                            src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                            alt="Jordan 1"
+                            class="product-image"
+                          />
+                          <div class="product-details">
+                            <p class="product-name">Air Jordan 1 High OG</p>
+                            <p class="product-sku">SKU: AJ1-HIGH-001</p>
+                            <p class="product-condition">New with Tags</p>
+                            <p class="product-quantity">1</p>
+                            <p class="product-price">$220.00</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="additional-notes">
+                      <p class="additional-notes-title">Additional Notes</p>
+                      <textarea
+                        id="trade-request-notes"
+                        placeholder="Add any additional notes"
+                      ></textarea>
+                    </div>
+                    <div class="trade-items-value">
+                      <div class="trade-value-wrapper">
+                        <div class="your-items-value">
+                          <p class="trade-section-title">Your Items Value</p>
+                          <p class="trade-items-value-amount">$299.99</p>
+                        </div>
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        <div class="their-items-value">
+                          <p class="trade-section-title">Their Items Value</p>
+                          <p class="trade-items-value-amount">$349.99</p>
+                        </div>
+                      </div>
+                      <div class="value-diff">
+                        <i class="fa-solid fa-info"></i>
+                        <p class="trade-section-title">Value Difference</p>
+                        <p class="trade-items-value-amount">$50.00</p>
+                      </div>
+                    </div>
+                    <div class="trade-request-actions">
+                      <button type="button" id="trade-request-btn">
+                        <i class="fa-solid fa-right-left"></i>
+                        Trade Request
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Content Sections -->
               <div class="products-content">
                 <!-- All products content goes here -->

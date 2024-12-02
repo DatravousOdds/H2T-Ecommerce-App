@@ -1,3 +1,5 @@
+"use strict";
+
 import { generateCountries, validateForm } from "./global.js";
 import { closeDropdown } from "./global.js";
 
@@ -2028,15 +2030,16 @@ closeReviewMenu.addEventListener("click", () => {
 const replyTextarea = document.querySelectorAll(".reply-textarea");
 const replyForms = document.querySelectorAll(".reply-form");
 const replyContent = document.querySelectorAll(".reply-content");
-const reviewControls = document.querySelectorAll(
-  ".review__item .review-controls"
-);
+const reviewControls = document.querySelectorAll(" .review__controls");
 console.log("replyTextarea", replyTextarea);
 replyTextarea.forEach((textarea, index) => {
   replyForms[index].addEventListener("submit", (e) => {
     e.preventDefault();
-    console.log("textarea", textarea.value);
-    console.log("index", index);
+
+    const reviewItem = textarea.closest(".review__item");
+
+    const controls = reviewItem.querySelector(".review__controls");
+
     replyContent[index].innerHTML = `
     <div class="reply-content">
       <div class="reply-details">
@@ -2061,6 +2064,36 @@ replyTextarea.forEach((textarea, index) => {
           <button class="delete-reply">Delete</button>
         </div>
       </div>`;
-    reviewControls[index].classList.remove("active");
+
+    if (controls) {
+      controls.style.display = "none";
+    }
   });
 });
+
+// View All Activity
+const viewAllActivityBtn = document.querySelector(".view-all-link");
+const viewAllActivityOverlay = document.querySelector(
+  ".view-all-activity-overlay"
+);
+const closeViewAllActivityBtn = document.querySelector(
+  ".close-view-all-activity"
+);
+
+console.log("viewAllActivityBtn", viewAllActivityBtn);
+console.log("viewAllActivityOverlay", viewAllActivityOverlay);
+
+viewAllActivityBtn.addEventListener("click", () => {
+  viewAllActivityOverlay.classList.add("active");
+  document.body.style.overflow = "hidden";
+});
+
+closeViewAllActivityBtn.addEventListener("click", () => {
+  viewAllActivityOverlay.classList.remove("active");
+  document.body.style.overflow = "auto";
+});
+
+// Trade Request Modal
+const tradeRequestBtn = document.querySelector(".trade-request");
+const tradeRequestOverlay = document.querySelector(".trade-request-overlay");
+const closeTradeRequestBtn = document.querySelector(".close-trade-request");
