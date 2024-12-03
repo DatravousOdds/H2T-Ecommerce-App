@@ -3500,8 +3500,8 @@ h6 {
 }
 
 .trade-items-value-amount {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 500;
   color: var(--color-gray-700);
   margin: 0;
 }
@@ -3557,15 +3557,39 @@ h6 {
 
 .trade-value-wrapper {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
+  align-items: center;
+}
+
+.their-items-value .trade-items-value-amount {
+  font-size: 1.5rem;
+  color: #000;
+  font-weight: 600;
+  margin: 0;
+}
+
+.their-items-value .trade-section-title {
+  font-size: 1rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin: 0;
 }
 
 .trade-section-title {
-  font-size: 0.875rem;
-  color: #6b7280;
   margin: 0;
-  margin-bottom: 0.5rem;
+}
+
+.your-items-value .trade-items-value-amount {
+  font-size: 1.5rem;
+  color: #000;
+  font-weight: 600;
+  margin: 0;
+}
+
+.trade-section-title i {
+  font-size: 1rem;
+  color: #6b7280;
 }
 
 .search-wrapper {
@@ -3607,14 +3631,10 @@ h6 {
 
 .trade-section {
   display: flex;
-  align-items: center;
-
   gap: 1rem;
   justify-content: space-between;
-  border: 1px solid var(--border-gray);
   padding: 1rem;
   border-radius: 0.5rem;
-  background: var(--color-gray-50);
 }
 
 .trade-request-content {
@@ -3634,6 +3654,10 @@ h6 {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--color-gray-50);
 }
 
 .notice-text,
@@ -3670,6 +3694,7 @@ h6 {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
+  gap: 8px;
 }
 
 .trade-request-actions button {
@@ -3683,8 +3708,33 @@ h6 {
   color: white;
   font-weight: 500;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+.trade-request-actions #trade-request-btn {
+  background: var(--primary-blue);
+  color: white;
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s ease;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.trade-request-actions #trade-request-cancel-btn {
+  background: transparent;
+  color: var(--text-gray-dark);
+  border: 1px solid var(--border-gray);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 
 .trade-request-actions button:hover {

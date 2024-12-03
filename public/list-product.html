@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Head-To-Toe : List Product</title>
+  </head>
+  <body>
+    <nav></nav>
+
+    <!-- End of Navbar -->
+
+    <!-- Page Content -->
+    <header class="list-product-header">
+      <div class="list-product-header-container">
+        <button class="back-btn">
+          <i class="fas fa-arrow-left"></i>
+          <p>Back</p>
+        </button>
+        <h1>List Product</h1>
+        <button class="draft-btn">
+          <i class="fas fa-file-alt"></i>
+          <p>Save as Draft</p>
+        </button>
+      </div>
+    </header>
+    <!-- End of Page Content -->
+
+    <!-- Main Content -->
+    <main class="list-product-main">
+      <form class="list-product-form">
+        <!-- Image Upload Section -->
+        <div class="image-upload-section">
+          <h2 class="image-upload-title">Image Upload</h2>
+          <div class="image-grid">
+            <div class="image-item">
+              <input type="file" id="mainImage" accept="image/*" />
+              <label for="mainImage">
+                <i class="fas fa-plus"></i>
+                <span> Add Image </span>
+              </label>
+            </div>
+            <div class="image-upload-box">
+              <input type="file" id="image1" accept="image/*" />
+              <label for="image1">
+                <i class="fas fa-plus"></i>
+                <span> Add Image </span>
+              </label>
+            </div>
+            <!-- Add more image upload boxes as needed -->
+          </div>
+        </div>
+        <!-- End of Image Upload Section -->
+
+        <!-- Product Details Section -->
+        <div class="product-details-section">
+          <div class="form-group">
+            <label for="productName">Product Name</label>
+            <input type="text" id="productName" />
+          </div>
+        </div>
+        <!-- End of Product Details Section -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Size *</label>
+            <select name="size" id="size">
+              <option value="">Select Size</option>
+              <option value="US 6">US 6</option>
+              <option value="US 7">US 7</option>
+              <option value="US 8">US 8</option>
+              <option value="US 9">US 9</option>
+              <option value="US 10">US 10</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Condition *</label>
+            <select name="condition" id="condition">
+              <option value="">Select Condition</option>
+              <option value="new">New</option>
+              <option value="used">Used</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea name="description" id="description" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Price *</label>
+          <div class="price-input">
+            <span class="currency">$</span>
+            <input type="number" id="price" step="0.01" required />
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button class="cancel-btn">Cancel</button>
+          <button type="submit" class="submit-btn">List Product</button>
+        </div>
+        <!-- End of Form Actions -->
+      </form>
+    </main>
+    <!-- End of Main Content -->
+
+    <script src="js/list-product.js"></script>
+    <script src="js/nav.js"></script>
+  </body>
+</html>
