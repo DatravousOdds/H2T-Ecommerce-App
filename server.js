@@ -104,6 +104,11 @@ app.get("/signup", (req, res) => {
   res.sendFile(path.join(staticPth, "signup.html"));
 });
 
+//list product route
+app.get("/list-product", (req, res) => {
+  res.sendFile(path.join(staticPth, "list-product.html"));
+});
+
 app.post("/signup", (req, res) => {
   let { name, email, password, number, tac, notification } = req.body;
 
