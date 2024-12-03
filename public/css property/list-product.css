@@ -1,0 +1,305 @@
+:root {
+  --primary-blue: #2563eb;
+  --success-green: #22c55e;
+  --warning-yellow: #f59e0b;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --padding-medium: 10px 10px;
+  --primary: #ff0000;
+  --primary-dark: #cc0000;
+  --primary-light: #ffebeb;
+  --black: #000000;
+  --white: #ffffff;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --primary-red: #dc2626;
+  --primary-red-hover: #b91c1c;
+  --border-gray: #e5e7eb;
+  --shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  --bg-white: #fff;
+
+  /* Colors */
+  --color-primary: #2563eb;
+  --color-white: #ffffff;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #e5e7eb;
+  --color-gray-500: #6b7280;
+  --color-gray-700: #374151;
+  --color-black-alpha: rgba(0, 0, 0, 0.5);
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.875rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Typography */
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.5rem;
+
+  /* Border Radius */
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-focus: 0 0 0 2px rgba(37, 99, 235, 0.1);
+
+  --radius-md: 4px;
+
+  --transition-base: 0.2s ease;
+  --text-gray-700: #374151;
+  --text-gray-500: #6b7280;
+
+  /* Border Radius */
+  --border-radius-sm: 0.25rem; /* 4px */
+  --border-radius-md: 0.375rem; /* 6px */
+  --border-radius-lg: 0.5rem; /* 8px */
+  --border-radius-full: 9999px;
+
+  /* Typography */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+
+  /* Spacing */
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 0.75rem; /* 12px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+
+  /* Colors */
+  --color-primary: #ef4444; /* Red-500 */
+  --color-primary-hover: #dc2626; /* Red-600 */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+  --color-white: #ffffff;
+  --color-primary-dark: #000000;
+
+  /* Border Radius */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem; /* 8px */
+  --radius-full: 9999px;
+  --border-radius-md: 12px;
+
+  /* Transitions */
+  --transition-base: all 0.2s ease-in-out;
+
+  /* Border Colors */
+  --border-gray-100: #f3f4f6; /* Gray 100 - Light borders */
+  --border-gray-200: #e5e7eb; /* Gray 200 - Slightly darker borders */
+
+  /* Overlay Colors */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Text Colors */
+  --text-gray-900: #111827; /* Gray 900 - Headings and important text */
+  --text-gray-600: #4b5563; /* Gray 600 - Secondary text */
+  --text-gray-500: #6b7280; /* Gray 500 - Less important text */
+
+  /* Status Colors */
+  --success-green-50: #f0fdf4; /* Green 50 - Success background */
+  --success-green-600: #16a34a; /* Green 600 - Success text */
+  --alert-red-50: #fef2f2; /* Red 50 - Alert background */
+  --alert-red-600: #dc2626; /* Red 600 - Alert text */
+
+  /* Status Colors */
+  --color-status-processing-bg: #eef2ff;
+  --color-status-processing-text: #4f46e5;
+  --color-status-shipped-bg: #fef3c7;
+  --color-status-shipped-text: #d97706;
+  --color-status-delivered-bg: #ecfdf5;
+  --color-status-delivered-text: #16a34a;
+
+  /* Chart Colors */
+  --chart-line: #dc2626; /* Red 600 - Chart line color */
+  --chart-grid: #f0f0f0; /* Light gray - Chart grid lines */
+  --chart-text: #6b7280; /* Gray 500 - Chart axis text */
+
+  /* Hover/Interactive States */
+  --hover-gray-700: #374151; /* Gray 700 - Text hover */
+
+  /* Review */
+  --review-reply-btn: #000;
+  --review-like-btn: #000;
+  --review-reply-btn-hover: #0000008a;
+  --review-like-btn-hover: #0000008a;
+  --review-rating-value: #000;
+  --review-border-color: #d6d6d6;
+  --review-star-color: #ffb400;
+  --review-spacing-base: 1rem;
+  --review-spacing-small: 0.25rem;
+  --review-avatar-size: 3rem;
+  --review-font-size: 1rem;
+
+  /* Reply Form */
+  --review-background-color: #fff;
+  --review-border-color: #d6d6d6;
+  --review-border-radius: 8px;
+  --review-spacing-base: 1rem;
+  --review-text-secondary: #6b7280;
+  --review-primary-color: #000;
+  --review-primary-color-dark: #0000008a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* Form Styles */
+.list-product-form {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Container */
+
+.list-product-header {
+  background-color: #f5f5f5;
+  /* padding: 1rem 0; */
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.back-btn p,
+.draft-btn p {
+  margin-left: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.list-product-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+
+  /* margin-bottom: 1rem; */
+}
+
+.list-product-header-container h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.list-product-header-container button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  color: ;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+
+/* Image Upload Section */
+.image-upload-section {
+  margin-bottom: 1rem 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.image-upload-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.image-upload-box {
+  aspect-ratio: 1;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.image-upload-box:hover {
+  border-color: #007bff;
+  background-color: #f0f0f0;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Button Styles */
+
+.submit-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #ccc;
+  border: 1px solid #ccc;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 1rem;
+}
