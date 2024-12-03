@@ -109,6 +109,16 @@ app.get("/list-product", (req, res) => {
   res.sendFile(path.join(staticPth, "list-product.html"));
 });
 
+// trade request route
+app.get("/trade-request", (req, res) => {
+  res.sendFile(path.join(staticPth, "trade-request.html"));
+});
+
+// sell to us route
+app.get("/sell-to-us", (req, res) => {
+  res.sendFile(path.join(staticPth, "sell-to-us.html"));
+});
+
 app.post("/signup", (req, res) => {
   let { name, email, password, number, tac, notification } = req.body;
 
