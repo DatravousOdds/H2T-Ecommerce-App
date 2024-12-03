@@ -178,6 +178,31 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-gray);
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 /* Header Container */
 
 .list-product-header {
@@ -295,16 +320,19 @@ input[type="file"] {
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--text-gray-700);
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select {
+input[type="text"],
+input[type="number"],
+select,
+textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-gray);
   border-radius: 4px;
+  transition: var(--transition-base);
 }
 
 .form-row {
@@ -315,28 +343,25 @@ input[type="file"] {
 
 /* Button Styles */
 
-.submit-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  background-color: #ccc;
-  border: 1px solid #ccc;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 1rem;
-}
-
 .list-product-main {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+}
+
+.price-input {
+  position: relative;
+}
+
+.price-input input {
+  padding-left: 30px;
+}
+
+.currency {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 @media (max-width: 768px) {
