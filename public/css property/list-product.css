@@ -194,13 +194,26 @@ body {
   cursor: pointer;
 }
 
+/* Hover states */
+
+.list-product-main input:focus,
+.list-product-main select:focus,
+.list-product-main textarea:focus {
+  border-color: #3182ce;
+  outline: none;
+}
+
 .submit-btn {
   padding: 0.5rem 1rem;
   border: none;
-  background-color: var(--primary-blue);
+  background-color: #3182ce;
   color: var(--white);
   border-radius: 4px;
   cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #c53030;
 }
 
 /* Header Container */
@@ -309,7 +322,7 @@ body {
   color: #666;
 }
 
-input[type="file"] {
+.list-product-main input[type="file"] {
   display: none;
 }
 
@@ -324,10 +337,10 @@ input[type="file"] {
   color: var(--text-gray-700);
 }
 
-input[type="text"],
-input[type="number"],
-select,
-textarea {
+.list-product-main input[type="text"],
+.list-product-main input[type="number"],
+.list-product-main select,
+.list-product-main textarea {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--border-gray);
@@ -354,7 +367,7 @@ textarea {
 }
 
 .price-input input {
-  padding-left: 30px;
+  padding-left: 30px !important;
 }
 
 .currency {
@@ -371,5 +384,9 @@ textarea {
 
   .list-product-header-container h1 {
     font-size: 1.25rem;
+  }
+
+  .image-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
