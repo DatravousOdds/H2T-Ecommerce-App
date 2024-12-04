@@ -176,7 +176,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>Size *</label>
-            <select name="size" id="size">
+            <select name="size" id="size" required>
               <option value="">Select Size</option>
               <option value="US 6">US 6</option>
               <option value="US 7">US 7</option>
@@ -187,7 +187,7 @@
           </div>
           <div class="form-group">
             <label>Condition *</label>
-            <select name="condition" id="condition">
+            <select name="condition" id="condition" required>
               <option value="">Select Condition</option>
               <option value="new">New</option>
               <option value="used">Used</option>
@@ -197,7 +197,12 @@
 
         <div class="form-group">
           <label>Description *</label>
-          <textarea name="description" id="description" rows="4"></textarea>
+          <textarea
+            name="description"
+            id="description"
+            rows="4"
+            required
+          ></textarea>
         </div>
 
         <div class="form-group">
