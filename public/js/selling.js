@@ -51,3 +51,9 @@ const listProductBtn = document.querySelector(".list-products");
 listProductBtn.addEventListener("click", () => {
   window.location.href = "/list-product";
 });
+
+// Trade Request
+const tradeRequestBtn = document.querySelector(".trade-request");
+tradeRequestBtn.addEventListener("click", () => {
+  window.location.href = "/trade-request";
+});
