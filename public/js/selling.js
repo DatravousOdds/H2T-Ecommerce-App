@@ -45,3 +45,9 @@ filterButtons.forEach((btn) => {
     }
   });
 });
+
+// List Product
+const listProductBtn = document.querySelector(".list-products");
+listProductBtn.addEventListener("click", () => {
+  window.location.href = "/list-product";
+});
