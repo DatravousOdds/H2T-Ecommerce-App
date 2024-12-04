@@ -53,39 +53,117 @@
         <!-- Image Upload Section -->
         <div class="image-upload-section">
           <h2 class="image-upload-title">Image Upload</h2>
+          <p class="upload-hint">First image will be used as the main image.</p>
+
           <div class="image-grid">
-            <div class="image-item">
-              <input type="file" id="mainImage" accept="image/*" />
+            <!-- Main Image -->
+            <div class="image-item main-image">
+              <input
+                type="file"
+                id="mainImage"
+                accept="image/*"
+                class="file-input"
+              />
               <label for="mainImage" class="file-label">
-                <i class="fas fa-plus"></i>
-                <span> Add Image </span>
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Main Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
               </label>
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
             </div>
-            <div class="image-upload-box">
-              <input type="file" id="image1" accept="image/*" />
-              <label for="image1" class="file-label">
-                <i class="fas fa-plus"></i>
-                <span> Add Image </span>
-              </label>
-            </div>
-            <div class="image-upload-box">
-              <input type="file" id="image2" accept="image/*" />
+
+            <!-- Additional Images -->
+            <div class="image-item">
+              <input
+                type="file"
+                id="image2"
+                accept="image/*"
+                class="file-input"
+              />
               <label for="image2" class="file-label">
-                <i class="fas fa-plus"></i>
-                <span> Add Image </span>
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Add Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
               </label>
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
             </div>
-            <div class="image-upload-box">
-              <input type="file" id="image3" accept="image/*" />
+            <div class="image-item">
+              <input
+                type="file"
+                id="image3"
+                accept="image/*"
+                class="file-input"
+              />
               <label for="image3" class="file-label">
-                <i class="fas fa-plus"></i>
-                <span> Add Image </span>
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Add Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
               </label>
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <div class="image-item">
+              <input
+                type="file"
+                id="image4"
+                accept="image/*"
+                class="file-input"
+              />
+              <label for="image4" class="file-label">
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Add Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
+              </label>
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
             </div>
             <!-- Add more image upload boxes as needed -->
           </div>
         </div>
         <!-- End of Image Upload Section -->
+
+        <div class="upload-requirement">
+          <p>
+            <i class="fas fa-exclamation-triangle"></i>
+            <small
+              >Upload up to 4 images. (JPEG, PNG, WEBP) * Max 5MB each</small
+            >
+          </p>
+        </div>
 
         <!-- Product Details Section -->
         <div class="product-details-section">
