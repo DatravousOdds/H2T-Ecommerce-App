@@ -211,6 +211,38 @@ body {
   color: var(--secondary-color);
 }
 
+/* Available Item Card */
+.available-items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.available-item-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--padding-medium);
+  background-color: var(--quaternary-color);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+.available-item-card:hover {
+  transform: translateY(-1px);
+  transition: all 0.3s ease-in-out;
+  background-color: #66666614;
+}
+
+.available-item-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
 /* Trade Summary */
 .trade-summary {
   margin-top: 2rem;
@@ -329,13 +361,38 @@ body {
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .trade-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .trade-comparison {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
   .trade-grid {
     grid-template-columns: repeat(1, 1fr);
   }
 
   .trade-comparison {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
+  }
+
+  .trade-value .label {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .available-items-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .trade-value .label {
+    font-size: 0.8rem;
   }
 }
