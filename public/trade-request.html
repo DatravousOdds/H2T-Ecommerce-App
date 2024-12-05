@@ -34,9 +34,9 @@
   </head>
   <body>
     <!-- Navbar -->
-    <header class="header">
+    <section id="header">
       <nav></nav>
-    </header>
+    </section>
 
     <!-- Main Content -->
     <main class="trade-request">
@@ -62,6 +62,43 @@
               <span class="item-counter">0/4 Selected</span>
             </header>
 
+            <!-- Items Grid -->
+            <div class="selected-items-grid">
+              <!-- Selected Item Card -->
+              <div class="selected-item-card">
+                <div class="selected-item-remove">
+                  <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <img
+                  src="./images/SupremeShirt.jpg"
+                  alt="Item Image"
+                  width="100px"
+                  height="100px"
+                />
+                <div class="selected-item-info">
+                  <h3>Supreme Shirt</h3>
+                  <p>Value: $100</p>
+                  <p>Condition: New</p>
+                </div>
+              </div>
+              <div class="selected-item-card">
+                <div class="selected-item-remove">
+                  <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <img
+                  src="./images/Bape.jpg"
+                  alt="Item Image"
+                  width="100px"
+                  height="100px"
+                />
+                <div class="selected-item-info">
+                  <h3>Bape Hoodie</h3>
+                  <p>Value: $100</p>
+                  <p>Condition: New</p>
+                </div>
+              </div>
+            </div>
+
             <!-- Search Bar -->
             <div class="search-container">
               <i class="fa-solid fa-magnifying-glass"></i>
@@ -71,9 +108,6 @@
                 aria-label="Search your inventory"
               />
             </div>
-
-            <!-- Items Grid -->
-            <div class="selected-items-grid"></div>
 
             <!-- Available Items Grid -->
             <div class="available-items-grid"></div>
@@ -88,6 +122,42 @@
               <span class="item-counter">0/4 Selected</span>
             </header>
 
+            <!-- Items Grid -->
+            <div class="selected-items-grid">
+              <div class="selected-item-card">
+                <div class="selected-item-remove">
+                  <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <img
+                  src="./images/Bape.jpg"
+                  alt="Item Image"
+                  width="100px"
+                  height="100px"
+                />
+                <div class="selected-item-info">
+                  <h3>Bape Hoodie</h3>
+                  <p>Value: $100</p>
+                  <p>Condition: New</p>
+                </div>
+              </div>
+              <div class="selected-item-card">
+                <div class="selected-item-remove">
+                  <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <img
+                  src="./images/Bape.jpg"
+                  alt="Item Image"
+                  width="100px"
+                  height="100px"
+                />
+                <div class="selected-item-info">
+                  <h3>Bape Hoodie</h3>
+                  <p>Value: $100</p>
+                  <p>Condition: New</p>
+                </div>
+              </div>
+            </div>
+
             <!-- Search Bar -->
             <div class="search-container">
               <i class="fa-solid fa-magnifying-glass"></i>
@@ -97,9 +167,6 @@
                 aria-label="Search their inventory"
               />
             </div>
-
-            <!-- Items Grid -->
-            <div class="selected-items-grid"></div>
 
             <!-- Available Items Grid -->
             <div class="available-items-grid"></div>
@@ -131,11 +198,11 @@
 
         <!-- Value Difference Alert -->
         <div class="value-difference">
-          <i class="fa-solid fa-right-left" aria-hidden="true"></i>
+          <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
           <div class="alert-content">
             <span class="alert-title">Value Difference</span>
             <p class="alert-message">
-              There is a difference of $0 in your favor
+              There is a $200 value difference in their favor.
             </p>
           </div>
         </div>
