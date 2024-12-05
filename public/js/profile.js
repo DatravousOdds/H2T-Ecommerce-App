@@ -2092,8 +2092,3 @@ closeViewAllActivityBtn.addEventListener("click", () => {
   viewAllActivityOverlay.classList.remove("active");
   document.body.style.overflow = "auto";
 });
-
-// Trade Request Modal
-const tradeRequestBtn = document.querySelector(".trade-request");
-const tradeRequestOverlay = document.querySelector(".trade-request-overlay");
-const closeTradeRequestBtn = document.querySelector(".close-trade-request");
