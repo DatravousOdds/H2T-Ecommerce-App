@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f5f5f5;
+}
+
+main {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.trade-request-container-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trade-request-header {
+  margin: 1rem;
+}
+
+.trade-request-card {
+  padding: 20px 10px;
+  margin: 1rem;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}

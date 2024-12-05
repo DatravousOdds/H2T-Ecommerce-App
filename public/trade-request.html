@@ -37,26 +37,120 @@
     <header class="header">
       <nav></nav>
     </header>
+
     <!-- Main Content -->
-    <main>
-      <h1>Trade Request</h1>
-      <div class="trade-request-container">
-        <div class="trade-request-card">
-          <div class="trade-request-card-header">
-            <div class="trade-request-card-header-left">
-              <h1>Trade Request</h1>
-            </div>
-            <div class="trade-request-card-header-right">
-              <p>0/4 Selected</p>
-            </div>
-          </div>
-          <div class="trade-search-bar">
-            <input type="text" placeholder="Search your inventory" />
+    <main class="trade-request">
+      <!-- Trade Request Header -->
+      <section class="trade-request-header">
+        <h1>Create Trade Request</h1>
+        <div class="trade-request-status">
+          <p>Select up to 4 items</p>
+          <div class="status-indicator">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Draft</span>
           </div>
         </div>
+      </section>
+
+      <!-- Trade Items Grid Container -->
+      <div class="trade-grid">
+        <!-- Your Items -->
+        <section class="trade-section your-item">
+          <div class="trade-card">
+            <header class="trade-card-header">
+              <h2>Your Items</h2>
+              <span class="item-counter">0/4 Selected</span>
+            </header>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="text"
+                placeholder="Search your inventory"
+                aria-label="Search your inventory"
+              />
+            </div>
+
+            <!-- Items Grid -->
+            <div class="selected-items-grid"></div>
+
+            <!-- Available Items Grid -->
+            <div class="available-items-grid"></div>
+          </div>
+        </section>
+
+        <!-- Their Items -->
+        <section class="trade-section their-item">
+          <div class="trade-card">
+            <header class="trade-card-header">
+              <h2>Their Items</h2>
+              <span class="item-counter">0/4 Selected</span>
+            </header>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="text"
+                placeholder="Search their inventory"
+                aria-label="Search their inventory"
+              />
+            </div>
+
+            <!-- Items Grid -->
+            <div class="selected-items-grid"></div>
+
+            <!-- Available Items Grid -->
+            <div class="available-items-grid"></div>
+          </div>
+        </section>
       </div>
+
+      <!-- Trade Summary -->
+      <section class="trade-summary">
+        <h2>Trade Summary</h2>
+
+        <!-- Trade Values Comparison -->
+        <div class="trade-comparison">
+          <div class="trade-value your-value">
+            <span class="label">Your Total</span>
+            <p class="amount">$0</p>
+          </div>
+
+          <div class="trade-direction">
+            <i class="fa-solid fa-right-left" aria-hidden="true"></i>
+          </div>
+
+          <!-- Their Total -->
+          <div class="trade-value their-value">
+            <span class="label">Their Total</span>
+            <p class="amount">$0</p>
+          </div>
+        </div>
+
+        <!-- Value Difference Alert -->
+        <div class="value-difference">
+          <i class="fa-solid fa-right-left" aria-hidden="true"></i>
+          <div class="alert-content">
+            <span class="alert-title">Value Difference</span>
+            <p class="alert-message">
+              There is a difference of $0 in your favor
+            </p>
+          </div>
+        </div>
+
+        <!-- Trade Button Actions -->
+        <div class="trade-button-actions">
+          <button type="button" class="btn-primary">
+            Create Trade Request
+          </button>
+          <button type="button" class="btn-secondary">Cancel</button>
+        </div>
+      </section>
     </main>
-    <!-- JS -->
+
+    <!-- Scripts -->
     <script src="js/trade-request.js"></script>
     <script src="js/nav.js"></script>
   </body>
