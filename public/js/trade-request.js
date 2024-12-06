@@ -86,15 +86,26 @@ availableItemsGrids.forEach((grid) => {
     let theirTotal = 0;
 
     yourItems.forEach((item) => {
-      yourTotal += parseInt(item.getAttribute("data-price"));
+      yourTotal += parseInt(item.getAttribute("data-price")) || 0;
     });
 
     theirItems.forEach((item) => {
-      theirTotal += parseInt(item.getAttribute("data-price"));
+      theirTotal += parseInt(item.getAttribute("data-price")) || 0;
     });
 
     console.log("your total", yourTotal);
     console.log("their total", theirTotal);
+
+    // Update the total value
+    const yourTotalValue = document
+      .querySelector(".trade-value .your-value")
+      .querySelector(".amount");
+    yourTotalValue.textContent = `$${yourTotal}`;
+
+    const theirTotalValue = document
+      .querySelector(".trade-value .their-value")
+      .querySelector(".amount");
+    theirTotalValue.textContent = `$${theirTotal}`;
   });
 });
 
