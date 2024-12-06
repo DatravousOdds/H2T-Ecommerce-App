@@ -4303,6 +4303,11 @@ h6 {
   border-radius: 8px;
 }
 
+.edit-info-header .edit-info p {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 .header-info .edit-info:hover {
   transform: scale(1.1);
 }
@@ -7250,6 +7255,14 @@ input:checked + .slider:before {
     flex-direction: column;
     width: 450px;
   }
+
+  .trade-request,
+  .sell-to-us,
+  .list-products {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 }
 
 /* Medium devices (tablets, 768px and up) */
@@ -7292,11 +7305,9 @@ input:checked + .slider:before {
     flex-direction: column;
   }
 
-  .filter-dropdown,
-  .trade-request,
-  .sell-to-us,
-  .list-products {
+  .actions-buttons button {
     width: 100%;
+    justify-content: center;
   }
 
   .products-header .search-bar {
@@ -7527,6 +7538,12 @@ input:checked + .slider:before {
   .addCard-btn {
     padding: 0.6rem 1.25rem;
     font-size: 0.95rem;
+  }
+
+  /* Search bar */
+  .search-wrapper {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
