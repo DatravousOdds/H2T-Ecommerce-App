@@ -69,10 +69,6 @@ availableItemsGrids.forEach((grid) => {
     const selectedItemsCount = tradeSection.querySelector(".item-counter");
     selectedItemsCount.textContent = `${selectedItemsGrid.children.length}/4 Selected`;
 
-    // Update the total value
-    let totalValue = 0;
-    let theirValue = 0;
-
     const yourItems = tradeSection
       .querySelector(".your-item .selected-items-grid")
       .querySelectorAll(".item-value");
@@ -82,6 +78,10 @@ availableItemsGrids.forEach((grid) => {
       .querySelector(".their-item .selected-items-grid")
       .querySelectorAll(".item-value");
     console.log("their items", theirItems);
+
+    // Update the total value
+    let totalValue = 0;
+    let theirValue = 0;
   });
 });
 
