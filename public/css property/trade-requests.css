@@ -360,6 +360,11 @@ body {
   transform: translateY(-1px);
 }
 
+#create-trade-request.disabled {
+  background-color: #66666614;
+  cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .trade-grid {
