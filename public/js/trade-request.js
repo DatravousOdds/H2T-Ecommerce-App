@@ -7,7 +7,7 @@ availableItemsGrids.forEach((grid) => {
     // console.log("clicked item", e.target);
     // Find the clicked card or its parent
     const itemCard = e.target.closest(".available-item-card");
-    console.log("item card", itemCard);
+    // console.log("item card", itemCard);
     if (!itemCard) return; // if no card is clicked, return
 
     const tradeSection = itemCard.closest(".trade-section");
@@ -15,7 +15,7 @@ availableItemsGrids.forEach((grid) => {
     const selectedItemsGrid = tradeSection.querySelector(
       ".selected-items-grid"
     );
-    console.log("selected items grid", selectedItemsGrid);
+    // console.log("selected items grid", selectedItemsGrid);
 
     // Check if the selected items grid has 4 items
     const selectedItems = selectedItemsGrid.querySelectorAll(
@@ -29,10 +29,10 @@ availableItemsGrids.forEach((grid) => {
     const itemValue = itemCard.querySelector(".item-value").textContent;
     const itemCondition = itemCard.querySelector(".item-condition").textContent;
     const itemImage = itemCard.querySelector(".item-image").src;
-    console.log("item name", itemName);
-    console.log("item value", itemValue);
-    console.log("item condition", itemCondition);
-    console.log("item image", itemImage);
+    // console.log("item name", itemName);
+    // console.log("item value", itemValue);
+    // console.log("item condition", itemCondition);
+    // console.log("item image", itemImage);
     // Create a new selected item card
     const selectedItemCard = document.createElement("div");
     selectedItemCard.classList.add("selected-item-card");
@@ -60,7 +60,7 @@ availableItemsGrids.forEach((grid) => {
     const itemCount = selectedItemsGrid.querySelectorAll(
       ".selected-item-card"
     ).length;
-    console.log("item count", itemCount);
+    // console.log("item count", itemCount);
     if (itemCount > 4) {
       // Disable the trade button
       document.getElementById("create-trade-request").classList.add("disabled");
@@ -69,19 +69,32 @@ availableItemsGrids.forEach((grid) => {
     const selectedItemsCount = tradeSection.querySelector(".item-counter");
     selectedItemsCount.textContent = `${selectedItemsGrid.children.length}/4 Selected`;
 
-    const yourItems = tradeSection
+    const yourItems = document
       .querySelector(".your-item .selected-items-grid")
       .querySelectorAll(".item-value");
+
     console.log("your items", yourItems);
 
-    const theirItems = tradeSection
+    const theirItems = document
       .querySelector(".their-item .selected-items-grid")
       .querySelectorAll(".item-value");
+
     console.log("their items", theirItems);
 
     // Update the total value
-    let totalValue = 0;
-    let theirValue = 0;
+    let yourTotal = 0;
+    let theirTotal = 0;
+
+    yourItems.forEach((item) => {
+      yourTotal += parseInt(item.getAttribute("data-price"));
+    });
+
+    theirItems.forEach((item) => {
+      theirTotal += parseInt(item.getAttribute("data-price"));
+    });
+
+    console.log("your total", yourTotal);
+    console.log("their total", theirTotal);
   });
 });
 
