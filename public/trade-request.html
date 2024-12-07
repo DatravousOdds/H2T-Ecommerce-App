@@ -203,6 +203,56 @@
       </section>
     </main>
 
+    <!-- Trade Confirmation Modal -->
+    <div class="trade-confirmation-modal">
+      <div class="trade-confirmation-modal-content">
+        <!-- Trade confirmation icon -->
+        <div class="trade-confirmation-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <!-- Header -->
+        <header class="trade-confirmation-header">
+          <h2>Trade Request Sent!</h2>
+          <p class="trade-recipient-info">
+            Your trade request has been sent to
+            <span id="trade-recipient">Trade Recipient</span>
+          </p>
+        </header>
+        <!-- Items traded -->
+        <div class="items-traded">
+          <!-- Dynamic Content -->
+          <div class="traded-items">
+            <!-- Dynamic Content -->
+            <p class="items-label">Your Items:</p>
+            <p class="items-count">2 items ($200)</p>
+          </div>
+          <div class="traded-items">
+            <!-- Dynamic Content -->
+            <p class="items-label">Their Items:</p>
+            <p class="items-count">1 items ($100)</p>
+          </div>
+        </div>
+
+        <!-- Trade Button Actions -->
+        <div class="confirmation-button-actions">
+          <button
+            type="button"
+            class="view-trade-request"
+            id="view-trade-request"
+          >
+            View Trade Request
+          </button>
+          <button
+            type="button"
+            class="back-to-trading-page"
+            id="close-trade-confirmation"
+          >
+            Back to Trading Page
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/trade-request.js"></script>
     <script src="js/nav.js"></script>
