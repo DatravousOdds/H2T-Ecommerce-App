@@ -1,7 +1,9 @@
 const availableItemsGrids = document.querySelectorAll(".available-items-grid");
 const selectedItemsGrids = document.querySelectorAll(".selected-items-grid");
+const createTradeRequestBtn = document.getElementById("create-trade-request");
+const cancelTradeRequestBtn = document.getElementById("cancel-trade-request");
 
-// available items grid
+// Add event listener to the available items grid
 availableItemsGrids.forEach((grid) => {
   grid.addEventListener("click", (e) => {
     // console.log("clicked item", e.target);
@@ -86,33 +88,68 @@ availableItemsGrids.forEach((grid) => {
     let theirTotal = 0;
 
     yourItems.forEach((item) => {
-      yourTotal += parseInt(item.getAttribute("data-price")) || 0;
+      const price = item.textContent.match(/\d+/)[0];
+      yourTotal += parseInt(price) || 0;
     });
 
     theirItems.forEach((item) => {
-      theirTotal += parseInt(item.getAttribute("data-price")) || 0;
+      const price = item.textContent.match(/\d+/)[0];
+      theirTotal += parseInt(price) || 0;
     });
 
     console.log("your total", yourTotal);
     console.log("their total", theirTotal);
 
     // Update the total value
-    const yourTotalValue = document
-      .querySelector(".trade-value .your-value")
-      .querySelector(".amount");
+    const yourTotalValue = document.querySelector(".your-value .amount");
     yourTotalValue.textContent = `$${yourTotal}`;
 
-    const theirTotalValue = document
-      .querySelector(".trade-value .their-value")
-      .querySelector(".amount");
+    const theirTotalValue = document.querySelector(".their-value .amount");
     theirTotalValue.textContent = `$${theirTotal}`;
+
+    // Update the value difference
+    const valueDifference = document.querySelector(
+      ".value-difference .alert-message"
+    );
+    const favorDifference = Math.abs(theirTotal - yourTotal);
+    console.log("favor difference", favorDifference);
+
+    if (favorDifference > 0) {
+      const favorText =
+        yourTotal > theirTotal ? "in your favor" : "in their favor";
+      valueDifference.textContent = `There is a $${favorDifference} value difference ${favorText}.`;
+    }
+
+    // add remove event listener to the selected items
+    const removeBtn = selectedItemCard.querySelector(".selected-item-remove");
+    removeBtn.addEventListener("click", (e) => {
+      console.log("remove btn clicked", e.target);
+      e.target.closest(".selected-item-card").remove();
+    });
   });
 });
 
-const itemRemoveBtn = document.querySelectorAll(".selected-item-remove");
-itemRemoveBtn.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    console.log("closed item card", e.target);
-    e.target.closest(".selected-item-card").remove();
+// Add event listener to the create trade request button
+createTradeRequestBtn.addEventListener("click", () => {
+  console.log("create trade request button clicked");
+  // create trade request
+
+  // redirect to the trade request page
+  window.location.href = "/trade-request";
+
+  // create trade confirmation message
+});
+
+// Add event listener to the cancel trade request button
+cancelTradeRequestBtn.addEventListener("click", () => {
+  console.log("cancel trade request button clicked");
+
+  // clear the selected items
+  const selectedItems = document.querySelectorAll(".selected-item-card");
+  selectedItems.forEach((item) => {
+    item.remove();
   });
+
+  // redirect to the profile page
+  window.location.href = "/profile";
 });
