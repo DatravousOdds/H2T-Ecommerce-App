@@ -310,74 +310,86 @@ nav ul li a:hover {
   padding: 0px 10px;
 }
 
+/* Search Container */
 nav .search_box {
+  --search-height: 35px;
+  --search-padding: 10px;
+  --search-bg: #212529;
+  --search-radius: 12px;
+
   display: flex;
   margin: auto 9rem;
-
-  /* height: 35px; */
+  height: var(--search-height);
   width: 100%;
-  line-height: 35px;
-  border-radius: 12px;
+  line-height: var(--search-height);
+  border-radius: var(--search-radius);
+}
+
+/* Search Input Styles */
+.search-bar input,
+.input_box {
+  background: var(--search-bg);
+  height: 100%;
+  padding: 0 var(--search-padding);
+  font-size: var(--fontSize-1);
+  color: var(--color-white);
+  border: none;
+  outline: none;
 }
 
 .search-bar input {
   flex: 1;
-  background: none;
-  outline: 0;
 }
 
+/* Search Button/Trigger */
 .triggerSearch {
-  font-size: 22px;
+  --trigger-size: 22px;
+
+  font-size: var(--trigger-size);
   color: var(--color-red);
   background: transparent;
-  outline: 0;
-  border: 0;
-  cursor: pointer;
-}
-
-.input_box {
   border: none;
   outline: none;
-  background: #212529;
-  height: 100%;
-  padding: 0 10px;
-  font-size: var(--fontSize-1);
-  /* width: 350px; */
-  color: var(--color-white);
+  cursor: pointer;
 }
 
+/* Search Icon/Span */
 nav .search_box span {
-  color: var(--color-red);
-  font-size: var(--fontSize-1);
-  background: #212529;
+  position: relative;
+  display: flex;
+  align-items: center;
   height: 100%;
   padding: 8px;
-  position: relative;
+  color: var(--color-red);
+  font-size: var(--fontSize-1);
+  background: var(--search-bg);
   cursor: pointer;
   z-index: 1;
+  transition: color 0.3s;
+}
+
+/* Hover Effect */
+nav .search_box span::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 0;
+  background: var(--color-red);
+  z-index: -1;
+  transition: width 0.3s ease;
 }
 
 nav .search_box span:hover {
   color: var(--color-white);
 }
 
-nav .search_box span::after {
-  height: 100%;
-  width: 0%;
-  content: "";
-  /* change color later */
-  background: var(--color-red);
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: -1;
-  transition: 0.3s;
-}
-
 nav .search_box span:hover::after {
   width: 100%;
+  right: auto;
+  left: 0;
 }
-
 .nav-items {
   position: absolute;
   width: 100%; /* changed from 100vw */
