@@ -444,7 +444,7 @@ body {
 }
 
 .trade-confirmation-modal {
-  display: flex;
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -456,12 +456,27 @@ body {
   z-index: 1000;
 }
 
+.trade-confirmation-modal.active {
+  display: flex;
+}
+
+.trade-confirmation-modal.active .trade-confirmation-modal-content {
+  transform: translateY(0);
+}
+
+.trade-confirmation-modal-content.hidden {
+  transform: translateY(-100%);
+  display: none;
+}
+
 .trade-confirmation-modal-content {
-  width: 50%;
+  width: 90%;
+  max-width: 500px;
   margin: 15vh auto;
   background-color: var(--quaternary-color);
   padding: var(--padding-large);
   border-radius: var(--border-radius);
+  transition: all 0.3s ease-in-out;
 }
 
 .confirmation-button-actions {
@@ -478,11 +493,30 @@ body {
   font-weight: var(--font-weight-small);
   border-radius: 8px;
   border: none;
+  cursor: pointer;
+}
+
+.confirmation-button-actions button:hover {
+  transform: translateY(-1px);
+  transition: all 0.3s ease-in-out;
 }
 
 .view-trade-request {
   background-color: var(--primary-color);
   color: var(--quaternary-color);
+}
+
+.view-trade-request:hover {
+  background-color: var(--color-primary-light);
+}
+
+.cancel-trade-request {
+  background-color: var(--quaternary-color);
+  color: var(--secondary-color);
+}
+
+.cancel-trade-request:hover {
+  background-color: var(--tertiary-color);
 }
 
 /* Responsive */

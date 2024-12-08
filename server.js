@@ -114,6 +114,11 @@ app.get("/trade-request", (req, res) => {
   res.sendFile(path.join(staticPth, "trade-request.html"));
 });
 
+// view trade request route
+app.get("/view-trade-request", (req, res) => {
+  res.sendFile(path.join(staticPth, "viewTradeRequest.html"));
+});
+
 // sell to us route
 app.get("/sell-to-us", (req, res) => {
   res.sendFile(path.join(staticPth, "sell-to-us.html"));
