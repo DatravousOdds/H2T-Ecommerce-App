@@ -14,17 +14,7 @@ const newNav = () => {
       </form>
     </div>
     <!-- end of search bar -->
-    <div id="ss-icon">
-      <div class="icon-container">
-        <div>
-          <a href="/cart" class="sh"><i class="fa-solid fa-bag-shopping"></i></a>
-        </div>
-        <div>
-          <button class="nav-btn-dd btn-1 nav-icon " type="button"><i
-              class="fa-sharp fa-solid fa-bars"></i></button>
-        </div>
-      </div>
-    </div>
+    
   </div>
   <a href="/"><img src="../images/logoh2t_home.png" class="logo-img" width="80px" height="50px" /></a>
   <div id="menu">
@@ -46,5 +36,3 @@ const newNav = () => {
 };
 
 newNav();
-
-

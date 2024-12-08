@@ -2,6 +2,23 @@ const availableItemsGrids = document.querySelectorAll(".available-items-grid");
 const selectedItemsGrids = document.querySelectorAll(".selected-items-grid");
 const createTradeRequestBtn = document.getElementById("create-trade-request");
 const cancelTradeRequestBtn = document.getElementById("cancel-trade-request");
+const tradeConfirmationModal = document.querySelector(
+  ".trade-confirmation-modal"
+);
+const yourItemsCount = document.querySelector(".items-count.your-items");
+const theirItemsCount = document.querySelector(".items-count.their-items");
+const backToTradingPageBtn = document.querySelector(
+  ".trade-confirmation-modal-content .back-to-trading-page"
+);
+const viewTradeRequestBtn = document.querySelector(
+  ".trade-confirmation-modal-content .view-trade-request"
+);
+const viewTradeRequestPage = document.getElementById("view-trade-request");
+
+console.log("view trade request page", viewTradeRequestPage);
+
+console.log("your items count", yourItemsCount);
+console.log("their items count", theirItemsCount);
 
 // Add event listener to the available items grid
 availableItemsGrids.forEach((grid) => {
@@ -126,6 +143,10 @@ availableItemsGrids.forEach((grid) => {
       console.log("remove btn clicked", e.target);
       e.target.closest(".selected-item-card").remove();
     });
+
+    // confirmation item counts
+    yourItemsCount.textContent = `${selectedItemsGrids[0].children.length} items ($${yourTotal})`;
+    theirItemsCount.textContent = `${selectedItemsGrids[1].children.length} items ($${theirTotal})`;
   });
 });
 
@@ -133,11 +154,8 @@ availableItemsGrids.forEach((grid) => {
 createTradeRequestBtn.addEventListener("click", () => {
   console.log("create trade request button clicked");
   // create trade request
-
-  // redirect to the trade request page
-  window.location.href = "/trade-request";
-
-  // create trade confirmation message
+  tradeConfirmationModal.style.display = "flex";
+  document.body.style.overflow = "hidden";
 });
 
 // Add event listener to the cancel trade request button
@@ -152,4 +170,17 @@ cancelTradeRequestBtn.addEventListener("click", () => {
 
   // redirect to the profile page
   window.location.href = "/profile";
+});
+
+// Add event listener to the back to trading page button
+backToTradingPageBtn.addEventListener("click", () => {
+  console.log("back to trading page button clicked");
+  tradeConfirmationModal.style.display = "none";
+  document.body.style.overflow = "auto";
+});
+
+// Add event listener to the view trade request button
+viewTradeRequestBtn.addEventListener("click", () => {
+  console.log("view trade request button clicked");
+  window.location.href = "/view-trade-request";
 });
