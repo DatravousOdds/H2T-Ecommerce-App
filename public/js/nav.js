@@ -15,12 +15,38 @@ const newNav = () => {
       <a href="/"><img src="../images/logoh2t_home.png" class="logo-img" width="80px" height="50px"/></a>
     </div>
 
+    <!-- Small screen nav -->
+    <div class="small-screen-nav-container">
+      <ul class="small-screen-nav">
+        <li>
+          <a href="#notifications" class="nav-link" aria-label="Notifications">
+            <i class="fa-regular fa-bell"></i>
+          </a>
+        </li>
+      <li>
+          <a href="/profile" class="nav-link" aria-label="User profile">
+            <i class="fa-regular fa-user"></i>
+          </a>
+        </li>
+        <li>
+          <a href="/cart" class="nav-link cart-link" aria-label="Shopping cart">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span class="cart-amount" aria-label="Cart items">0</span>
+          </a>
+          </li>
+      </ul>
+    </div>
+
     <!-- Mobile menu button -->
     <button class="menu-button" aria-label="Menu"
             aria-expanded="false"
             aria-controls="slide-menu">
       <i class="fa-solid fa-bars"></i>
     </button>
+
+    
+
+
 
     <!-- Desktop Navigation menu -->
     <div class="nav-menu" id="main-menu" aria-hidden="true">
