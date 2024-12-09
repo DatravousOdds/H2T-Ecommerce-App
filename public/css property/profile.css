@@ -5896,7 +5896,7 @@ h6 {
   margin-bottom: 1.5rem;
 }
 
-.nav-menu {
+dashboard-nav-container .nav-menu {
   display: flex;
   gap: 2rem;
   list-style-type: none;
@@ -5909,7 +5909,7 @@ h6 {
   margin-bottom: 1rem;
 }
 
-.nav-menu::-webkit-scrollbar {
+.dashboard-nav-container .nav-menu::-webkit-scrollbar {
   display: none;
 }
 
