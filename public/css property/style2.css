@@ -172,7 +172,7 @@ button.white {
 }
 
 .menu-button {
-  display: flex; /* for mobile testing */
+  display: none; /* for mobile testing */
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -356,6 +356,14 @@ button.white {
 .slide-menu.active {
   transform: translateX(0); /* Slide to visible position */
   visibility: visible;
+}
+
+.close-slide-menu {
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
 }
 
 .menu-header {
@@ -2408,6 +2416,7 @@ footer .rights {
 
   /* Menu button */
   .menu-button {
+    display: flex;
     border: none;
     background: none;
     color: #ffffff;
