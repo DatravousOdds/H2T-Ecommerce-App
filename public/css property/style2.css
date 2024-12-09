@@ -338,6 +338,77 @@ button.white {
   transition: 0.2s ease-in-out;
 }
 
+/* Mobile slide menu specific styles */
+.slide-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: white;
+  z-index: 1000;
+  overflow-y: auto;
+  transform: translateX(100%); /* Start from outside the viewport */
+  transition: transform 0.3s ease-in-out;
+  visibility: hidden; /* Hide it initially but keep in DOM */
+}
+
+.slide-menu.active {
+  transform: translateX(0); /* Slide to visible position */
+  visibility: visible;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.slide-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: black;
+  text-decoration: none;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+}
+
+.submenu {
+  display: none;
+  background: #f5f5f5;
+  padding-left: 3rem;
+}
+
+.submenu.active {
+  display: block;
+}
+
+.dropdown-trigger {
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-trigger i.fa-chevron-right {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-trigger.expanded i.fa-chevron-right {
+  transform: rotate(90deg);
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
   .nav-menu {
@@ -359,12 +430,6 @@ button.white {
 
   .nav-menu.active .close-btn {
     display: block;
-  }
-
-  .nav-list {
-    flex-direction: column;
-    /* width: 100%; */
-    gap: 1.5rem;
   }
 
   .button-link {
@@ -1792,6 +1857,15 @@ footer .rights {
 }
 
 @media (max-width: 1040px) {
+  .search-section {
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .nav-list {
+    display: none !important;
+  }
+
   .image-custom {
     width: 70%;
   }
@@ -1822,6 +1896,15 @@ footer .rights {
 
 /*  Applies styles to screens < 767px */
 @media (max-width: 920px) {
+  .search-section {
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .nav-list {
+    display: none !important;
+  }
+
   #banner {
     margin: 0 auto;
     width: 100%;
@@ -2009,6 +2092,17 @@ footer .rights {
 }
 
 @media (max-width: 799px) {
+  /* New Navbar */
+
+  .search-section {
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .nav-list {
+    display: none !important;
+  }
+
   .image-custom {
     width: 70%;
   }
@@ -2256,265 +2350,266 @@ footer .rights {
 @media (max-width: 430px) {
   /* New Navbar */
   /* Mobile navbar styles for 390px width */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  background: #000000;
-  height: 60px;
-}
-
-/* Search section */
-.search-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex: 1;
-  max-width: 280px;
-}
-
-/* Search form */
-.search-form {
-  position: relative;
-  width: 100%;
-}
-
-.search-input {
-  width: 100%;
-  height: 40px;
-  padding: 8px 8px 8px 40px;
-  border-radius: 8px;
-  border: none;
-  background: #ffffff;
-  font-size: 14px;
-}
-
-.search-input::placeholder {
-  color: #757575;
-}
-
-.search-button {
-  position: absolute;
-  left: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #757575;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-}
-
-/* Logo */
-.logo-img {
-  height: 30px;
-  width: auto;
-}
-
-/* Menu button */
-.menu-button {
-  border: none;
-  background: none;
-  color: #ffffff;
-  font-size: 24px;
-  padding: 5px;
-  margin-left: 0.5rem;
-  cursor: pointer;
-}
-
-/* Hide regular nav list on mobile */
-.nav-list {
-  display: none;
-}
-
-/* Mobile menu panel styles */
-.nav-menu {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 270px;
-  height: 100vh;
-  background: #000000;
-  padding: 1rem;
-  transition: right 0.3s ease;
-  z-index: 1000;
-}
-
-.nav-menu.active {
-  right: 0;
-}
-
-/* Mobile menu items */
-.nav-menu .nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 3rem;
-}
-
-.nav-link {
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 16px;
-  padding: 0.5rem 0;
-}
-
-/* Mobile buttons */
-.login-button,
-.signup-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  text-align: center;
-
-  /* Nav Menu */
-  nav .search_box {
+  .navbar {
     display: flex;
-    margin: auto 1px;
-    margin-left: 98px;
-  }
-
-  .sub-headline {
-    width: 80%;
-  }
-
-  nav button.nav-btn-dd {
-    display: flex;
-    margin: 5px;
-    padding-right: 10px;
-  }
-
-  form {
-    width: 22vh;
-  }
-
-  .triggerSearch {
-    font-size: 16px;
-    width: 36px;
-  }
-
-  .search-bar input {
-    padding: 6px;
-    font-size: 15px;
-  }
-
-  #ss-icon {
-    justify-content: space-around;
-    margin-left: 1rem;
-  }
-
-  #ss-icon i {
-    color: var(--color-white);
-    font-size: 1.2rem;
-  }
-
-  /* Single Product */
-  #prodetails {
-    display: flex;
-    flex-direction: column;
-  }
-
-  #prodetails .single-pro-image {
-    width: 100%;
-    margin-right: 50px;
-  }
-
-  #prodetails .s_prod_details {
-    width: 100%;
-  }
-
-  /* About page */
-
-  #about-head {
-    display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: #000000;
+    height: 60px;
   }
 
-  #about-head {
-    padding-left: 0px;
+  /* Search section */
+  .search-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    max-width: 280px;
   }
 
-  #about-app .video {
+  /* Search form */
+  .search-form {
+    position: relative;
     width: 100%;
   }
 
-  #about-head img {
+  .search-input {
     width: 100%;
-    height: auto;
+    height: 40px;
+    padding: 8px 8px 8px 40px;
+    border-radius: 8px;
+    border: none;
+    background: #ffffff;
+    font-size: 14px;
   }
 
-  /* Contact Page */
-  #contact-details {
+  .search-input::placeholder {
+    color: #757575;
+  }
+
+  .search-button {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #757575;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  /* Logo */
+  .logo-img {
+    height: 30px;
+    width: auto;
+  }
+
+  /* Menu button */
+  .menu-button {
+    border: none;
+    background: none;
+    color: #ffffff;
+    font-size: 24px;
+    padding: 5px;
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
+
+  /* Hide regular nav list on mobile */
+  .nav-list {
+    display: none;
+  }
+
+  /* Mobile menu panel styles */
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 270px;
+    height: 100vh;
+    background: #000000;
+    padding: 1rem;
+    transition: right 0.3s ease;
+    z-index: 1000;
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  /* Mobile menu items */
+  .nav-menu .nav-list {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+    margin-top: 3rem;
   }
 
-  #contact-details .details {
+  .nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 0.5rem 0;
+  }
+
+  /* Mobile buttons */
+  .login-button,
+  .signup-button {
+    display: block;
     width: 100%;
-    margin-bottom: 40px;
-  }
+    padding: 10px;
+    text-align: center;
 
-  #contact-details .map {
-    width: 100%;
-  }
+    /* Nav Menu */
+    nav .search_box {
+      display: flex;
+      margin: auto 1px;
+      margin-left: 98px;
+    }
 
-  #form-details {
-    margin: 10px;
-    padding: 30px 10px;
-    flex-wrap: wrap;
-  }
+    .sub-headline {
+      width: 80%;
+    }
 
-  #form-details form {
-    width: 100%;
-    margin-bottom: 30px;
-  }
+    nav button.nav-btn-dd {
+      display: flex;
+      margin: 5px;
+      padding-right: 10px;
+    }
 
-  /* Home page */
+    form {
+      width: 22vh;
+    }
 
-  #product1 .pro {
-    width: 160px;
-  }
+    .triggerSearch {
+      font-size: 16px;
+      width: 36px;
+    }
 
-  #product1 .pro .product-image {
-    width: 82%;
-    height: 150px;
-  }
-  #product1 .pro img {
-    border-style: none;
-    border-radius: 20px;
-  }
+    .search-bar input {
+      padding: 6px;
+      font-size: 15px;
+    }
 
-  #product1 .pro-container {
-    justify-content: flex-start;
-  }
+    #ss-icon {
+      justify-content: space-around;
+      margin-left: 1rem;
+    }
 
-  /* Mens Page */
-  .image-custom {
-    object-fit: contain;
-    width: 100%;
-    height: 100%;
-  }
+    #ss-icon i {
+      color: var(--color-white);
+      font-size: 1.2rem;
+    }
 
-  .liked {
-    position: absolute;
-    top: 0px;
-    left: 4.96rem;
-    z-index: 1;
-    width: 0px;
-  }
+    /* Single Product */
+    #prodetails {
+      display: flex;
+      flex-direction: column;
+    }
 
-  .liked i {
-    font-size: 15px;
-  }
+    #prodetails .single-pro-image {
+      width: 100%;
+      margin-right: 50px;
+    }
 
-  #prod-card-container {
-    margin: 0px 0px !important;
-  }
+    #prodetails .s_prod_details {
+      width: 100%;
+    }
 
-  #product1 .pro {
-    height: auto;
-    margin: 1px;
+    /* About page */
+
+    #about-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #about-head {
+      padding-left: 0px;
+    }
+
+    #about-app .video {
+      width: 100%;
+    }
+
+    #about-head img {
+      width: 100%;
+      height: auto;
+    }
+
+    /* Contact Page */
+    #contact-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #contact-details .details {
+      width: 100%;
+      margin-bottom: 40px;
+    }
+
+    #contact-details .map {
+      width: 100%;
+    }
+
+    #form-details {
+      margin: 10px;
+      padding: 30px 10px;
+      flex-wrap: wrap;
+    }
+
+    #form-details form {
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    /* Home page */
+
+    #product1 .pro {
+      width: 160px;
+    }
+
+    #product1 .pro .product-image {
+      width: 82%;
+      height: 150px;
+    }
+    #product1 .pro img {
+      border-style: none;
+      border-radius: 20px;
+    }
+
+    #product1 .pro-container {
+      justify-content: flex-start;
+    }
+
+    /* Mens Page */
+    .image-custom {
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+    }
+
+    .liked {
+      position: absolute;
+      top: 0px;
+      left: 4.96rem;
+      z-index: 1;
+      width: 0px;
+    }
+
+    .liked i {
+      font-size: 15px;
+    }
+
+    #prod-card-container {
+      margin: 0px 0px !important;
+    }
+
+    #product1 .pro {
+      height: auto;
+      margin: 1px;
+    }
   }
 }
