@@ -150,7 +150,252 @@ button.white {
 }
 
 /* header start */
+
+/* New Header */
+
 #header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.navbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.75rem 2rem !important;
+  background: var(--color-black) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06) !important;
+  height: 80px !important;
+}
+
+.menu-button {
+  display: none; /* for mobile testing */
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #fff;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* padding: 1rem; */
+  gap: 2rem;
+  flex: 0 1 auto;
+}
+
+.search-form {
+  position: relative;
+  width: 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 13px 12px 43px;
+  border-radius: 8px;
+  border: none;
+  background: #ffffff;
+  color: #333333;
+  font-size: 16px;
+}
+
+.search-input::placeholder {
+  color: #757575;
+  opacity: 0.7;
+}
+
+.search-button {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  font-size: 1.2rem;
+  color: #757575;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.search-button:hover {
+  color: #333333;
+}
+
+.logo-link {
+  display: block;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  color: #ffffff !important;
+  text-decoration: none;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.login-button {
+  border: 1px solid #4a90e2;
+  color: #4a90e2;
+}
+
+.signup-button {
+  background: #4a90e2;
+  color: white;
+}
+
+.close-btn {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #fff;
+}
+
+.cart-amount {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--color-red);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-size: 12px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.cart-link {
+  position: relative;
+  display: inline-block;
+}
+
+/* Login/Signup buttons */
+.login-button {
+  padding: 8px 20px;
+  border: 1px solid var(--color-white);
+  border-radius: 4px;
+  color: var(--color-white);
+  background: transparent;
+}
+
+.login-button:hover {
+  background: var(--color-white);
+  color: var(--color-black);
+  transition: 0.2s ease-in-out;
+}
+
+.signup-button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-white);
+  background: var(--color-red);
+}
+
+.signup-button:hover {
+  background: var(--color-white);
+  color: var(--color-black);
+  transition: 0.2s ease-in-out;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 270px;
+    height: 100vh;
+    background: var(--color-black);
+    flex-direction: column;
+    padding: 2rem;
+    transition: right 0.3s ease-in-out;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  .nav-menu.active .close-btn {
+    display: block;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    /* width: 100%; */
+    gap: 1.5rem;
+  }
+
+  .button-link {
+    width: 100%;
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+
+  .close-button {
+    display: block;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .menu-button {
+    display: block;
+  }
+
+  .button-link {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Old Header */
+/* #header {
   position: sticky;
   top: 0;
   left: 0;
@@ -241,92 +486,14 @@ nav ul li a {
   text-decoration: none;
   transition: 0.2s ease-in-out;
   /* border: 1px solid red; */
-}
-
-nav ul li a:hover {
-  color: var(--color-white) !important;
-  /* border: 1px solid red; */
-  transform: scale(1.2);
-}
-
-.user_profile i {
-  color: #fff;
-  margin: 0 8px;
-  font-size: 1rem;
-}
-
-.second_menu {
-  display: flex;
-}
-
-/* #user_profile {
-  display: flex;
-} */
-
-.dropdown_menu {
-  width: 100px;
-  height: 100px;
-  background-color: #000;
-}
-
-.hide {
-  display: none;
-}
-
-.logo-img {
-  float: left;
-  position: relative;
-  margin: 10px 15px 15px 10px;
-}
-
-.bg-div {
-  background: #333;
-  overflow: hidden;
-}
-
-.sub-header:hover a i {
-  transform: rotate(-180deg);
-  transition: 0.8s;
-}
-
-.sh:hover {
-  background-color: var(--color-black);
-  color: var(--color-red);
-  transition: 0.5s ease-in-out;
-}
+/* } */
 
 /* end of header */
 
 /* search bar */
 
-.search_box form {
-  display: flex;
-  justify-content: space-between;
-  border-radius: 9px;
-  width: 70%;
-  /* max-width: 700px; */
-  background: #212529;
-  align-items: center;
-  padding: 0px 10px;
-}
-
-/* Search Container */
-nav .search_box {
-  --search-height: 35px;
-  --search-padding: 10px;
-  --search-bg: #212529;
-  --search-radius: 12px;
-
-  display: flex;
-  margin: auto 9rem;
-  height: var(--search-height);
-  width: 100%;
-  line-height: var(--search-height);
-  border-radius: var(--search-radius);
-}
-
 /* Search Input Styles */
-.search-bar input,
+/* .search-bar input,
 .input_box {
   background: var(--search-bg);
   height: 100%;
@@ -342,7 +509,7 @@ nav .search_box {
 }
 
 /* Search Button/Trigger */
-.triggerSearch {
+/* .triggerSearch {
   --trigger-size: 22px;
 
   font-size: var(--trigger-size);
@@ -354,75 +521,10 @@ nav .search_box {
 }
 
 /* Search Icon/Span */
-nav .search_box span {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 8px;
-  color: var(--color-red);
-  font-size: var(--fontSize-1);
-  background: var(--search-bg);
-  cursor: pointer;
-  z-index: 1;
-  transition: color 0.3s;
-}
 
-/* Hover Effect */
-nav .search_box span::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: 0;
-  background: var(--color-red);
-  z-index: -1;
-  transition: width 0.3s ease;
-}
-
-nav .search_box span:hover {
-  color: var(--color-white);
-}
-
-nav .search_box span:hover::after {
-  width: 100%;
-  right: auto;
-  left: 0;
-}
-.nav-items {
-  position: absolute;
-  width: 100%; /* changed from 100vw */
-  display: flex;
-  justify-content: space-between;
-}
-
-/* end of search bar *
+/* end of search bar * */
 
 /* here display the sidebar */
-#mobile {
-  display: none;
-  align-items: center;
-}
-
-.close-btn {
-  display: none;
-}
-
-#close {
-  display: none;
-}
-
-.cartAmount {
-  font-size: 16px;
-  background-color: red;
-  color: white;
-  position: absolute;
-  top: -12px;
-  right: 25%;
-  border-radius: 4px;
-  padding: 1.1px;
-}
 
 /* buttons details */
 
@@ -481,22 +583,23 @@ nav .search_box span:hover::after {
 .card-btn:hover {
   background: var(--color-red);
 }
+*/
 
 /* home page */
 #hero .hero-text {
-  background-image: url(/images/sneakerBg.jpg);
-  height: 100vh;
-  width: 100%;
-  opacity: 0.85;
-  background-size: cover;
-  background-position: top 25% right 0;
-  padding: 0 80px;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 6rem;
+  background-image: url(/images/sneakerBg.jpg) !important;
+  height: 100vh !important;
+  width: 100% !important;
+  opacity: 0.85 !important;
+  background-size: cover !important;
+  background-position: top 25% right 0 !important;
+  padding: 0 80px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  flex-direction: column !important ;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding-top: 6rem !important;
 }
 
 #banner button {
@@ -1655,7 +1758,7 @@ footer .rights {
 
 @media (max-width: 1658px) {
   .search_box form {
-    width: 50%;
+    width: 85% !important;
     height: 100%;
     max-height: 60px;
   }
