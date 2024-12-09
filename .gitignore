@@ -1,4 +1,5 @@
 node_modules/
-env.txt
+.env
 CORS.txt
-ecom-website-94d87-firebase-adminsdk-uzg8o-a9f385696e.json
+ecom-website-94d87-firebase-adminsdk-uzg8o-d29f50c77a.json
+*firebase-adminsdk*.json

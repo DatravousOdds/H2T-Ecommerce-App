@@ -13,7 +13,7 @@
     "bcrypt": "^5.1.0",
     "countries-list": "^3.1.1",
     "country-region-data": "^3.0.0",
-    "dotenv": "^16.0.2",
+    "dotenv": "^16.4.7",
     "express": "^4.19.2",
     "express.js": "^1.0.0",
     "firebase-admin": "^11.0.1",

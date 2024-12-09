@@ -1,5 +1,7 @@
 "use strict";
 
+require("dotenv").config();
+
 // importing packages
 const express = require("express");
 const admin = require("firebase-admin");
@@ -8,11 +10,26 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 
 // firebase admin setup
-let serviceAccount = require("./ecom-website-94d87-firebase-adminsdk-uzg8o-a9f385696e.json");
+try {
+  if (!process.env.FIREBASE_CONFIG) {
+    console.error("❌ Missing FIREBASE_CONFIG environment variable");
+    process.exit(1);
+  }
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+  console.log("Using environment variable configuration...");
+  const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+
+  // Test Firebase connection
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
+
+  console.log("✅ Firebase connection successful!");
+} catch (error) {
+  console.error("❌ Error with Firebase configuration:", error);
+  console.error("Error details:", error.message);
+  process.exit(1);
+}
 
 let db = admin.firestore();
 

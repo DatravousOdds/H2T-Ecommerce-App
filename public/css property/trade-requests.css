@@ -29,6 +29,14 @@
   --padding-large: 1.5rem;
 }
 
+/* Global */
+.space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -169,7 +177,7 @@ body {
   padding: var(--padding-medium);
   gap: 1rem;
   position: relative;
-  background-color: #66666614;
+  background-color: #f9fafb;
   transition: all 0.3s ease-in-out;
   will-change: transform;
   animation: fadeIn 0.3s ease-in-out;
@@ -294,10 +302,9 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-top: 1rem;
-  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   padding: var(--padding-medium);
-  background-color: var(--quaternary-color);
+  background-color: #f9fafb;
 }
 
 .value-difference i {
@@ -327,6 +334,8 @@ body {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
 }
 
 .trade-button-actions button {
@@ -337,8 +346,8 @@ body {
   background-color: var(--primary-color);
   color: var(--quaternary-color);
   border: none;
-  border-radius: var(--border-radius);
-  padding: var(--padding-small) var(--padding-medium);
+  border-radius: 8px;
+  padding: 1rem;
   font-size: var(--font-size-medium);
   font-weight: var(--font-weight-small);
   cursor: pointer;
@@ -517,6 +526,49 @@ body {
 
 .cancel-trade-request:hover {
   background-color: var(--tertiary-color);
+}
+
+/* Fees Breakdown */
+.fees-breakdown-container {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.fees-breakdown-container h3 {
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-medium);
+  color: var(--secondary-color);
+}
+
+.fees-breakdown-container p {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-small);
+  color: var(--secondary-color);
+}
+
+/* Total Fees */
+.total-fees {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.total-fees p {
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-small);
+}
+
+/* Final Total */
+.final-total {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.final-total p {
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Responsive */

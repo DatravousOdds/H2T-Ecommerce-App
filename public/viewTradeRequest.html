@@ -48,9 +48,26 @@
           <!-- Trade Request Order ID -->
           <span class="trade-request-order-id">Order ID: 1234567890</span>
           <div class="status-container pending-response">
-            <div class="status-icon">
-              <i class="fa-solid fa-spinner"></i>
-            </div>
+            <svg
+              class="loading-spinner"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
             <span class="status-text">Pending Response</span>
           </div>
         </div>
@@ -126,6 +143,33 @@
                 </div>
               </div>
             </div>
+
+            <!-- Fees Breakdown -->
+            <div class="fees-breakdown-container">
+              <h3>Fees Breakdown</h3>
+              <div class="trade-fee space-between">
+                <p class="trade-fee-title">Trading Fee (2%):</p>
+                <p class="trade-fee-value">$0</p>
+              </div>
+              <div class="processing-fee space-between">
+                <p class="processing-fee-title">Processing Fee:</p>
+                <p class="processing-fee-value">$0</p>
+              </div>
+              <div class="platform-fee space-between">
+                <p class="platform-fee-title">Platform Fee:</p>
+                <p class="platform-fee-value">$0</p>
+              </div>
+              <div class="total-fees space-between">
+                <p class="total-fees-title">Total Fees:</p>
+                <p class="total-fees-value">$0</p>
+              </div>
+              <div class="final-total space-between">
+                <p class="final-total-title">Final Total:</p>
+                <p class="final-total-value">$0</p>
+              </div>
+            </div>
+
+            <!-- Trade Status -->
             <div class="trade-status-container">
               <div class="trade-status-title">Trade Status</div>
               <div class="trade-request-latest-update">
