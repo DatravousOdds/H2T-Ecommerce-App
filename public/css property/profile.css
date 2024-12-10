@@ -7596,6 +7596,10 @@ input:checked + .slider:before {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+  .profile-section {
+    max-width: 100%;
+  }
+
   .products-header {
     flex-direction: column;
   }
