@@ -14,6 +14,11 @@
   --rightTextAlign: left;
   --paraFontSize: 1rem;
   --paraFontSize-1: 0.125rem;
+
+  --color-red: #ff0000;
+  --color-white: #ffffff;
+  --smallScreenFontSize: 14px;
+  --header-height: 60px;
 }
 
 * {
@@ -1914,42 +1919,37 @@ footer .rights {
   border-radius: 20px;
 }
 
-@media (max-width: 1658px) {
-  .search_box form {
-    width: 85% !important;
-    height: 100%;
-    max-height: 60px;
-  }
-
-  .section-p1 {
-    padding: 0px 20px;
-  }
-}
-
-@media (max-width: 1537px) {
+/* Desktop (1537px and above) */
+@media (max-width: 1657px) {
   .input_box {
     width: 200px;
   }
 
   #feature .fe-box {
     width: 30%;
-    padding: 20px 20px;
-  }
-
-  #feature .fe-box h6 {
-    margin: 11px 30px;
     padding: 20px;
   }
 
   #menu ul {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
+/* Tablet (1040px and above) */
 @media (max-width: 1040px) {
   .search-section {
     flex: 1;
     justify-content: flex-start;
+  }
+
+  /* Small Screen Nav */
+
+  .small-screen-nav-container {
+    display: flex;
+  }
+
+  .menu-button {
+    display: flex !important;
   }
 
   .nav-list {
@@ -2197,6 +2197,7 @@ footer .rights {
   }
 }
 
+/* Mobile (768px and below) */
 @media (max-width: 768px) {
   /* New Navbar */
 
