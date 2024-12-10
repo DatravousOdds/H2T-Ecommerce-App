@@ -5580,7 +5580,7 @@ h6 {
 
   .pfp,
   #review-content {
-    width: 92%;
+    width: 100%;
   }
 
   #review-content {
@@ -6959,7 +6959,7 @@ input:checked + .slider:before {
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 390px) and (max-width: 575.98px) {
   .profile-section {
-    max-width: 90%;
+    max-width: 100%;
     width: 100%;
   }
 
