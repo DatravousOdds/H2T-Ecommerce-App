@@ -1861,8 +1861,7 @@ button:disabled {
 }
 
 .feedback {
-  background-color: #fff;
-  border: 2px solid #d6d6d6;
+  background-color: #f8f7f7;
   padding: 10px;
   justify-content: center;
   align-items: center;
@@ -1915,6 +1914,10 @@ button:disabled {
   padding: 24px 0px;
 }
 
+.rating-breakdown p {
+  margin: 0;
+}
+
 .rating-breakdown .rating-process {
   display: flex;
   align-items: center;
@@ -1923,7 +1926,7 @@ button:disabled {
 
 .rating-breakdown .rating-process .rating-bar {
   border: none;
-  background-color: var(--review-border-color);
+  background-color: #f8f7f7;
   /* max-width: 357px; */
   position: relative;
   width: 336px;
@@ -5465,6 +5468,35 @@ h6 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  /* Profile Tab */
+  .tab {
+    max-width: 100%;
+  }
+
+  #user-stats {
+    gap: 2rem;
+  }
+
+  #user-stats .stat-grid {
+    gap: 1rem;
+  }
+
+  .verified-tag {
+    font-size: 12px;
+  }
+
+  .verified-tag.verified {
+    font-size: 12px;
+  }
+
+  .share-btn {
+    font-size: 1.5rem;
+  }
+
+  .share-btn-text {
+    display: none;
+  }
+
   .selling-section {
     grid-template-columns: repeat(1, 1fr);
     gap: 0.5rem;
@@ -5567,9 +5599,9 @@ h6 {
 
   .review-wrapper .rating-container {
     align-items: center;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: flex-start;
-    gap: 1rem;
+    gap: 0.5rem;
   }
 
   .review-wrapper .rating-container h2 {
@@ -5580,12 +5612,17 @@ h6 {
     text-align: left;
   }
 
-  #reivew-content .rating-breakdown {
+  .rating-breakdown {
     padding: 24px 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .rating-breakdown .rating-process .rating-bar {
     width: 56%;
+    height: 10px;
+    background-color: #f8f7f7;
   }
 
   #profile-data {
@@ -6922,8 +6959,18 @@ input:checked + .slider:before {
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 390px) and (max-width: 575.98px) {
   .profile-section {
-    max-width: 100%;
+    max-width: 90%;
     width: 100%;
+  }
+
+  .profile-section label {
+    font-size: 12px;
+  }
+
+  /* Review */
+
+  .review-wrapper .rating-container {
+    gap: 0.5rem;
   }
 
   .trade-request,
