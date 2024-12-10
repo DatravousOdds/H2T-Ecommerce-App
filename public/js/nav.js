@@ -85,21 +85,30 @@ const newNav = () => {
     </div>
 
     <!-- Mobile Slide-out menu -->
+    <div class="slide-menu-overlay">
     <div class="slide-menu" id="slide-menu" aria-hidden="true">
       <div class="menu-header">
-        <h2>Menu</h2>
+        
         <button class="close-slide-menu" aria-label="Close Menu" aria-controls="slide-menu">
           <i class="fa-solid fa-x"></i>
         </button>
       </div>
       
+      
       <ul class="slide-menu-list">
+        <li>
+          <a href="/profile" class="menu-item">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+          </a>
+        </li>
         <li>
           <a href="/" class="menu-item">
             <i class="fa-solid fa-home"></i>
             <span>Home</span>
           </a>
         </li>
+        <!-- Shop dropdown -->
         <li class="menu-dropdown">
           <button class="menu-item dropdown-trigger">
             <i class="fa-solid fa-shopping-bag"></i>
@@ -112,12 +121,33 @@ const newNav = () => {
             <li><a href="/accessories">Accessories</a></li>
           </ul>
         </li>
+        <!-- Services dropdown -->
+        <li class="menu-dropdown">
+          <button class="menu-item dropdown-trigger">
+            <i class="fa-solid fa-screwdriver"></i>
+            <span>Services</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <ul class="submenu">
+            <li><a href="/repair">Repair</a></li>
+            <li><a href="/authentication">Authentication</a></li>
+            <li><a href="/trade-in">Trade-in</a></li>
+          </ul>
+        </li>
         <li>
           <a href="/seller" class="menu-item">
             <i class="fa-solid fa-store"></i>
             <span>Sell</span>
           </a>
         </li>
+        
+        <li>
+          <a href="/signup" class="menu-item">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Signup</span>
+          </a>
+        </li>
+        
         <li>
           <a href="/login" class="menu-item">
             <i class="fa-solid fa-sign-in-alt"></i>
@@ -125,34 +155,46 @@ const newNav = () => {
           </a>
         </li>
         <li>
-          <a href="/signup" class="menu-item">
-            <i class="fa-solid fa-user-plus"></i>
-            <span>Signup</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile" class="menu-item">
-            <i class="fa-regular fa-user"></i>
-            <span>Profile</span>
+          <a href="/help" class="menu-item">
+            <i class="fa-solid fa-question"></i>
+            <span>Help</span>
           </a>
         </li>
       </ul>
     </div>
+    </div>
   </nav>
   `;
 
-  // Add event listeners after DOM insertion
+  // And update your JavaScript event listeners
+  const dropdownTrigger = nav.querySelectorAll(".dropdown-trigger");
+  const submenu = nav.querySelector(".submenu");
   const menuButton = nav.querySelector(".menu-button");
-  const closeSlideButton = nav.querySelector(".close-slide-menu");
   const slideMenu = nav.querySelector(".slide-menu");
-  const dropdownTriggers = nav.querySelectorAll(".dropdown-trigger");
-
-  // Toggle slide menu
+  const closeSlideMenu = nav.querySelector(".close-slide-menu");
+  const slideMenuOverlay = nav.querySelector(".slide-menu-overlay");
+  // Mobile menu button
   menuButton.addEventListener("click", () => {
-    const isExpanded = menuButton.getAttribute("aria-expanded") === "true";
-    menuButton.setAttribute("aria-expanded", !isExpanded);
-    slideMenu.setAttribute("aria-hidden", isExpanded);
     slideMenu.classList.toggle("active");
+    slideMenuOverlay.classList.toggle("active");
+  });
+
+  closeSlideMenu.addEventListener("click", () => {
+    slideMenu.classList.remove("active");
+    slideMenuOverlay.classList.remove("active");
+  });
+
+  // Add event listeners to each dropdown trigger
+  dropdownTrigger.forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      const menuItem = trigger.closest(".menu-dropdown");
+
+      trigger.classList.toggle("expanded");
+
+      const submenu = menuItem.querySelector(".submenu");
+
+      submenu.classList.toggle("active");
+    });
   });
 };
 
