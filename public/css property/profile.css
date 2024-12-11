@@ -5656,6 +5656,7 @@ h6 {
 
   .profile-section {
     flex-direction: column;
+    max-width: 100%;
     padding: 10px;
   }
 
@@ -6959,7 +6960,7 @@ input:checked + .slider:before {
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 390px) and (max-width: 575.98px) {
   .profile-section {
-    max-width: 100%;
+    max-width: 100% !important;
     width: 100%;
   }
 
