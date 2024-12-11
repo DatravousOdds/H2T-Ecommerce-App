@@ -1465,8 +1465,62 @@ button:disabled {
 
 /* Reviews Section */
 
+.review-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.review-controls button {
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #374151;
+  transition: 0.3s ease-in-out;
+}
+
+.review-controls button:hover {
+  color: #373737;
+}
+
+.review-controls button i {
+  margin-right: 2px;
+}
+
+.view-all-replies {
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: 0.3s ease-in-out; 
+}
+
+.view-all-replies:hover {
+  color: #373737;
+}
+
+.review-controls-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.username-and-rating {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.username-wrapper {
+  font-size: 1rem;
+  margin: 0;
+}
+
 .review-card {
-  border-bottom: 2px solid #d6d6d6;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .review-header {
@@ -1499,13 +1553,15 @@ button:disabled {
 }
 
 .review-details {
-  padding-bottom: 1rem;
+  /* padding-bottom: 1rem; */
+  color: #374151;
 }
 
 .review-card .rating-display {
   gap: 1rem;
   display: flex;
   align-items: center;
+  font-size: 1rem;
 }
 
 .review-card .user-info {
@@ -1525,6 +1581,7 @@ button:disabled {
 .user-review {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 /* All Reviews */
@@ -1931,7 +1988,7 @@ button:disabled {
 
 .rating-breakdown .rating-process .rating-bar {
   border: none;
-  background-color: #f8f7f7;
+  background-color: #f3f4f6;
   /* max-width: 357px; */
   position: relative;
   width: 336px;
@@ -1960,7 +2017,7 @@ button:disabled {
 
 .rating-breakdown .rating-process .review-counter {
   font-weight: 500;
-  color: #6a6a6a;
+  color: #6b7280;
 }
 
 .see-all-reviews {
