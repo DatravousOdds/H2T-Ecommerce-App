@@ -401,7 +401,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 #bio-section #bio {
@@ -2020,6 +2020,7 @@ button:disabled {
   font-weight: 600;
   text-transform: capitalize;
   gap: 5rem;
+  margin-top: 1rem;
 }
 
 /* Payment Method Selection Card */
@@ -2329,6 +2330,8 @@ button:disabled {
 
 #timestamp-container i {
   padding: 0px 6px;
+  color: #707070;
+  font-size: 1.2rem;
 }
 
 .section-p1 {
@@ -6781,6 +6784,7 @@ input:checked + .slider:before {
 .purchase-type-list {
   display: flex;
   gap: var(--spacing-sm);
+  list-style: none;
 }
 
 .purchases-content-section {
@@ -7004,6 +7008,15 @@ input:checked + .slider:before {
 
   .products-header {
     flex-direction: column;
+  }
+
+  .purchases-header {
+    flex-direction: column;
+  }
+
+  .purchase-type-list {
+    overflow-x: auto;
+    gap: 0.5rem;
   }
 }
 
@@ -7364,7 +7377,7 @@ input:checked + .slider:before {
 
   /* Products Section */
   .products-overview {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 
   .products-header {
@@ -7392,7 +7405,7 @@ input:checked + .slider:before {
   #profile-data,
   #shipping-data,
   #review-content {
-    width: 95%;
+    width: 100%;
   }
 
   #wallet-balance .header-wrapper {
@@ -7615,6 +7628,14 @@ input:checked + .slider:before {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+  .orders-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #user-stats {
+    gap: 8rem;
+  }
+
   .profile-section {
     max-width: 100%;
   }
