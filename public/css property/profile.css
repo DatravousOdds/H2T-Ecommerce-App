@@ -5483,6 +5483,10 @@ h6 {
     max-width: 100%;
   }
 
+  #user-stats {
+    gap: 1rem;
+  }
+
   #user-stats .stat-grid {
     gap: 1rem;
   }
