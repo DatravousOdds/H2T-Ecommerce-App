@@ -5503,10 +5503,6 @@ h6 {
     font-size: 1.5rem;
   }
 
-  .share-btn-text {
-    display: none;
-  }
-
   .selling-section {
     grid-template-columns: repeat(1, 1fr);
     gap: 0.5rem;
@@ -5630,7 +5626,7 @@ h6 {
   }
 
   .rating-breakdown .rating-process .rating-bar {
-    width: 56%;
+    width: 54%;
     height: 10px;
     background-color: #f8f7f7;
   }
@@ -6968,8 +6964,23 @@ input:checked + .slider:before {
   max-width: 1280px;
 }
 
+.share-btn-text {
+  margin: 0;
+}
+
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 390px) and (max-width: 575.98px) {
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+  }
+
   .profile-section {
     max-width: 100% !important;
     width: 100%;
@@ -6977,6 +6988,20 @@ input:checked + .slider:before {
 
   .profile-section label {
     font-size: 12px;
+  }
+
+  #name-infor {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .wrapper-row {
+    gap: 5rem;
+  }
+
+  .share-btn i {
+    font-size: 1.2rem;
   }
 
   /* Review */
@@ -7022,6 +7047,11 @@ input:checked + .slider:before {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  #name-infor {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   /* Recent Activity */
   .view-all-activity {
     max-width: 350px;
