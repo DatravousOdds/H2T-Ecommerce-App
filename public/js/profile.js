@@ -1204,12 +1204,12 @@ const closeBtn = document.querySelector(".close");
 // Review action: all reviews, close
 seeAllReviewsBtn.addEventListener("click", () => {
   reviewModal.style.display = "flex";
-  document.body.classList.add("no-scroll");
+  document.body.style.overflow = "hidden";
 });
 
 closeBtn.addEventListener("click", () => {
   reviewModal.style.display = "none";
-  document.body.classList.remove("no-scroll");
+  document.body.style.overflow = "auto";
 });
 
 /* Background actions */
