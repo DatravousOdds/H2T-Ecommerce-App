@@ -5813,6 +5813,21 @@ h6 {
   .margin-right label {
     font-size: 0.85rem;
   }
+
+  .purchase-type-list {
+    overflow-x: auto;
+    gap: 0.5rem;
+  }
+
+  .purchase-type-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .purchases-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 }
 
 /* Filter Menu */
@@ -7181,10 +7196,22 @@ input:checked + .slider:before {
 
   .purchases-header {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 
   .purchases-header .purchases-controls {
     flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-controls {
+    width: 100%;
+  }
+
+  .filter-button {
+    width: 100%;
+    justify-content: center;
   }
 
   .purchase-type-list {
@@ -7195,6 +7222,11 @@ input:checked + .slider:before {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  .purchase-type-list {
+    overflow-x: auto;
+    gap: 0.5rem;
+  }
+
   #name-infor {
     flex-direction: column;
     align-items: flex-start;
