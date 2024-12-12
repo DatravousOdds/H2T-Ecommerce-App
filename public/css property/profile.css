@@ -1494,7 +1494,7 @@ button:disabled {
   color: #374151;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: 0.3s ease-in-out; 
+  transition: 0.3s ease-in-out;
 }
 
 .view-all-replies:hover {
@@ -2024,6 +2024,7 @@ button:disabled {
   padding: 20px 0px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
 }
@@ -2034,6 +2035,7 @@ button:disabled {
 
 .see-all-reviews a {
   color: #000;
+  text-decoration: none;
 }
 
 .lf-wrapper li {
