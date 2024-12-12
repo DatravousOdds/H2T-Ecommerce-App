@@ -652,33 +652,63 @@
                 <article class="review-card">
                   <header class="user-review">
                     <div class="user-info">
-                      <img
-                        class="user-review-img"
-                        src="images/user-2.png"
-                        alt="user-image"
-                        width="50px"
-                        height="50px"
-                      />
-                      <p>Alexander Rity</p>
-                    </div>
-
-                    <div class="rating-display">
-                      <div class="rating-stars">
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
-                        <i class="fa-solid fa-star"></i>
+                      <!-- User Image -->
+                      <div class="user-image-wrapper">
+                        <img
+                          class="user-review-img"
+                          src="images/user-2.png"
+                          alt="user-image"
+                          width="50px"
+                          height="50px"
+                        />
                       </div>
-                      <p class="rating-timestamp">2 days ago</p>
+
+                      <!-- Username and Rating -->
+                      <div class="username-and-rating">
+                        <h3 class="username-wrapper">Alexander Rity</h3>
+                        <div
+                          class="rating-display"
+                          aria-label="5 out of 5 stars"
+                        >
+                          <div class="rating-stars">
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                            <i class="fa-solid fa-star" aria-hidden="true"></i>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                    <!-- Rating Timestamp -->
+                    <time class="rating-timestamp" datetime="2024-12-09">
+                      2 days ago
+                    </time>
                   </header>
 
+                  <!-- Review Details -->
                   <p class="review-details">
                     Easy booking, great value! Cozy rooms at a reasonable price
                     in Sheffield's vibrant center. Suprisingly quiet with nearby
                     Traveller's accommodations. Highly recommended!
                   </p>
+                  <!-- Review Controls -->
+                  <div class="review-controls">
+                    <div class="review-controls-wrapper">
+                      <!-- Reply Button -->
+                      <button class="reply-btn">
+                        <i class="fa-solid fa-reply"></i>
+                        Reply
+                      </button>
+                      <!-- Like Button -->
+                      <button class="like-btn">
+                        <i class="fa-solid fa-heart"></i>
+                        Like
+                      </button>
+                    </div>
+                    <!-- View all replies -->
+                    <div class="view-all-replies">View all replies (2)</div>
+                  </div>
                 </article>
 
                 <div class="see-more">
@@ -699,252 +729,243 @@
                     </div>
                     <div class="review-list">
                       <!-- code to display all reviews -->
-                      <div class="review__item">
-                        <header class="review__header">
-                          <img
-                            class="review__avatar"
-                            src="images/user-2.png"
-                            alt="User Avatar"
-                          />
-                          <p class="review__username">Alexander Rity</p>
-                        </header>
-                        <div class="review__subheader">
-                          <div class="review__rating">
-                            <p class="review__rating-value">5.0</p>
-                            <div class="review__stars">
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                            </div>
-                          </div>
-                          <p>2 days ago</p>
-                        </div>
-                        <div class="review__response">
-                          <p>
-                            Easy booking, great value! Cozy rooms at a
-                            reasonable price in Sheffield's vibrant center.
-                            Suprisingly quiet with nearby Traveller's
-                            accommodations. Highly recommended!
-                          </p>
-                        </div>
-                        <div class="review__controls">
-                          <button class="button-31 reply-btn">
-                            <i class="fa-solid fa-reply"></i>
-                            Reply
-                          </button>
-                          <button class="button-31 like-btn">
-                            <i class="fa-solid fa-heart"></i>
-                            Like
-                          </button>
-                          <div class="view__all__replies">
-                            View all replies (2)
-                          </div>
-                        </div>
-                        <!-- Reply Form -->
-                        <div class="review__reply">
-                          <div class="reply-content">
-                            <div class="replying-to">
+                      <article class="review-card">
+                        <header class="user-review">
+                          <div class="user-info">
+                            <!-- User Image -->
+                            <div class="user-image-wrapper">
                               <img
-                                class="replying-to__avatar"
+                                class="user-review-img"
                                 src="images/user-2.png"
-                                alt="User Avatar"
+                                alt="user-image"
+                                width="50px"
+                                height="50px"
                               />
-                              <div class="replay__and__timestamp">
-                                <p class="replying-to__text">
-                                  Replying to
-                                  <span class="replying-to__username">
-                                    Alexander Rity
-                                  </span>
-                                </p>
-                                <p class="replying-to__timestamp">2 days ago</p>
+                            </div>
+
+                            <!-- Username and Rating -->
+                            <div class="username-and-rating">
+                              <h3 class="username-wrapper">Alexander Rity</h3>
+                              <div
+                                class="rating-display"
+                                aria-label="5 out of 5 stars"
+                              >
+                                <div class="rating-stars">
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                </div>
                               </div>
                             </div>
-                            <form
-                              action=""
-                              class="reply-form"
-                              id="reply-form-1"
-                            >
-                              <textarea
-                                name="review-reply"
-                                id="review-reply"
-                                class="reply-textarea"
-                                placeholder="Write a reply..."
-                              ></textarea>
-                              <div class="reply-controls">
-                                <button
-                                  type="button"
-                                  class="button-31 cancel-btn"
-                                >
-                                  Cancel
-                                </button>
-                                <button class="button-31">Post Reply</button>
-                              </div>
-                            </form>
                           </div>
-                        </div>
-                      </div>
-                      <div class="review__item">
-                        <header class="review__header">
-                          <img
-                            class="review__avatar"
-                            src="images/user-2.png"
-                            alt="User Avatar"
-                          />
-                          <p class="review__username">Alexander Rity</p>
+                          <!-- Rating Timestamp -->
+                          <time class="rating-timestamp" datetime="2024-12-09">
+                            2 days ago
+                          </time>
                         </header>
-                        <div class="review__subheader">
-                          <div class="review__rating">
-                            <p class="review__rating-value">5.0</p>
-                            <div class="review__stars">
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                            </div>
+
+                        <!-- Review Details -->
+                        <p class="review-details">
+                          Easy booking, great value! Cozy rooms at a reasonable
+                          price in Sheffield's vibrant center. Suprisingly quiet
+                          with nearby Traveller's accommodations. Highly
+                          recommended!
+                        </p>
+                        <!-- Review Controls -->
+                        <div class="review-controls">
+                          <div class="review-controls-wrapper">
+                            <!-- Reply Button -->
+                            <button class="reply-btn">
+                              <i class="fa-solid fa-reply"></i>
+                              Reply
+                            </button>
+                            <!-- Like Button -->
+                            <button class="like-btn">
+                              <i class="fa-solid fa-heart"></i>
+                              Like
+                            </button>
                           </div>
-                          <p>2 days ago</p>
-                        </div>
-                        <div class="review__response">
-                          <p>
-                            Easy booking, great value! Cozy rooms at a
-                            reasonable price in Sheffield's vibrant center.
-                            Suprisingly quiet with nearby Traveller's
-                            accommodations. Highly recommended!
-                          </p>
-                        </div>
-                        <div class="review__controls">
-                          <button class="button-31 reply-btn">
-                            <i class="fa-solid fa-reply"></i>
-                            Reply
-                          </button>
-                          <button class="button-31 like-btn">
-                            <i class="fa-solid fa-heart"></i>
-                            Like
-                          </button>
-                          <div class="view__all__replies">
+                          <!-- View all replies -->
+                          <div class="view-all-replies">
                             View all replies (2)
                           </div>
                         </div>
-                        <!-- Reply Form -->
-                        <div class="review__reply">
-                          <div class="replying-to">
-                            <img
-                              class="replying-to__avatar"
-                              src="images/user-2.png"
-                              alt="User Avatar"
-                            />
-                            <div class="replay__and__timestamp">
-                              <p class="replying-to__text">
-                                Replying to
-                                <span class="replying-to__username">
-                                  Alexander Rity
-                                </span>
-                              </p>
-                              <p class="replying-to__timestamp">2 days ago</p>
+                      </article>
+                      <article class="review-card">
+                        <header class="user-review">
+                          <div class="user-info">
+                            <!-- User Image -->
+                            <div class="user-image-wrapper">
+                              <img
+                                class="user-review-img"
+                                src="images/user-2.png"
+                                alt="user-image"
+                                width="50px"
+                                height="50px"
+                              />
                             </div>
-                          </div>
-                          <form class="reply-form">
-                            <textarea
-                              name="review-reply"
-                              id="review-reply"
-                              class="reply-textarea"
-                              placeholder="Write a reply..."
-                            ></textarea>
-                            <div class="reply-controls">
-                              <button
-                                type="button"
-                                class="button-31 cancel-btn"
+
+                            <!-- Username and Rating -->
+                            <div class="username-and-rating">
+                              <h3 class="username-wrapper">Alexander Rity</h3>
+                              <div
+                                class="rating-display"
+                                aria-label="5 out of 5 stars"
                               >
-                                Cancel
-                              </button>
-                              <button class="button-31">Post Reply</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                      <div class="review__item">
-                        <header class="review__header">
-                          <img
-                            class="review__avatar"
-                            src="images/user-2.png"
-                            alt="User Avatar"
-                          />
-                          <p class="review__username">Alexander Rity</p>
-                        </header>
-                        <div class="review__subheader">
-                          <div class="review__rating">
-                            <p class="review__rating-value">5.0</p>
-                            <div class="review__stars">
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
-                              <i class="fa-solid fa-star"></i>
+                                <div class="rating-stars">
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <p>2 days ago</p>
-                        </div>
-                        <div class="review__response">
-                          <p>
-                            Easy booking, great value! Cozy rooms at a
-                            reasonable price in Sheffield's vibrant center.
-                            Suprisingly quiet with nearby Traveller's
-                            accommodations. Highly recommended!
-                          </p>
-                        </div>
-                        <div class="review__controls">
-                          <button class="button-31 reply-btn">
-                            <i class="fa-solid fa-reply"></i>
-                            Reply
-                          </button>
-                          <button class="button-31 like-btn">
-                            <i class="fa-solid fa-heart"></i>
-                            Like
-                          </button>
-                          <div class="view__all__replies">
+                          <!-- Rating Timestamp -->
+                          <time class="rating-timestamp" datetime="2024-12-09">
+                            2 days ago
+                          </time>
+                        </header>
+
+                        <!-- Review Details -->
+                        <p class="review-details">
+                          Easy booking, great value! Cozy rooms at a reasonable
+                          price in Sheffield's vibrant center. Suprisingly quiet
+                          with nearby Traveller's accommodations. Highly
+                          recommended!
+                        </p>
+                        <!-- Review Controls -->
+                        <div class="review-controls">
+                          <div class="review-controls-wrapper">
+                            <!-- Reply Button -->
+                            <button class="reply-btn">
+                              <i class="fa-solid fa-reply"></i>
+                              Reply
+                            </button>
+                            <!-- Like Button -->
+                            <button class="like-btn">
+                              <i class="fa-solid fa-heart"></i>
+                              Like
+                            </button>
+                          </div>
+                          <!-- View all replies -->
+                          <div class="view-all-replies">
                             View all replies (2)
                           </div>
                         </div>
-                        <!-- Reply Form -->
-                        <div class="review__reply">
-                          <div class="replying-to">
-                            <img
-                              class="replying-to__avatar"
-                              src="images/user-2.png"
-                              alt="User Avatar"
-                            />
-                            <div class="replay__and__timestamp">
-                              <p class="replying-to__text">
-                                Replying to
-                                <span class="replying-to__username">
-                                  Alexander Rity
-                                </span>
-                              </p>
-                              <p class="replying-to__timestamp">2 days ago</p>
+                      </article>
+                      <article class="review-card">
+                        <header class="user-review">
+                          <div class="user-info">
+                            <!-- User Image -->
+                            <div class="user-image-wrapper">
+                              <img
+                                class="user-review-img"
+                                src="images/user-2.png"
+                                alt="user-image"
+                                width="50px"
+                                height="50px"
+                              />
+                            </div>
+
+                            <!-- Username and Rating -->
+                            <div class="username-and-rating">
+                              <h3 class="username-wrapper">Alexander Rity</h3>
+                              <div
+                                class="rating-display"
+                                aria-label="5 out of 5 stars"
+                              >
+                                <div class="rating-stars">
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                  <i
+                                    class="fa-solid fa-star"
+                                    aria-hidden="true"
+                                  ></i>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <form class="reply-form">
-                            <textarea
-                              name="review-reply"
-                              id="review-reply"
-                              class="reply-textarea"
-                              placeholder="Write a reply..."
-                            ></textarea>
-                            <div class="reply-controls">
-                              <button
-                                type="button"
-                                class="button-31 cancel-btn"
-                              >
-                                Cancel
-                              </button>
-                              <button class="button-31">Post Reply</button>
-                            </div>
-                          </form>
+                          <!-- Rating Timestamp -->
+                          <time class="rating-timestamp" datetime="2024-12-09">
+                            2 days ago
+                          </time>
+                        </header>
+
+                        <!-- Review Details -->
+                        <p class="review-details">
+                          Easy booking, great value! Cozy rooms at a reasonable
+                          price in Sheffield's vibrant center. Suprisingly quiet
+                          with nearby Traveller's accommodations. Highly
+                          recommended!
+                        </p>
+                        <!-- Review Controls -->
+                        <div class="review-controls">
+                          <div class="review-controls-wrapper">
+                            <!-- Reply Button -->
+                            <button class="reply-btn">
+                              <i class="fa-solid fa-reply"></i>
+                              Reply
+                            </button>
+                            <!-- Like Button -->
+                            <button class="like-btn">
+                              <i class="fa-solid fa-heart"></i>
+                              Like
+                            </button>
+                          </div>
+                          <!-- View all replies -->
+                          <div class="view-all-replies">
+                            View all replies (2)
+                          </div>
                         </div>
-                      </div>
+                      </article>
                     </div>
                   </div>
                 </div>
