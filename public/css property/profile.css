@@ -5786,7 +5786,7 @@ details h3 {
   }
 
   .rating-breakdown .rating-process .rating-bar {
-    width: 54%;
+    width: 54% !important;
     height: 10px;
     background-color: #f8f7f7;
   }
@@ -7150,6 +7150,10 @@ input:checked + .slider:before {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 390px) and (max-width: 575.98px) {
+  .rating-breakdown .rating-process .rating-bar {
+    width: 61%;
+  }
+
   .purchase-item-container {
     display: flex;
     gap: 1rem;
@@ -7233,7 +7237,7 @@ input:checked + .slider:before {
   }
 
   .wrapper-row {
-    gap: 5rem;
+    gap: 3rem;
   }
 
   .share-btn i {
