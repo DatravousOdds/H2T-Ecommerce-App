@@ -3449,13 +3449,30 @@ h6 {
 }
 
 .status-badge.processing {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-badge.processing i {
+  color: #2563eb;
+}
+
+.status-badge.delivered {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.status-badge.delivered i {
+  color: #22c55e;
 }
 
 .status-badge.shipped {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.status-badge.shipped i {
+  color: #f97316;
 }
 
 .status-badge.in-stock {
@@ -3471,11 +3488,6 @@ h6 {
 .status.pending {
   background: #fef3c7;
   color: #92400e;
-}
-
-.status.processing {
-  background: #dbeafe;
-  color: #1e40af;
 }
 
 :root {
@@ -5535,8 +5547,97 @@ h6 {
   margin-bottom: 1.5rem;
 }
 
+/* Purchase Items */
+.purchases-list {
+  padding: 1rem;
+}
+
+.purchase-item {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: white;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.3s ease;
+  padding: 1rem;
+}
+
+.purchase-item:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile View */
+.desktop-view {
+  display: none;
+}
+
+/* .mobile-view {
+  padding: 1rem;
+} */
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 0.75rem;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.product-info {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.product-img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.details p {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+details h3 {
+  margin: 0;
+}
+
+.expected-date {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.view-details-btn {
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  color: #2563eb;
+  background: none;
+  font-size: 0.875rem;
+}
+
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  /* Purchases */
+
   /* Profile Tab */
   .tab {
     max-width: 100%;
@@ -6268,10 +6369,11 @@ h6 {
 }
 
 .product-info img {
-  width: 3rem;
-  height: 3rem;
+  width: 5rem;
+  height: 5rem;
   object-fit: cover;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
 }
 
 .search-wrapper {
@@ -6760,7 +6862,7 @@ input:checked + .slider:before {
 
 .purchases-section {
   padding: var(--spacing-md);
-  max-width: 1280px;
+  max-width: 100%;
   width: 100%;
   margin: 0 auto;
 }
@@ -6994,24 +7096,6 @@ input:checked + .slider:before {
   gap: 1rem;
 }
 
-.purchase-item {
-  border: 1px solid var(--gray-200);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: var(--spacing-md);
-  display: grid;
-  gap: var(--spacing-md);
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  justify-content: space-between;
-
-  transition: var(--transition-base);
-}
-
-.purchase-item:hover {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-}
-
 .purchase-item .product-container {
   display: flex;
   align-items: center;
@@ -7074,16 +7158,10 @@ input:checked + .slider:before {
     width: 100%;
   }
 
-  .purchase-item {
-    padding: 1rem;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
   .purchase-status .status-icon {
     flex-direction: row-reverse;
     align-items: center;
-    gap: 6rem;
+    gap: 5rem;
   }
 
   .status-text i {
@@ -7222,6 +7300,33 @@ input:checked + .slider:before {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  .mobile-view {
+    display: none;
+  }
+
+  .desktop-view {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem;
+  }
+
+  .product-section {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .product-section img {
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-end;
+  }
+
   .purchase-type-list {
     overflow-x: auto;
     gap: 0.5rem;
@@ -7257,10 +7362,6 @@ input:checked + .slider:before {
     width: 100%; /* Full width buttons on mobile */
   }
   /* Purchases */
-
-  .purchase-item {
-    grid-template-columns: 1fr;
-  }
 
   .purchase-status {
     align-items: flex-start;
