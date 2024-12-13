@@ -26,7 +26,7 @@ const orderDetailsMenu = document.querySelector(".order-details-menu");
 const closeOrderDetailsMenu = document.getElementById(
   "close-order-details-menu"
 );
-const viewOrderDetailsButton = document.querySelectorAll(".purchase-controls");
+const viewOrderDetailsButton = document.querySelectorAll(".view-details-btn");
 
 viewOrderDetailsButton.forEach((button) => {
   button.addEventListener("click", () => {
