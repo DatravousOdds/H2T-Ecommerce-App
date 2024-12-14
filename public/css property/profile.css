@@ -5266,7 +5266,7 @@ h6 {
 
 .profile-section {
   width: 100%;
-  max-width: 70%;
+  max-width: 100%;
   box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
     rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
   padding: 10px 24px;
@@ -5636,6 +5636,10 @@ details h3 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  .review-content {
+    max-height: 450px;
+  }
+
   /* Purchases */
 
   /* Profile Tab */
