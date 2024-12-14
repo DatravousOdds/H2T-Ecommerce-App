@@ -1214,18 +1214,17 @@ closeBtn.addEventListener("click", () => {
 
 // Review actions: view all replies
 const viewAllRepliesBtn = document.querySelectorAll(".view-all-replies");
-const hideRepliesBtn = document.querySelector(".hide-replies");
+const hideRepliesBtn = document.querySelectorAll(".hide-replies");
 const viewRepliesBtn = document.querySelector(".review-replies");
 
 viewAllRepliesBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
     // Find parent review card
     const reviewCard = btn.closest(".review-card");
-    // console.log(reviewCard);
-
-    // Show all replies
     const replies = reviewCard.querySelector(".review-replies");
+
     replies.classList.remove("hidden");
+    replies.classList.add("animate-slide-down");
 
     // Hide view all replies button
     btn.classList.add("hidden");
@@ -1236,11 +1235,20 @@ viewAllRepliesBtn.forEach((btn) => {
   });
 });
 
-hideRepliesBtn.addEventListener("click", () => {
-  viewRepliesBtn.classList.add("hidden");
-  hideRepliesBtn.classList.add("hidden");
-  viewAllRepliesBtn.forEach((btn) => {
-    btn.classList.remove("hidden");
+hideRepliesBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const reviewCard = btn.closest(".review-card");
+    const replies = reviewCard.querySelector(".review-replies");
+
+    replies.classList.add("animate-slide-up");
+    btn.classList.add("hidden");
+
+    // hide review replies
+    replies.classList.add("hidden");
+
+    // show view all replies button
+    const viewAllRepliesBtn = reviewCard.querySelector(".view-all-replies");
+    viewAllRepliesBtn.classList.remove("hidden");
   });
 });
 
