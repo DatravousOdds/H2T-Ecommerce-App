@@ -183,6 +183,51 @@ function removeError(element) {
   }
 }
 
+function formatTimestamp(timestamp) {
+  const now = new Date();
+  const date = new Date(timestamp);
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  // Less than a minute
+  if (diffInSeconds < 60) {
+    return "Just now";
+  }
+
+  // Less than an hour
+  if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
+  }
+
+  // Less than a day
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+  }
+
+  // Less than a week
+  if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} ${days === 1 ? "day" : "days"} ago`;
+  }
+
+  // Less than a month
+  if (diffInSeconds < 2592000) {
+    const weeks = Math.floor(diffInSeconds / 604800);
+    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
+  }
+
+  // Less than a year
+  if (diffInSeconds < 31536000) {
+    const months = Math.floor(diffInSeconds / 2592000);
+    return `${months} ${months === 1 ? "month" : "months"} ago`;
+  }
+
+  // More than a year
+  const years = Math.floor(diffInSeconds / 31536000);
+  return `${years} ${years === 1 ? "year" : "years"} ago`;
+}
+
 /* Add card Popup Functionality */
 
 function validateCardForm(element, errorMessage, options = {}) {
@@ -1268,8 +1313,53 @@ likeBtn.forEach((btn) => {
 const replyBtn = document.querySelectorAll(".reply-btn");
 const cancelReplyBtn = document.querySelectorAll(".cancel-reply");
 const submitReplyBtn = document.querySelectorAll(".reply-btn");
-const replyForms = document.querySelectorAll(".reply-form");
-console.log("replyForms", replyForms);
+const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
+<article class="review-card reply-card">
+                      <header class="user-review">
+                        <div class="user-info">
+                          <!-- User Image -->
+                          <div class="user-image-wrapper">
+                            <img
+                              class="user-review-img"
+                              src="${pfp}"
+                              alt="user-image"
+                              width="50px"
+                              height="50px"
+                            />
+                          </div>
+
+                          <!-- Username -->
+                          <div class="username-and-rating">
+                            <h3 class="username-wrapper">${username}</h3>
+                          </div>
+                        </div>
+                        <!-- Rating Timestamp -->
+                        <time class="rating-timestamp" datetime="2024-12-09">
+                          ${timestamp}
+                        </time>
+                      </header>
+
+                      <!-- Review Details -->
+                      <p class="review-details">
+                        ${replyText}
+                      </p>
+                      <!-- Review Controls -->
+                      <div class="review-controls">
+                        <div class="review-controls-wrapper">
+                          <!-- Reply Button -->
+                          <button class="reply-btn">
+                            <i class="fa-solid fa-reply"></i>
+                            Reply
+                          </button>
+                          <!-- Like Button -->
+                          <button class="like-btn">
+                            <i class="fa-solid fa-heart"></i>
+                            Like
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+`;
 
 // Review actions: reply to review
 replyBtn.forEach((btn) => {
@@ -1292,6 +1382,75 @@ cancelReplyBtn.forEach((btn) => {
 });
 
 // Review actions: submit reply
+submitReplyBtn.forEach((btn) => {
+  const replyFormWrapper = btn.closest(".reply-form-wrapper");
+  const replyForm = replyFormWrapper?.querySelector(".reply-form");
+  const reviewCard = btn.closest(".review-card");
+
+  if (!replyForm) {
+    console.error("No reply form found");
+    return;
+  }
+
+  replyForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    console.log("replyForm", replyForm);
+
+    const textarea = replyForm.querySelector("textarea");
+    const replyText = textarea.value.trim();
+
+    if (!replyText) {
+      const notification = new PaymentNotification();
+      notification.error("Please enter a reply", "reply");
+      return;
+    }
+
+    // Get current user
+    const currentUser = {
+      pfp: reviewCard.querySelector(".user-review-img").src,
+      username: reviewCard.querySelector(".username-wrapper").textContent
+    };
+
+    // Get form Data
+    const formData = {
+      pfp: currentUser.pfp,
+      username: currentUser.username,
+      text: replyText,
+      timestamp: new Date().toISOString()
+    };
+
+    // Append form data to new reply card
+    const newReplyCard = REPLY_CARD_TEMPLATE(
+      formData.pfp,
+      formData.username,
+      formData.text,
+      formData.timestamp
+    );
+
+    // Check if there is already a replies container
+    const repliesContainer = reviewCard.querySelector(".review-replies");
+    if (!repliesContainer) {
+      const repliesContainer = document.createElement("div");
+      repliesContainer.classList.add("review-replies");
+      reviewCard.appendChild(repliesContainer);
+    }
+
+    // Append new reply card to replies container
+    repliesContainer.insertAdjacentHTML("beforeend", newReplyCard);
+
+    // Clear the textarea
+    textarea.value = "";
+
+    // Hide the reply form
+    replyFormWrapper.classList.remove("active");
+
+    // TODO: send reply to server
+
+    // Show success notification
+    const notification = new PaymentNotification();
+    notification.success("Reply submitted", "reply");
+  });
+});
 
 /* Background actions */
 const uploadBackgroundBtn = document.getElementById("upload-background-btn");
