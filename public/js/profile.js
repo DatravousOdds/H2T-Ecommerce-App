@@ -1199,7 +1199,7 @@ bioTextarea.addEventListener("input", () => {
 const reviewModal = document.getElementById("reviews-modal");
 // see all reviews
 const seeAllReviewsBtn = document.getElementById("see-all-reviews");
-const closeBtn = document.querySelector(".close");
+const closeReviewModal = document.querySelector(".review-close");
 
 // Review action: all reviews, close
 seeAllReviewsBtn.addEventListener("click", () => {
@@ -1207,7 +1207,7 @@ seeAllReviewsBtn.addEventListener("click", () => {
   document.body.style.overflow = "hidden";
 });
 
-closeBtn.addEventListener("click", () => {
+closeReviewModal.addEventListener("click", () => {
   reviewModal.style.display = "none";
   document.body.style.overflow = "auto";
 });
@@ -1251,6 +1251,47 @@ hideRepliesBtn.forEach((btn) => {
     viewAllRepliesBtn.classList.remove("hidden");
   });
 });
+
+// Review actions: like review
+const likeBtn = document.querySelectorAll(".like-btn");
+// console.log("likeBtn", likeBtn);
+
+likeBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    btn.classList.toggle("active");
+
+    // TODO: send like to server
+  });
+});
+
+// Review actions: reply to review, cancel reply, submit reply
+const replyBtn = document.querySelectorAll(".reply-btn");
+const cancelReplyBtn = document.querySelectorAll(".cancel-reply");
+const submitReplyBtn = document.querySelectorAll(".reply-btn");
+const replyForms = document.querySelectorAll(".reply-form");
+console.log("replyForms", replyForms);
+
+// Review actions: reply to review
+replyBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    // get the parent review card
+    const reviewCard = btn.closest(".review-card");
+    const replyFormWrapper = reviewCard.querySelector(".reply-form-wrapper");
+
+    // Show the reply form wrapper
+    replyFormWrapper.classList.add("active");
+  });
+});
+
+// Review actions: cancel reply
+cancelReplyBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const replyFormWrapper = btn.closest(".reply-form-wrapper");
+    replyFormWrapper.classList.remove("active");
+  });
+});
+
+// Review actions: submit reply
 
 /* Background actions */
 const uploadBackgroundBtn = document.getElementById("upload-background-btn");
