@@ -1603,6 +1603,37 @@ button:disabled {
   margin-bottom: 1rem;
 }
 
+/* Animation class */
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
 /* All Reviews */
 
 .review__controls {
@@ -5657,6 +5688,46 @@ details h3 {
 @media (max-width: 575.98px) {
   .review-content {
     max-height: 450px;
+  }
+
+  .reply-card {
+    padding: 1rem;
+    margin-left: 0;
+  }
+
+  .reply-card .review-card .user-review {
+    padding: 0;
+  }
+
+  .reply-card .user-review {
+    gap: 0.5rem;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+  }
+
+  .reply-card .username-wrapper {
+    font-size: 12px;
+  }
+
+  .reply-card .review-details {
+    font-size: 12px;
+  }
+
+  .reply-card .rating-stars {
+    font-size: 12px;
+  }
+
+  .reply-card .user-review-img img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .reply-card .review-controls button {
+    font-size: 12px;
+  }
+
+  .reply-card .rating-timestamp {
+    font-size: 12px;
   }
 
   /* Purchases */
