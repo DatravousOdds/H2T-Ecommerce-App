@@ -1523,6 +1523,25 @@ button:disabled {
   border-bottom: 1px solid #e5e7eb;
 }
 
+.review-replies {
+  margin-left: 40px;
+  border-left: 2px solid #e5e7eb;
+  padding-left: 24px;
+}
+
+.hide-replies.hidden {
+  display: none;
+}
+
+.reply-card {
+  border-bottom: none;
+  margin-left: 2rem;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
 .review-header {
   display: flex;
   justify-content: space-between;
