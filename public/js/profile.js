@@ -1215,10 +1215,32 @@ closeBtn.addEventListener("click", () => {
 // Review actions: view all replies
 const viewAllRepliesBtn = document.querySelectorAll(".view-all-replies");
 const hideRepliesBtn = document.querySelector(".hide-replies");
-console.log(viewAllRepliesBtn);
+const viewRepliesBtn = document.querySelector(".review-replies");
+
 viewAllRepliesBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
-    console.log(btn);
+    // Find parent review card
+    const reviewCard = btn.closest(".review-card");
+    // console.log(reviewCard);
+
+    // Show all replies
+    const replies = reviewCard.querySelector(".review-replies");
+    replies.classList.remove("hidden");
+
+    // Hide view all replies button
+    btn.classList.add("hidden");
+
+    // Show hide replies button
+    const hideRepliesBtn = reviewCard.querySelector(".hide-replies");
+    hideRepliesBtn.classList.remove("hidden");
+  });
+});
+
+hideRepliesBtn.addEventListener("click", () => {
+  viewRepliesBtn.classList.add("hidden");
+  hideRepliesBtn.classList.add("hidden");
+  viewAllRepliesBtn.forEach((btn) => {
+    btn.classList.remove("hidden");
   });
 });
 
