@@ -1299,7 +1299,6 @@ hideRepliesBtn.forEach((btn) => {
 
 // Review actions: like review
 const likeBtn = document.querySelectorAll(".like-btn");
-// console.log("likeBtn", likeBtn);
 
 likeBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -1335,7 +1334,7 @@ const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
                         </div>
                         <!-- Rating Timestamp -->
                         <time class="rating-timestamp" datetime="2024-12-09">
-                          ${timestamp}
+                          ${formatTimestamp(timestamp)}
                         </time>
                       </header>
 
@@ -1437,6 +1436,22 @@ submitReplyBtn.forEach((btn) => {
 
     // Append new reply card to replies container
     repliesContainer.insertAdjacentHTML("beforeend", newReplyCard);
+
+    // TODO: like functionality
+    const newReply = repliesContainer.lastElementChild;
+    console.log("newReply", newReply);
+    const newLikeBtn = newReply.querySelector(".like-btn");
+
+    if (!newLikeBtn) {
+      console.error("No like button found");
+      return;
+    }
+
+    console.log("newLikeBtn", newLikeBtn);
+
+    newLikeBtn.addEventListener("click", () => {
+      newLikeBtn.classList.toggle("active");
+    });
 
     // Clear the textarea
     textarea.value = "";
