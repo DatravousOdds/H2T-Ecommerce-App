@@ -1503,6 +1503,7 @@ button:disabled {
   color: #374151;
   font-size: 0.875rem;
   cursor: pointer;
+  display: none;
   transition: 0.3s ease-in-out;
 }
 
