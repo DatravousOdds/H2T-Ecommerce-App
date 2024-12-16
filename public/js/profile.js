@@ -1467,6 +1467,18 @@ submitReplyBtn.forEach((btn) => {
   });
 });
 
+const repliesContainer = document.querySelector(".review-replies");
+const articleCount = repliesContainer.getElementsByTagName("article").length;
+console.log("articleCount", articleCount);
+
+// show view all replies (if theres more than 1 reply)
+if (articleCount > 1) {
+  const viewAllRepliesBtn = document.querySelector(".view-all-replies");
+  viewAllRepliesBtn.style.display = "inline";
+  viewAllRepliesBtn.innerHTML = `View all replies (${articleCount})`;
+}
+
+// TODO: like functionality
 /* Background actions */
 const uploadBackgroundBtn = document.getElementById("upload-background-btn");
 const removeBackgroundBtn = document.getElementById("remove-background-btn");
