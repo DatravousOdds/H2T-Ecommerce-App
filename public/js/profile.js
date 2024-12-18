@@ -1241,10 +1241,41 @@ bioTextarea.addEventListener("input", () => {
 });
 
 // Review section
+
+// Reply Count Functionality
+function updatedReplyCount(reviewCard) {
+  const repliesContainer = reviewCard.querySelector(".review-replies");
+  if (!repliesContainer) return;
+
+  const articleCount = repliesContainer.getElementsByTagName("article").length;
+  const viewAllRepliesBtn = reviewCard.querySelector(".view-all-replies");
+  const hideRepliesBtn = reviewCard.querySelector(".hide-replies");
+
+  if (articleCount >= 1) {
+    viewAllRepliesBtn?.classList.remove("hidden");
+    if (hideRepliesBtn) {
+      viewAllRepliesBtn.innerHTML = `View all replies (${articleCount})`;
+    }
+    hideRepliesBtn?.classList.add("hidden");
+    repliesContainer.classList.add("hidden");
+  } else {
+    viewAllRepliesBtn?.classList.add("hidden");
+    hideRepliesBtn?.classList.add("hidden");
+  }
+}
+
 const reviewModal = document.getElementById("reviews-modal");
 // see all reviews
 const seeAllReviewsBtn = document.getElementById("see-all-reviews");
 const closeReviewModal = document.querySelector(".review-close");
+const reviewCards = document.querySelectorAll(".review-card");
+
+reviewCards.forEach((reviewCard) => {
+  // skip reply cards
+  if (!reviewCard.classList.contains("reply-card")) {
+    updatedReplyCount(reviewCard);
+  }
+});
 
 // Review action: all reviews, close
 seeAllReviewsBtn.addEventListener("click", () => {
@@ -1357,6 +1388,16 @@ const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
                           </button>
                         </div>
                       </div>
+                      <!-- Reply Form -->
+                      <div class="reply-form-wrapper">
+                        <form class="reply-form">
+                          <textarea placeholder="Reply to this review"></textarea>
+                          <div class="reply-btn-wrapper">
+                            <button type="button" class="cancel-reply">Cancel</button>
+                            <button type="submit" class="reply-btn">Reply</button>
+                          </div>
+                        </form>
+                      </div>
                     </article>
 `;
 
@@ -1364,7 +1405,8 @@ const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
 replyBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
     // get the parent review card
-    const reviewCard = btn.closest(".review-card");
+    const reviewCard =
+      btn.closest(".review-card") || btn.closest(".reply-card");
     const replyFormWrapper = reviewCard.querySelector(".reply-form-wrapper");
 
     // Show the reply form wrapper
@@ -1393,7 +1435,6 @@ submitReplyBtn.forEach((btn) => {
 
   replyForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    console.log("replyForm", replyForm);
 
     const textarea = replyForm.querySelector("textarea");
     const replyText = textarea.value.trim();
@@ -1437,17 +1478,26 @@ submitReplyBtn.forEach((btn) => {
     // Append new reply card to replies container
     repliesContainer.insertAdjacentHTML("beforeend", newReplyCard);
 
+    // Update reply count
+    updatedReplyCount(reviewCard);
+
     // TODO: like functionality
     const newReply = repliesContainer.lastElementChild;
-    console.log("newReply", newReply);
     const newLikeBtn = newReply.querySelector(".like-btn");
+
+    // Add reply functionality to the new reply card
+    const replyBtn = newReply.querySelector(".reply-btn");
+    replyBtn.addEventListener("click", () => {
+      const replyFormWrapper = newReply.querySelector(".reply-form-wrapper");
+      if (replyFormWrapper) {
+        replyFormWrapper.classList.add("active");
+      }
+    });
 
     if (!newLikeBtn) {
       console.error("No like button found");
       return;
     }
-
-    console.log("newLikeBtn", newLikeBtn);
 
     newLikeBtn.addEventListener("click", () => {
       newLikeBtn.classList.toggle("active");
@@ -1467,18 +1517,6 @@ submitReplyBtn.forEach((btn) => {
   });
 });
 
-const repliesContainer = document.querySelector(".review-replies");
-const articleCount = repliesContainer.getElementsByTagName("article").length;
-console.log("articleCount", articleCount);
-
-// show view all replies (if theres more than 1 reply)
-if (articleCount > 1) {
-  const viewAllRepliesBtn = document.querySelector(".view-all-replies");
-  viewAllRepliesBtn.style.display = "inline";
-  viewAllRepliesBtn.innerHTML = `View all replies (${articleCount})`;
-}
-
-// TODO: like functionality
 /* Background actions */
 const uploadBackgroundBtn = document.getElementById("upload-background-btn");
 const removeBackgroundBtn = document.getElementById("remove-background-btn");
