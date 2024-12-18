@@ -1426,7 +1426,8 @@ cancelReplyBtn.forEach((btn) => {
 submitReplyBtn.forEach((btn) => {
   const replyFormWrapper = btn.closest(".reply-form-wrapper");
   const replyForm = replyFormWrapper?.querySelector(".reply-form");
-  const reviewCard = btn.closest(".review-card");
+  // Get either the parent review card or the parent reply card
+  const reviewCard = btn.closest(".review-card") || btn.closest(".reply-card");
 
   if (!replyForm) {
     console.error("No reply form found");
@@ -1468,7 +1469,7 @@ submitReplyBtn.forEach((btn) => {
     );
 
     // Check if there is already a replies container
-    const repliesContainer = reviewCard.querySelector(".review-replies");
+    let repliesContainer = reviewCard.querySelector(".review-replies");
     if (!repliesContainer) {
       const repliesContainer = document.createElement("div");
       repliesContainer.classList.add("review-replies");
@@ -1478,14 +1479,11 @@ submitReplyBtn.forEach((btn) => {
     // Append new reply card to replies container
     repliesContainer.insertAdjacentHTML("beforeend", newReplyCard);
 
-    // Update reply count
     updatedReplyCount(reviewCard);
 
-    // TODO: like functionality
     const newReply = repliesContainer.lastElementChild;
-    const newLikeBtn = newReply.querySelector(".like-btn");
 
-    // Add reply functionality to the new reply card
+    // Add reply functionality to the new reply card : TODO create a helper function
     const replyBtn = newReply.querySelector(".reply-btn");
     replyBtn.addEventListener("click", () => {
       const replyFormWrapper = newReply.querySelector(".reply-form-wrapper");
@@ -1494,11 +1492,14 @@ submitReplyBtn.forEach((btn) => {
       }
     });
 
+    const newLikeBtn = newReply.querySelector(".like-btn");
+
     if (!newLikeBtn) {
       console.error("No like button found");
       return;
     }
 
+    // Add like functionality to the new reply card : TODO create a helper function
     newLikeBtn.addEventListener("click", () => {
       newLikeBtn.classList.toggle("active");
     });
