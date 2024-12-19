@@ -1244,21 +1244,42 @@ bioTextarea.addEventListener("input", () => {
 
 // Reply Count Functionality
 function updatedReplyCount(reviewCard) {
+  // Skip counting if this is a reply-card
+  if (reviewCard.classList.contains("reply-card")) return;
+
   const repliesContainer = reviewCard.querySelector(".review-replies");
   if (!repliesContainer) return;
 
-  const articleCount = repliesContainer.getElementsByTagName("article").length;
+  // Count all direct replies
+  const directReplies = repliesContainer.children.length;
+
+  // Count nested replies
+  const nestedReplies = repliesContainer.querySelectorAll(
+    ".reply-card .review-replies article"
+  ).length;
+
+  // Total reply count
+  const totalReplies = directReplies + nestedReplies;
+
   const viewAllRepliesBtn = reviewCard.querySelector(".view-all-replies");
   const hideRepliesBtn = reviewCard.querySelector(".hide-replies");
 
-  if (articleCount >= 1) {
+  if (totalReplies > 0) {
+    // Only show view replies button if there are replies
     viewAllRepliesBtn?.classList.remove("hidden");
-    if (hideRepliesBtn) {
-      viewAllRepliesBtn.innerHTML = `View all replies (${articleCount})`;
+    if (viewAllRepliesBtn) {
+      // Use proper grammar for reply count
+      const replyText = totalReplies === 1 ? "reply" : "replies";
+      viewAllRepliesBtn.innerHTML = `View all ${replyText} (${totalReplies})`;
     }
+
+    // Keep hide button hidden initially
     hideRepliesBtn?.classList.add("hidden");
+
+    // Keep replies hidden initially
     repliesContainer.classList.add("hidden");
   } else {
+    // Hide both buttons if no replies
     viewAllRepliesBtn?.classList.add("hidden");
     hideRepliesBtn?.classList.add("hidden");
   }
@@ -1291,7 +1312,6 @@ closeReviewModal.addEventListener("click", () => {
 // Review actions: view all replies
 const viewAllRepliesBtn = document.querySelectorAll(".view-all-replies");
 const hideRepliesBtn = document.querySelectorAll(".hide-replies");
-const viewRepliesBtn = document.querySelector(".review-replies");
 
 viewAllRepliesBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -1345,72 +1365,45 @@ const cancelReplyBtn = document.querySelectorAll(".cancel-reply");
 const submitReplyBtn = document.querySelectorAll(".reply-btn");
 const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
 <article class="review-card reply-card">
-                      <header class="user-review">
-                        <div class="user-info">
-                          <!-- User Image -->
-                          <div class="user-image-wrapper">
-                            <img
-                              class="user-review-img"
-                              src="${pfp}"
-                              alt="user-image"
-                              width="50px"
-                              height="50px"
-                            />
-                          </div>
-
-                          <!-- Username -->
-                          <div class="username-and-rating">
-                            <h3 class="username-wrapper">${username}</h3>
-                          </div>
-                        </div>
-                        <!-- Rating Timestamp -->
-                        <time class="rating-timestamp" datetime="2024-12-09">
-                          ${formatTimestamp(timestamp)}
-                        </time>
-                      </header>
-
-                      <!-- Review Details -->
-                      <p class="review-details">
-                        ${replyText}
-                      </p>
-                      <!-- Review Controls -->
-                      <div class="review-controls">
-                        <div class="review-controls-wrapper">
-                          <!-- Reply Button -->
-                          <button class="reply-btn">
-                            <i class="fa-solid fa-reply"></i>
-                            Reply
-                          </button>
-                          <!-- Like Button -->
-                          <button class="like-btn">
-                            <i class="fa-solid fa-heart"></i>
-                            Like
-                          </button>
-                        </div>
-                      </div>
-                      <!-- Reply Form -->
-                      <div class="reply-form-wrapper">
-                        <form class="reply-form">
-                          <textarea placeholder="Reply to this review"></textarea>
-                          <div class="reply-btn-wrapper">
-                            <button type="button" class="cancel-reply">Cancel</button>
-                            <button type="submit" class="reply-btn">Reply</button>
-                          </div>
-                        </form>
-                      </div>
-                    </article>
+  <header class="user-review">
+    <div class="user-info">
+      <div class="user-image-wrapper">
+        <img
+          class="user-review-img"
+          src="${pfp}"
+          alt="user-image"
+          width="50"
+          height="50"
+        />
+      </div>
+      <div class="username-and-rating">
+        <div class="username-wrapper">
+          <h3 class="username">${username}</h3>
+          <span class="seller-badge">Seller</span>
+        </div>
+      </div>
+    </div>
+    <time class="rating-timestamp" datetime="${timestamp}">
+      ${formatTimestamp(timestamp)}
+    </time>
+  </header>
+  <p class="review-details">
+    ${replyText}
+  </p>
+</article>
 `;
 
 // Review actions: reply to review
 replyBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
-    // get the parent review card
-    const reviewCard =
-      btn.closest(".review-card") || btn.closest(".reply-card");
-    const replyFormWrapper = reviewCard.querySelector(".reply-form-wrapper");
+    const reviewCard = btn.closest(".review-card");
+    // Don't allow replies if there's already a seller response
+    if (reviewCard.querySelector(".reply-card")) {
+      return;
+    }
 
-    // Show the reply form wrapper
-    replyFormWrapper.classList.add("active");
+    const replyFormWrapper = reviewCard.querySelector(".reply-form-wrapper");
+    replyFormWrapper?.classList.add("active");
   });
 });
 
@@ -1422,12 +1415,35 @@ cancelReplyBtn.forEach((btn) => {
   });
 });
 
+// Helper functions for event handlers
+function addReplyHandler(replyBtn) {
+  replyBtn.addEventListener("click", () => {
+    const reviewCard =
+      replyBtn.closest(".review-card") || replyBtn.closest(".reply-card");
+    const replyFormWrapper = reviewCard.querySelector(".reply-form-wrapper");
+    replyFormWrapper?.classList.add("active");
+  });
+}
+
+function addCancelHandler(cancelBtn) {
+  cancelBtn.addEventListener("click", () => {
+    const replyFormWrapper = cancelBtn.closest(".reply-form-wrapper");
+    replyFormWrapper?.classList.remove("active");
+  });
+}
+
+function addLikeHandler(likeBtn) {
+  likeBtn.addEventListener("click", () => {
+    likeBtn.classList.toggle("active");
+  });
+}
+
 // Review actions: submit reply
 submitReplyBtn.forEach((btn) => {
   const replyFormWrapper = btn.closest(".reply-form-wrapper");
   const replyForm = replyFormWrapper?.querySelector(".reply-form");
   // Get either the parent review card or the parent reply card
-  const reviewCard = btn.closest(".review-card") || btn.closest(".reply-card");
+  const reviewCard = btn.closest(".review-card");
 
   if (!replyForm) {
     console.error("No reply form found");
@@ -1460,54 +1476,34 @@ submitReplyBtn.forEach((btn) => {
       timestamp: new Date().toISOString()
     };
 
-    // Append form data to new reply card
+    // Check if there is already a replies container
+    let repliesContainer = reviewCard.querySelector(".review-replies");
+    if (!repliesContainer) {
+      repliesContainer = document.createElement("div");
+      repliesContainer.classList.add("review-replies");
+      reviewCard.appendChild(repliesContainer);
+    }
+
+    // Create and append new reply
     const newReplyCard = REPLY_CARD_TEMPLATE(
       formData.pfp,
       formData.username,
       formData.text,
       formData.timestamp
     );
-
-    // Check if there is already a replies container
-    let repliesContainer = reviewCard.querySelector(".review-replies");
-    if (!repliesContainer) {
-      const repliesContainer = document.createElement("div");
-      repliesContainer.classList.add("review-replies");
-      reviewCard.appendChild(repliesContainer);
-    }
-
     // Append new reply card to replies container
     repliesContainer.insertAdjacentHTML("beforeend", newReplyCard);
 
+    // Add handlers to new reply's buttons
+    // addReplyHandler(newReplyCard.querySelector(".reply-btn"));
+    // addLikeHandler(newReplyCard.querySelector(".like-btn"));
+    // addCancelHandler(newReplyCard.querySelector(".cancel-reply"));
+
+    // Update reply count
     updatedReplyCount(reviewCard);
-
-    const newReply = repliesContainer.lastElementChild;
-
-    // Add reply functionality to the new reply card : TODO create a helper function
-    const replyBtn = newReply.querySelector(".reply-btn");
-    replyBtn.addEventListener("click", () => {
-      const replyFormWrapper = newReply.querySelector(".reply-form-wrapper");
-      if (replyFormWrapper) {
-        replyFormWrapper.classList.add("active");
-      }
-    });
-
-    const newLikeBtn = newReply.querySelector(".like-btn");
-
-    if (!newLikeBtn) {
-      console.error("No like button found");
-      return;
-    }
-
-    // Add like functionality to the new reply card : TODO create a helper function
-    newLikeBtn.addEventListener("click", () => {
-      newLikeBtn.classList.toggle("active");
-    });
 
     // Clear the textarea
     textarea.value = "";
-
-    // Hide the reply form
     replyFormWrapper.classList.remove("active");
 
     // TODO: send reply to server
