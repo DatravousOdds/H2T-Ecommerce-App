@@ -1363,6 +1363,9 @@ likeBtn.forEach((btn) => {
 const replyBtn = document.querySelectorAll(".reply-btn");
 const cancelReplyBtn = document.querySelectorAll(".cancel-reply");
 const submitReplyBtn = document.querySelectorAll(".reply-btn");
+const editReplyBtn = document.querySelectorAll(".edit-reply-btn");
+const replyDropdownBtn = document.querySelectorAll(".reply-dropdown-btn");
+const deleteReplyBtn = document.querySelectorAll(".delete-reply-btn");
 const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
 <article class="review-card reply-card">
   <header class="user-review">
@@ -1383,13 +1386,39 @@ const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
         </div>
       </div>
     </div>
-    <time class="rating-timestamp" datetime="${timestamp}">
-      ${formatTimestamp(timestamp)}
-    </time>
+    <div class="reply-actions">
+      <time class="rating-timestamp" datetime="${timestamp}">
+        ${formatTimestamp(timestamp)}
+      </time>
+    <div class="reply-dropdown-btn">
+      <button class="reply-dropdown-btn">
+        <i class="fa-solid fa-ellipsis"></i>
+      </button>
+      <div class="reply-dropdown-content hidden">
+        <button class="edit-reply-btn">
+          <i class="fa-solid fa-pen"></i>
+          Edit Reply
+        </button>
+        <button class="delete-reply-btn">
+          <i class="fa-solid fa-trash"></i>
+          Delete Reply
+        </button>
+      </div>
+    </div>
+    </div>
   </header>
   <p class="review-details">
     ${replyText}
   </p>
+  <div class="edit-form-wrapper">
+    <form class="edit-form">
+      <textarea>${replyText}</textarea>
+      <div class="edit-btn-wrapper">
+        <button type="button" class="cancel-edit">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+    </form>
+  </div>
 </article>
 `;
 

@@ -1499,6 +1499,95 @@ button:disabled {
   margin-right: 2px;
 }
 
+.reply-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.reply-dropdown {
+  position: relative;
+}
+
+.reply-dropdown-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #374151;
+  transition: 0.3s ease-in-out;
+}
+
+.reply-dropdown-btn:hover {
+  background-color: rbga(0, 0, 0, 0.05);
+}
+
+.reply-dropdown-content {
+  position: absolute;
+  right: 4rem;
+  /* top: 100%; */
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  z-index: 10;
+}
+
+.reply-dropdown-content button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.reply-dropdown-content button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.edit-form-wrapper {
+  margin-top: 1rem;
+}
+
+.edit-form textarea {
+  width: 100%;
+  min-height: 100px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem;
+  resize: none;
+}
+
+.edit-btn-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.edit-btn-wrapper button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-btn-wrapper button:nth-child(2) {
+  background-color: #2563eb;
+  color: white;
+}
+
+.delete-reply-btn {
+  color: #e52d27;
+}
+
 .view-all-replies {
   color: #374151;
   font-size: 0.875rem;
