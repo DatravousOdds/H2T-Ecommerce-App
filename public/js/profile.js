@@ -1535,6 +1535,9 @@ submitReplyBtn.forEach((btn) => {
     const editReplyBtn = replyCard.querySelector(".edit-reply-btn");
     const deleteReplyBtn = replyCard.querySelector(".delete-reply-btn");
     const editFormWrapper = replyCard.querySelector(".edit-form-wrapper");
+    const replyCancelEditBtn = replyCard.querySelector(".cancel-edit");
+    const replySaveEditBtn = replyCard.querySelector(".save-edit");
+    const editForm = replyCard.querySelector(".edit-form");
 
     replyDropdownBtn.addEventListener("click", () => {
       replyDropdownContent.classList.toggle("hidden");
@@ -1542,10 +1545,18 @@ submitReplyBtn.forEach((btn) => {
 
     editReplyBtn.addEventListener("click", () => {
       editFormWrapper.classList.remove("hidden");
+      replyText.classList.add("hidden");
+      replyDropdownContent.classList.add("hidden");
     });
 
     deleteReplyBtn.addEventListener("click", () => {
       replyCard.remove();
+      updatedReplyCount(reviewCard);
+    });
+
+    replyCancelEditBtn.addEventListener("click", () => {
+      editFormWrapper.classList.add("hidden");
+      replyText.classList.remove("hidden");
     });
 
     // Clear the textarea
