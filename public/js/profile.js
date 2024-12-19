@@ -1520,16 +1520,22 @@ submitReplyBtn.forEach((btn) => {
       formData.text,
       formData.timestamp
     );
+
     // Append new reply card to replies container
     repliesContainer.insertAdjacentHTML("beforeend", newReplyCard);
 
-    // Add handlers to new reply's buttons
-    // addReplyHandler(newReplyCard.querySelector(".reply-btn"));
-    // addLikeHandler(newReplyCard.querySelector(".like-btn"));
-    // addCancelHandler(newReplyCard.querySelector(".cancel-reply"));
-
     // Update reply count
     updatedReplyCount(reviewCard);
+
+    const replyCard = repliesContainer.lastElementChild;
+    const replyDropdownBtn = replyCard.querySelector(".reply-dropdown-btn");
+    const replyDropdownContent = replyCard.querySelector(
+      ".reply-dropdown-content"
+    );
+
+    replyDropdownBtn.addEventListener("click", () => {
+      replyDropdownContent.classList.toggle("hidden");
+    });
 
     // Clear the textarea
     textarea.value = "";
