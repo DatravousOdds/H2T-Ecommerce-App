@@ -1410,7 +1410,7 @@ const REPLY_CARD_TEMPLATE = (pfp, username, replyText, timestamp) => `
   <p class="review-details">
     ${replyText}
   </p>
-  <div class="edit-form-wrapper">
+  <div class="edit-form-wrapper hidden">
     <form class="edit-form">
       <textarea>${replyText}</textarea>
       <div class="edit-btn-wrapper">
@@ -1532,9 +1532,20 @@ submitReplyBtn.forEach((btn) => {
     const replyDropdownContent = replyCard.querySelector(
       ".reply-dropdown-content"
     );
+    const editReplyBtn = replyCard.querySelector(".edit-reply-btn");
+    const deleteReplyBtn = replyCard.querySelector(".delete-reply-btn");
+    const editFormWrapper = replyCard.querySelector(".edit-form-wrapper");
 
     replyDropdownBtn.addEventListener("click", () => {
       replyDropdownContent.classList.toggle("hidden");
+    });
+
+    editReplyBtn.addEventListener("click", () => {
+      editFormWrapper.classList.remove("hidden");
+    });
+
+    deleteReplyBtn.addEventListener("click", () => {
+      replyCard.remove();
     });
 
     // Clear the textarea
