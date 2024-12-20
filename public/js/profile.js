@@ -1538,6 +1538,7 @@ submitReplyBtn.forEach((btn) => {
     const replyCancelEditBtn = replyCard.querySelector(".cancel-edit");
     const replySaveEditBtn = replyCard.querySelector(".save-edit");
     const editForm = replyCard.querySelector(".edit-form");
+    const replyTxt = replyCard.querySelector(".review-details");
 
     replyDropdownBtn.addEventListener("click", () => {
       replyDropdownContent.classList.toggle("hidden");
@@ -1545,7 +1546,7 @@ submitReplyBtn.forEach((btn) => {
 
     editReplyBtn.addEventListener("click", () => {
       editFormWrapper.classList.remove("hidden");
-      replyText.classList.add("hidden");
+      replyTxt.classList.add("hidden");
       replyDropdownContent.classList.add("hidden");
     });
 
@@ -1556,7 +1557,26 @@ submitReplyBtn.forEach((btn) => {
 
     replyCancelEditBtn.addEventListener("click", () => {
       editFormWrapper.classList.add("hidden");
-      replyText.classList.remove("hidden");
+      replyTxt.classList.remove("hidden");
+    });
+
+    editForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      console.log("Edit form submitted");
+
+      const editTextarea = editForm.querySelector("textarea");
+      if (!editTextarea) {
+        console.error("No edit textarea found");
+        return;
+      }
+      console.log(editTextarea.value);
+
+      replyTxt.textContent = editTextarea.value;
+
+      editFormWrapper.classList.add("hidden");
+      replyTxt.classList.remove("hidden");
+      replyDropdownContent.classList.remove("hidden");
     });
 
     // Clear the textarea

@@ -5827,6 +5827,34 @@ details h3 {
     height: 32px;
   }
 
+  /* Reply Card */
+  .reply-card .user-info .user-review-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .seller-badge {
+    font-size: 12px;
+  }
+
+  .reply-card .username-wrapper {
+    margin: 0;
+    gap: 1rem;
+  }
+
+  .reply-card .reply-actions {
+    justify-content: space-between;
+  }
+
+  .reply-card .username-wrapper .username {
+    font-size: 12px;
+    margin-bottom: 0;
+  }
+
+  .reply-card .reply-actions .reply-dropdown-content {
+    right: 32px;
+  }
+
   .review-card .user-info .username-wrapper {
     font-size: 12px;
   }
@@ -7555,6 +7583,33 @@ input:checked + .slider:before {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  /* Reply Card */
+  .reply-card .user-info .user-review-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .reply-card {
+    margin-left: 1rem;
+  }
+
+  .reply-card .user-info .username {
+    margin-bottom: 0;
+    font-size: 12px;
+  }
+
+  .seller-badge {
+    font-size: 12px;
+  }
+
+  .reply-card .rating-timestamp {
+    font-size: 12px;
+  }
+
+  .reply-card .reply-dropdown-content {
+    right: 15rem;
+  }
+
   .mobile-view {
     display: none;
   }
