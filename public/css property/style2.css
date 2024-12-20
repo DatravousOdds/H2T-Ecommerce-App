@@ -2205,6 +2205,9 @@ footer .rights {
 /* Mobile (768px and below) */
 @media (max-width: 768px) {
   /* New Navbar */
+  .submenu {
+    padding: 10px 3rem !important;
+  }
 
   .menu-button {
     display: flex !important;
