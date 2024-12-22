@@ -1444,29 +1444,6 @@ cancelReplyBtn.forEach((btn) => {
   });
 });
 
-// Helper functions for event handlers
-function addReplyHandler(replyBtn) {
-  replyBtn.addEventListener("click", () => {
-    const reviewCard =
-      replyBtn.closest(".review-card") || replyBtn.closest(".reply-card");
-    const replyFormWrapper = reviewCard.querySelector(".reply-form-wrapper");
-    replyFormWrapper?.classList.add("active");
-  });
-}
-
-function addCancelHandler(cancelBtn) {
-  cancelBtn.addEventListener("click", () => {
-    const replyFormWrapper = cancelBtn.closest(".reply-form-wrapper");
-    replyFormWrapper?.classList.remove("active");
-  });
-}
-
-function addLikeHandler(likeBtn) {
-  likeBtn.addEventListener("click", () => {
-    likeBtn.classList.toggle("active");
-  });
-}
-
 // Review actions: submit reply
 submitReplyBtn.forEach((btn) => {
   const replyFormWrapper = btn.closest(".reply-form-wrapper");
@@ -1545,9 +1522,11 @@ submitReplyBtn.forEach((btn) => {
     });
 
     editReplyBtn.addEventListener("click", () => {
+      // Hide reply dropdown content
+      replyDropdownContent.classList.add("hidden");
+      // Show edit form
       editFormWrapper.classList.remove("hidden");
       replyTxt.classList.add("hidden");
-      replyDropdownContent.classList.add("hidden");
     });
 
     deleteReplyBtn.addEventListener("click", () => {
@@ -1576,7 +1555,20 @@ submitReplyBtn.forEach((btn) => {
 
       editFormWrapper.classList.add("hidden");
       replyTxt.classList.remove("hidden");
-      replyDropdownContent.classList.remove("hidden");
+
+      // Hide reply dropdown content
+      replyDropdownContent.classList.add("hidden");
+    });
+
+    // Add click outside handler to close dropdown
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".reply-dropdown-btn")) {
+        document
+          .querySelectorAll(".reply-dropdown-content")
+          .forEach((dropdown) => {
+            dropdown.classList.add("hidden");
+          });
+      }
     });
 
     // Clear the textarea

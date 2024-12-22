@@ -1,25 +1,22 @@
 setupSliderEffect = () => {
+  const prodcontainers = [...document.querySelectorAll(".pro-container")];
+  const nextBTn = [...document.querySelectorAll("nxt-btn")];
+  const preBTn = [...document.querySelectorAll("pre-btn")];
 
+  prodcontainers.forEach((item, i) => {
+    let containerDimensions = item.getBoundingClientRect();
+    let containerWidth = containerDimensions.width;
 
-    const prodcontainers = [...document.querySelectorAll('.pro-container')];
-    const nextBTn = [...document.querySelectorAll('nxt-btn')];
-    const preBTn = [...document.querySelectorAll('pre-btn')];
+    nextBTn[i].addEventListener("click", () => {
+      item.scrollLeft += containerWidth;
+    });
 
-    prodcontainers.forEach((item, i) => {
-        let containerDimensions = item.getBoundingClientRect();
-        let containerWidth = containerDimensions.width;
-
-        nextBTn[i].addEventListener('click', () => {
-            item.scrollLeft += containerWidth;
-        })
-
-        preBTn[i].addEventListener('click', () => {
-            item.scrollLeft -= containerWidth;
-        })
-    })
-
-}
-//fetch prod cards 
+    preBTn[i].addEventListener("click", () => {
+      item.scrollLeft -= containerWidth;
+    });
+  });
+};
+//fetch prod cards
 // const getProducts = (tag) => {
 //     return fetch('/get-products', {
 //         method: "post",
@@ -34,28 +31,28 @@ setupSliderEffect = () => {
 
 // create product slider
 const createProductSlider = (data, parent, title) => {
-    let slideContainer = document.querySelector(`${parent}`);
+  let slideContainer = document.querySelector(`${parent}`);
 
-    slideContainer.innerHTML += `<section id="product1" class="section-p1">
+  slideContainer.innerHTML += `<section id="product1" class="section-p1">
       <h2>${title}</h2>
       ${createProductCards(data)}
       </section>
 
     
-    `
+    `;
 
-    setupSliderEffect();
-}
+  setupSliderEffect();
+};
 
 const createProductCards = (data, parent) => {
-    //here parent is for search product
-    let start = '<div class="pro-container" id="shop">';
-    let middle = ''; // this will contain card HTML
-    let end  = '</div>';
+  //here parent is for search product
+  let start = '<div class="pro-container" id="shop">';
+  let middle = ""; // this will contain card HTML
+  let end = "</div>";
 
-    for(let i = 0; i < data.length; i++){
-        if(data[i].id != decodeURI(location.pathname.split('/').pop())){
-            middle += ` <div class="pro product-card product-image">
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].id != decodeURI(location.pathname.split("/").pop())) {
+      middle += ` <div class="pro product-card product-image">
                     
         <img src="${data[i].images[0]}" alt="">
         <div class="des" onclick="location.href = '/product/${data[i].id}'">
@@ -74,34 +71,106 @@ const createProductCards = (data, parent) => {
         </div>
     <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
     </div>
-        `
-        }
+        `;
     }
+  }
 
-    if(parent){
-        let cardContainer = document.querySelector(parent);
-        cardContainer.innerHTML = start + middle + end;
-    }else{
-        return start + middle + end; 
-    }
-}
+  if (parent) {
+    let cardContainer = document.querySelector(parent);
+    cardContainer.innerHTML = start + middle + end;
+  } else {
+    return start + middle + end;
+  }
+};
 
 const add_product_to_cart_or_wishlist = (type, product) => {
-    let data = JSON.parse(localStorage.getItem(type));
-    if(data == null){
-        data = [];
-    }
+  let data = JSON.parse(localStorage.getItem(type));
+  if (data == null) {
+    data = [];
+  }
 
-    product = {
-        item: 1,
-        name: product.name,
-        sellPrice: product.sellPrice,
-        size: size || null,
-        shortDes: product.shortDes,
-        image: product.images[0]
-    }
+  product = {
+    item: 1,
+    name: product.name,
+    sellPrice: product.sellPrice,
+    size: size || null,
+    shortDes: product.shortDes,
+    image: product.images[0]
+  };
 
-    data.push(product);
-    localStorage.setItem(type, JSON.stringify(data));
-    return 'added';
-}
+  data.push(product);
+  localStorage.setItem(type, JSON.stringify(data));
+  return "added";
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const slides = document.querySelectorAll(".slide");
+  const prevButton = document.querySelector(".prev-arrow");
+  const nextButton = document.querySelector(".next-arrow");
+  const indicatorsContainer = document.querySelector(".slide-indicators");
+
+  let currentSlide = 0;
+  let slideInterval;
+
+  // Create indicators
+  slides.forEach((_, index) => {
+    const indicator = document.createElement("div");
+    indicator.classList.add("indicator");
+    if (index === 0) indicator.classList.add("active");
+    indicator.addEventListener("click", () => goToSlide(index));
+    indicatorsContainer.appendChild(indicator);
+  });
+
+  const indicators = document.querySelectorAll(".indicator");
+
+  function updateSlides() {
+    slides.forEach((slide) => slide.classList.remove("active"));
+    indicators.forEach((indicator) => indicator.classList.remove("active"));
+
+    slides[currentSlide].classList.add("active");
+    indicators[currentSlide].classList.add("active");
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % slides.length;
+    updateSlides();
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+    updateSlides();
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    updateSlides();
+  }
+
+  function resetInterval() {
+    clearInterval(slideInterval);
+    slideInterval = setInterval(nextSlide, 5000);
+  }
+
+  prevButton.addEventListener("click", () => {
+    prevSlide();
+    resetInterval();
+  });
+
+  nextButton.addEventListener("click", () => {
+    nextSlide();
+    resetInterval();
+  });
+
+  // Start automatic sliding
+  slideInterval = setInterval(nextSlide, 5000);
+
+  // Pause on hover
+  const slidesContainer = document.querySelector(".slider-container");
+  slidesContainer.addEventListener("mouseenter", () => {
+    clearInterval(slideInterval);
+  });
+
+  slidesContainer.addEventListener("mouseleave", () => {
+    slideInterval = setInterval(nextSlide, 5000);
+  });
+});

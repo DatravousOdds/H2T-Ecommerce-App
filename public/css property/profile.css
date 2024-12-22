@@ -1534,6 +1534,10 @@ button:disabled {
   z-index: 10;
 }
 
+.reply-dropdown-content.hidden {
+  display: none;
+}
+
 .reply-dropdown-content button {
   display: flex;
   align-items: center;
@@ -7967,6 +7971,39 @@ input:checked + .slider:before {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  /* Reply Card */
+  .reply-card .user-info .user-review-img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .reply-card {
+    margin-left: 1rem;
+    padding: 1rem !important;
+  }
+
+  .review-card {
+    padding: 1rem !important;
+  }
+
+  .reply-card .user-info .username {
+    margin-bottom: 0;
+    font-size: 12px;
+  }
+
+  .seller-badge {
+    font-size: 12px;
+  }
+
+  .reply-card .rating-timestamp {
+    font-size: 12px;
+  }
+
+  .reply-card .reply-dropdown-content {
+    right: 4rem;
+  }
+
+  /* Orders */
   .orders-container {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
