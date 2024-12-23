@@ -96,11 +96,22 @@ const newNav = () => {
       
       
       <ul class="slide-menu-list">
-        <li>
-          <a href="/profile" class="menu-item">
+      <!-- profile dropdown -->
+      <li class="menu-dropdown">
+          <button class="menu-item dropdown-trigger">
             <i class="fa-regular fa-user"></i>
             <span>Profile</span>
-          </a>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <ul class="submenu">
+            <li><a data-section="profile" href="/profile">Profile</a></li>
+            <li><a data-section="payment" href="/profile">Payment Information</a></li>
+            <li><a data-section="selling" href="/profile">Selling</a></li>
+            <li><a data-section="favorites" href="/profile">Favorites</a></li>
+            <li><a data-section="notifications" href="/profile">Notifications</a></li>
+            <li><a data-section="purchases" href="/profile">Purchases</a></li>
+            <li><a data-section="settings" href="/profile">Settings</a></li>
+          </ul>
         </li>
         <li>
           <a href="/" class="menu-item">
@@ -194,6 +205,17 @@ const newNav = () => {
       const submenu = menuItem.querySelector(".submenu");
 
       submenu.classList.toggle("active");
+    });
+  });
+
+  const submenuLinks = nav.querySelectorAll(".submenu a");
+  submenuLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const section = link.getAttribute("data-section");
+
+      // Hide all sections first
+      d;
     });
   });
 };
