@@ -335,6 +335,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   padding: 1rem;
 }
 
@@ -472,6 +473,50 @@ body {
 
 .shipping-restrictions-container p {
   margin-bottom: 0;
+}
+
+.shipping-method-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shipping-method-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--border-gray);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.shipping-method-item:hover {
+  border-color: var(--primary-blue);
+}
+
+.shipping-method-item.active {
+  border-color: var(--primary-blue);
+}
+
+.shipping-method-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shipping-method-name {
+  font-weight: 600;
+}
+
+.shipping-method-time {
+  font-size: 0.875rem;
+  color: var(--text-gray-500);
+}
+
+.shipping-method-price {
+  font-weight: 600;
+  color: var(--primary-blue);
 }
 
 .upload-requirement {
