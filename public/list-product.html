@@ -38,9 +38,8 @@
           <i class="fas fa-arrow-left"></i>
           <p>Back to Products</p>
         </button>
-        <h1>List Product</h1>
+
         <button class="draft-btn">
-          <i class="fas fa-file-alt"></i>
           <p>Save as Draft</p>
         </button>
       </div>
@@ -169,7 +168,57 @@
         <div class="product-details-section">
           <div class="form-group">
             <label for="productName">Product Name</label>
-            <input type="text" id="productName" />
+            <input
+              type="text"
+              id="productName"
+              placeholder="e.g. Nike Air Force 1"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="category">Category *</label>
+              <select name="category" id="category" required>
+                <option value="">Select Category</option>
+                <option value="men">Men</option>
+                <option value="women">Women</option>
+                <option value="kids">Kids</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="subcategory">Subcategory</label>
+              <select name="subcategory" id="subcategory" required>
+                <option value="">Select Subcategory</option>
+                <option value="men">Men</option>
+                <option value="women">Women</option>
+                <option value="kids">Kids</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Brand & Color -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="brand">Brand *</label>
+              <select name="brand" id="brand" required>
+                <option value="">Select Brand</option>
+                <option value="nike">Nike</option>
+                <option value="adidas">Adidas</option>
+                <option value="puma">Puma</option>
+                <option value="converse">Converse</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="color">Color *</label>
+              <input
+                type="text"
+                id="color"
+                required
+                placeholder="e.g. Black, White, Red, etc."
+              />
+            </div>
           </div>
         </div>
         <!-- End of Product Details Section -->
@@ -184,25 +233,39 @@
               <option value="US 9">US 9</option>
               <option value="US 10">US 10</option>
             </select>
+            <a href="#">View Size Chart</a>
           </div>
           <div class="form-group">
             <label>Condition *</label>
             <select name="condition" id="condition" required>
               <option value="">Select Condition</option>
-              <option value="new">New</option>
-              <option value="used">Used</option>
+              <option value="new">Brand New</option>
+              <option value="used">Like New</option>
+              <option value="used">Used - Excellent</option>
+              <option value="used">Used - Good</option>
+              <option value="used">Used - Fair</option>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label>Description *</label>
+          <label>Description (Optional)</label>
           <textarea
             name="description"
             id="description"
             rows="4"
-            required
+            placeholder="Describe your product in detail"
           ></textarea>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-group">
+          <label>Tags</label>
+          <input
+            type="text"
+            id="tags"
+            placeholder="e.g. Sneakers, Shoes, etc."
+          />
         </div>
 
         <div class="form-group">
@@ -210,6 +273,78 @@
           <div class="price-input">
             <span class="currency">$</span>
             <input type="number" id="price" step="0.01" required />
+          </div>
+        </div>
+
+        <!-- Shipping -->
+        <div class="shipping-section">
+          <h2 class="shipping-title">Shipping</h2>
+
+          <div class="form-group">
+            <label>Shipping Method</label>
+            <select name="shipping" id="shipping" required>
+              <option value="">Select Shipping Method</option>
+              <option value="pickup">Pickup</option>
+              <option value="delivery">Delivery</option>
+            </select>
+          </div>
+
+          <!-- Shipping From -->
+          <div class="form-group">
+            <label>Shipping From *</label>
+            <input
+              type="text"
+              id="shippingFrom"
+              required
+              placeholder="Enter Shipping From"
+            />
+            <p>This helps calculate accurate shipping costs</p>
+          </div>
+
+          <!-- Package Size -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Package Weight</label>
+              <input type="text" id="packageWeight" placeholder="e.g. 100g" />
+            </div>
+            <div class="form-group">
+              <label>Package Size</label>
+              <select name="packageSize" id="packageSize" required>
+                <option value="">Select Package Size</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Handling Time -->
+          <div class="form-group">
+            <label>Handling Time</label>
+            <select name="handlingTime" id="handlingTime" required>
+              <option value="">Select Handling Time</option>
+              <option value="1-2 days">1-2 days</option>
+              <option value="3-4 days">3-4 days</option>
+              <option value="5-6 days">5-6 days</option>
+            </select>
+            <p>This is the time it takes to prepare the product for shipping</p>
+          </div>
+
+          <!-- Shipping Restrictions -->
+          <div class="form-group">
+            <label>Shipping Restrictions</label>
+            <div class="shipping-restrictions-container">
+              <input type="checkbox" id="shippingRestrictions" />
+              <p>No International Shipping</p>
+            </div>
+            <div class="shipping-restrictions-container">
+              <input type="checkbox" id="shippingRestrictions" />
+              <p>No P.O. Box Shipping</p>
+            </div>
+            <div class="shipping-restrictions-container">
+              <input type="checkbox" id="shippingRestrictions" />
+              <p>No Signature Required</p>
+            </div>
           </div>
         </div>
 
