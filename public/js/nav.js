@@ -1,3 +1,36 @@
+// Function to handle tabs submenu navigation
+const handleTabs = () => {
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  const tabs = document.querySelectorAll(".tab");
+
+  if (tabs && tabBtns) {
+    // Initially show the first tab
+    tabs[0].classList.add("active");
+    tabBtns[0].classList.add("active");
+  }
+  // Add click event listeners to each tab button
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tab = btn.getAttribute("data-tab");
+      switchTabs(tab);
+    });
+  });
+
+  // Function to switch tabs
+  const switchTabs = (tabId) => {
+    // Remove active class from all tabs and buttons
+    tabs.forEach((t) => t.classList.remove("active"));
+    tabBtns.forEach((btn) => btn.classList.remove("active"));
+
+    // Add active class to selected tab and button
+    document.getElementById(tabId).classList.add("active");
+    document.getElementById(`.tab-btn[data-tab="${tabId}"]`);
+  };
+
+  // Return the switchTabs function so it can be used elsewhere
+  return { switchTabs };
+};
+
 const newNav = () => {
   let nav = document.querySelector("#header");
 
@@ -208,14 +241,21 @@ const newNav = () => {
     });
   });
 
+  const { switchTabs } = handleTabs();
+
   const submenuLinks = nav.querySelectorAll(".submenu a");
   submenuLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       const section = link.getAttribute("data-section");
+      console.log("section: ", section);
 
       // Hide all sections first
-      d;
+      switchTabs(section);
+
+      // Close the mobile menu if it's open
+      slideMenu.classList.remove("active");
+      slideMenuOverlay.classList.remove("active");
     });
   });
 };

@@ -294,9 +294,9 @@ body {
 
 .image-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  margin-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .image-upload-title {
@@ -448,7 +448,100 @@ body {
   transform: translateY(-50%);
 }
 
-@media (max-width: 768px) {
+.shipping-section {
+  margin-top: 2rem;
+}
+
+.shipping-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.shipping-section p {
+  font-size: 0.875rem;
+  color: var(--text-gray-500);
+  margin-bottom: 1rem;
+}
+
+.shipping-restrictions-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shipping-restrictions-container p {
+  margin-bottom: 0;
+}
+
+.upload-requirement {
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.upload-requirement p {
+  margin-bottom: 0;
+  color: var(--text-gray-500);
+}
+
+@media (max-width: 390px) and (max-width: 575.98px) {
+  .upload-requirement small {
+    font-size: 0.75rem;
+    color: var(--text-gray-500);
+  }
+
+  .form-actions button {
+    flex: 1;
+  }
+
+  .upload-requirement {
+    padding: 0px 10px;
+  }
+
+  .back-btn {
+    flex: 1;
+  }
+
+  .list-product-main {
+    padding: 0 0.5rem;
+  }
+
+  .upload-hint {
+    font-size: 0.75rem;
+  }
+
+  .list-product-header-container {
+    padding: 0 1rem;
+  }
+
+  .list-product-header-container h1 {
+    font-size: 1.25rem;
+  }
+
+  .draft-btn {
+    display: none !important;
+  }
+
+  .image-upload-section {
+    padding: 0.5rem;
+  }
+
+  .list-product-form {
+    padding: 0.5rem;
+  }
+
+  .preview-container {
+    padding: 0.5rem;
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .draft-btn {
+    display: none;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
   }
@@ -457,7 +550,23 @@ body {
     font-size: 1.25rem;
   }
 
+  .list-product-header-container {
+    padding: 0 1rem;
+  }
+
   .image-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .image-upload-section {
+    padding: 1rem;
+  }
+
+  .list-product-main {
+    padding: 0 1rem;
+  }
+
+  .list-product-form {
+    padding: 0.5rem;
   }
 }
