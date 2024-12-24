@@ -281,12 +281,59 @@
           <h2 class="shipping-title">Shipping</h2>
 
           <div class="form-group">
-            <label>Shipping Method</label>
-            <select name="shipping" id="shipping" required>
-              <option value="">Select Shipping Method</option>
-              <option value="pickup">Pickup</option>
-              <option value="delivery">Delivery</option>
-            </select>
+            <label>Shipping Method *</label>
+            <div class="shipping-method-options">
+              <!-- Standard Shipping Option -->
+              <div class="shipping-method-item">
+                <div class="shipping-method-content">
+                  <input
+                    type="radio"
+                    name="shippingMethod"
+                    id="standardShipping"
+                  />
+                  <div class="shipping-method-details">
+                    <p class="shipping-method-name">Standard Shipping</p>
+                    <p class="shipping-method-time">5-7 business days</p>
+                  </div>
+                </div>
+                <div class="shipping-method-price">
+                  <p>$10.00</p>
+                </div>
+              </div>
+
+              <!-- Express Shipping Option -->
+              <div class="shipping-method-item">
+                <div class="shipping-method-content">
+                  <input
+                    type="radio"
+                    name="shippingMethod"
+                    id="expressShipping"
+                  />
+                  <div class="shipping-method-details">
+                    <p class="shipping-method-name">Express Shipping</p>
+                    <p class="shipping-method-time">2-3 business days</p>
+                  </div>
+                </div>
+                <div class="shipping-method-price">
+                  <p>$15.00</p>
+                </div>
+              </div>
+
+              <!-- Pickup Shipping Option -->
+              <div class="shipping-method-item">
+                <div class="shipping-method-content">
+                  <input
+                    type="radio"
+                    name="shippingMethod"
+                    id="pickupShipping"
+                  />
+                  <div class="shipping-method-details">
+                    <p class="shipping-method-name">Pickup Shipping</p>
+                    <p class="shipping-method-time">Pickup at store</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Shipping From -->
