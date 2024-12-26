@@ -904,6 +904,101 @@ nav ul li a {
   transition: 0.2s ease-in-out;
 }
 
+.has-dropdown {
+  position: relative;
+}
+
+.has-dropdown > a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.services-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  z-index: 1000;
+  min-width: 600px;
+  margin-top: 1rem;
+}
+
+.has-dropdown:hover .services-dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdown-content {
+  padding: 1rem;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.service-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: background-color 0.3s ease-in-out;
+  text-decoration: none;
+  color: inherit;
+}
+
+.service-item:hover {
+  background-color: #f0f0f0;
+}
+
+.service-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f30c1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-icon i {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.service-info {
+  flex: 1;
+}
+
+.service-info h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.service-info p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.service-price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #f30c1e;
+  display: block;
+  margin-top: 0.5rem;
+}
+
 /* hero section */
 
 .main-headline {
@@ -2318,6 +2413,10 @@ footer .rights {
 
 /* Mobile (768px and below) */
 @media (max-width: 768px) {
+  .services-dropdown {
+    display: none;
+  }
+
   .hero-text {
     padding: 0 2rem;
   }
