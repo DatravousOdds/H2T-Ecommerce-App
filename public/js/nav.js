@@ -88,6 +88,51 @@ const newNav = () => {
       </button>
     
       <ul class="nav-list">
+        <li class="has-dropdown">
+          <a href="#" class="nav-link">Services
+            <i class="fa-solid fa-chevron-down"></i>
+          </a>
+          <div class="services-dropdown">
+            <div class="dropdown-content">
+              <div class="services-grid">
+                <!-- Authentication -->
+                <a href="/authentication" class="service-item">
+                  <div class="service-icon">
+                    <i class="fa-solid fa-screwdriver"></i>
+                  </div>
+                  <div class="service-info">
+                    <h4>Authentication</h4>
+                    <p>Authenticate your products with our expert team.</p>
+                    <span class="service-price">$30/item</span>
+                  </div>
+                </a>
+                <!-- Trade-in -->
+                <a href="/trade-request" class="service-item">
+                  <div class="service-icon">
+                    <i class="fa-solid fa-handshake"></i>
+                  </div>
+                  <div class="service-info">
+                    <h4>Trade-in</h4>
+                    <p>Trade in your products for a new one or store credit.</p>
+                    <span class="service-price">Best Market Prices</span>
+                  </div>
+                </a>
+                <!-- Sell to Us -->
+                <a href="/sell-to-us" class="service-item">
+                  <div class="service-icon">
+                    <i class="fa-solid fa-store"></i>
+                  </div>
+                  <div class="service-info">
+                    <h4>Sell to Us</h4>
+                    <p>Quick and easy selling process.</p>
+                    <span class="service-price">Competitive Prices</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li><a href="/releases" class="nav-link">Releases</a></li>
         <li><a href="/mens" class="nav-link">Men</a></li>
         <li><a href="/women" class="nav-link">Women</a></li>
         <li><a href="/accessories" class="nav-link">Accessories</a></li>
@@ -163,6 +208,7 @@ const newNav = () => {
             <li><a href="/mens">Men</a></li>
             <li><a href="/women">Women</a></li>
             <li><a href="/accessories">Accessories</a></li>
+            <li><a href="/releases">Releases</a></li>
           </ul>
         </li>
         <!-- Services dropdown -->

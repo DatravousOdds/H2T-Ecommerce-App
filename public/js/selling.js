@@ -57,3 +57,9 @@ const tradeRequestBtn = document.querySelector(".trade-request");
 tradeRequestBtn.addEventListener("click", () => {
   window.location.href = "/trade-request";
 });
+
+// Sell to Us
+const sellToUsBtn = document.querySelector(".sell-to-us");
+sellToUsBtn.addEventListener("click", () => {
+  window.location.href = "/sell-to-us";
+});
