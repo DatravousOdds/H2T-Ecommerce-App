@@ -219,9 +219,9 @@ const newNav = () => {
             <i class="fa-solid fa-chevron-right"></i>
           </button>
           <ul class="submenu">
-            <li><a href="/repair">Repair</a></li>
+            <li><a href="/sell-to-us">Sell to Us</a></li>
             <li><a href="/authentication">Authentication</a></li>
-            <li><a href="/trade-in">Trade-in</a></li>
+            <li><a href="/trade-request">Trade-in</a></li>
           </ul>
         </li>
         <li>
