@@ -73,6 +73,7 @@ body {
   height: 100%;
   width: 100%;
   padding: var(--spacing-md);
+  position: relative;
 }
 
 .release-header {
@@ -92,6 +93,7 @@ body {
 }
 
 .release-date {
+  width: 40%;
   background-color: var(--primary-color);
   color: var(--white);
   padding: var(--spacing-md);
@@ -101,8 +103,40 @@ body {
 }
 
 .release-date span {
-  font-size: var(--font-size-base);
+  font-size: 12px;
   font-weight: bold;
+}
+
+.wishlist-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: var(--white);
+  padding: 5px;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1;
+  box-shadow: var(--shadow-sm);
+}
+
+.wishlist-btn:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.wishlist-btn i {
+  font-size: 18px;
+  color: var(--primary-color);
+}
+
+.wishlist-btn.active i {
+  color: #ff3b30;
 }
 
 .releases-image img {
@@ -120,11 +154,6 @@ body {
 .releases-info h3 {
   font-size: var(--font-size-base);
   margin-bottom: var(--spacing-sm);
-}
-
-.releases-info p {
-  font-size: 16px;
-  color: #666;
 }
 
 /* Page Header */
@@ -203,24 +232,26 @@ body {
   transform: translateX(5px);
 }
 
-.releases-price {
+/* Releases Price */
+
+#releases .releases-price {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
-  font-size: var(--font-size-base);
+  font-size: 16px;
   font-weight: 600;
   color: var(--primary-color);
 }
 
-.releases-price span {
+#releases .releases-price span {
   color: #333;
   font-size: var(--font-size-base);
   font-weight: 500;
 }
 
-.releases-availability {
+#releases .releases-availability {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
@@ -231,33 +262,36 @@ body {
   margin-top: var(--spacing-md);
 }
 
-.notify-btn {
+#releases .notify-btn {
   display: flex;
   justify-content: center;
-  margin-top: var(--spacing-md) 0;
+  align-items: center;
+  margin-top: var(--spacing-md);
   background-color: var(--primary-color);
   color: var(--white);
-  padding: 10px var(--spacing-md);
+  padding: 16px var(--spacing-md);
   border-radius: 5px;
+  gap: var(--spacing-sm);
   position: relative;
   text-decoration: none;
   font-weight: 600;
   width: 100%;
   overflow: hidden;
-  transition: transform var(--transition-base);
+  transition: all 0.3s ease;
   cursor: pointer;
+  border: none;
 }
 
-.notify-btn:hover {
-  transform: scale(-2px);
+#releases .notify-btn:hover {
+  transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.notify-btn:active {
+#releases .notify-btn:active {
   transform: translateY(0);
 }
 
-.notify-btn::after {
+#releases .notify-btn::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -270,42 +304,72 @@ body {
   transition: width 0.3s ease, height 0.3s ease;
 }
 
-.notify-btn a {
+#releases .notify-btn:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+#releases .notify-btn.loading {
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+#releases .notify-btn.loading::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  border-top-color: transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+#releases .notify-btn a {
   color: var(--white);
   text-decoration: none;
 }
 
-.releases-availability i {
+#releases .releases-availability i {
   font-size: var(--font-size-lg);
   font-weight: 600;
 }
 
 /* Media Queries */
 @media (max-width: 768px) {
-  .releases-container {
+  #releases .releases-container {
     gap: var(--spacing-sm);
   }
 
-  .releases-item {
+  #releases .releases-item {
     padding: var(--spacing-sm);
   }
 
-  .releases-info {
+  #releases .releases-info {
     padding: var(--spacing-sm);
   }
 
-  .releases-title {
+  #releases .releases-title {
     font-size: 2rem;
   }
 }
 
 @media (max-width: 480px) {
-  .release-header {
+  #releases .release-header {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
 
-  .releases-price {
+  #releases .releases-price {
     flex-direction: column;
     align-items: flex-start;
   }
