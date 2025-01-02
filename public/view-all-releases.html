@@ -32,59 +32,209 @@
     </section>
 
     <!-- Page Header -->
-    <section id="page-header" class="releases-header">
+    <section id="page-header" class="page-header">
       <h1>Upcoming Releases</h1>
       <p>Stay ahead of the game with our comprehensive release calendar.</p>
     </section>
 
     <!-- Filter Section -->
-    <section id="filter-section" class="section-p1">
-      <div class="filter-container">
-        <!-- Filter Header -->
-        <div class="header-container">
-          <i class="bi bi-funnel"></i>
-          <h2>Filter</h2>
+    <div class="content-wrapper">
+      <!-- Filter Sidebar -->
+      <aside class="filters">
+        <div class="filter-header">
+          <h3>Filter</h3>
+          <button class="clear-filters">Clear Filters</button>
         </div>
 
-        <!-- Filter Options -->
-        <div class="filter-options">
-          <!-- Release Month -->
-          <div class="filter-option">
-            <select class="filter-select">
-              <option value="">Month</option>
-              <option value="january">January</option>
-              <option value="february">February</option>
-              <option value="march">March</option>
-            </select>
-          </div>
+        <!-- Product Type Filter -->
+        <div class="filter-section">
+          <h3>Product Type <i class="bi bi-chevron-down"></i></h3>
 
-          <!-- Release Year     -->
-          <div class="filter-option">
-            <select class="filter-select">
-              <option value="">Year</option>
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-            </select>
-          </div>
-
-          <!-- Release Brand -->
-          <div class="filter-option">
-            <label for="brand">Brand</label>
-            <input type="checkbox" id="brand" name="brand" value="nike" />
-            <label for="brand">Nike</label>
-            <input type="checkbox" id="brand" name="brand" value="jordan" />
-            <label for="brand">Jordan</label>
-            <input type="checkbox" id="brand" name="brand" value="adidas" />
-            <label for="brand">Adidas</label>
+          <div class="filter-options">
+            <div class="filter-option">
+              <input type="checkbox" id="shoes" name="shoes" value="shoes" />
+              <label for="shoes">Shoes</label>
+            </div>
+            <div class="filter-option">
+              <input
+                type="checkbox"
+                id="accessories"
+                name="accessories"
+                value="accessories"
+              />
+              <label for="accessories">Accessories</label>
+            </div>
+            <div class="filter-option">
+              <input
+                type="checkbox"
+                id="clothing"
+                name="clothing"
+                value="clothing"
+              />
+              <label for="clothing">Clothing</label>
+            </div>
           </div>
         </div>
+
+        <!-- Brand Filter -->
+        <div class="filter-section">
+          <h3>Brand <i class="bi bi-chevron-down"></i></h3>
+          <div class="filter-options">
+            <div class="filter-option">
+              <input type="checkbox" id="nike" name="nike" value="nike" />
+              <label for="nike">Nike</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="jordan" name="jordan" value="jordan" />
+              <label for="jordan">Jordan</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="adidas" name="adidas" value="adidas" />
+              <label for="adidas">Adidas</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Release Month Filter -->
+        <div class="filter-section">
+          <h3>Release Month <i class="bi bi-chevron-down"></i></h3>
+          <div class="filter-options">
+            <div class="filter-option">
+              <input
+                type="checkbox"
+                id="january"
+                name="january"
+                value="january"
+              />
+              <label for="january">January</label>
+            </div>
+            <div class="filter-option">
+              <input
+                type="checkbox"
+                id="february"
+                name="february"
+                value="february"
+              />
+              <label for="february">February</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="march" name="march" value="march" />
+              <label for="march">March</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Release Year Filter -->
+        <div class="filter-section">
+          <h3>Release Year <i class="bi bi-chevron-down"></i></h3>
+          <div class="filter-options">
+            <div class="filter-option">
+              <input type="checkbox" id="2025" name="2025" value="2025" />
+              <label for="2025">2025</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="2024" name="2024" value="2024" />
+              <label for="2024">2024</label>
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" id="2023" name="2023" value="2023" />
+              <label for="2023">2023</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Range Filter -->
+        <div class="filter-section">
+          <h3>Price Range <i class="bi bi-chevron-down"></i></h3>
+          <div class="filter-options">
+            <div class="filter-option">
+              <input type="checkbox" id="0-100" name="0-100" value="0-100" />
+              <label for="0-100">$0 - $100</label>
+            </div>
+            <div class="filter-option">
+              <input
+                type="checkbox"
+                id="100-200"
+                name="100-200"
+                value="100-200"
+              />
+              <label for="100-200">$100 - $200</label>
+            </div>
+            <div class="filter-option">
+              <input
+                type="checkbox"
+                id="200-300"
+                name="200-300"
+                value="200-300"
+              />
+              <label for="200-300">$200 - $300</label>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products -->
+      <section class="products">
+        <div class="product-header">
+          <span>50 Results</span>
+          <select class="sort-select">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="price-low-high">Price: Low to High</option>
+            <option value="price-high-low">Price: High to Low</option>
+          </select>
+        </div>
+
+        <!-- Product List -->
+        <div class="product-grid">
+          <!-- Product items will be dynamically added here -->
+          <article class="releases-item">
+            <!-- Release Date -->
+            <div class="release-date">
+              <span>12.26.2024</span>
+            </div>
+            <!-- Like button -->
+            <div class="like-btn">
+              <i class="bi bi-heart"></i>
+            </div>
+            <!-- Product Image -->
+            <div class="product-image">
+              <img
+                src="images/Jordan 3 Retro Cardinal Red (11).jpg"
+                alt="Product 1"
+              />
+            </div>
+            <!-- Product Name -->
+            <div class="product-name">
+              <h3>Jordan 3 Retro Cardinal Red</h3>
+            </div>
+            <!-- Product Price -->
+            <div class="product-price">
+              <span>$190.00</span>
+            </div>
+            <!-- Product Availability -->
+            <div class="product-availability">
+              <span>Available</span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <!-- Newsletter-->
+    <section id="newsletter" class="section-p1 section-m1">
+      <div class="newstext">
+        <!-- change later, look at planning sheet -->
+        <h4>Sign Up for Newsletter</h4>
+        <!-- change later, look at planning sheet -->
+        <p>
+          Get E-mail updates about latest shop and <span>special offers</span>
+        </p>
       </div>
-    </section>
-
-    <!-- Newsletter section is good as is -->
-    <section id="newsletter" class="section-p1">
-      <!-- Your existing newsletter content -->
+      <div class="form">
+        <input type="text" placeholder="  Your email address" />
+        <button class="normal">Sign Up</button>
+      </div>
     </section>
 
     <!-- Footer -->
