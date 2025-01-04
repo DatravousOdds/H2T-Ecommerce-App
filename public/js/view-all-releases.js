@@ -13,8 +13,20 @@ if (paginationButtons) {
 
 // Filter functionality
 const filterSections = document.querySelectorAll(".filter-section");
-console.log(filterSections);
-filterSections.forEach((filter) => {
-  const filterHeader = filter.querySelector(".filter-header");
-  console.log(filterHeader);
+const filterHeaders = document.querySelectorAll(".filter-header");
+
+filterHeaders.forEach((header) => {
+  header.addEventListener("click", () => {
+    const section = header.closest(".filter-section");
+    const sectionIcon = header.querySelector("i");
+    section.classList.toggle("expanded");
+    sectionIcon.classList.add("rotate");
+
+    // Optional: collapse other sections when one is expanded
+    filterSections.forEach((otherSection) => {
+      if (otherSection !== section) {
+        otherSection.classList.remove("expanded");
+      }
+    });
+  });
 });

@@ -304,3 +304,16 @@
 .next {
   font-weight: bold;
 }
+
+/* filter Section */
+.rotate {
+  transform: rotate(-180deg);
+}
+
+.filter-section .filter-options {
+  display: none;
+}
+
+.filter-section.expanded .filter-options {
+  display: flex;
+}
