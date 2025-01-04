@@ -48,7 +48,9 @@
 
         <!-- Product Type Filter -->
         <div class="filter-section">
-          <h3>Product Type <i class="bi bi-chevron-down"></i></h3>
+          <h3 class="filter-header">
+            Product Type <i class="bi bi-chevron-down"></i>
+          </h3>
 
           <div class="filter-options">
             <div class="filter-option">
@@ -78,7 +80,9 @@
 
         <!-- Brand Filter -->
         <div class="filter-section">
-          <h3>Brand <i class="bi bi-chevron-down"></i></h3>
+          <h3 class="filter-header">
+            Brand <i class="bi bi-chevron-down"></i>
+          </h3>
           <div class="filter-options">
             <div class="filter-option">
               <input type="checkbox" id="nike" name="nike" value="nike" />
@@ -97,7 +101,9 @@
 
         <!-- Release Month Filter -->
         <div class="filter-section">
-          <h3>Release Month <i class="bi bi-chevron-down"></i></h3>
+          <h3 class="filter-header">
+            Release Month <i class="bi bi-chevron-down"></i>
+          </h3>
           <div class="filter-options">
             <div class="filter-option">
               <input
@@ -126,7 +132,9 @@
 
         <!-- Release Year Filter -->
         <div class="filter-section">
-          <h3>Release Year <i class="bi bi-chevron-down"></i></h3>
+          <h3 class="filter-header">
+            Release Year <i class="bi bi-chevron-down"></i>
+          </h3>
           <div class="filter-options">
             <div class="filter-option">
               <input type="checkbox" id="2025" name="2025" value="2025" />
@@ -145,7 +153,9 @@
 
         <!-- Price Range Filter -->
         <div class="filter-section">
-          <h3>Price Range <i class="bi bi-chevron-down"></i></h3>
+          <h3 class="filter-header">
+            Price Range <i class="bi bi-chevron-down"></i>
+          </h3>
           <div class="filter-options">
             <div class="filter-option">
               <input type="checkbox" id="0-100" name="0-100" value="0-100" />
@@ -193,7 +203,7 @@
             <div class="releases-header">
               <!-- Availability Badge -->
               <div class="availability-badge">
-                <span>Coming Soon</span>
+                <span>12.12.24</span>
               </div>
               <!-- Wishlist Button -->
               <div class="wishlist-btn">
@@ -478,14 +488,28 @@
           </article>
         </div>
       </section>
-
-      <!-- Pagination -->
-      <div class="pagination">
-        <button class="prev-btn">Previous</button>
-
-        <button class="next-btn">Next</button>
-      </div>
     </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Pagination" class="pagination">
+      <ul class="pagination-list">
+        <li>
+          <button class="pagination-btn prev" aria-label="Previous page">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+        </li>
+        <li><button class="pagination-btn active">1</button></li>
+        <li><button class="pagination-btn">2</button></li>
+        <li><button class="pagination-btn">3</button></li>
+        <li><span class="pagination-ellipsis">...</span></li>
+        <li><button class="pagination-btn">25</button></li>
+        <li>
+          <button class="pagination-btn next" aria-label="Next page">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
 
     <!-- Newsletter-->
     <section id="newsletter" class="section-p1 section-m1">
@@ -510,6 +534,5 @@
     <script src="js/nav.js"></script>
     <script src="js/footer.js"></script>
     <script src="js/view-all-releases.js"></script>
-    <script src="js/home.js"></script>
   </body>
 </html>
