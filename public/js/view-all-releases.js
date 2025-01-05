@@ -61,3 +61,37 @@ document.querySelectorAll(".wishlist-btn").forEach((btn) => {
     icon.classList.toggle("bi-heart");
   });
 });
+
+// Notify Me functionality
+const notifiedBtn = document.querySelectorAll(".notify-btn");
+const notifiedModal = document.querySelector(".notified-availablity-wrapper");
+const notifiedCloseBtn = document.querySelector(".close-button");
+console.log(notifiedModal);
+
+notifiedBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    console.log("Notify Me button was clicked!");
+    // Display Modal
+    notifiedModal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  });
+});
+
+notifiedCloseBtn.addEventListener("click", () => {
+  notifiedModal.classList.remove("active");
+  document.body.style.overflow = "auto";
+});
+
+// Size Item Selected code
+const sizeItem = document.querySelectorAll(".size-item");
+console.log(sizeItem);
+
+sizeItem.forEach((size) => {
+  size.addEventListener("click", () => {
+    sizeItem.forEach((btn) => {
+      btn.classList.remove("selected");
+    });
+    // console.log("Size button was clicked");
+    size.classList.add("selected");
+  });
+});
