@@ -49,3 +49,15 @@ if (clearFilterBtn && inputElements.length > 0) {
     });
   });
 }
+
+// Wishlist functionality
+document.querySelectorAll(".wishlist-btn").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    btn.classList.toggle("active");
+
+    const icon = btn.querySelector("i");
+    icon.classList.toggle("bi-heart-fill");
+    icon.classList.toggle("bi-heart");
+  });
+});
