@@ -308,12 +308,20 @@
 /* filter Section */
 .rotate {
   transform: rotate(-180deg);
+  transition: transform 0.3s ease;
 }
 
 .filter-section .filter-options {
-  display: none;
+  /* display: none; */
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .filter-section.expanded .filter-options {
-  display: flex;
+  /* display: flex; */
+  max-height: 500px;
+  opacity: 1;
+  /* transition: all 0.3s; */
 }
