@@ -325,3 +325,7 @@
   opacity: 1;
   /* transition: all 0.3s; */
 }
+
+.wishlist-btn.active i {
+  color: #ff3b30;
+}
