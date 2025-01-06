@@ -39,6 +39,28 @@
 
     <!-- Filter Section -->
     <div class="content-wrapper">
+      <!-- Product Notification Toast Component -->
+      <div class="toast-component" role="alert" aria-live="polite">
+        <div class="notification-content">
+          <!-- Sucess Icon with Notification Message -->
+          <div class="notification-icon">
+            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          </div>
+          <div class="notification-text">
+            <h4>Notification Set!</h4>
+            <p>
+              We'll notify you when Jordan 3 Retro Cardinal Red in size US M 9
+              becomes available
+            </p>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <div class="notification-close-btn" aria-label="Close notification">
+          <i class="fa-solid fa-xmark"></i>
+        </div>
+      </div>
+
       <!-- Filter Sidebar -->
       <aside class="filters">
         <div class="filter-header">
@@ -205,11 +227,18 @@
 
             <!-- Product & Description -->
             <div class="product-wrapper">
-              <img
-                src="/images/Jordan 3 Retro Cardinal Red (11).jpg"
-                alt=""
-                class="product-image"
-              />
+              <div class="product-wrapper-description">
+                <img
+                  src="/images/Jordan 3 Retro Cardinal Red (11).jpg"
+                  alt=""
+                  class="product-image"
+                />
+                <div class="product-details">
+                  <p class="product-title">Jordan 3 Retro Cardinal Red</p>
+                  <p class="retail-price">$190.00</p>
+                </div>
+              </div>
+
               <p class="product-description">
                 Select your size to be notified when this item becomes available
               </p>
@@ -233,7 +262,11 @@
               <!-- Email Newsletter -->
               <div class="email-notification-container">
                 <p>Email Address</p>
-                <input type="text" class="email-notified" />
+                <input
+                  type="text"
+                  class="email-notified"
+                  placeholder="Enter your email address"
+                />
               </div>
               <!-- Notify Me button-->
               <div class="notify-me-container">
