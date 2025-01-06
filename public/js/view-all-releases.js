@@ -95,3 +95,52 @@ sizeItem.forEach((size) => {
     size.classList.add("selected");
   });
 });
+
+// Toast Component
+const notificationModal = document.querySelector(".toast-component");
+const closeButton = notificationModal.querySelector(".notification-close-btn");
+const notifyButtons = document.querySelectorAll(".notify-me");
+console.log(notifyButtons);
+
+function showNotification() {
+  // Make the notification visible
+  notificationModal.style.display = "flex";
+
+  // Automatically hide after 5 seconds
+  setTimeout(() => {
+    hideNotification();
+  }, 5000);
+}
+
+function hideNotification() {
+  notificationModal.classList.remove("show-notification");
+  // Wait for animation to finish before hiding completely
+  setTimeout(() => {
+    notificationModal.style.display = "none";
+  }, 300);
+}
+
+// Add click handlers to all Notify Me buttons
+notifyButtons.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Check if a size is selected
+    const selectedSize = document.querySelector(".size-item.selected");
+    console.log(selectedSize);
+
+    if (!selectedSize) {
+      alert("Please select a size first");
+      return;
+    }
+
+    notifiedModal.classList.remove("active");
+
+    // If we have a size, show the notification
+    showNotification();
+  });
+});
+
+if (closeButton) {
+  closeButton.addEventListener("click", hideNotification);
+}
