@@ -163,13 +163,49 @@
   align-items: center;
   background-color: #000;
   color: #fff;
+  gap: 8px;
   padding: 0.5rem 1rem;
   border-radius: 4px;
+  border: none;
   cursor: pointer;
+  width: 100%;
   font-weight: 600;
   text-align: center;
   transition: all 0.3s ease;
   text-decoration: none !important;
+}
+
+.notify-success {
+  background-color: #22c55e !important;
+}
+
+.check-icon {
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.notify-success .check-icon {
+  display: inline-block;
+  transform: scale(1);
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+.notify-success .bell-icon,
+.notify-success .notify-text {
+  display: none;
 }
 
 .releases-item .notify-btn i {

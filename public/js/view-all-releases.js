@@ -68,9 +68,12 @@ const notifiedModal = document.querySelector(".notified-availablity-wrapper");
 const notifiedCloseBtn = document.querySelector(".close-button");
 console.log(notifiedModal);
 
+let activeNotifyButton = null;
+
 notifiedBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
     console.log("Notify Me button was clicked!");
+    activeNotifyButton = btn;
     // Display Modal
     notifiedModal.classList.add("active");
     document.body.style.overflow = "hidden";
@@ -80,6 +83,7 @@ notifiedBtn.forEach((btn) => {
 notifiedCloseBtn.addEventListener("click", () => {
   notifiedModal.classList.remove("active");
   document.body.style.overflow = "auto";
+  activeNotifyButton = null; // Clear the active button
 });
 
 // Size Item Selected code
@@ -120,6 +124,21 @@ function hideNotification() {
   }, 300);
 }
 
+function handleNotifySuccess(button) {
+  if (!button) return;
+
+  // Add success class to trigger animation
+  button.classList.add("notify-success");
+  button.setAttribute("disabled", true);
+
+  // Update button text and icon
+  const checkIcon = button.querySelector(".check-icon");
+  const bellIcon = button.querySelector(".bell-icon");
+
+  if (checkIcon) checkIcon.style.display = "contents";
+  if (bellIcon) bellIcon.style.display = "none";
+}
+
 // Add click handlers to all Notify Me buttons
 notifyButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
@@ -135,9 +154,11 @@ notifyButtons.forEach((btn) => {
     }
 
     notifiedModal.classList.remove("active");
+    document.body.style.overflow = "auto";
 
     // If we have a size, show the notification
     showNotification();
+    handleNotifySuccess(activeNotifyButton);
   });
 });
 
