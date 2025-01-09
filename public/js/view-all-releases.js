@@ -66,45 +66,11 @@ document.querySelectorAll(".wishlist-btn").forEach((btn) => {
 const notifiedBtn = document.querySelectorAll(".notify-btn");
 const notifiedModal = document.querySelector(".notified-availablity-wrapper");
 const notifiedCloseBtn = document.querySelector(".close-button");
-console.log(notifiedModal);
-
-let activeNotifyButton = null;
-
-notifiedBtn.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    console.log("Notify Me button was clicked!");
-    activeNotifyButton = btn;
-    // Display Modal
-    notifiedModal.classList.add("active");
-    document.body.style.overflow = "hidden";
-  });
-});
-
-notifiedCloseBtn.addEventListener("click", () => {
-  notifiedModal.classList.remove("active");
-  document.body.style.overflow = "auto";
-  activeNotifyButton = null; // Clear the active button
-});
-
-// Size Item Selected code
-const sizeItem = document.querySelectorAll(".size-item");
-console.log(sizeItem);
-
-sizeItem.forEach((size) => {
-  size.addEventListener("click", () => {
-    sizeItem.forEach((btn) => {
-      btn.classList.remove("selected");
-    });
-    // console.log("Size button was clicked");
-    size.classList.add("selected");
-  });
-});
-
-// Toast Component
 const notificationModal = document.querySelector(".toast-component");
 const closeButton = notificationModal.querySelector(".notification-close-btn");
 const notifyButtons = document.querySelectorAll(".notify-me");
-console.log(notifyButtons);
+
+let activeNotifyButton = null;
 
 function showNotification() {
   // Make the notification visible
@@ -124,22 +90,56 @@ function hideNotification() {
   }, 300);
 }
 
-function handleNotifySuccess(button) {
+function toggleNotifyState(button) {
   if (!button) return;
 
-  // Add success class to trigger animation
-  button.classList.add("notify-success");
-  button.setAttribute("disabled", true);
-
-  // Update button text and icon
+  const isNotified = button.classList.contains("notify-success");
   const checkIcon = button.querySelector(".check-icon");
   const bellIcon = button.querySelector(".bell-icon");
 
-  if (checkIcon) checkIcon.style.display = "contents";
-  if (bellIcon) bellIcon.style.display = "none";
+  if (isNotified) {
+    button.classList.remove("notify-success");
+    button.removeAttribute("disabled");
+    checkIcon.style.display = "none";
+    bellIcon.style.display = "flex";
+    notifyText.textContent = "Notify Me";
+  } else {
+    button.classList.add("notify-success");
+    checkIcon.style.display = "contents";
+    bellIcon.style.display = "none";
+  }
 }
 
-// Add click handlers to all Notify Me buttons
+// Notify button click handlers
+notifiedBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    console.log("Notify Me button was clicked!");
+    activeNotifyButton = btn;
+
+    if (btn.classList.contains("notify-success")) {
+      toggleNotifyState(btn);
+      return;
+    }
+
+    // Display Modal
+    notifiedModal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  });
+});
+
+// Size Item Selected code
+const sizeItem = document.querySelectorAll(".size-item");
+sizeItem.forEach((size) => {
+  size.addEventListener("click", () => {
+    sizeItem.forEach((btn) => {
+      btn.classList.remove("selected");
+    });
+    // console.log("Size button was clicked");
+    size.classList.add("selected");
+  });
+});
+
+// Notify Me button handlers
 notifyButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -158,10 +158,19 @@ notifyButtons.forEach((btn) => {
 
     // If we have a size, show the notification
     showNotification();
-    handleNotifySuccess(activeNotifyButton);
+    toggleNotifyState(activeNotifyButton);
   });
 });
 
+// Close button handlers
 if (closeButton) {
   closeButton.addEventListener("click", hideNotification);
+}
+
+if (notifiedCloseBtn) {
+  notifiedCloseBtn.addEventListener("click", () => {
+    notificationModal.classList.remove("active");
+    document.body.style.overflow = "auto";
+    activeNotifyButton = null;
+  });
 }
