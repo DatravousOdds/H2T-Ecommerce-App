@@ -185,6 +185,10 @@
   transition: all 0.3s ease;
 }
 
+.check-icon .active {
+  display: contents;
+}
+
 .notify-success .check-icon {
   display: inline-block;
   transform: scale(1);
