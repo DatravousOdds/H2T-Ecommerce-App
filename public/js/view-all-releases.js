@@ -70,6 +70,8 @@ const notificationModal = document.querySelector(".toast-component");
 const closeButton = notificationModal.querySelector(".notification-close-btn");
 const notifyButtons = document.querySelectorAll(".notify-me");
 
+console.log(notifiedCloseBtn);
+
 let activeNotifyButton = null;
 
 function showNotification() {
@@ -170,6 +172,7 @@ if (closeButton) {
 if (notifiedCloseBtn) {
   notifiedCloseBtn.addEventListener("click", () => {
     notificationModal.classList.remove("active");
+    console.log("The close button was clicked!");
     document.body.style.overflow = "auto";
     activeNotifyButton = null;
   });
