@@ -146,6 +146,11 @@ app.get("/releases", (req, res) => {
   res.sendFile(path.join(staticPth, "releases.html"));
 });
 
+// authentication route
+app.get("/authenticate", (req, res) => {
+  res.sendFile(path.join(staticPth, "authenticate.html"));
+});
+
 app.post("/signup", (req, res) => {
   let { name, email, password, number, tac, notification } = req.body;
 
