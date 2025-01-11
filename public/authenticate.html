@@ -3,6 +3,7 @@
   <head>
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <link rel="stylesheet" href="css property/style2.css" />
+    <link rel="stylesheet" href="css property/authenticate.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
@@ -38,20 +39,326 @@
     <main>
       <!-- Navbar -->
       <section id="header">
-        <nav></nav>
+        <nav aria-label="Main Navigation"></nav>
       </section>
-      <!-- End of Navbar-->
+
+      <!-- Authentication Progress Indicator -->
+      <div class="progress-steps">
+        <div class="step active">
+          <span class="step-number">1</span>
+          <span class="step-text">Upload photos</span>
+        </div>
+        <div class="step">
+          <span class="step-number">2</span>
+          <span class="step-text">Product Details</span>
+        </div>
+        <div class="step">
+          <span class="step-number">3</span>
+          <span class="step-text">Review</span>
+        </div>
+      </div>
 
       <!-- Content Header-->
+      <header class="content-header">
+        <h1>Item Authentication Request</h1>
+        <p>Upload clear photos of your item for verification</p>
+      </header>
 
       <!-- Image Uploads Section -->
+      <form action="" id="authentication-form">
+        <!-- Image Uploads Section-->
+        <section id="image-upload-section">
+          <h2 id="image-upload-title" class="visually-hidden">
+            Product Images
+          </h2>
 
-      <!-- Product Search Section -->
+          <div
+            class="image-grid"
+            role="group"
+            aria-label="Product image Uploads"
+          >
+            <!-- Main Image Upload -->
+            <div class="image-item main-image">
+              <input
+                type="file"
+                id="mainImage"
+                name="mainImage"
+                accept="image/png, image/jpeg"
+                class="file-input"
+                required
+                aria-required="true"
+                aria-describedby="mainImageHelp"
+              />
+              <label for="mainImage" class="file-label">
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Upload Main Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
+              </label>
 
-      <!-- Product Details Section -->
+              <button
+                class="remove-image-btn"
+                style="display: none"
+                aria-label="Remove image"
+              >
+                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+              </button>
+            </div>
+            <!-- Image 2 -->
+            <div class="image-item" data-upload-type="back">
+              <input
+                type="file"
+                id="mainImage"
+                accept="image/*"
+                class="file-input"
+              />
+              <label for="mainImage" class="file-label">
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Main Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
+              </label>
+              <!-- Remove Image button -->
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <!-- Image 3 -->
+            <div class="image-item">
+              <input
+                type="file"
+                id="mainImage"
+                accept="image/*"
+                class="file-input"
+              />
+              <label for="mainImage" class="file-label">
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Main Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
+              </label>
+              <!-- Remove Image button -->
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <!-- Image 4 -->
+            <div class="image-item">
+              <input
+                type="file"
+                id="mainImage"
+                accept="image/*"
+                class="file-input"
+              />
+              <label for="mainImage" class="file-label">
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Main Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
+              </label>
+              <!-- Remove Image button -->
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <!-- Image 5 -->
+            <div class="image-item">
+              <input
+                type="file"
+                id="mainImage"
+                accept="image/*"
+                class="file-input"
+              />
+              <label for="mainImage" class="file-label">
+                <div class="preview-container">
+                  <i class="fas fa-plus upload-icon"></i>
+                  <span class="upload-text"> Main Image </span>
+                  <img
+                    src=""
+                    alt="Preview"
+                    class="image-preview"
+                    style="display: none"
+                  />
+                </div>
+              </label>
+              <!-- Remove Image button -->
+              <button class="remove-image-btn" style="display: none">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Message -->
+          <div class="message-wrapper" role="alert">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p class="msg-text">
+              Please upload at least 5 clear photos for authentication
+              verification. Include:
+            </p>
+            <ul>
+              <li>Front view (required)</li>
+              <li>Back view (required)</li>
+              <li>Side views</li>
+              <li>Label/tags</li>
+              <li>Special details or markings</li>
+            </ul>
+          </div>
+        </section>
 
-      <!-- Submission Button-->
+        <!-- Product Search Section -->
+        <section id="product-search-section">
+          <div class="content-wrapper">
+            <div class="form-input">
+              <label for="productSku">Product SKU</label>
+              <input type="text" placeholder="Enter product SKU" />
+            </div>
+
+            <button class="sku-search-button">Search</button>
+          </div>
+        </section>
+
+        <!-- Product Details Section -->
+        <section
+          id="product-details-section"
+          aria-labelledby="product-details-title"
+        >
+          <h2 id="product-details-title" class="visually-hidden">
+            Product Details
+          </h2>
+
+          <div class="form-input-row">
+            <div class="form-input">
+              <label for="brand">Brand</label>
+              <input
+                type="text"
+                id="brand"
+                name="brand"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-input">
+              <label for="model">Model</label>
+              <input
+                type="text"
+                id="model"
+                name="model"
+                required
+                aria-required="true"
+              />
+            </div>
+          </div>
+
+          <div class="form-input-row">
+            <div class="form-input">
+              <label for="size">Size</label>
+              <input
+                type="text"
+                id="size"
+                name="size"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="form-input">
+              <label for="condition">Condition</label>
+              <select
+                name="condition"
+                id="condition"
+                class="condition-select"
+                required
+                aria-required="true"
+              >
+                <option value="">Select condition...</option>
+                <option value="new">New</option>
+                <option value="like-new">Like New</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-input">
+            <label for="additionalDetails">Additional Details</label>
+            <textarea
+              id="additionalDetails"
+              class="additional-details"
+              name="additionalDetails"
+              placeholder="Any additional information about the item..."
+              rows="4"
+              aria-describedby="detailsHelp"
+            ></textarea>
+            <small id="detailsHelp" class="form-text"
+              >Include any relevant details about the item's condition, history,
+              or special features</small
+            >
+          </div>
+        </section>
+
+        <!-- Form Submission -->
+        <div class="form-actions">
+          <button class="submit-btn">
+            <i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i>
+            Submit for Authentication
+          </button>
+          <div
+            id="submissionStatus"
+            class="status-message"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+      </form>
+
+      <!-- Loading Overlay -->
+      <div id="loadingOverlay" class="loading-overlay" style="display: none">
+        <div class="spinner"></div>
+        <p>Processing your request...</p>
+      </div>
+
+      <!-- newsletter -->
+      <section id="newsletter" class="section-p1 section-m1">
+        <div class="newstext">
+          <!-- change later, look at planning sheet -->
+          <h4>Sign Up for Newsletter</h4>
+          <!-- change later, look at planning sheet -->
+          <p>
+            Get E-mail updates about latest shop and <span>special offers</span>
+          </p>
+        </div>
+        <div class="form">
+          <input type="text" placeholder="  Your email address" />
+          <button class="normal">Sign Up</button>
+        </div>
+      </section>
+
+      <!-- Footer Section -->
+      <footer></footer>
     </main>
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <script src="nav.js"></script>
     <script src="js/footer.js"></script>
     <script src="js/nav.js"></script>
