@@ -96,7 +96,7 @@ const newNav = () => {
             <div class="dropdown-content">
               <div class="services-grid">
                 <!-- Authentication -->
-                <a href="/authentication" class="service-item">
+                <a href="/authenticate.html" class="service-item">
                   <div class="service-icon">
                     <i class="fa-solid fa-screwdriver"></i>
                   </div>
@@ -220,7 +220,7 @@ const newNav = () => {
           </button>
           <ul class="submenu">
             <li><a href="/sell-to-us">Sell to Us</a></li>
-            <li><a href="/authentication">Authentication</a></li>
+            <li><a href="/authenticate">Authentication</a></li>
             <li><a href="/trade-request">Trade-in</a></li>
           </ul>
         </li>
