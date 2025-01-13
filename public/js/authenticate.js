@@ -58,12 +58,30 @@ imageInputs.forEach((input) => {
   });
 });
 
-// imageItems.forEach((item) => {
-//   item.addEventListener("click", () => {
-//     // Trigger the file input when clicking the image
-//     const fileInput = item.querySelector(".file-input");
-//     fileInput.click();
-//   });
-// });
-
 // Step Navigation Functionality
+function nextStep() {
+  currentStep++;
+  showStep(currentStep);
+}
+
+function showStep(stepNumber) {
+  // hide all steps
+  formSteps.forEach((step) => {
+    step.style.display = "none";
+  });
+
+  // gets the id of the of the step number and shows that step
+  document.getElementById(`"step${stepNumber}"`).style.display = "block";
+}
+// Keep track of current step
+let currentStep = 1;
+const nextBtn = document.querySelector(".next-btn");
+const backBtn = document.querySelectorAll(".back-btn");
+const formSteps = document.querySelectorAll(".form-step");
+console.log(formSteps);
+console.log(backBtn);
+console.log(nextBtn);
+
+nextBtn.addEventListener("click", () => {
+  nextStep();
+});
