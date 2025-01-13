@@ -84,6 +84,11 @@ body {
   background: var(--primary-red);
 }
 
+.step.completed .step-number {
+  background-color: #16a34a;
+  color: white;
+}
+
 /* Content Header */
 .content-header {
   text-align: center;
@@ -316,8 +321,10 @@ body {
   padding: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .form-actions .submit-btn {
@@ -327,6 +334,40 @@ body {
   background-color: var(--primary-red);
   color: white;
   padding: 9px;
+}
+
+.back-btn,
+.next-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn {
+  background-color: transparent;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.next-btn {
+  background-color: #dc2626;
+  border: none;
+  color: white;
+}
+
+.back-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.next-btn:hover {
+  background-color: #b91c1c;
+}
+
+.form-step {
+  transition: opacity 0.3s ease-in-out;
 }
 
 /* Add media queries for the image grid */
