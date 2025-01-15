@@ -191,6 +191,10 @@ const newNav = () => {
               <i class="fa-solid fa-gear"></i>
               <span>Settings</span>
             </a>
+            <a href="#" class="dropdown-item">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Log Out</span>
+            </a>
           </div>
         </li>
       </ul>
