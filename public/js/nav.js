@@ -158,6 +158,40 @@ const newNav = () => {
           <a href="/profile" class="nav-link" aria-label="User profile">
             <i class="fa-regular fa-user"></i>
           </a>
+          <!-- Hover over dropdown Menu -->
+          <div class="user-dropdown-menu">
+            <div class="dropdown-header">
+              <h3>Account</h3>
+            </div>
+            <a href="/profile" class="dropdown-item">
+              <i class="fa-regular fa-user"></i>
+              <span>Profile</span>
+            </a>
+            <a href="/payment" class="dropdown-item">
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Payment Information</span>
+            </a>
+            <a href="/selling" class="dropdown-item">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <span>Selling</span>
+            </a>
+            <a href="/favorites" class="dropdown-item">
+              <i class="fa-solid fa-heart"></i>
+              <span>Favorites</span>
+            </a>
+            <a href="/notifications" class="dropdown-item">
+              <i class="fa-solid fa-bell"></i>
+              <span>Notifications</span>
+            </a>
+            <a href="/purchases" class="dropdown-item">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span>Purchases</span>
+            </a>
+            <a href="/settings" class="dropdown-item">
+              <i class="fa-solid fa-gear"></i>
+              <span>Settings</span>
+            </a>
+          </div>
         </li>
       </ul>
     </div>

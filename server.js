@@ -1,5 +1,5 @@
 "use strict";
-
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 // importing packages
@@ -36,6 +36,7 @@ let db = admin.firestore();
 // aws config
 const aws = require("aws-sdk");
 const dotenv = require("dotenv");
+const { data } = require("jquery");
 
 dotenv.config();
 
@@ -151,7 +152,7 @@ app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticate.html"));
 });
 
-app.post("/signup", (req, res) => {
+app.post("/signup", async (req, res) => {
   let { name, email, password, number, tac, notification } = req.body;
 
   // form validations
@@ -169,32 +170,44 @@ app.post("/signup", (req, res) => {
     return res.json({ alert: "you must agree to our terms and conditions" });
   }
 
-  // store user in db
-  db.collection("users")
-    .doc(email)
-    .get()
-    .then((user) => {
-      if (user.exists) {
-        return res.json({ alert: "email already exists" });
-      } else {
-        // encrypt the password before storing it.
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(password, salt, (err, hash) => {
-            req.body.password = hash;
-            db.collection("users")
-              .doc(email)
-              .set(req.body)
-              .then((data) => {
-                res.json({
-                  name: req.body.name,
-                  email: req.body.email,
-                  seller: req.body.seller
-                });
-              });
-          });
-        });
-      }
-    });
+  // Get user from database
+  const userDoc = await db.collection("users").doc(email).get();
+  if (userDoc.exists) {
+    return res.json({ alert: "email already exists" });
+  }
+
+  // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  // Create user object
+  const userData = {
+    name,
+    email,
+    password: hashedPassword,
+    number,
+    notification: notification || false,
+    seller: false,
+    createdAt: new Date().toISOString()
+  };
+
+  // Save user to database
+  await db.collection("users").doc(email).set(userData);
+
+  // Create JWT token
+  const token = jwt.sign({ email, seller: false }, process.env.JWT_SECRET, {
+    expiresIn: "24h"
+  });
+
+  // Return success with token
+  res.status(201).json({
+    success: true,
+    data: {
+      name,
+      email,
+      token
+    }
+  });
 });
 
 // login route

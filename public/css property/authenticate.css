@@ -370,6 +370,72 @@ body {
   transition: opacity 0.3s ease-in-out;
 }
 
+select {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border-color: var(--gray-border);
+}
+
+#step3 .content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Image and Product Details Layout */
+.image-product-details-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Image Review Section */
+.review-images {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.review-image h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #111;
+}
+
+/* Image Grid */
+.review-image img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: 4px;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  background-color: #f3f4f6;
+}
+
+/* First image larger */
+.review-images img:first-child {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* Product Details Section */
+.review-details {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.review-details h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
 /* Add media queries for the image grid */
 @media (max-width: 768px) {
   .image-grid {

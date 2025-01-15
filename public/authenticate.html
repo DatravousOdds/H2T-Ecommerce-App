@@ -119,10 +119,10 @@
                   accept="image/*"
                   class="file-input"
                 />
-                <label for="mainImage" class="file-label">
+                <label for="image2" class="file-label">
                   <div class="preview-container">
                     <i class="fas fa-plus upload-icon"></i>
-                    <span class="upload-text"> Main Image </span>
+                    <span class="upload-text"> Upload Image 2 </span>
                     <img
                       src=""
                       alt="Preview"
@@ -144,7 +144,7 @@
                   accept="image/*"
                   class="file-input"
                 />
-                <label for="mainImage" class="file-label">
+                <label for="image3" class="file-label">
                   <div class="preview-container">
                     <i class="fas fa-plus upload-icon"></i>
                     <span class="upload-text"> Main Image </span>
@@ -169,7 +169,7 @@
                   accept="image/*"
                   class="file-input"
                 />
-                <label for="mainImage" class="file-label">
+                <label for="image4" class="file-label">
                   <div class="preview-container">
                     <i class="fas fa-plus upload-icon"></i>
                     <span class="upload-text"> Main Image </span>
@@ -194,7 +194,7 @@
                   accept="image/*"
                   class="file-input"
                 />
-                <label for="mainImage" class="file-label">
+                <label for="image5" class="file-label">
                   <div class="preview-container">
                     <i class="fas fa-plus upload-icon"></i>
                     <span class="upload-text"> Main Image </span>
@@ -284,13 +284,22 @@
             <div class="form-input-row">
               <div class="form-input">
                 <label for="size">Size</label>
-                <input
-                  type="text"
-                  id="size"
-                  name="size"
-                  required
-                  aria-required="true"
-                />
+                <select name="size" id="size" required aria-required="true">
+                  <option value="">Select size...</option>
+                  <option value="US M 7">US M 7</option>
+                  <option value="US M 7.5">US M 7.5</option>
+                  <option value="US M 8">US M 8</option>
+                  <option value="US M 8.5">US M 8.5</option>
+                  <option value="US M 9">US M 9</option>
+                  <option value="US M 9.5">US M 9.5</option>
+                  <option value="US M 10">US M 10</option>
+                  <option value="US M 10.5">US M 10.5</option>
+                  <option value="US M 11">US M 11</option>
+                  <option value="US M 11.5">US M 11.5</option>
+                  <option value="US M 12">US M 12</option>
+                  <option value="US M 12.5">US M 12.5</option>
+                  <option value="US M 13">US M 13</option>
+                </select>
               </div>
               <div class="form-input">
                 <label for="condition">Condition</label>
