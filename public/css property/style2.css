@@ -2130,6 +2130,71 @@ footer .rights {
   border-radius: 20px;
 }
 
+/* profile dropdown menu */
+.nav-list li {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.user-dropdown-menu {
+  display: none;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  position: absolute;
+  top: 100%;
+  right: 28px;
+  width: 200px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* margin-top: 8px; */
+  z-index: 1000;
+}
+
+.nav-list li:hover .user-dropdown-menu,
+.user-dropdown-menu:hover {
+  display: block;
+}
+
+.dropdown-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.dropdown-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.nav-list li:hover::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 20px; /* Match parent padding */
+}
+
+.dropdown-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 10px 16px !important;
+  text-decoration: none !important;
+  color: #555 !important;
+  transition: background-color 0.2s !important;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item i {
+  width: 16px;
+  color: #666;
+}
+
 /* Desktop (1537px and above) */
 @media (max-width: 1657px) {
   .input_box {
