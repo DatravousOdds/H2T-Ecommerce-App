@@ -31,6 +31,14 @@ const handleTabs = () => {
   return { switchTabs };
 };
 
+// First, add the auth check function
+const checkUserAuth = () => {
+  // getting the user data from document's localStorage
+  const userData = localStorage.getItem("user");
+  console.log(userData);
+  return userData ? JSON.parse(userData) : null;
+};
+
 const newNav = () => {
   let nav = document.querySelector("#header");
 

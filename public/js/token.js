@@ -34,7 +34,7 @@ const sendData = (path, data) => {
   fetch(path, {
     method: "POST",
     headers: new Headers({ "Content-Type": "application/json" }),
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   })
     .then((res) => res.json())
     .then((response) => {
@@ -73,7 +73,7 @@ const showAlert = (msg, type) => {
   alertMsg.innerHTML = msg;
 
   if (type === "success") {
-    alertImg.src = `images/success.png`; 
+    alertImg.src = `images/success.png`;
     alertMsg.style.color = `#0ab50a`;
   } else {
     // means it is an error
