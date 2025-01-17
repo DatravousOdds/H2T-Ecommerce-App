@@ -1,12 +1,12 @@
-// redirect to the home page if user is confirmed
-// window.onload = () => {
-//   if (sessionStorage.user) {
-//     user = JSON.parse(sessionStorage.user);
-//     if (compareToken(user.authToken, user.email)) {
-//       location.replace("/");
-//     }
-//   }
-// };
+//redirect to the home page if user is confirmed
+window.onload = () => {
+  if (sessionStorage.user) {
+    user = JSON.parse(sessionStorage.user);
+    if (compareToken(user.authToken, user.email)) {
+      location.replace("/");
+    }
+  }
+};
 
 const loader = document.querySelector(".loader");
 
@@ -22,6 +22,7 @@ const noti = document.querySelector("#notification") || null;
 // Update your sendData function to handle the response
 const submitFormData = async (path, data) => {
   try {
+    console.log("Submitting data:", data);
     const response = await fetch(path, {
       method: "POST",
       headers: {
@@ -31,19 +32,25 @@ const submitFormData = async (path, data) => {
     });
 
     const responseData = await response.json();
+    console.log("Server response:", responseData);
 
     if (responseData.alert) {
       showAlert(responseData.alert);
     } else if (responseData.success) {
+      console.log("Login successful, storing user data");
       // Store in both sessionStorage (for your existing code)
-      // and localStorage (for navigation)
-      sessionStorage.user = JSON.stringify({
+
+      const userData = {
         name: responseData.data.name,
         email: responseData.data.email,
         seller: responseData.data.seller,
         authToken: responseData.data.token
-      });
+      };
 
+      console.log("Storing user data:", userData);
+      sessionStorage.user = JSON.stringify(userData);
+
+      // and localStorage (for navigation)
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -54,9 +61,14 @@ const submitFormData = async (path, data) => {
       );
       localStorage.setItem("token", responseData.data.token);
 
+      console.log("Redirecting to home page");
       location.replace("/");
+    } else {
+      console.log("Unexpected response format:", responseData);
+      showAlert("Unexpected response from server");
     }
   } catch (error) {
+    console.error("Error during form submission:", error);
     showAlert("Something went wrong. Please try again.");
   } finally {
     loader.style.display = "none";
@@ -101,6 +113,7 @@ subBtn.addEventListener("click", () => {
         email: email.value,
         password: password.value
       });
+      console.log("Email:", email.value, "Password:", password.value);
     }
   }
 });

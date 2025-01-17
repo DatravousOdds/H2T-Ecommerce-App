@@ -2,6 +2,8 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+const { generateToken, compareToken } = require("./tokenUtils");
+
 // importing packages
 const express = require("express");
 const admin = require("firebase-admin");
@@ -233,16 +235,26 @@ app.post("/login", (req, res) => {
         bcrypt.compare(password, user.data().password, (err, result) => {
           if (result) {
             let data = user.data();
+            // generate auth token
+            const token = generateToken(email);
             return res.json({
-              name: data.name,
-              email: data.email,
-              seller: data.seller
+              success: true,
+              data: {
+                name: data.name,
+                email: data.email,
+                seller: data.seller,
+                token: token
+              }
             });
           } else {
             return res.json({ alert: "password in incorrect" });
           }
         });
       }
+    })
+    .catch((err) => {
+      console.error("Login error:", err);
+      return res.json({ alert: "An error occured during login" });
     });
 });
 
