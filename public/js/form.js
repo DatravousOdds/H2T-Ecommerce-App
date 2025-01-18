@@ -1,12 +1,12 @@
 //redirect to the home page if user is confirmed
-window.onload = () => {
-  if (sessionStorage.user) {
-    user = JSON.parse(sessionStorage.user);
-    if (compareToken(user.authToken, user.email)) {
-      location.replace("/");
-    }
-  }
-};
+// window.onload = () => {
+//   if (sessionStorage.user) {
+//     user = JSON.parse(sessionStorage.user);
+//     if (compareToken(user.authToken, user.email)) {
+//       location.replace("/");
+//     }
+//   }
+// };
 
 const loader = document.querySelector(".loader");
 

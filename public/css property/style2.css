@@ -249,7 +249,7 @@ button.white {
 
 .nav-list {
   display: flex;
-  align-items: center;
+  align-items: end;
   gap: 2rem;
   list-style: none;
   margin: 0;
@@ -2130,10 +2130,22 @@ footer .rights {
   border-radius: 20px;
 }
 
+/* Profile Picture Styles */
+.profile-picture {
+  width: 35px;
+  height: 35px;
+  border-radius: 28px;
+  border: 2px solid #fff;
+  object-fit: cover;
+  background: #f0f0f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* profile dropdown menu */
 .nav-list li {
   position: relative;
   padding-bottom: 20px;
+  font-size: 1.125rem;
 }
 
 .user-dropdown-menu {
@@ -2495,6 +2507,13 @@ footer .rights {
 
 /* Mobile (768px and below) */
 @media (max-width: 768px) {
+  /* Profile Picture */
+  .profile-picture {
+    width: 35px;
+    height: 35px;
+    border-radius: 20px;
+  }
+
   .services-dropdown {
     display: none;
   }
