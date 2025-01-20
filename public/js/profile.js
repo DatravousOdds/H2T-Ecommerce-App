@@ -3,6 +3,135 @@
 import { generateCountries, validateForm } from "./global.js";
 import { closeDropdown } from "./global.js";
 
+// Fetch user profile
+const fetchUserProfile = async (email) => {
+  try {
+    const userProfile = await DataBrew.collection("userProfiles")
+      .doc(email)
+      .get();
+
+    if (userProfile.exists) {
+      return userProfile.data();
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    showAlert("Error loading profile");
+  }
+};
+
+// Update profile information
+const updateProfile = async (email, updateData) => {
+  try {
+    await db
+      .collection("userProfiles")
+      .doc(email)
+      .update({
+        ...updateData,
+        lastUpdated: new Date()
+      });
+    showAlert("Profile updated successfully", "success");
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    showAlert("Error updating profile");
+  }
+};
+
+// Update shipping information
+const updateShippingInfo = async (email, shippingData) => {
+  try {
+    await db.collection("userProfiles").doc(email).update({
+      address1: shippingData.address1,
+      address2: shippingData.address2,
+      city: shippingData.city,
+      state: shippingData.state,
+      postalCode: shippingData.postalCode,
+      lastUpdated: new Date()
+    });
+    showAlert("Shupping information updated", "success");
+  } catch (error) {
+    console.error("Error updating shipping:", error);
+    showAlert("Error updating shipping information");
+  }
+};
+
+// Update profile picture
+const updateProfilePicture = async (email, imageFile) => {
+  try {
+    // First upload to S3 (will implement this later)
+
+    // Then update profile
+    await db.collection.doc("userProfiles").doc(email).update({
+      profileImage: imageFile,
+      lastUpdated: new Date()
+    });
+
+    showAlert("Profile picture updated", "success");
+  } catch (error) {
+    console.error("Error updating profile picture:", error);
+    showAlert("Error updating profile picture");
+  }
+};
+
+const handleShippingSubmit = async (e) => {
+  e.preventDefault();
+
+  const user = JSON.parse(sessionStorage.user);
+  const shippingData = {
+    address1: document.querySelector("#address1").value,
+    address2: document.querySelector("#address2").value,
+    city: document.querySelector("#city").value,
+    state: document.querySelector("#state").value,
+    postalCode: document.querySelector("#postalCode").value
+  };
+
+  await updateShippingInfo(user.email, shippingData);
+};
+
+const handleProfileUpload = async (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const user = JSON.parse(sessionStorage.user);
+    await updateProfilePicture(user.email, file);
+  }
+};
+
+const loadProfileData = async (user) => {
+  const profile = await fetchUserProfile(user.email);
+
+  if (profile) {
+    // Shipping Information
+    document.querySelector("#shippingInformation #fname").value =
+      profile.firstName || "";
+    document.querySelector("#shippingInformation #lname").value =
+      profile.lastName || "";
+    document.querySelector("#shippingInformation #country").value =
+      profile.country || "";
+    document.querySelector("#shippingInformation #address").value =
+      profile.address1 || "";
+    document.querySelector("#shippingInformation #address-two").value =
+      profile.address2;
+    document.querySelector("#shippingInformation #city").value = profile.city;
+    document.querySelector("#shippingInformation #state-select").value =
+      profile.state;
+    document.querySelector("#shippingInformation #postal").value =
+      profile.postalCode;
+    document.querySelector("#shippingInformation #phoneNumber").value =
+      profile.phoneNumber;
+    // Personal Information
+    document.querySelector("#personalInformation #fname").value =
+      profile.firstName;
+    document.querySelector("#personalInformation #lname").value =
+      profile.firstName;
+    document.querySelector("#personalInformation #email").value = profile.email;
+    document.querySelector("#personalInformation #phoneNumber").value =
+      profile.phoneNumber;
+    document.querySelector("#personalInformation #username").value =
+      profile.username;
+  }
+};
+
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
@@ -51,12 +180,16 @@ const closePopup = document.getElementById("closePopup");
 // Form submission
 personalInformationForm.addEventListener("submit", (e) => {
   e.preventDefault(); // prevents form submission for validation checks
-  console.log(validateForm(personalInformationForm));
+  if (validateForm(personalInformationForm)) {
+    updateProfile(e);
+  }
 });
 
 shippingInformationForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  console.log(validateForm(shippingInformationForm));
+  if (validateForm(shippingInformationForm)) {
+    handleShippingSubmit(e);
+  }
 });
 
 const cardWrappers = document.querySelectorAll(".payment-card");
@@ -1863,11 +1996,6 @@ saveBioBtn.addEventListener("click", () => {
     websiteLinks.style.display = "none";
   }
 
-  // Logging for testing
-  console.log("The url is:", currentUrl);
-  console.log("The current bio is:", currentBio);
-  console.log("The url title is:", currentUrlTitle);
-
   // Reset the url & title for next input
   url.value = "";
   title.value = "";
@@ -1931,8 +2059,6 @@ smallDropdownSection.forEach((smallMenu) => {
   const options = smallMenu.querySelectorAll("#list .options");
   const selectedYear = smallMenu.querySelector(".selected-year");
 
-  console.log(yearHeader);
-
   options.forEach((opt) => {
     opt.addEventListener("click", () => {
       const selectValue = opt.textContent;
@@ -1965,7 +2091,6 @@ profileSection.forEach((section) => {
   const select = section.querySelectorAll("select");
 
   select.forEach((ele) => {
-    // console.log(ele);
     ele.disabled = true;
   });
 
@@ -2381,9 +2506,6 @@ const viewAllActivityOverlay = document.querySelector(
 const closeViewAllActivityBtn = document.querySelector(
   ".close-view-all-activity"
 );
-
-console.log("viewAllActivityBtn", viewAllActivityBtn);
-console.log("viewAllActivityOverlay", viewAllActivityOverlay);
 
 viewAllActivityBtn.addEventListener("click", () => {
   viewAllActivityOverlay.classList.add("active");
