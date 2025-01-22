@@ -1,5 +1,5 @@
 // function to generate countries
-export const generateCountries = (apiUrl, selectId) => {
+const generateCountries = (apiUrl, selectId) => {
   fetch(apiUrl)
     .then((res) => res.json())
     .then((data) => {
@@ -30,7 +30,7 @@ export const generateCountries = (apiUrl, selectId) => {
     .catch((err) => console.log(err("Error Message:", err)));
 };
 
-export const generateRegions = (countriesData) => {
+const generateRegions = (countriesData) => {
   const selectSelect = document.getElementById("state-select");
 
   countriesData.forEach((country) => {
@@ -45,38 +45,38 @@ export const generateRegions = (countriesData) => {
   }
 };
 
-export function setError(inputElement, errorElement, message) {
+function setError(inputElement, errorElement, message) {
   errorElement.textContent = message;
   inputElement.classList.add("input-error");
   errorElement.classList.add("error-msg");
 }
 
-export function clearError(inputElement, errorElement) {
+function clearError(inputElement, errorElement) {
   errorElement.textContent = "";
   inputElement.classList.remove("input-error");
   errorElement.classList.remove("error-msg");
 }
 
-export function validateEmail(email) {
+function validateEmail(email) {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailPattern.test(email);
 }
 
-export function validatePhone(phoneNumber) {
+function validatePhone(phoneNumber) {
   const phonePattern = /^\d{3}-\d{3}-\d{4}$/;
   return phonePattern.test(phoneNumber);
 }
 
-export function validateAddress(address) {
+function validateAddress(address) {
   return address.length > 5;
 }
 
-export function validatePostalCode(postalCode) {
+function validatePostalCode(postalCode) {
   const postalRegex = /^\d{5}(-\d{4})?$/; // Validates 12345 or 12345-6789
   return postalRegex.test(postalCode);
 }
 
-export function validateForm(formElement) {
+function validateForm(formElement) {
   let isValid = true; // Assume the form is valid initially
 
   // Get form fields
@@ -266,12 +266,7 @@ export function validateForm(formElement) {
   return isValid; // Return true if valid, false if there are errors
 }
 
-export function closeDropdown(
-  event,
-  dropdownId,
-  headerId = null,
-  iconId = null
-) {
+function closeDropdown(event, dropdownId, headerId = null, iconId = null) {
   const dropdownContent = document.getElementById(dropdownId);
   const header = document.getElementById(headerId);
   const icon = iconId ? document.getElementById(iconId) : null; // check if an idea has been provided
@@ -617,3 +612,16 @@ const validator = new PaymentValidation();
 const security = new PaymentSecurity();
 
 export { PaymentValidation, PaymentSecurity };
+
+module.exports = {
+  generateCountries,
+  validateForm,
+  closeDropdown,
+  validatePhone,
+  validateEmail,
+  validatePostalCode,
+  validateAddress,
+  generateRegions,
+  setError,
+  clearError
+};

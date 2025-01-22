@@ -2,38 +2,42 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const { generateToken, compareToken } = require("./tokenUtils");
+const { generateToken } = require("./tokenUtils");
 
 // importing packages
 const express = require("express");
-const admin = require("firebase-admin");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const nodemailer = require("nodemailer");
 
+// Import Firebase configuration
+const { initializeFirebase, getDb, getAdmin } = require("./firebase");
+
+// Initialize Firebase
+const { admin, db } = initializeFirebase();
 // firebase admin setup
-try {
-  if (!process.env.FIREBASE_CONFIG) {
-    console.error("❌ Missing FIREBASE_CONFIG environment variable");
-    process.exit(1);
-  }
+// try {
+//   if (!process.env.FIREBASE_CONFIG) {
+//     console.error("❌ Missing FIREBASE_CONFIG environment variable");
+//     process.exit(1);
+//   }
 
-  console.log("Using environment variable configuration...");
-  const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+//   console.log("Using environment variable configuration...");
+//   const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
-  // Test Firebase connection
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+//   // Test Firebase connection
+//   admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount)
+//   });
 
-  console.log("✅ Firebase connection successful!");
-} catch (error) {
-  console.error("❌ Error with Firebase configuration:", error);
-  console.error("Error details:", error.message);
-  process.exit(1);
-}
+//   console.log("✅ Firebase connection successful!");
+// } catch (error) {
+//   console.error("❌ Error with Firebase configuration:", error);
+//   console.error("Error details:", error.message);
+//   process.exit(1);
+// }
 
-let db = admin.firestore();
+// let db = admin.firestore();
 
 // aws config
 const aws = require("aws-sdk");
@@ -82,7 +86,16 @@ console.log(staticPth);
 const app = express();
 
 // middlewares
-app.use(express.static(staticPth));
+app.use(
+  express.static(staticPth, {
+    setHeaders: (res, path) => {
+      if (path.endsWith(".js")) {
+        res.setHeader("Content-Type", "application/javascript");
+      }
+    }
+  })
+);
+
 app.use(express.json());
 
 // route
@@ -536,10 +549,15 @@ app.get("/404", (req, res) => {
 });
 
 app.use((req, res) => {
-  res.redirect("/404");
+  if (req.path.endsWith(".js")) {
+    res.type("application/javascript");
+    res.status(404).send("// Module not found");
+  } else {
+    res.redirect("/404");
+  }
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
   console.log(`listening on port ${port}.......`);

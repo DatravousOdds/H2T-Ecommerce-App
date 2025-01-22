@@ -23,5 +23,8 @@
     "nodemailer": "^6.7.8",
     "nodemon": "^2.0.19",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.1"
   }
 }
