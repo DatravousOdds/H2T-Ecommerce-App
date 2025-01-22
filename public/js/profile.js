@@ -1,14 +1,16 @@
 "use strict";
 
-import { generateCountries, validateForm } from "./global.js";
-import { closeDropdown } from "./global.js";
+const {
+  generateCountries,
+  validateForm,
+  closeDropdown
+} = require("./global.js");
+const { db } = require("./firebase.js");
 
 // Fetch user profile
 const fetchUserProfile = async (email) => {
   try {
-    const userProfile = await DataBrew.collection("userProfiles")
-      .doc(email)
-      .get();
+    const userProfile = await db.collection("userProfiles").doc(email).get();
 
     if (userProfile.exists) {
       return userProfile.data();
@@ -44,7 +46,6 @@ const updateShippingInfo = async (email, shippingData) => {
     await db.collection("userProfiles").doc(email).update({
       address1: shippingData.address1,
       address2: shippingData.address2,
-      city: shippingData.city,
       state: shippingData.state,
       postalCode: shippingData.postalCode,
       lastUpdated: new Date()
@@ -57,13 +58,13 @@ const updateShippingInfo = async (email, shippingData) => {
 };
 
 // Update profile picture
-const updateProfilePicture = async (email, imageFile) => {
+const updateProfilePicture = async (email, imageUrl) => {
   try {
     // First upload to S3 (will implement this later)
 
     // Then update profile
     await db.collection.doc("userProfiles").doc(email).update({
-      profileImage: imageFile,
+      profileImage: imageUrl,
       lastUpdated: new Date()
     });
 
@@ -71,29 +72,6 @@ const updateProfilePicture = async (email, imageFile) => {
   } catch (error) {
     console.error("Error updating profile picture:", error);
     showAlert("Error updating profile picture");
-  }
-};
-
-const handleShippingSubmit = async (e) => {
-  e.preventDefault();
-
-  const user = JSON.parse(sessionStorage.user);
-  const shippingData = {
-    address1: document.querySelector("#address1").value,
-    address2: document.querySelector("#address2").value,
-    city: document.querySelector("#city").value,
-    state: document.querySelector("#state").value,
-    postalCode: document.querySelector("#postalCode").value
-  };
-
-  await updateShippingInfo(user.email, shippingData);
-};
-
-const handleProfileUpload = async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const user = JSON.parse(sessionStorage.user);
-    await updateProfilePicture(user.email, file);
   }
 };
 
@@ -158,37 +136,57 @@ const uploadBtn = document.getElementById("upload-btn");
 const profilePicture = document.getElementById("profile-picture");
 const removeBtn = document.getElementById("remove-btn");
 const websiteLinks = document.getElementById("website-link-box");
-
 // Image upload validation and preview
 const maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
 const feedback = document.getElementById("feedback");
-
 // Website Links
 const url = document.getElementById("website");
 const title = document.getElementById("title");
 const websiteFeedback = document.getElementById("website-feedback");
 const titleFeedback = document.getElementById("title-feedback");
 const websiteUrlDisplay = document.getElementById("website-link-display");
-
 // Forms
 const personalInformationForm = document.getElementById("personalInformation");
 const shippingInformationForm = document.getElementById("shippingInformation");
-
 // close add card popup
 const closePopup = document.getElementById("closePopup");
 
 // Form submission
-personalInformationForm.addEventListener("submit", (e) => {
+personalInformationForm.addEventListener("submit", async (e) => {
   e.preventDefault(); // prevents form submission for validation checks
   if (validateForm(personalInformationForm)) {
-    updateProfile(e);
+    const user = JSON.parse(sessionStorage.user);
+    const updateData = {
+      firstName: document.querySelector("#fname").value,
+      lastName: document.querySelector("#lname").value,
+      phoneNumber: document.querySelector("#phoneNumber").value,
+      username: document.querySelector("#username").value,
+      lastUpdated: new Date()
+    };
+    await updateProfile(user.email, updateData);
   }
 });
 
-shippingInformationForm.addEventListener("submit", (e) => {
+shippingInformationForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (validateForm(shippingInformationForm)) {
-    handleShippingSubmit(e);
+    const user = JSON.parse(sessionStorage.user);
+    const shippingData = {
+      firstName: document.querySelector("#shippingInformation #fname").value,
+      lastName: document.querySelector("#shippingInformation #lname").value,
+      address1: document.querySelector("#shippingInformation #address").value,
+      address2: document.querySelector("#shippingInformation #address-two")
+        .value,
+      city: document.querySelector("#shippingInformation #city").value,
+      state: document.querySelector("#shippingInformation #state-select").value,
+      postalCode: document.querySelector("#shippingInformation #postal").value,
+      country: document.querySelector("#shippingInformation #country").value,
+      phoneNumber: document.querySelector("#shippingInformation #phoneNumber")
+        .value,
+      lastUpdated: new Date()
+    };
+
+    await updateShippingInfo(user.email, shippingData);
   }
 });
 
