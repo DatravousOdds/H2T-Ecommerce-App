@@ -613,7 +613,7 @@ const security = new PaymentSecurity();
 
 export { PaymentValidation, PaymentSecurity };
 
-module.exports = {
+export {
   generateCountries,
   validateForm,
   closeDropdown,

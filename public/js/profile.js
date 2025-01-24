@@ -1,11 +1,7 @@
 "use strict";
 
-const {
-  generateCountries,
-  validateForm,
-  closeDropdown
-} = require("./global.js");
-const { db } = require("./firebase.js");
+import { generateCountries, validateForm, closeDropdown } from "./global.js";
+import { db } from "./firebase-client.js";
 
 // Fetch user profile
 const fetchUserProfile = async (email) => {
@@ -416,6 +412,7 @@ const successCard = document.querySelector("#successCard");
 const cardNumber = document.querySelector("#cardForm #cardNumber");
 const expiry = document.querySelector("#cardForm #expiry");
 const cvv = document.querySelector("#cardForm #cvv");
+
 if (cardNumber) {
   cardNumber.addEventListener("input", (e) => {
     // Remove all non-digit characters
