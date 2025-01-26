@@ -1,18 +1,22 @@
 "use strict";
 
 import { generateCountries, validateForm, closeDropdown } from "./global.js";
-import { db } from "./firebase-client.js";
+import {
+  db,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc
+} from "./firebase-client.js";
+
+const userProfilesRef = collection(db, "userProfiles");
 
 // Fetch user profile
 const fetchUserProfile = async (email) => {
   try {
-    const userProfile = await db.collection("userProfiles").doc(email).get();
-
-    if (userProfile.exists) {
-      return userProfile.data();
-    } else {
-      return null;
-    }
+    const userProfileDoc = await getDoc(doc(userProfilesRef, email));
+    return userProfileDoc.exists() ? userProfileDoc.data() : null;
   } catch (error) {
     console.error("Error fetching profile:", error);
     showAlert("Error loading profile");
@@ -22,13 +26,11 @@ const fetchUserProfile = async (email) => {
 // Update profile information
 const updateProfile = async (email, updateData) => {
   try {
-    await db
-      .collection("userProfiles")
-      .doc(email)
-      .update({
-        ...updateData,
-        lastUpdated: new Date()
-      });
+    const userDocRef = doc(db, "userProfiles", email);
+    await updateDoc(userDocRef, {
+      ...updateData,
+      lastUpdated: new Date()
+    });
     showAlert("Profile updated successfully", "success");
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -59,7 +61,7 @@ const updateProfilePicture = async (email, imageUrl) => {
     // First upload to S3 (will implement this later)
 
     // Then update profile
-    await db.collection.doc("userProfiles").doc(email).update({
+    await db.collection("userProfiles").doc(email).update({
       profileImage: imageUrl,
       lastUpdated: new Date()
     });
@@ -97,7 +99,7 @@ const loadProfileData = async (user) => {
     document.querySelector("#personalInformation #fname").value =
       profile.firstName;
     document.querySelector("#personalInformation #lname").value =
-      profile.firstName;
+      profile.lastName;
     document.querySelector("#personalInformation #email").value = profile.email;
     document.querySelector("#personalInformation #phoneNumber").value =
       profile.phoneNumber;
@@ -151,14 +153,16 @@ const closePopup = document.getElementById("closePopup");
 personalInformationForm.addEventListener("submit", async (e) => {
   e.preventDefault(); // prevents form submission for validation checks
   if (validateForm(personalInformationForm)) {
-    const user = JSON.parse(sessionStorage.user);
+    console.log("session", localStorage.user);
+    const user = JSON.parse(localStorage.user);
     const updateData = {
       firstName: document.querySelector("#fname").value,
       lastName: document.querySelector("#lname").value,
       phoneNumber: document.querySelector("#phoneNumber").value,
-      username: document.querySelector("#username").value,
+      username: document.querySelector("#profile-username").value,
       lastUpdated: new Date()
     };
+    console.log("Updated Data: ", updateData);
     await updateProfile(user.email, updateData);
   }
 });
