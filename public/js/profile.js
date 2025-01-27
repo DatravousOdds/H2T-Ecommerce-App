@@ -9,14 +9,28 @@ import {
   setDoc,
   updateDoc
 } from "./firebase-client.js";
+import { checkUserAuth } from "./nav.js";
+
+checkUserAuth()
+  .then((user) => {
+    if (user) {
+      loadProfileData(user);
+    } else {
+      console.log("No user was found");
+    }
+  })
+  .catch((error) => console.error("Auth error:", error));
 
 const userProfilesRef = collection(db, "userProfiles");
+console.log(userProfilesRef);
 
 // Fetch user profile
 const fetchUserProfile = async (email) => {
   try {
     const userProfileDoc = await getDoc(doc(userProfilesRef, email));
-    return userProfileDoc.exists() ? userProfileDoc.data() : null;
+    return userProfileDoc.exists()
+      ? userProfileDoc.data()
+      : console.log("no data found for user");
   } catch (error) {
     console.error("Error fetching profile:", error);
     showAlert("Error loading profile");

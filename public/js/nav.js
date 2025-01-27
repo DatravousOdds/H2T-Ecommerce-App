@@ -1,3 +1,11 @@
+import {
+  getAuth,
+  onAuthStateChanged,
+  doc,
+  getDoc,
+  db
+} from "./firebase-client.js";
+
 // Function to handle tabs submenu navigation
 const handleTabs = () => {
   const tabBtns = document.querySelectorAll(".tab-btn");
@@ -32,29 +40,54 @@ const handleTabs = () => {
 };
 
 // First, add the auth check function
-const checkUserAuth = () => {
-  try {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
-      console.log("No user data found");
-      return null;
-    }
-    console.log("User data found", userData);
-    return JSON.parse(userData);
-  } catch (error) {
-    console.error("Error parsing user data:", error);
-    return null;
-  }
+export const checkUserAuth = () => {
+  return new Promise((resolve, reject) => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (user) => {
+        unsubscribe();
+        if (user) {
+          try {
+            // Fetch user data from firestore
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+              const userData = {
+                uid: user.uid,
+                ...userDocSnap.data()
+              };
+              console.log("User data fetched:", userData);
+              resolve(userData);
+            } else {
+              console.log("No user document found");
+              resolve(null);
+            }
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            reject(error);
+          }
+        } else {
+          console.log("No user is authenticated");
+          resolve(null);
+        }
+      },
+      (error) => {
+        console.log("Error in onAuthStateChanged:");
+        reject(error);
+      }
+    );
+  });
 };
 
-const newNav = () => {
+const newNav = async () => {
   let nav = document.querySelector("#header");
-  const userData = checkUserAuth();
-
-  console.log("Current user data:", userData);
-
-  if (userData !== null) {
-    nav.innerHTML = `<nav class="navbar" aria-label="main navigation">
+  try {
+    const user = await checkUserAuth();
+    console.log("User object:", user);
+    if (user) {
+      nav.innerHTML = `<nav class="navbar" aria-label="main navigation">
     <!-- Left section with search and logo -->
     <div class="search-section">
       <form class="search-form" role="search">
@@ -77,10 +110,9 @@ const newNav = () => {
         </li>
       <li>
           <a href="/profile" class="nav-link" aria-label="User profile">
-           <img src="${userData.profilePicture}" 
+           <img src="${user.profilePicture || "../images/default-avatar.svg"}" 
          alt="user profile picture" 
-         class="profile-picture" 
-         onerror="this.src='../images/default-avatar.svg'" />
+         class="profile-picture" />
           </a>
         </li>
         <li>
@@ -174,7 +206,7 @@ const newNav = () => {
         <li>
           <a href="/profile" class="nav-link" aria-label="User profile">
             
-            <img src="${userData.profilePicture}" 
+            <img src="${user.profilePicture}" 
          alt="user profile picture" 
          class="profile-picture" 
          onerror="this.src='../images/default-avatar.svg'" />
@@ -314,21 +346,24 @@ const newNav = () => {
     </div>
   </nav>
   `;
-    // Add event listeners after the HTML is injected
-    const logoutBtn = nav.querySelector("#logoutBtn");
-    const mobileLogoutLink = nav.querySelector("#mobileLogoutLink");
+      // Add event listeners after the HTML is injected
+      const logoutBtn = nav.querySelector("#logoutBtn");
+      const mobileLogoutLink = nav.querySelector("#mobileLogoutLink");
 
-    const handleLogout = (e) => {
-      e.preventDefault();
-      localStorage.removeItem("user");
-      window.location.href = "/";
-    };
+      const handleLogout = (e) => {
+        e.preventDefault();
+        localStorage.removeItem("user");
+        // signout out user
 
-    if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
-    if (mobileLogoutLink)
-      mobileLogoutLink.addEventListener("click", handleLogout);
-  } else {
-    nav.innerHTML = `
+        window.location.href = "/";
+      };
+
+      if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
+      if (mobileLogoutLink)
+        mobileLogoutLink.addEventListener("click", handleLogout);
+    } else {
+      console.log("No user is signed in");
+      nav.innerHTML = `
     <nav class="navbar" aria-label="main navigation">
       <!-- Left section with search and logo -->
       <div class="search-section">
@@ -544,6 +579,9 @@ const newNav = () => {
       </div>
     </nav>
     `;
+    }
+  } catch (error) {
+    console.error("Error checking user auth:", error);
   }
 
   // And update your JavaScript event listeners

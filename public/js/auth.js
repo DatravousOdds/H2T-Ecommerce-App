@@ -1,15 +1,12 @@
-//redirect to the home page if user is confirmed
-// window.onload = () => {
-//   if (sessionStorage.user) {
-//     user = JSON.parse(sessionStorage.user);
-//     if (compareToken(user.authToken, user.email)) {
-//       location.replace("/");
-//     }
-//   }
-// };
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "./firebase-client.js";
+
+const auth = getAuth();
 
 const loader = document.querySelector(".loader");
-
 // select inputs
 const subBtn = document.querySelector(".submit-btn");
 const name = document.querySelector("#name") || null;
@@ -62,7 +59,7 @@ const submitFormData = async (path, data) => {
       localStorage.setItem("token", responseData.data.token);
 
       console.log("Redirecting to home page");
-      location.replace("/");
+      // location.replace("/");
     } else {
       console.log("Unexpected response format:", responseData);
       showAlert("Unexpected response from server");
@@ -91,17 +88,25 @@ subBtn.addEventListener("click", () => {
     } else if (!tac.checked) {
       showAlert("you must agree to our terms and conditions");
     } else {
-      //submit
-      loader.style.display = "block";
-      submitFormData("/signup", {
-        name: name.value,
-        email: email.value,
-        password: password.value,
-        number: number.value,
-        tac: tac.checked,
-        notification: notification.checked,
-        seller: false
-      });
+      // Signed up
+      createUserWithEmailAndPassword(auth, email.value, password.value)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user);
+          loader.style.display = "block";
+          return submitFormData("/signup", {
+            name: name.value,
+            email: email.value,
+            password: password.value,
+            number: number.value,
+            tac: tac.checked,
+            notification: notification.checked,
+            seller: false
+          });
+        })
+        .catch((error) => {
+          showAlert(error.message);
+        });
     }
   } else {
     // login page validation
@@ -109,11 +114,22 @@ subBtn.addEventListener("click", () => {
       showAlert("fill all the inputs");
     } else {
       loader.style.display = "block";
-      submitFormData("/login", {
-        email: email.value,
-        password: password.value
-      });
-      console.log("Email:", email.value, "Password:", password.value);
+      // For login
+      const auth = getAuth();
+      signInWithEmailAndPassword(auth, email.value, password.value)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          loader.style.display = "block";
+          return submitFormData("/login", {
+            email: email.value,
+            password: password.value
+          });
+        })
+        .catch((error) => {
+          showAlert(error.message);
+        });
     }
   }
 });

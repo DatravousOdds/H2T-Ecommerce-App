@@ -90,7 +90,7 @@ app.use(
   express.static(staticPth, {
     setHeaders: (res, path) => {
       if (path.endsWith(".js")) {
-        res.setHeader("Content-Type", "application/javascript");
+        res.setHeader("Content-Type", "application/javascript; charset=utf-8");
       }
     }
   })
@@ -187,6 +187,7 @@ app.post("/signup", async (req, res) => {
 
   // Get user from database
   const userDoc = await db.collection("users").doc(email).get();
+  console.log(userDoc);
   if (userDoc.exists) {
     return res.json({ alert: "email already exists" });
   }
