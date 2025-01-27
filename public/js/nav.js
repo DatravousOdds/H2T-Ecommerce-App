@@ -5,6 +5,7 @@ import {
   getDoc,
   db
 } from "./firebase-client.js";
+import { logout, checkUserStatus, auth } from "./auth.js";
 
 // Function to handle tabs submenu navigation
 const handleTabs = () => {
@@ -40,54 +41,54 @@ const handleTabs = () => {
 };
 
 // First, add the auth check function
-export const checkUserAuth = () => {
-  return new Promise((resolve, reject) => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      async (user) => {
-        unsubscribe();
-        if (user) {
-          try {
-            // Fetch user data from firestore
-            const userDocRef = doc(db, "users", user.uid);
-            const userDocSnap = await getDoc(userDocRef);
+// export const checkUserAuth = () => {
+//   return new Promise((resolve, reject) => {
+//     const auth = getAuth();
+//     const unsubscribe = onAuthStateChanged(
+//       auth,
+//       async (user) => {
+//         unsubscribe();
+//         if (user) {
+//           try {
+//             // Fetch user data from firestore
+//             const userDocRef = doc(db, "users", user.uid);
+//             const userDocSnap = await getDoc(userDocRef);
 
-            if (userDocSnap.exists()) {
-              const userData = {
-                uid: user.uid,
-                ...userDocSnap.data()
-              };
-              console.log("User data fetched:", userData);
-              resolve(userData);
-            } else {
-              console.log("No user document found");
-              resolve(null);
-            }
-          } catch (error) {
-            console.error("Error fetching user data:", error);
-            reject(error);
-          }
-        } else {
-          console.log("No user is authenticated");
-          resolve(null);
-        }
-      },
-      (error) => {
-        console.log("Error in onAuthStateChanged:");
-        reject(error);
-      }
-    );
-  });
-};
+//             if (userDocSnap.exists()) {
+//               const userData = {
+//                 uid: user.uid,
+//                 ...userDocSnap.data()
+//               };
+//               console.log("User data fetched:", userData);
+//               resolve(userData);
+//             } else {
+//               console.log("No user document found");
+//               resolve(null);
+//             }
+//           } catch (error) {
+//             console.error("Error fetching user data:", error);
+//             reject(error);
+//           }
+//         } else {
+//           console.log("No user is authenticated");
+//           resolve(null);
+//         }
+//       },
+//       (error) => {
+//         console.log("Error in onAuthStateChanged:");
+//         reject(error);
+//       }
+//     );
+//   });
+// };
 
 const newNav = async () => {
   let nav = document.querySelector("#header");
-  try {
-    const user = await checkUserAuth();
-    console.log("User object:", user);
-    if (user) {
-      nav.innerHTML = `<nav class="navbar" aria-label="main navigation">
+
+  const user = await checkUserStatus();
+
+  if (user) {
+    nav.innerHTML = `<nav class="navbar" aria-label="main navigation">
     <!-- Left section with search and logo -->
     <div class="search-section">
       <form class="search-form" role="search">
@@ -346,24 +347,23 @@ const newNav = async () => {
     </div>
   </nav>
   `;
-      // Add event listeners after the HTML is injected
-      const logoutBtn = nav.querySelector("#logoutBtn");
-      const mobileLogoutLink = nav.querySelector("#mobileLogoutLink");
+    // Add event listeners after the HTML is injected
+    const logoutBtn = nav.querySelector("#logoutBtn");
+    const mobileLogoutLink = nav.querySelector("#mobileLogoutLink");
 
-      const handleLogout = (e) => {
+    if (logoutBtn)
+      logoutBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        localStorage.removeItem("user");
-        // signout out user
-
-        window.location.href = "/";
-      };
-
-      if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
-      if (mobileLogoutLink)
-        mobileLogoutLink.addEventListener("click", handleLogout);
-    } else {
-      console.log("No user is signed in");
-      nav.innerHTML = `
+        logout();
+      });
+    if (mobileLogoutLink)
+      mobileLogoutLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        logout();
+      });
+  } else {
+    console.log("No user is signed in");
+    nav.innerHTML = `
     <nav class="navbar" aria-label="main navigation">
       <!-- Left section with search and logo -->
       <div class="search-section">
@@ -579,9 +579,7 @@ const newNav = async () => {
       </div>
     </nav>
     `;
-    }
-  } catch (error) {
-    console.error("Error checking user auth:", error);
+    location.replace("/login");
   }
 
   // And update your JavaScript event listeners

@@ -1,20 +1,32 @@
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
 } from "./firebase-client.js";
 
-const auth = getAuth();
+export const auth = getAuth();
 
-const loader = document.querySelector(".loader");
-// select inputs
-const subBtn = document.querySelector(".submit-btn");
-const name = document.querySelector("#name") || null;
-const email = document.querySelector("#email");
-const password = document.querySelector("#password");
-const number = document.querySelector("#number") || null;
-const tac = document.querySelector("#terms-and-cond") || null;
-const noti = document.querySelector("#notification") || null;
+// listen for auth status changes
+
+export function checkUserStatus() {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(
+      auth,
+      (user) => {
+        if (user) {
+          resolve(user);
+          console.log("User object", user);
+        } else {
+          resolve(null);
+          console.log("Nothing object returned");
+        }
+      },
+      reject
+    );
+  });
+}
 
 // Update your sendData function to handle the response
 const submitFormData = async (path, data) => {
@@ -59,7 +71,7 @@ const submitFormData = async (path, data) => {
       localStorage.setItem("token", responseData.data.token);
 
       console.log("Redirecting to home page");
-      // location.replace("/");
+      location.replace("/");
     } else {
       console.log("Unexpected response format:", responseData);
       showAlert("Unexpected response from server");
@@ -72,71 +84,95 @@ const submitFormData = async (path, data) => {
   }
 };
 
-subBtn.addEventListener("click", () => {
-  if (name != null) {
-    // sign up page validation
-    if (name.value.length < 3) {
-      showAlert("name must be 3 letters long");
-    } else if (!email.value.length) {
-      showAlert("enter your email");
-    } else if (password.value.length < 8) {
-      showAlert("password should be 8 letters long");
-    } else if (!number.value.length) {
-      showAlert("enter your phone number");
-    } else if (!Number(number.value) || number.value.length < 10) {
-      showAlert("invalid number, please enter valid one");
-    } else if (!tac.checked) {
-      showAlert("you must agree to our terms and conditions");
-    } else {
-      // Signed up
-      createUserWithEmailAndPassword(auth, email.value, password.value)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          console.log(user);
+document.addEventListener("DOMContentLoaded", () => {
+  const loader = document.querySelector(".loader");
+  // select inputs
+  const submitBtn = document.querySelector(".submit-btn");
+  const name = document.querySelector("#name") || null;
+  const email = document.querySelector("#email");
+  const password = document.querySelector("#password");
+  const number = document.querySelector("#number") || null;
+  const tac = document.querySelector("#terms-and-cond") || null;
+  const noti = document.querySelector("#notification") || null;
+
+  if (submitBtn) {
+    submitBtn.addEventListener("click", () => {
+      if (name != null) {
+        // sign up page validation
+        if (name.value.length < 3) {
+          showAlert("name must be 3 letters long");
+        } else if (!email.value.length) {
+          showAlert("enter your email");
+        } else if (password.value.length < 8) {
+          showAlert("password should be 8 letters long");
+        } else if (!number.value.length) {
+          showAlert("enter your phone number");
+        } else if (!Number(number.value) || number.value.length < 10) {
+          showAlert("invalid number, please enter valid one");
+        } else if (!tac.checked) {
+          showAlert("you must agree to our terms and conditions");
+        } else {
+          // Signed up
+          createUserWithEmailAndPassword(auth, email.value, password.value)
+            .then((userCredential) => {
+              const user = userCredential.user;
+              console.log(user);
+              loader.style.display = "block";
+              return submitFormData("/signup", {
+                name: name.value,
+                email: email.value,
+                password: password.value,
+                number: number.value,
+                tac: tac.checked,
+                notification: notification.checked,
+                seller: false
+              });
+            })
+            .catch((error) => {
+              showAlert(error.message);
+            });
+        }
+      } else {
+        // login page validation
+        if (!email.value.length || !password.value.length) {
+          showAlert("fill all the inputs");
+        } else {
           loader.style.display = "block";
-          return submitFormData("/signup", {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-            number: number.value,
-            tac: tac.checked,
-            notification: notification.checked,
-            seller: false
-          });
-        })
-        .catch((error) => {
-          showAlert(error.message);
-        });
-    }
-  } else {
-    // login page validation
-    if (!email.value.length || !password.value.length) {
-      showAlert("fill all the inputs");
-    } else {
-      loader.style.display = "block";
-      // For login
-      const auth = getAuth();
-      signInWithEmailAndPassword(auth, email.value, password.value)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          console.log(user);
-          loader.style.display = "block";
-          return submitFormData("/login", {
-            email: email.value,
-            password: password.value
-          });
-        })
-        .catch((error) => {
-          showAlert(error.message);
-        });
-    }
+          // For login
+          const auth = getAuth();
+          signInWithEmailAndPassword(auth, email.value, password.value)
+            .then((userCredential) => {
+              // Signed in
+              const user = userCredential.user;
+              console.log(user);
+              loader.style.display = "block";
+              return submitFormData("/login", {
+                email: email.value,
+                password: password.value
+              });
+            })
+            .catch((error) => {
+              showAlert(error.message);
+            });
+        }
+      }
+    });
   }
 });
 
 // Add logout functionality
-const logout = () => {
-  sessionStorage.clear();
-  localStorage.clear();
-  location.replace("/login");
+export const logout = () => {
+  signOut(auth)
+    .then(() => {
+      console.log("User was signout successfully");
+      // Clear storage and redirect only after successful signout
+      sessionStorage.clear();
+      localStorage.clear();
+      location.replace("/"); // redirect to home page
+    })
+    .catch((error) => {
+      // Display error message
+      console.log("Error occured during signout: ", error);
+      showAlert("Error signing out. Please try again.");
+    });
 };
