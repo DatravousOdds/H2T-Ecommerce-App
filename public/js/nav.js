@@ -60,59 +60,10 @@ const handleTabs = () => {
   return { switchTabs };
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    // Init navigation with user status
-    await newNav();
-  } catch (error) {
-    console.error("Error initializing navigation:", error);
-  }
-});
-// export const checkUserAuth = () => {
-//   return new Promise((resolve, reject) => {
-//     const auth = getAuth();
-//     const unsubscribe = onAuthStateChanged(
-//       auth,
-//       async (user) => {
-//         unsubscribe();
-//         if (user) {
-//           try {
-//             // Fetch user data from firestore
-//             const userDocRef = doc(db, "users", user.uid);
-//             const userDocSnap = await getDoc(userDocRef);
-
-//             if (userDocSnap.exists()) {
-//               const userData = {
-//                 uid: user.uid,
-//                 ...userDocSnap.data()
-//               };
-//               console.log("User data fetched:", userData);
-//               resolve(userData);
-//             } else {
-//               console.log("No user document found");
-//               resolve(null);
-//             }
-//           } catch (error) {
-//             console.error("Error fetching user data:", error);
-//             reject(error);
-//           }
-//         } else {
-//           console.log("No user is authenticated");
-//           resolve(null);
-//         }
-//       },
-//       (error) => {
-//         console.log("Error in onAuthStateChanged:");
-//         reject(error);
-//       }
-//     );
-//   });
-// };
-
 const newNav = async () => {
-  let nav = document.querySelector("#header");
-
   const user = await checkUserStatus();
+
+  const nav = document.querySelector("#header");
 
   if (user) {
     nav.innerHTML = `<nav class="navbar" aria-label="main navigation">
@@ -612,13 +563,22 @@ const newNav = async () => {
 };
 
 const setupEventListeners = (nav) => {
-  // And update your JavaScript event listeners
-  const dropdownTrigger = nav.querySelectorAll(".dropdown-trigger");
-  const submenu = nav.querySelector(".submenu");
+  if (!nav) {
+    console.error("Navigation container not found");
+    return;
+  }
+
+  // Get all required elements with null checks
+  const dropdownTrigger = nav.querySelectorAll(".dropdown-trigger") || [];
   const menuButton = nav.querySelector(".menu-button");
   const slideMenu = nav.querySelector(".slide-menu");
   const closeSlideMenu = nav.querySelector(".close-slide-menu");
   const slideMenuOverlay = nav.querySelector(".slide-menu-overlay");
+
+  if (!menuButton || !slideMenu || !closeSlideMenu || !slideMenuOverlay) {
+    console.error("Required navigation elements not found");
+    return;
+  }
 
   // Mobile menu button
   menuButton.addEventListener("click", () => {
@@ -635,32 +595,36 @@ const setupEventListeners = (nav) => {
   dropdownTrigger.forEach((trigger) => {
     trigger.addEventListener("click", () => {
       const menuItem = trigger.closest(".menu-dropdown");
-
-      trigger.classList.toggle("expanded");
+      if (!menuItem) return;
 
       const submenu = menuItem.querySelector(".submenu");
+      if (!submenu) return;
 
+      trigger.classList.toggle("expanded");
       submenu.classList.toggle("active");
     });
   });
 
-  const { switchTabs } = handleTabs();
+  try {
+    const { switchTabs } = handleTabs();
+    const submenuLinks = nav.querySelectorAll(".submenu a") || [];
 
-  const submenuLinks = nav.querySelectorAll(".submenu a");
-  submenuLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const section = link.getAttribute("data-section");
-      console.log("section: ", section);
-
-      // Hide all sections first
-      switchTabs(section);
-
-      // Close the mobile menu if it's open
-      slideMenu.classList.remove("active");
-      slideMenuOverlay.classList.remove("active");
+    submenuLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const section = link.getAttribute("data-section");
+        if (section) {
+          // Hide all sections first
+          switchTabs(section);
+        }
+        // Close the mobile menu if it's open
+        slideMenu.classList.remove("active");
+        slideMenuOverlay.classList.remove("active");
+      });
     });
-  });
+  } catch (error) {
+    console.error("Error setting up tab navigation");
+  }
 };
 
 newNav();
