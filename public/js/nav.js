@@ -1,22 +1,21 @@
-import {
-  getAuth,
-  onAuthStateChanged,
-  doc,
-  getDoc,
-  db
-} from "./firebase-client.js";
-import { logout, checkUserStatus, auth } from "./auth.js";
+import { getAuth, onAuthStateChanged } from "./firebase-client.js";
+import { logout, checkUserStatus } from "./auth.js";
 
 // Function to handle tabs submenu navigation
 const handleTabs = () => {
   const tabBtns = document.querySelectorAll(".tab-btn");
   const tabs = document.querySelectorAll(".tab");
 
-  if (tabs && tabBtns) {
+  if (!tabs.length || !tabBtns.length) {
     // Initially show the first tab
-    tabs[0].classList.add("active");
-    tabBtns[0].classList.add("active");
+    console.log("Tab elements not found");
+    return { switchTabs: () => {} };
   }
+
+  // add active if exist
+  tabs[0]?.classList.add("active");
+  tabBtns[0]?.classList.add("active");
+
   // Add click event listeners to each tab button
   tabBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -27,20 +26,48 @@ const handleTabs = () => {
 
   // Function to switch tabs
   const switchTabs = (tabId) => {
+    if (!tabId) {
+      console.log(`${tabId} not found`);
+      return;
+    }
+
+    const targetTab = document.getElementById(tabId);
+    const targetBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+
+    if (!targetTab || !targetBtn) {
+      console.warn(`Tab elements for ${tabId} not found`);
+      return;
+    }
+
     // Remove active class from all tabs and buttons
-    tabs.forEach((t) => t.classList.remove("active"));
-    tabBtns.forEach((btn) => btn.classList.remove("active"));
+    tabs.forEach((t) => t?.classList.remove("active"));
+    tabBtns.forEach((btn) => btn?.classList.remove("active"));
 
     // Add active class to selected tab and button
-    document.getElementById(tabId).classList.add("active");
-    document.getElementById(`.tab-btn[data-tab="${tabId}"]`);
+    targetTab.classList.add("active");
+    targetBtn.classList.add("active");
   };
+
+  // Add click event listeners to each tab button
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tab = btn.getAttribute("data-tab");
+      if (tab) switchTabs(tab);
+    });
+  });
 
   // Return the switchTabs function so it can be used elsewhere
   return { switchTabs };
 };
 
-// First, add the auth check function
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    // Init navigation with user status
+    await newNav();
+  } catch (error) {
+    console.error("Error initializing navigation:", error);
+  }
+});
 // export const checkUserAuth = () => {
 //   return new Promise((resolve, reject) => {
 //     const auth = getAuth();
@@ -579,9 +606,12 @@ const newNav = async () => {
       </div>
     </nav>
     `;
-    location.replace("/login");
   }
 
+  setupEventListeners(nav);
+};
+
+const setupEventListeners = (nav) => {
   // And update your JavaScript event listeners
   const dropdownTrigger = nav.querySelectorAll(".dropdown-trigger");
   const submenu = nav.querySelector(".submenu");
