@@ -9,20 +9,6 @@ import {
   setDoc,
   updateDoc
 } from "./firebase-client.js";
-import { checkUserAuth } from "./nav.js";
-
-// checkUserAuth()
-//   .then((user) => {
-//     if (user) {
-//       loadProfileData(user);
-//     } else {
-//       console.log("No user was found");
-//     }
-//   })
-//   .catch((error) => console.error("Auth error:", error));
-
-const userProfilesRef = collection(db, "userProfiles");
-console.log(userProfilesRef);
 
 // Fetch user profile
 const fetchUserProfile = async (email) => {

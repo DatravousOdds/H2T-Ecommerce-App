@@ -151,26 +151,29 @@ document.addEventListener("DOMContentLoaded", () => {
     slideInterval = setInterval(nextSlide, 5000);
   }
 
-  prevButton.addEventListener("click", () => {
-    prevSlide();
-    resetInterval();
-  });
-
-  nextButton.addEventListener("click", () => {
-    nextSlide();
-    resetInterval();
-  });
+  if (prevButton) {
+    prevButton.addEventListener("click", () => {
+      prevSlide();
+      resetInterval();
+    });
+  }
+  if (nextButton)
+    nextButton.addEventListener("click", () => {
+      nextSlide();
+      resetInterval();
+    });
 
   // Start automatic sliding
   slideInterval = setInterval(nextSlide, 5000);
 
   // Pause on hover
   const slidesContainer = document.querySelector(".slider-container");
-  slidesContainer.addEventListener("mouseenter", () => {
-    clearInterval(slideInterval);
-  });
-
-  slidesContainer.addEventListener("mouseleave", () => {
-    slideInterval = setInterval(nextSlide, 5000);
-  });
+  if (slidesContainer) {
+    slidesContainer.addEventListener("mouseenter", () => {
+      clearInterval(slideInterval);
+    });
+    slidesContainer.addEventListener("mouseleave", () => {
+      slideInterval = setInterval(nextSlide, 5000);
+    });
+  }
 });
