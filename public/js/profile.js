@@ -1,14 +1,7 @@
 "use strict";
 
 import { generateCountries, validateForm, closeDropdown } from "./global.js";
-import {
-  db,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc
-} from "./firebase-client.js";
+import { db, collection, doc, setDoc, updateDoc } from "./firebase-client.js";
 
 // Fetch user profile
 const fetchUserProfile = async (email) => {

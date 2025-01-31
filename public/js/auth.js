@@ -3,27 +3,57 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  db,
+  collection,
+  doc,
+  getDoc
 } from "./firebase-client.js";
 
-export const auth = getAuth();
-
-// listen for auth status changes
-
+// Checks user status and gets their profile data
 export function checkUserStatus() {
   return new Promise((resolve, reject) => {
-    onAuthStateChanged(
+    const auth = getAuth();
+    console.log("Starting auth check...");
+
+    const unsubscribe = onAuthStateChanged(
       auth,
-      (user) => {
+      async (user) => {
+        unsubscribe(); // Stop listening for changes
+
         if (user) {
-          resolve(user);
-          console.log("User object", user);
+          console.log("User is authenticated:", user.email);
+          try {
+            // Get user's profile document
+            const docRef = doc(db, "userProfiles", user.email);
+            console.log("Fetching user profile for email:", user.email);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+              const userData = {
+                uid: user.uid,
+                email: user.email,
+                ...docSnap.data()
+              };
+              console.log("User profile found:", userData);
+              resolve(userData);
+            } else {
+              console.log("No profile document exists for user:", user.uid);
+              resolve(null);
+            }
+          } catch (error) {
+            console.error("Error fetching user profile:", error);
+            reject(error);
+          }
         } else {
+          console.log("No user authenticated");
           resolve(null);
-          console.log("Nothing object returned");
         }
       },
-      reject
+      (error) => {
+        console.error("Auth state change error:", error);
+        reject(error);
+      }
     );
   });
 }
