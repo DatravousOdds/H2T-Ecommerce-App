@@ -1,4 +1,3 @@
-import { getAuth, onAuthStateChanged } from "./firebase-client.js";
 import { logout, checkUserStatus } from "./auth.js";
 
 // Function to handle tabs submenu navigation
@@ -61,9 +60,9 @@ const handleTabs = () => {
 };
 
 const newNav = async () => {
-  const user = await checkUserStatus();
-
   const nav = document.querySelector("#header");
+
+  const user = await checkUserStatus();
 
   if (user) {
     nav.innerHTML = `<nav class="navbar" aria-label="main navigation">
