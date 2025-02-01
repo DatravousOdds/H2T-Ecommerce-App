@@ -5,10 +5,35 @@ import {
   signOut,
   onAuthStateChanged,
   db,
-  collection,
   doc,
   getDoc
 } from "./firebase-client.js";
+
+// Fetch user profile
+const fetchUserProfile = async (user) => {
+  try {
+    const docRef = doc(db, "userProfiles", user.email);
+    console.log("Fetching user profile for email:", user.email);
+    const docSnap = await getDoc(docRef);
+
+    // Fetching user profile
+    if (docSnap.exists()) {
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        ...docSnap.data()
+      };
+      console.log("User profile found:", userData);
+      return userData;
+    } else {
+      console.log("No profile document exists for user:", user.email);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error; // Throw error to be caught by caller
+  }
+};
 
 // Checks user status and gets their profile data
 export function checkUserStatus() {
@@ -22,27 +47,11 @@ export function checkUserStatus() {
         unsubscribe(); // Stop listening for changes
 
         if (user) {
-          console.log("User is authenticated:", user.email);
           try {
-            // Get user's profile document
-            const docRef = doc(db, "userProfiles", user.email);
-            console.log("Fetching user profile for email:", user.email);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-              const userData = {
-                uid: user.uid,
-                email: user.email,
-                ...docSnap.data()
-              };
-              console.log("User profile found:", userData);
-              resolve(userData);
-            } else {
-              console.log("No profile document exists for user:", user.uid);
-              resolve(null);
-            }
+            console.log("User is authenticated:", user.email);
+            const userData = await fetchUserProfile(user);
+            resolve(userData);
           } catch (error) {
-            console.error("Error fetching user profile:", error);
             reject(error);
           }
         } else {
