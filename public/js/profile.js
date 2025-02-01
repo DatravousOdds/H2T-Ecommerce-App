@@ -2,19 +2,7 @@
 
 import { generateCountries, validateForm, closeDropdown } from "./global.js";
 import { db, collection, doc, setDoc, updateDoc } from "./firebase-client.js";
-
-// Fetch user profile
-const fetchUserProfile = async (email) => {
-  try {
-    const userProfileDoc = await getDoc(doc(userProfilesRef, email));
-    return userProfileDoc.exists()
-      ? userProfileDoc.data()
-      : console.log("no data found for user");
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    showAlert("Error loading profile");
-  }
-};
+import { checkUserStatus } from "./auth.js";
 
 // Update profile information
 const updateProfile = async (email, updateData) => {
@@ -66,46 +54,55 @@ const updateProfilePicture = async (email, imageUrl) => {
   }
 };
 
-const loadProfileData = async (user) => {
-  const profile = await fetchUserProfile(user.email);
-
-  if (profile) {
-    // Shipping Information
-    document.querySelector("#shippingInformation #fname").value =
-      profile.firstName || "";
-    document.querySelector("#shippingInformation #lname").value =
-      profile.lastName || "";
-    document.querySelector("#shippingInformation #country").value =
-      profile.country || "";
-    document.querySelector("#shippingInformation #address").value =
-      profile.address1 || "";
-    document.querySelector("#shippingInformation #address-two").value =
-      profile.address2;
-    document.querySelector("#shippingInformation #city").value = profile.city;
-    document.querySelector("#shippingInformation #state-select").value =
-      profile.state;
-    document.querySelector("#shippingInformation #postal").value =
-      profile.postalCode;
-    document.querySelector("#shippingInformation #phoneNumber").value =
-      profile.phoneNumber;
-    // Personal Information
-    document.querySelector("#personalInformation #fname").value =
-      profile.firstName;
-    document.querySelector("#personalInformation #lname").value =
-      profile.lastName;
-    document.querySelector("#personalInformation #email").value = profile.email;
-    document.querySelector("#personalInformation #phoneNumber").value =
-      profile.phoneNumber;
-    document.querySelector("#personalInformation #username").value =
-      profile.username;
+async function loadProfileData() {
+  try {
+    const userData = await checkUserStatus();
+    console.log("User Data imported:", userData);
+    if (userData) {
+      //  personal information
+      document.querySelector("#personal-fname").value = userData.FirstName;
+      document.querySelector("#personal-lname").value = userData.LastName;
+      document.querySelector("#personal-email").value = userData.Email;
+      document.querySelector("#personal-phoneNumber").value =
+        userData.phoneNumber;
+      // profile username
+      document.querySelector("#profile-username").value = userData.Username;
+      // shipping information
+      document.querySelector("#shipping-fname").value = userData.FirstName;
+      document.querySelector("#shipping-lname").value = userData.LastName;
+      document.querySelector("#shipping-address").value = userData.address1;
+      document.querySelector("#shipping-address2").value = userData.address2;
+      document.querySelector("#shipping-city").value = userData.city;
+      document.querySelector("#shipping-state").value = userData.state;
+      // document.querySelector("#shipping-postalCode").value =
+      //   userData.postalCode || "";
+      document.querySelector("#shipping-phoneNumber").value =
+        userData.phoneNumber;
+      if (userData.backgroundImage) {
+        const profileBackground = document.querySelector(".profile-background");
+        profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
+      } else {
+        console.log("No user data available");
+      }
+      // profile picture image
+      document.querySelector("#profile-picture").value = userData.profileImage;
+      // profile username
+      document.querySelector("#username").value = userData.username;
+      document.querySelector("#timestamp-container").value =
+        userData.joinedDate;
+      document.querySelector("#verified-tag").value = userData.isVerified;
+    }
+  } catch (error) {
+    console.error("Error happened when loading userData from auth.js", error);
+    throw error;
   }
-};
+}
 
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
-  generateCountries(apiUrl, "country");
-  // generateCountries(apiUrl, "state-select");
+  generateCountries(apiUrl, "shipping-country");
+  loadProfileData();
 });
 
 // Payment Information Section

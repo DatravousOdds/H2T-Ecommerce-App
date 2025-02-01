@@ -273,7 +273,7 @@
                 <div class="pfp-1">
                   <form action="#" id="personalInformation">
                     <div class="input-group">
-                      <label for="fname">First Name</label>
+                      <label for="personal-fname">First Name</label>
                       <input
                         type="text"
                         name="personal-fname"
@@ -286,26 +286,26 @@
                     </div>
 
                     <div class="input-group">
-                      <label for="lname">Last Name</label>
+                      <label for="personal-lname">Last Name</label>
                       <input
                         type="text"
-                        name="lname"
-                        id="lname"
+                        name="personal-lname"
+                        id="personal-lname"
                         placeholder="Your last name..."
-                        value="Almasi"
+                        value=""
                         disabled
                       />
                       <span class="error-message" id="lnameError"></span>
                     </div>
 
                     <div class="input-group">
-                      <label for="email">Email</label>
+                      <label for="personal-email">Email</label>
                       <input
                         type="email"
-                        name="email"
-                        id="email"
+                        name="personal-email"
+                        id="personal-email"
                         placeholder="noemail@noemail.com"
-                        value="sara.almasi@example.com"
+                        value=""
                         disabled
                       />
                       <span class="error-message" id="emailError"></span>
@@ -318,7 +318,7 @@
                         name="personal-phoneNumber"
                         id="personal-phoneNumber"
                         placeholder="Phone number"
-                        value="123-456-7890"
+                        value=""
                         disabled
                       />
                       <span class="error-message" id="phoneError"></span>
@@ -402,46 +402,46 @@
                       <span id="lnameError"></span>
                     </div>
                     <div class="input-groups">
-                      <label for="country"
+                      <label for="shipping-country"
                         >Country <span class="required">*</span></label
                       >
-                      <select id="country" name="country" required>
+                      <select id="shipping-country" name="country" required>
                         <option value="">Select a country</option>
                       </select>
                       <span id="countryError"></span>
                     </div>
                     <div class="input-groups">
-                      <label for="address"
+                      <label for="shipping-address"
                         >Address <span class="required">*</span></label
                       >
                       <input
                         type="text"
-                        name="address"
-                        id="address"
+                        name="shipping-address"
+                        id="shipping-address"
                         placeholder="Your address..."
                       />
                       <span id="addressError"></span>
                     </div>
 
                     <div class="input-groups">
-                      <label for="address-two">Address 2</label>
+                      <label for="shipping-address2">Address 2</label>
                       <input
                         type="text"
-                        name="address-two"
-                        id="address-two"
+                        name="shipping-address2"
+                        id="shipping-address2"
                         placeholder="Your address..."
                       />
                       <span id="addressTwoError"></span>
                     </div>
 
                     <div class="input-groups">
-                      <label for="city"
+                      <label for="shipping-city"
                         >City <span class="required">*</span></label
                       >
                       <input
                         type="text"
-                        name="city"
-                        id="city"
+                        name="shipping-city"
+                        id="shipping-city"
                         placeholder="Your address..."
                       />
                       <span id="cityError"></span>
@@ -449,23 +449,27 @@
 
                     <div class="form-group">
                       <div class="input-groups">
-                        <label for="state-select"
+                        <label for="shipping-state"
                           >State/Region <span class="required">*</span></label
                         >
-                        <select id="state-select" name="state-region" required>
+                        <select
+                          id="shipping-state"
+                          name="shipping-state"
+                          required
+                        >
                           <option value="">Select</option>
                         </select>
                         <span id="stateError"></span>
                       </div>
 
                       <div class="input-groups">
-                        <label for="postal"
+                        <label for="shipping-postal"
                           >Postal Code <span class="required">*</span></label
                         >
                         <input
                           type="number"
-                          name="postal"
-                          id="postal"
+                          name="shipping-postal"
+                          id="shipping-postal"
                           placeholder="Enter zip code"
                         />
                         <span id="postalError"></span>

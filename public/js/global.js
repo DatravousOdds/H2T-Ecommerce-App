@@ -31,7 +31,7 @@ const generateCountries = (apiUrl, selectId) => {
 };
 
 const generateRegions = (countriesData) => {
-  const selectSelect = document.getElementById("state-select");
+  const selectSelect = document.getElementById("shipping-state");
 
   countriesData.forEach((country) => {
     // console.log(country.region)
@@ -39,7 +39,7 @@ const generateRegions = (countriesData) => {
     // console.log(country.cca2)
   });
 
-  const regionSelect = document.getElementById("state-select");
+  const regionSelect = document.getElementById("shipping-state");
 
   if (regionSelect) {
   }
