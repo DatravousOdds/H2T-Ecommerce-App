@@ -59,6 +59,7 @@ async function loadProfileData() {
     const userData = await checkUserStatus();
     console.log("User Data imported:", userData);
     if (userData) {
+      console.log("User followers:", userData.stats.followers);
       //  personal information
       document.querySelector("#personal-fname").value = userData.FirstName;
       document.querySelector("#personal-lname").value = userData.LastName;
@@ -91,6 +92,28 @@ async function loadProfileData() {
       document.querySelector("#timestamp-container").value =
         userData.joinedDate;
       document.querySelector("#verified-tag").value = userData.isVerified;
+      // user stats
+      document.querySelector("#followers-count").textContent =
+        userData.stats.followers;
+      document.querySelector("#following-count").textContent =
+        userData.stats.following;
+      document.querySelector("#current-rating").textContent =
+        userData.stats.rating;
+      // review section
+      document.querySelector("#average-rating").textContent =
+        userData.ratings.averageRating;
+      document.querySelector("#total-ratings").textContent =
+        userData.ratings.totalRatings;
+      document.querySelector("#rating-count-5").textContent =
+        userData.ratingCounts["5"];
+      document.querySelector("#rating-count-4").textContent =
+        userData.ratingCounts["4"];
+      document.querySelector("#rating-count-3").textContent =
+        userData.ratingCounts["3"];
+      document.querySelector("#rating-count-2").textContent =
+        userData.ratingCounts["2"];
+      document.querySelector("#rating-count-1").textContent =
+        userData.ratingCounts["1"];
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);

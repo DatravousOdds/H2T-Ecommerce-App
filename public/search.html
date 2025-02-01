@@ -1,208 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    />
     <title>Search Results for</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
 
-    <link rel="stylesheet" href="css/style2.css">
-    <link rel="stylesheet" href="css/search.css">
-
-
-</head>
-<body>
-    
+    <link rel="stylesheet" href="css/style2.css" />
+    <link rel="stylesheet" href="css/search.css" />
+  </head>
+  <body>
     <section id="header">
-        <!-- Find and input a logo in the [img src] !-->
-        <a href="index.html"><img src="images/H2T LogoB Small.png" class="logo"></a>
+      <a href="index.html"
+        ><img src="images/H2T LogoB Small.png" class="logo"
+      /></a>
+      <div>
+        <ul id="navbar">
+          <li><a class="active" href="index.html">Home</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="LoginPage.html">Login</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="sign.html">Sign Up</a></li>
+          <li><a href="news.html">News</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="shop.html">Shop</a></li>
+        </ul>
 
-        <div>
-            <ul id="navbar">
-                <li><a class="active" href="index.html">Home</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="LoginPage.html">Login</a></li>
-                  <li><a href="blog.html">Blog</a></li>
-                  <li><a href="sign.html">Sign Up</a></li>
-                <li><a href="news.html">News</a></li>
-                <li><a href="about.html">About Us</a></li>
-                <li><a href="shop.html">Shop</a></li>
-
-                <li id="Ig-bag"><a href="cart.html"><i class="far fa-shopping-bag"></i><div id="cartAmount" class="cartAmount">0</div></a></li>
-            <a href="#" id="close"><i class="far fa-times"></i>
-            </a>
-            </ul>
-            <div class="nav-items">
-                <div class="search">
-                    <input type="text" class="search-box" placeholder="search brand, product">
-                    <button class="search-btn">search</button>
-                </div>
-            </div>
-        
         <div id="mobile">
-        <a href="cart.html"><i class="far fa-shopping-bag"></i></a>
-            <i id="bar" class="fas fa-outdent"></i>
+          <a href="cart.html"><i class="far fa-shopping-bag"></i></a>
+          <i id="bar" class="fas fa-outdent"></i>
         </div>
+      </div>
     </section>
-
-<section class="search-results">
-    <h2 class="heading">search results for <span id="search-key">product</span></h2>
-    <section id="product1" class="section-p1">
-        
+    <section class="search-results">
+      <h2 class="heading">
+        search results for <span id="search-key">product</span>
+      </h2>
+      <section id="product1" class="section-p1">
         <h2>Similar Products</h2>
         <p></p>
         <div class="pro-container" id="shop">
-                <div class="pro product-card">
-                    
-                <img src="images/Supreme Model .jpeg" alt="">
-                <button class="card-btn">add to wishlist</button>
-
-                <div class="des">
-                    <span>Supreme</span>
-                    <!-- insert product name below !-->
-                    <h5>Supreme "Model Tee"</h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <!-- insert price final price here !-->
-                    <h4 class="price">$100</h4><span class="actual-price">$40</span>
-                </div>
+          <div class="pro product-card">
+            <img src="images/Galaxy Note20 5G.jpeg" alt="" />
+            <button class="card-btn">add to wishlist</button>
+            <div class="des">
+              <span>Supreme</span>
+              <!-- insert product name below !-->
+              <h5>The shirt shirt</h5>
+              <div class="star">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <!-- insert price final price here !-->
+              <h4>$</h4>
+            </div>
+            <a href="#" class="store-item-icon"
+              ><i class="fas fa-shopping-cart cart"></i
+            ></a>
+          </div>
+          <div class="pro">
+            <img src="images/Knowledge Tee.jpeg" alt="" />
+            <button class="card-btn">add to wishlist</button>
+            <div class="des">
+              <span>Supreme</span>
+              <!-- insert product name below !-->
+              <h5></h5>
+              <div class="star">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <!-- insert price final price here !-->
+              <h4>$</h4>
+            </div>
             <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
+          </div>
+          <div class="pro product-card">
+            <img src="images/Iphone X Plus.jpeg" alt="" />
+            <button class="card-btn">add to wishlist</button>
+            <div class="des">
+              <span>Supreme</span>
+              <!-- insert product name below !-->
+              <h5></h5>
+              <div class="star">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <!-- insert price final price here !-->
+              <h4>$</h4>
             </div>
-            <div class="pro product-card">
-                <img src="images/PalaceShirt.jpg" alt="">
-                <button class="card-btn">add to wishlist</button>
-
-                <div class="des">
-                    <span>Supreme</span>
-                    <!-- insert product name below !-->
-                    <h5></h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <!-- insert price final price here !-->
-                    <h4 class="price">$100</h4><span class="actual-price">$40</span>
-                </div>
-                <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
+            <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
+          </div>
+          <div class="pro product-card">
+            <img src="images/SAMSUNG Galaxy Note9.jpeg" alt="" />
+            <button class="card-btn">add to wishlist</button>
+            <div class="des">
+              <span>Supreme</span>
+              <!-- insert product name below !-->
+              <h5></h5>
+              <div class="star">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <!-- insert price final price here !-->
+              <h4>$</h4>
             </div>
-            <div class="pro product-card">
-                <img src="images/Galaxy Note20 5G.jpeg" alt="">
-                <button class="card-btn">add to wishlist</button>
-                <div class="des">
-                    <span>Supreme</span>
-                    <!-- insert product name below !-->
-                    <h5>The shirt shirt</h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <!-- insert price final price here !-->
-                    <h4>$</h4>
-                </div>
-                <a href="#" class="store-item-icon"><i class="fas fa-shopping-cart cart"></i></a>
+            <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
+          </div>
+          <div class="pro product-card">
+            <img src="images/OfferSneaker.jpg" alt="" />
+            <button class="card-btn">add to wishlist</button>
+            <div class="des">
+              <span>Jordans</span>
+              <!-- insert product name below !-->
+              <h5></h5>
+              <div class="star">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+              <!-- insert price final price here !-->
+              <h4>$</h4>
             </div>
-            <div class="pro">
-                <img src="images/Knowledge Tee.jpeg" alt="">
-                <button class="card-btn">add to wishlist</button>
-                <div class="des">
-                    <span>Supreme</span>
-                    <!-- insert product name below !-->
-                    <h5></h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <!-- insert price final price here !-->
-                    <h4>$</h4>
-                </div>
-                <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
-            </div>
-            <div class="pro product-card">
-                <img src="images/Iphone X Plus.jpeg" alt="">
-                <button class="card-btn">add to wishlist</button>
-                <div class="des">
-                    <span>Supreme</span>
-                    <!-- insert product name below !-->
-                    <h5></h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <!-- insert price final price here !-->
-                    <h4>$</h4>
-                </div>
-                <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
-            </div>
-            <div class="pro product-card">
-                <img src="images/SAMSUNG Galaxy Note9.jpeg" alt="">
-                <button class="card-btn">add to wishlist</button>
-                <div class="des">
-                    <span>Supreme</span>
-                    <!-- insert product name below !-->
-                    <h5></h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <!-- insert price final price here !-->
-                    <h4>$</h4>
-                </div>
-                <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
-            </div>
-            <div class="pro product-card">
-                <img src="images/OfferSneaker.jpg" alt="">
-                <button class="card-btn">add to wishlist</button>
-                <div class="des">
-                    <span>Jordans</span>
-                    <!-- insert product name below !-->
-                    <h5></h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <!-- insert price final price here !-->
-                    <h4>$</h4>
-                </div>
-                <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
-            </div>
+            <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
+          </div>
         </div>
+      </section>
     </section>
-</section>
 
-<footer class="section-p1"></footer>
+    <footer class="section-p1"></footer>
 
-    <script src="../js/nav.js"></script>
+    <script type="module" src="../js/nav.js"></script>
     <script src="../js/footer.js"></script>
     <script src="../js/home.js"></script>
     <script src="../js/search.js"></script>
-
-</body>
+  </body>
 </html>
