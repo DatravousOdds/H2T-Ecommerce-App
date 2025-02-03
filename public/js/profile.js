@@ -59,67 +59,88 @@ async function loadProfileData() {
     const userData = await checkUserStatus();
     console.log("User Data imported:", userData);
     if (userData) {
-      console.log("User followers:", userData.stats.followers);
-      //  personal information
-      document.querySelector("#personal-fname").value = userData.FirstName;
-      document.querySelector("#personal-lname").value = userData.LastName;
-      document.querySelector("#personal-email").value = userData.Email;
-      document.querySelector("#personal-phoneNumber").value =
-        userData.phoneNumber;
-      // profile username
-      document.querySelector("#profile-username").value = userData.Username;
-      // shipping information
-      document.querySelector("#shipping-fname").value = userData.FirstName;
-      document.querySelector("#shipping-lname").value = userData.LastName;
-      document.querySelector("#shipping-address").value = userData.address1;
-      document.querySelector("#shipping-address2").value = userData.address2;
-      document.querySelector("#shipping-city").value = userData.city;
-      document.querySelector("#shipping-state").value = userData.state;
-      // document.querySelector("#shipping-postalCode").value =
-      //   userData.postalCode || "";
-      document.querySelector("#shipping-phoneNumber").value =
-        userData.phoneNumber;
-      if (userData.backgroundImage) {
-        const profileBackground = document.querySelector(".profile-background");
-        profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
-      } else {
-        console.log("No user data available");
-      }
-      // profile picture image
-      document.querySelector("#profile-picture").value = userData.profileImage;
-      // profile username
-      document.querySelector("#username").value = userData.username;
-      document.querySelector("#timestamp-container").value =
-        userData.joinedDate;
-      document.querySelector("#verified-tag").value = userData.isVerified;
-      // user stats
-      document.querySelector("#followers-count").textContent =
-        userData.stats.followers;
-      document.querySelector("#following-count").textContent =
-        userData.stats.following;
-      document.querySelector("#current-rating").textContent =
-        userData.stats.rating;
-      // review section
-      document.querySelector("#average-rating").textContent =
-        userData.ratings.averageRating;
-      document.querySelector("#total-ratings").textContent =
-        userData.ratings.totalRatings;
-      document.querySelector("#rating-count-5").textContent =
-        userData.ratingCounts["5"];
-      document.querySelector("#rating-count-4").textContent =
-        userData.ratingCounts["4"];
-      document.querySelector("#rating-count-3").textContent =
-        userData.ratingCounts["3"];
-      document.querySelector("#rating-count-2").textContent =
-        userData.ratingCounts["2"];
-      document.querySelector("#rating-count-1").textContent =
-        userData.ratingCounts["1"];
+      loadPersonalInfoData(userData);
+      loadShippingInfoData(userData);
+      loadProfileDisplayData(userData);
+      loadReviewData(userData);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
     throw error;
   }
 }
+
+function loadProfileDisplayData(userData) {
+  if (userData.backgroundImage) {
+    const profileBackground = document.querySelector(".profile-background");
+    profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
+  } else {
+    console.log("No user data available");
+  }
+  // profile picture image
+  document.querySelector("#profile-picture").value = userData.profileImage;
+  // profile username
+  document.querySelector("#username").value = userData.username;
+  document.querySelector("#timestamp-container").value = userData.joinedDate;
+  document.querySelector("#verified-tag").value = userData.isVerified;
+  // user stats
+  document.querySelector("#followers-count").textContent =
+    userData.stats.followers;
+  document.querySelector("#following-count").textContent =
+    userData.stats.following;
+  document.querySelector("#current-rating").textContent = userData.stats.rating;
+}
+
+function loadPersonalInfoData(userData) {
+  //  personal information
+  document.querySelector("#personal-fname").value = userData.FirstName;
+  document.querySelector("#personal-lname").value = userData.LastName;
+  document.querySelector("#personal-email").value = userData.Email;
+  document.querySelector("#personal-phoneNumber").value = userData.phoneNumber;
+}
+
+function loadShippingInfoData(userData) {
+  // shipping information
+  document.querySelector("#shipping-fname").value = userData.FirstName;
+  document.querySelector("#shipping-lname").value = userData.LastName;
+  document.querySelector("#shipping-address").value = userData.address1;
+  document.querySelector("#shipping-address2").value = userData.address2;
+  document.querySelector("#shipping-city").value = userData.city;
+  document.querySelector("#shipping-state").value = userData.state;
+  // document.querySelector("#shipping-postalCode").value =
+  //   userData.postalCode || "";
+  document.querySelector("#shipping-phoneNumber").value = userData.phoneNumber;
+}
+
+function loadReviewData(userData) {
+  // review section
+  document.querySelector("#average-rating").textContent =
+    userData.ratings.metrics.averageRating;
+  document.querySelector("#total-ratings").textContent =
+    userData.ratings.metrics.totalRatings;
+  // review counts
+  for (let i = 1; i <= 5; i++) {
+    const element = document.querySelector(`#rating-count-${i}`);
+    if (element) {
+      const ratingCount = userData.ratings.ratingCounts[i] || 0;
+      const reviewText = ratingCount === 1 ? "review" : "reviews";
+      element.textContent = `${ratingCount} ${reviewText}`;
+    }
+  }
+  // review categories
+}
+
+function loadPaymentInforData() {}
+
+function loadSellingData() {}
+
+function loadFavoritesData() {}
+
+function loadNotificationData() {}
+
+function loadPurchasesData() {}
+
+function loadSettingsData() {}
 
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
