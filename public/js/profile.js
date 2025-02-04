@@ -63,6 +63,12 @@ async function loadProfileData() {
       loadShippingInfoData(userData);
       loadProfileDisplayData(userData);
       loadReviewData(userData);
+      loadFavoritesData(userData);
+      loadNotificationData(userData);
+      loadPaymentInfoData(userData);
+      loadSellingData();
+      loadPurchasesData();
+      loadSettingsData();
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
@@ -130,7 +136,7 @@ function loadReviewData(userData) {
   // review categories
 }
 
-function loadPaymentInforData() {}
+function loadPaymentInfoData() {}
 
 function loadSellingData() {}
 
