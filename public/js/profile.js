@@ -1,7 +1,14 @@
 "use strict";
 
 import { generateCountries, validateForm, closeDropdown } from "./global.js";
-import { db, collection, doc, setDoc, updateDoc } from "./firebase-client.js";
+import {
+  db,
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  getDocs
+} from "./firebase-client.js";
 import { checkUserStatus } from "./auth.js";
 
 // Update profile information
@@ -82,9 +89,9 @@ async function loadProfileData() {
       loadFavoritesData(userData);
       loadNotificationData(userData);
       loadPaymentInfoData(userData);
-      loadSellingData();
-      loadPurchasesData();
-      loadSettingsData();
+      loadSellingData(userData);
+      loadPurchasesData(userData);
+      loadSettingsData(userData);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
@@ -152,17 +159,41 @@ function loadReviewData(userData) {
   // review categories
 }
 
-function loadPaymentInfoData(userData) {
+async function loadPaymentInfoData(userData) {
+  const payoutItems = document.querySelectorAll(".payouts-item");
+  console.log(payoutItems);
   if (userData) {
-    // load payment info
-    document.querySelector("#act-wallet-balance").value =
+    // load wallet info
+    document.querySelector("#act-wallet-balance").textContent =
       userData.wallet.balance;
-    document.querySelector("#monthly-activity").value =
+    document.querySelector("#monthly-activity").textContent =
       userData.wallet.monthlyActivity;
-    document.querySelector("#pending-balance").value =
+    document.querySelector("#pending-balance").textContent =
       userData.wallet.pendingBalance;
-    document.querySelector("#upcoming-payouts").value =
+    document.querySelector("#currency-info").textContent =
+      userData.wallet.currency;
+    document.querySelector("#update-status").textContent =
+      userData.wallet.lastUpdated;
+
+    // load payout info
+    document.querySelector("#upcoming-payouts").textContent =
       userData.payments.upcomingPayouts;
+    document.querySelector("#payout-schedule").textContent =
+      userData.payments.payoutSchedule;
+    try {
+      const payoutsRef = collection(
+        db,
+        "userProfiles",
+        userData.email,
+        "payouts"
+      );
+      const snapShot = await getDocs(payoutsRef);
+
+      // Log what we got
+      console.log("Number of payouts:", snapShot.size);
+    } catch (error) {
+      console.error("Error occured when fetching payouts:", error);
+    }
   }
 }
 
