@@ -5,6 +5,7 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -36,6 +37,7 @@ export {
   collection,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   updateDoc,
   getAuth,

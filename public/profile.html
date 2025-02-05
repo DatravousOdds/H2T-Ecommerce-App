@@ -2864,7 +2864,7 @@
                 <!-- Header with update status-->
                 <div class="header-wrapper">
                   <h4>Wallet Balance</h4>
-                  <span class="update-status">
+                  <span class="update-status" id="update-status">
                     <i class="fa-solid fa-clock"></i>
                     Last updated 12 hours ago
                   </span>
@@ -2873,11 +2873,11 @@
                 <!-- Currency Container-->
                 <div class="usd-wrapper">
                   <div class="usd-img">
-                    <img src="images/flag.jpg" alt="" />
+                    <img id="currency-img" src="images/flag.jpg" alt="" />
                   </div>
-                  <div class="currency-info">
+                  <div class="currency-info" id="currency-info">
                     <p>USD</p>
-                    <span class="currency-status">
+                    <span class="currency-status" id="currency-status">
                       <i class="fa-solid fa-arrow-trend-up"></i>
                       Active
                     </span>
@@ -2905,11 +2905,15 @@
                 <div class="wallet-info">
                   <div class="wallet-activity">
                     <p class="default-paragraph">Monthly Activity</p>
-                    <p class="default-paragraph font-600">$150.00</p>
+                    <p class="default-paragraph font-600" id="monthly-activity">
+                      $150.00
+                    </p>
                   </div>
                   <div class="pending-activity">
                     <p class="default-paragraph">Pending</p>
-                    <p class="default-paragraph font-600">$100.00</p>
+                    <p class="default-paragraph font-600" id="pending-balance">
+                      $100.00
+                    </p>
                   </div>
                 </div>
               </div>
@@ -2918,7 +2922,7 @@
             <div class="inner-wrapper" id="payouts">
               <div id="payouts-container">
                 <h4>Upcoming Payouts</h4>
-                <h1>$492.48</h1>
+                <h1 id="upcoming-payouts">$492.48</h1>
                 <p class="default-paragraph">Collected from order(s)</p>
               </div>
               <!-- Filters -->
@@ -2941,22 +2945,35 @@
               <div id="payouts-list">
                 <div class="payouts-item">
                   <div class="payouts-item-wrapper">
-                    <p class="default-paragraph">Order #1234567890</p>
-                    <p class="default-paragraph">03/01/2024</p>
+                    <p class="default-paragraph" id="payout-id">
+                      Order #1234567890
+                    </p>
+                    <p class="default-paragraph" id="payout-date">03/01/2024</p>
                   </div>
                   <div class="payouts-item-wrapper space-between">
-                    <p class="default-paragraph">$123.45</p>
-                    <p class="status default-paragraph completed">Completed</p>
+                    <p class="default-paragraph" id="payout-amount">$123.45</p>
+                    <p
+                      class="status default-paragraph completed"
+                      id="payout-status"
+                    >
+                      Completed
+                    </p>
                   </div>
                 </div>
                 <div class="payouts-item">
                   <div class="payouts-item-wrapper">
-                    <p class="default-paragraph">Order #1234567891</p>
-                    <p class="default-paragraph text-gray-500">03/02/2024</p>
+                    <p class="default-paragraph" id="payout-id">
+                      Order #1234567891
+                    </p>
+                    <p class="default-paragraph text-gray-500" id="payout-date">
+                      03/02/2024
+                    </p>
                   </div>
                   <div class="payouts-item-wrapper space-between">
-                    <p class="default-paragraph">$234.56</p>
-                    <span class="status pending">Pending</span>
+                    <p class="default-paragraph" id="payout-amount">$234.56</p>
+                    <span class="status pending" id="payout-status"
+                      >Pending</span
+                    >
                   </div>
                 </div>
                 <div class="view-all-payouts" id="view-all-payouts">
@@ -2965,7 +2982,7 @@
               </div>
               <div id="payouts-tooltip">
                 <i class="fa-regular fa-clock"></i>
-                <p class="default-paragraph">
+                <p class="default-paragraph" id="payout-schedule">
                   Payouts are typically processed within 2-3 business days
                 </p>
               </div>
@@ -3049,12 +3066,20 @@
                   </div>
                   <div class="filter-payout-list">
                     <div class="filter-payout-item">
-                      <p class="default-paragraph">03/01/2024</p>
-                      <p class="default-paragraph">Order #1234567890</p>
-                      <p class="default-paragraph">Sale</p>
-                      <p class="default-paragraph">$123.45</p>
+                      <p class="default-paragraph" id="order-date">
+                        03/01/2024
+                      </p>
+                      <p class="default-paragraph" id="order-id">
+                        Order #1234567890
+                      </p>
+                      <p class="default-paragraph" id="order-processingDate">
+                        Sale
+                      </p>
+                      <p class="default-paragraph" id="order-amount">$123.45</p>
                       <div class="status-wrapper">
-                        <p class="default-paragraph">Completed</p>
+                        <p class="default-paragraph" id="order-status">
+                          Completed
+                        </p>
                       </div>
                       <p class="default-paragraph">-</p>
                     </div>
@@ -3175,7 +3200,9 @@
                   min="0"
                   placeholder="0.00"
                 />
-                <span class="currency-indicator">USD</span>
+                <span class="currency-indicator" id="current-currency"
+                  >USD</span
+                >
               </div>
 
               <p class="available-balance">
