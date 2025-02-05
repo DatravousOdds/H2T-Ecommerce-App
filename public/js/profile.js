@@ -54,6 +54,22 @@ const updateProfilePicture = async (email, imageUrl) => {
   }
 };
 
+// update personal information
+const updatePersonalInfo = async (email, data) => {
+  if (!email && !data) {
+    // check if user is autheticate
+
+    // get user document
+    const userDocRef = getDoc();
+  }
+};
+
+// update payment information
+const updatePaymentInfo = async (email, data) => {};
+
+// update notification settings
+const updateNotificationSettings = async (email, data) => {};
+
 async function loadProfileData() {
   try {
     const userData = await checkUserStatus();
@@ -136,17 +152,41 @@ function loadReviewData(userData) {
   // review categories
 }
 
-function loadPaymentInfoData() {}
+function loadPaymentInfoData(userData) {
+  if (userData) {
+    // load payment info
+    document.querySelector("#act-wallet-balance").value =
+      userData.wallet.balance;
+    document.querySelector("#monthly-activity").value =
+      userData.wallet.monthlyActivity;
+    document.querySelector("#pending-balance").value =
+      userData.wallet.pendingBalance;
+    document.querySelector("#upcoming-payouts").value =
+      userData.payments.upcomingPayouts;
+  }
+}
 
-function loadSellingData() {}
+function loadSellingData(userData) {
+  if (userData) {
+    // load selling info
+  }
+}
 
-function loadFavoritesData() {}
+function loadFavoritesData(userData) {
+  if (userData) {
+    // load user's favorite items
+  }
+}
 
-function loadNotificationData() {}
+function loadNotificationData(userData) {
+  if (userData) {
+    // load user notification settings
+  }
+}
 
-function loadPurchasesData() {}
+function loadPurchasesData(userData) {}
 
-function loadSettingsData() {}
+function loadSettingsData(userData) {}
 
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
