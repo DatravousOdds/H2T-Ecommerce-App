@@ -10,6 +10,7 @@ import {
   getDocs
 } from "./firebase-client.js";
 import { checkUserStatus } from "./auth.js";
+import { query } from "express";
 
 // Update profile information
 const updateProfile = async (email, updateData) => {
@@ -160,8 +161,6 @@ function loadReviewData(userData) {
 }
 
 async function loadPaymentInfoData(userData) {
-  const payoutItems = document.querySelectorAll(".payouts-item");
-  console.log(payoutItems);
   if (userData) {
     // load wallet info
     document.querySelector("#act-wallet-balance").textContent =
@@ -187,14 +186,61 @@ async function loadPaymentInfoData(userData) {
         userData.email,
         "payouts"
       );
-      const snapShot = await getDocs(payoutsRef);
 
-      // Log what we got
-      console.log("Number of payouts:", snapShot.size);
+      const completedPayouts = query(
+        payoutsRef,
+        where("status", "==", "completed")
+      );
+
+      const querySnapshot = await getDocs(payoutsRef);
+
+      const payoutItems = document.querySelectorAll(".payouts-item");
+
+      console.log(payoutItems);
+      console.log("payout length", payoutItems.length);
+      console.log("Number of payouts:", querySnapshot.size);
+
+      // Coverting docs to array
+      const payoutDocs = Array.from(querySnapshot.docs);
+
+      const totalPayoutAmount = payoutDocs.reduce(
+        (sum, doc) => sum + doc.data().amount,
+        0
+      );
+      console.log(totalPayoutAmount);
+
+      payoutDocs.forEach((doc, index) => {
+        const currentItem = payoutItems[index];
+
+        console.log("current index", currentItem);
+        currentItem.querySelector(".payout-id").textContent = doc
+          .data()
+          .orderId.trim();
+        currentItem.querySelector(".payout-date").textContent =
+          formatFirebaseDate(doc.data().processingDate);
+        currentItem.querySelector(".payout-amount").textContent = `
+         $${doc.data().amount.toFixed()}`;
+        currentItem.querySelector(".payout-status").textContent =
+          doc.data().status.charAt(0).toUpperCase() +
+          doc.data().status.slice(1);
+      });
+
+      document.querySelector(
+        "#totalPayoutAmount"
+      ).textContent = `$${totalPayoutAmount}`;
     } catch (error) {
       console.error("Error occured when fetching payouts:", error);
     }
   }
+}
+
+function formatFirebaseDate(timestamp) {
+  const date = timestamp.toDate();
+  return date.toLocaleDateString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric"
+  });
 }
 
 function loadSellingData(userData) {
