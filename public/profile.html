@@ -2945,15 +2945,20 @@
               <div id="payouts-list">
                 <div class="payouts-item">
                   <div class="payouts-item-wrapper">
-                    <p class="default-paragraph" id="payout-id">
-                      Order #1234567890
+                    <p class="default-paragraph payout-id">Order #1234567890</p>
+                    <p class="default-paragraph payout-date" id="payout-date">
+                      03/01/2024
                     </p>
-                    <p class="default-paragraph" id="payout-date">03/01/2024</p>
                   </div>
                   <div class="payouts-item-wrapper space-between">
-                    <p class="default-paragraph" id="payout-amount">$123.45</p>
                     <p
-                      class="status default-paragraph completed"
+                      class="default-paragraph payout-amount"
+                      id="payout-amount"
+                    >
+                      $123.45
+                    </p>
+                    <p
+                      class="status default-paragraph completed payout-status"
                       id="payout-status"
                     >
                       Completed
@@ -2962,18 +2967,24 @@
                 </div>
                 <div class="payouts-item">
                   <div class="payouts-item-wrapper">
-                    <p class="default-paragraph" id="payout-id">
-                      Order #1234567891
-                    </p>
-                    <p class="default-paragraph text-gray-500" id="payout-date">
-                      03/02/2024
+                    <p class="default-paragraph payout-id">Order #1234567890</p>
+                    <p class="default-paragraph payout-date" id="payout-date">
+                      03/01/2024
                     </p>
                   </div>
                   <div class="payouts-item-wrapper space-between">
-                    <p class="default-paragraph" id="payout-amount">$234.56</p>
-                    <span class="status pending" id="payout-status"
-                      >Pending</span
+                    <p
+                      class="default-paragraph payout-amount"
+                      id="payout-amount"
                     >
+                      $123.45
+                    </p>
+                    <p
+                      class="status default-paragraph completed payout-status"
+                      id="payout-status"
+                    >
+                      Completed
+                    </p>
                   </div>
                 </div>
                 <div class="view-all-payouts" id="view-all-payouts">
@@ -3003,19 +3014,21 @@
                   <div class="view-all-payouts-list">
                     <div class="total-amount">
                       <p class="default-paragraph">Total Amount</p>
-                      <p class="default-paragraph">$492.48</p>
+                      <p class="default-paragraph" id="totalPayoutAmount">
+                        $492.48
+                      </p>
                     </div>
                     <div class="completed-payouts">
                       <p class="default-paragraph">Completed</p>
-                      <p class="default-paragraph">2</p>
+                      <p class="default-paragraph" id="completed-payouts">2</p>
                     </div>
                     <div class="pending-payouts">
                       <p class="default-paragraph">Pending</p>
-                      <p class="default-paragraph">1</p>
+                      <p class="default-paragraph" id="pending-payouts">1</p>
                     </div>
                     <div class="processing-payouts">
                       <p class="default-paragraph">Processing</p>
-                      <p class="default-paragraph">1</p>
+                      <p class="default-paragraph" id="processing-payouts">1</p>
                     </div>
                   </div>
                   <div class="filter-payouts">
