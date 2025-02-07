@@ -10,7 +10,6 @@ import {
   getDocs
 } from "./firebase-client.js";
 import { checkUserStatus } from "./auth.js";
-import { query } from "express";
 
 // Update profile information
 const updateProfile = async (email, updateData) => {
@@ -160,19 +159,24 @@ function loadReviewData(userData) {
   // review categories
 }
 
-async function loadPaymentInfoData(userData) {
+async function loadPaymentInfoData(userData, filter = "all") {
   if (userData) {
+    const walletData = userData.wallet;
     // load wallet info
-    document.querySelector("#act-wallet-balance").textContent =
-      userData.wallet.balance;
-    document.querySelector("#monthly-activity").textContent =
-      userData.wallet.monthlyActivity;
-    document.querySelector("#pending-balance").textContent =
-      userData.wallet.pendingBalance;
-    document.querySelector("#currency-info").textContent =
-      userData.wallet.currency;
-    document.querySelector("#update-status").textContent =
-      userData.wallet.lastUpdated;
+    document.querySelector(
+      "#act-wallet-balance"
+    ).textContent = `$${walletData.balance.toFixed(2)}`;
+
+    document.querySelector(
+      "#monthly-activity"
+    ).textContent = `$${walletData.monthlyActivity.toFixed(2)}`;
+    document.querySelector(
+      "#pending-balance"
+    ).textContent = `$${walletData.pendingBalance.toFixed(2)}`;
+    document.querySelector("#currency-info").textContent = walletData.currency;
+    document.querySelector("#update-status").textContent = formatTimestamp(
+      walletData.lastUpdated
+    );
 
     // load payout info
     document.querySelector("#upcoming-payouts").textContent =
@@ -186,48 +190,70 @@ async function loadPaymentInfoData(userData) {
         userData.email,
         "payouts"
       );
+      let baseQuery = payoutsRef;
 
-      const completedPayouts = query(
-        payoutsRef,
-        where("status", "==", "completed")
-      );
+      if (["pending", "completed", "processing"].includes(filter)) {
+        baseQuery = query(payoutsRef, where("status", "==", filter));
+      }
 
-      const querySnapshot = await getDocs(payoutsRef);
+      const querySnapShot = await getDocs(baseQuery);
+      const payoutDocs = Array.from(querySnapshot.docs);
+
+      let completedPayouts = 0;
+      let processingPayouts = 0;
+      let pendingPayouts = 0;
+      let totalPayoutAmount = 0;
+
+      // filters by today, this-week, or this-month
+      if (["today", "this-week", "this-month"].includes(filter)) {
+      }
 
       const payoutItems = document.querySelectorAll(".payouts-item");
 
-      console.log(payoutItems);
-      console.log("payout length", payoutItems.length);
-      console.log("Number of payouts:", querySnapshot.size);
+      // console.log("payout length", payoutItems.length);
+      // console.log("Number of payouts:", querySnapshot.size);
 
-      // Coverting docs to array
-      const payoutDocs = Array.from(querySnapshot.docs);
+      payoutDocs.forEach((doc) => {
+        if (doc.data().status == "completed") {
+          // console.log("completed order!");
+          completedPayouts++;
+        } else if (doc.data().status == "pending") {
+          pendingPayouts++;
+        } else if (doc.data().status == "processing") {
+          processingPayouts++;
+        }
 
-      const totalPayoutAmount = payoutDocs.reduce(
-        (sum, doc) => sum + doc.data().amount,
-        0
-      );
-      console.log(totalPayoutAmount);
+        totalPayoutAmount += doc.data().amount;
+      });
+
+      console.log("Completed payouts:", completedPayouts);
+      console.log("Pending Payouts:", pendingPayouts);
+      console.log("Processing:", processingPayouts);
+      console.log("totalAmountPayouts:", totalPayoutAmount);
 
       payoutDocs.forEach((doc, index) => {
         const currentItem = payoutItems[index];
+        const data = doc.data();
 
         console.log("current index", currentItem);
-        currentItem.querySelector(".payout-id").textContent = doc
-          .data()
-          .orderId.trim();
+        currentItem.querySelector(".payout-id").textContent = data.payoutId;
         currentItem.querySelector(".payout-date").textContent =
-          formatFirebaseDate(doc.data().processingDate);
+          formatFirebaseDate(data.processingDate);
         currentItem.querySelector(".payout-amount").textContent = `
-         $${doc.data().amount.toFixed()}`;
+         $${data.amount.toFixed(2)}`;
         currentItem.querySelector(".payout-status").textContent =
-          doc.data().status.charAt(0).toUpperCase() +
-          doc.data().status.slice(1);
+          data.status.charAt(0).toUpperCase() + data.status.slice(1);
       });
 
       document.querySelector(
         "#totalPayoutAmount"
       ).textContent = `$${totalPayoutAmount}`;
+      document.querySelector(
+        "#completed-payouts"
+      ).textContent = `${completedPayouts}`;
+      document.querySelector("#pending-payouts").textContent = pendingPayouts;
+      document.querySelector("#processing-payouts").textContent =
+        processingPayouts;
     } catch (error) {
       console.error("Error occured when fetching payouts:", error);
     }
