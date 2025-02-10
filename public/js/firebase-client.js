@@ -7,7 +7,11 @@ import {
   getDoc,
   getDocs,
   setDoc,
-  updateDoc
+  updateDoc,
+  query,
+  where,
+  limit,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import {
   getAuth,
@@ -44,5 +48,9 @@ export {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
+  query,
+  where,
+  limit,
+  orderBy
 };

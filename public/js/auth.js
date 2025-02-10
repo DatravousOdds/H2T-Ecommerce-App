@@ -201,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Add logout functionality
 export const logout = () => {
+  const auth = getAuth();
   signOut(auth)
     .then(() => {
       console.log("User was signout successfully");
