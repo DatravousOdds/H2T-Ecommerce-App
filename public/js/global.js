@@ -607,6 +607,10 @@ class PaymentSecurity {
   }
 }
 
+class AdminUser {}
+
+class User extends AdminUser {}
+
 // Usage Example:
 const validator = new PaymentValidation();
 const security = new PaymentSecurity();

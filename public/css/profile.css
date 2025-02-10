@@ -5241,7 +5241,7 @@ h6 {
 .filter-payout-list .filter-payout-item {
   display: grid;
   gap: 6rem;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, 1.5%);
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -8027,7 +8027,6 @@ input:checked + .slider:before {
   }
 
   /* Seller Dashboard Styles */
-
   .dashboard {
     width: 100%;
     max-width: 95%;
@@ -8055,8 +8054,15 @@ input:checked + .slider:before {
     align-items: center;
   }
 
+  /* Payout Modal Styles */
+
   .filter-payout-list .filter-payout-item {
-    grid-template-columns: repeat(6, 15.1%);
+    grid-template-columns: repeat(6, 3%);
+  }
+
+  .filter-payout-item .default-paragraph,
+  .filter-payout-header {
+    font-size: 12px !important;
   }
 
   #pfp-data,

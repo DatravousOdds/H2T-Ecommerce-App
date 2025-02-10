@@ -7,7 +7,11 @@ import {
   doc,
   setDoc,
   updateDoc,
-  getDocs
+  getDocs,
+  query,
+  where,
+  limit,
+  orderBy
 } from "./firebase-client.js";
 import { checkUserStatus } from "./auth.js";
 
@@ -88,7 +92,7 @@ async function loadProfileData() {
       loadReviewData(userData);
       loadFavoritesData(userData);
       loadNotificationData(userData);
-      loadPaymentInfoData(userData);
+      loadPaymentInfoData(userData, "pending");
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
@@ -159,83 +163,194 @@ function loadReviewData(userData) {
   // review categories
 }
 
+/**
+ * Loads and displays payment information and payout data for a user
+ * @param {Object} userData - Object containing user's information
+ * @param {Object} userData.wallet - User's wallet information
+ * @param {number} userData.wallet.balance - Current wallet balance
+ * @param {number} userData.wallet.monthlyActivity - Monthly transaction activity
+ * @param {number} userData.wallet.pendingBalance - Pending balance amount
+ * @param {string} userData.wallet.currency - Currency type
+ * @param {Object} userData.payments - User's payment information
+ * @param {number} userData.payments.upcomingPayouts - Number of upcoming payouts
+ * @param {string} userData.payments.payoutSchedule - Schedule for payouts
+ * @param {string} userData.email - User's email address used for database queries
+ * @param {string} [filter="all"] - Filter criteria for payouts. Can be:
+ *   - "all" (default): Shows all payouts
+ *   - "pending": Shows only pending payouts
+ *   - "completed": Shows only completed payouts
+ *   - "processing": Shows only processing payouts
+ *   - "today": Shows payouts from today
+ *   - "this-week": Shows payouts from current week
+ *   - "this-month": Shows payouts from current month
+ * @throws {Error} When Firebase API fails to retrieve payout data
+ * @returns {Promise<void>}
+ */
 async function loadPaymentInfoData(userData, filter = "all") {
-  if (userData) {
-    const walletData = userData.wallet;
-    // load wallet info
-    document.querySelector(
-      "#act-wallet-balance"
-    ).textContent = `$${walletData.balance.toFixed(2)}`;
+  if (!userData) return null;
 
-    document.querySelector(
-      "#monthly-activity"
-    ).textContent = `$${walletData.monthlyActivity.toFixed(2)}`;
-    document.querySelector(
-      "#pending-balance"
-    ).textContent = `$${walletData.pendingBalance.toFixed(2)}`;
-    document.querySelector("#currency-info").textContent = walletData.currency;
-    document.querySelector("#update-status").textContent = formatTimestamp(
-      walletData.lastUpdated
+  const walletData = userData.wallet;
+  updateWalletStatisticsDisplay(walletData);
+
+  const paymentData = userData.payments;
+
+  // TODO: create function to load schedule payout info
+  document.querySelector("#upcoming-payouts").textContent =
+    paymentData.upcomingPayouts;
+  document.querySelector("#payout-schedule").textContent =
+    paymentData.payoutSchedule;
+  try {
+    /**
+     * Query and filter payouts from Firebase
+     * @type {CollectioinReference}
+     */
+    const payoutsRef = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "payouts"
     );
 
-    // load payout info
-    document.querySelector("#upcoming-payouts").textContent =
-      userData.payments.upcomingPayouts;
-    document.querySelector("#payout-schedule").textContent =
-      userData.payments.payoutSchedule;
-    try {
-      const payoutsRef = collection(
-        db,
-        "userProfiles",
-        userData.email,
-        "payouts"
+    let baseQuery;
+
+    /**
+     * Apply status filter if specified
+     * @type {query}
+     */
+    switch (filter) {
+      case "pending":
+        // get only 2 most recent pending payouts
+        baseQuery = query(
+          payoutsRef,
+          where("status", "==", filter),
+          orderBy("processingDate", "desc"),
+          limit(2)
+        );
+        break;
+
+      case "today":
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        // get only 2 most recent payouts from today
+        baseQuery = query(
+          payoutsRef,
+          where("processingDate", ">=", todayStart),
+          orderBy("processingDate", "desc"),
+          limit(2)
+        );
+        break;
+      case "this-week":
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        weekStart.setHours(0, 0, 0, 0);
+        baseQuery = query(
+          payoutsRef,
+          where("processingDate", ">=", weekStart),
+          orderBy("processingDate", "desc"),
+          limit(2)
+        );
+        break;
+
+      case "this-month":
+        const monthStart = new Date(now.getFullYear(), now, getMonth(), 1);
+        baseQuery = query(
+          payoutsRef,
+          where("processingDate", ">=", monthStart),
+          orderBy("processingDate", "desc"),
+          limit(2)
+        );
+        break;
+
+      case "completed":
+        baseQuery = query(
+          payoutsRef,
+          where("status", "==", filter),
+          orderBy("processingDate", "desc"),
+          limit(2)
+        );
+        break;
+
+      case "processing":
+        baseQuery = query(
+          payoutsRef,
+          where("status", "==", filter),
+          orderBy("processingDate", "desc"),
+          limit(2)
+        );
+        break;
+
+      default:
+        // show all payouts by default
+        baseQuery = query(
+          payoutsRef,
+          orderBy("processingDate", "desc"),
+          limit(2)
+        );
+    }
+
+    const getTotalStats = async () => {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const statsQuery = query(
+        payoutsRef,
+        where("processingDate", ">=", monthStart)
       );
-      let baseQuery = payoutsRef;
+      const statsSnapshot = await getDocs(statsQuery);
 
-      if (["pending", "completed", "processing"].includes(filter)) {
-        baseQuery = query(payoutsRef, where("status", "==", filter));
-      }
+      let stats = {
+        completed: 0,
+        processing: 0,
+        pending: 0,
+        total: 0
+      };
 
-      const querySnapShot = await getDocs(baseQuery);
-      const payoutDocs = Array.from(querySnapshot.docs);
+      console.log("Stats Snapshot:", statsSnapshot);
 
-      let completedPayouts = 0;
-      let processingPayouts = 0;
-      let pendingPayouts = 0;
-      let totalPayoutAmount = 0;
-
-      // filters by today, this-week, or this-month
-      if (["today", "this-week", "this-month"].includes(filter)) {
-      }
-
-      const payoutItems = document.querySelectorAll(".payouts-item");
-
-      // console.log("payout length", payoutItems.length);
-      // console.log("Number of payouts:", querySnapshot.size);
-
-      payoutDocs.forEach((doc) => {
-        if (doc.data().status == "completed") {
-          // console.log("completed order!");
-          completedPayouts++;
-        } else if (doc.data().status == "pending") {
-          pendingPayouts++;
-        } else if (doc.data().status == "processing") {
-          processingPayouts++;
-        }
-
-        totalPayoutAmount += doc.data().amount;
+      statsSnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log(data);
+        stats[data.status]++;
+        stats.total += data.amount;
       });
 
-      console.log("Completed payouts:", completedPayouts);
-      console.log("Pending Payouts:", pendingPayouts);
-      console.log("Processing:", processingPayouts);
-      console.log("totalAmountPayouts:", totalPayoutAmount);
+      console.log("current stats:", stats);
 
-      payoutDocs.forEach((doc, index) => {
+      return stats;
+    };
+
+    const [querySnapshot, stats] = await Promise.all([
+      getDocs(baseQuery),
+      getTotalStats()
+    ]);
+
+    /**
+     * Fetch and process payout documents
+     * @type {querySnapshot}
+     */
+    const payoutDocs = Array.from(querySnapshot.docs);
+
+    /**
+     * Select all payouts elements in the DOM
+     * @type {NodeList}
+     */
+    const payoutItems = document.querySelectorAll(".payouts-item");
+
+    // Hide all items first
+    payoutItems.forEach((item) => {
+      item.style.display = "none";
+    });
+
+    /**
+     * Update DOM with payout information
+     * Maps Firebase data to corresponding  DOM elements
+     */
+    payoutDocs.forEach((doc, index) => {
+      if (index < payoutItems.length) {
         const currentItem = payoutItems[index];
         const data = doc.data();
+        console.log("doc:", doc.data());
 
-        console.log("current index", currentItem);
+        // Update individual payout item details
         currentItem.querySelector(".payout-id").textContent = data.payoutId;
         currentItem.querySelector(".payout-date").textContent =
           formatFirebaseDate(data.processingDate);
@@ -243,21 +358,48 @@ async function loadPaymentInfoData(userData, filter = "all") {
          $${data.amount.toFixed(2)}`;
         currentItem.querySelector(".payout-status").textContent =
           data.status.charAt(0).toUpperCase() + data.status.slice(1);
-      });
+      }
+    });
 
-      document.querySelector(
-        "#totalPayoutAmount"
-      ).textContent = `$${totalPayoutAmount}`;
-      document.querySelector(
-        "#completed-payouts"
-      ).textContent = `${completedPayouts}`;
-      document.querySelector("#pending-payouts").textContent = pendingPayouts;
-      document.querySelector("#processing-payouts").textContent =
-        processingPayouts;
-    } catch (error) {
-      console.error("Error occured when fetching payouts:", error);
-    }
+    /**
+     * Update summary statistics in the DOM
+     * Displays total amounts and counts for different payout statuses
+     */
+    updateStatisticsDisplay(stats);
+  } catch (error) {
+    /**
+     * Handles any errors that occur during the payout fetching process
+     * @param {Error} error - The error object thrown during execution
+     */
+    console.error("Error occured when fetching payouts:", error);
   }
+}
+
+function updateStatisticsDisplay(stats) {
+  document.querySelector(
+    "#totalPayoutAmount"
+  ).textContent = `$${stats.total.toFixed(2)}`;
+  document.querySelector("#completed-payouts").textContent = stats.completed;
+  document.querySelector("#pending-payouts").textContent = stats.pending;
+  document.querySelector("#processing-payouts").textContent = stats.processing;
+}
+
+function updateWalletStatisticsDisplay(walletData) {
+  // load wallet info
+  document.querySelector(
+    "#act-wallet-balance"
+  ).textContent = `$${walletData.balance.toFixed(2)}`;
+
+  document.querySelector(
+    "#monthly-activity"
+  ).textContent = `$${walletData.monthlyActivity.toFixed(2)}`;
+  document.querySelector(
+    "#pending-balance"
+  ).textContent = `$${walletData.pendingBalance.toFixed(2)}`;
+  document.querySelector("#currency-info").textContent = walletData.currency;
+  document.querySelector("#update-status").textContent = formatTimestamp(
+    walletData.lastUpdated
+  );
 }
 
 function formatFirebaseDate(timestamp) {
@@ -287,9 +429,15 @@ function loadNotificationData(userData) {
   }
 }
 
-function loadPurchasesData(userData) {}
+function loadPurchasesData(userData) {
+  if (userData) {
+  }
+}
 
-function loadSettingsData(userData) {}
+function loadSettingsData(userData) {
+  if (userData) {
+  }
+}
 
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
@@ -298,6 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProfileData();
 });
 
+// TODO: create class to load Payment Information to DOM
 // Payment Information Section
 const dropdownSection = document.querySelectorAll(".dropdown-section");
 const smallDropdownSection = document.querySelectorAll(".dropdown-section-sm");
@@ -567,6 +716,12 @@ function validateCardForm(element, errorMessage, options = {}) {
   return false;
 }
 
+/**
+ *
+ * @param {element} element - appends error div to the parent element
+ * @param {*} errorMessage - display the error message
+ * @returns - true if there is an error, false if there is not any errors
+ */
 function validateExpiry(element, errorMessage) {
   const value = element.value.trim();
 
@@ -613,7 +768,6 @@ if (cardNumber) {
 }
 
 // CVV Formatting
-
 if (cvv) {
   cvv.addEventListener("input", (e) => {
     e.target.value = e.target.value.replace(/\D/g, "").substring(0, 4);
@@ -621,7 +775,6 @@ if (cvv) {
 }
 
 // Expiry Formatting
-
 if (expiry) {
   expiry.addEventListener("input", (e) => {
     let value = e.target.value.replace(/\D/g, "");
@@ -776,6 +929,11 @@ if (bankForm) {
   });
 }
 
+/**
+ *
+ * @param {form} form - form that error will clear when called upon
+ * @returns
+ */
 function clearFormErrors(form) {
   if (!form) return;
 
