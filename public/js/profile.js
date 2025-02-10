@@ -103,10 +103,6 @@ async function loadProfileData() {
   }
 }
 
-const payoutFilterSelect = document.querySelector(".payout-type-filter");
-const selectedOption = payoutFilterSelect.value;
-console.log("Selected Options:", selectedOption);
-
 function loadProfileDisplayData(userData) {
   if (userData.backgroundImage) {
     const profileBackground = document.querySelector(".profile-background");
@@ -168,6 +164,89 @@ function loadReviewData(userData) {
 }
 
 /**
+ *
+ * @param {payouts} payouts - representing the document to get the payouts from through firebase
+ * @param {filterType} filterType - the applied filter that should placed on the payout information that is retrieve from the backend data
+ * @returns payouts - filter or all payouts returned when called
+ */
+function filterPayouts(payoutRef, filterType) {
+  let baseQuery;
+
+  /**
+   * Apply status filter if specified
+   * @type {query}
+   */
+  switch (filter) {
+    case "pending":
+      // get only 2 most recent pending payouts
+      baseQuery = query(
+        payoutRef,
+        where("status", "==", filter),
+        orderBy("processingDate", "desc"),
+        limit(2)
+      );
+      return baseQuery;
+
+    case "today":
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      // get only 2 most recent payouts from today
+      baseQuery = query(
+        payoutRef,
+        where("processingDate", ">=", todayStart),
+        orderBy("processingDate", "desc"),
+        limit(2)
+      );
+      return baseQuery;
+    case "this-week":
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      baseQuery = query(
+        payoutRef,
+        where("processingDate", ">=", weekStart),
+        orderBy("processingDate", "desc"),
+        limit(2)
+      );
+      return baseQuery;
+
+    case "this-month":
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now, getMonth(), 1);
+      baseQuery = query(
+        payoutRef,
+        where("processingDate", ">=", monthStart),
+        orderBy("processingDate", "desc"),
+        limit(2)
+      );
+      return baseQuery;
+
+    case "completed":
+      baseQuery = query(
+        payoutRef,
+        where("status", "==", filter),
+        orderBy("processingDate", "desc"),
+        limit(2)
+      );
+      return baseQuery;
+
+    case "processing":
+      baseQuery = query(
+        payoutRef,
+        where("status", "==", filter),
+        orderBy("processingDate", "desc"),
+        limit(2)
+      );
+      return baseQuery;
+
+    default:
+      // show all payouts by default
+      baseQuery = query(payoutRef, orderBy("processingDate", "desc"), limit(2));
+      return baseQuery;
+  }
+}
+
+/**
  * Loads and displays payment information and payout data for a user
  * @param {Object} userData - Object containing user's information
  * @param {Object} userData.wallet - User's wallet information
@@ -214,82 +293,12 @@ async function loadPaymentInfoData(userData, filter = "all") {
       "payouts"
     );
 
-    let baseQuery;
+    // Get current filter selection
+    const filterSelect = document.querySelector(".payout-filter");
+    const currentFilter = filterSelect.value;
+    console.log(currentFilter);
 
-    /**
-     * Apply status filter if specified
-     * @type {query}
-     */
-    switch (filter) {
-      case "pending":
-        // get only 2 most recent pending payouts
-        baseQuery = query(
-          payoutsRef,
-          where("status", "==", filter),
-          orderBy("processingDate", "desc"),
-          limit(2)
-        );
-        break;
-
-      case "today":
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        // get only 2 most recent payouts from today
-        baseQuery = query(
-          payoutsRef,
-          where("processingDate", ">=", todayStart),
-          orderBy("processingDate", "desc"),
-          limit(2)
-        );
-        break;
-      case "this-week":
-        const weekStart = new Date();
-        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-        weekStart.setHours(0, 0, 0, 0);
-        baseQuery = query(
-          payoutsRef,
-          where("processingDate", ">=", weekStart),
-          orderBy("processingDate", "desc"),
-          limit(2)
-        );
-        break;
-
-      case "this-month":
-        const monthStart = new Date(now.getFullYear(), now, getMonth(), 1);
-        baseQuery = query(
-          payoutsRef,
-          where("processingDate", ">=", monthStart),
-          orderBy("processingDate", "desc"),
-          limit(2)
-        );
-        break;
-
-      case "completed":
-        baseQuery = query(
-          payoutsRef,
-          where("status", "==", filter),
-          orderBy("processingDate", "desc"),
-          limit(2)
-        );
-        break;
-
-      case "processing":
-        baseQuery = query(
-          payoutsRef,
-          where("status", "==", filter),
-          orderBy("processingDate", "desc"),
-          limit(2)
-        );
-        break;
-
-      default:
-        // show all payouts by default
-        baseQuery = query(
-          payoutsRef,
-          orderBy("processingDate", "desc"),
-          limit(2)
-        );
-    }
+    const filteredPayouts = filterPayouts(payoutsRef, currentFilter);
 
     // Payout stats
     const getTotalStats = async () => {
@@ -323,7 +332,7 @@ async function loadPaymentInfoData(userData, filter = "all") {
     };
 
     const [querySnapshot, stats] = await Promise.all([
-      getDocs(baseQuery),
+      getDocs(filterPayouts),
       getTotalStats()
     ]);
 
