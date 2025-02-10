@@ -92,7 +92,7 @@ async function loadProfileData() {
       loadReviewData(userData);
       loadFavoritesData(userData);
       loadNotificationData(userData);
-      loadPaymentInfoData(userData, "pending");
+      loadPaymentInfoData(userData);
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
@@ -102,6 +102,10 @@ async function loadProfileData() {
     throw error;
   }
 }
+
+const payoutFilterSelect = document.querySelector(".payout-type-filter");
+const selectedOption = payoutFilterSelect.value;
+console.log("Selected Options:", selectedOption);
 
 function loadProfileDisplayData(userData) {
   if (userData.backgroundImage) {
@@ -188,11 +192,10 @@ function loadReviewData(userData) {
  */
 async function loadPaymentInfoData(userData, filter = "all") {
   if (!userData) return null;
-
-  const walletData = userData.wallet;
-  updateWalletStatisticsDisplay(walletData);
-
   const paymentData = userData.payments;
+  const walletData = userData.wallet;
+
+  updateWalletStatisticsDisplay(walletData);
 
   // TODO: create function to load schedule payout info
   document.querySelector("#upcoming-payouts").textContent =
@@ -288,6 +291,7 @@ async function loadPaymentInfoData(userData, filter = "all") {
         );
     }
 
+    // Payout stats
     const getTotalStats = async () => {
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -303,9 +307,9 @@ async function loadPaymentInfoData(userData, filter = "all") {
         pending: 0,
         total: 0
       };
-
       console.log("Stats Snapshot:", statsSnapshot);
 
+      // increment stats basic on stat type
       statsSnapshot.forEach((doc) => {
         const data = doc.data();
         console.log(data);
@@ -329,6 +333,9 @@ async function loadPaymentInfoData(userData, filter = "all") {
      */
     const payoutDocs = Array.from(querySnapshot.docs);
 
+    console.log("Payouts", payoutDocs);
+    console.log(payoutDocs.length);
+
     /**
      * Select all payouts elements in the DOM
      * @type {NodeList}
@@ -340,30 +347,53 @@ async function loadPaymentInfoData(userData, filter = "all") {
       item.style.display = "none";
     });
 
-    /**
-     * Update DOM with payout information
-     * Maps Firebase data to corresponding  DOM elements
-     */
-    payoutDocs.forEach((doc, index) => {
-      if (index < payoutItems.length) {
-        const currentItem = payoutItems[index];
-        const data = doc.data();
-        console.log("doc:", doc.data());
+    // generate payouts dynamically
+    payoutDocs.forEach((doc) => {
+      const payoutList = document.querySelector("#payouts-list");
+      const payoutElement = document.createElement("div");
+      payoutElement.classList.add("payouts-item");
 
-        // Update individual payout item details
-        currentItem.querySelector(".payout-id").textContent = data.payoutId;
-        currentItem.querySelector(".payout-date").textContent =
-          formatFirebaseDate(data.processingDate);
-        currentItem.querySelector(".payout-amount").textContent = `
-         $${data.amount.toFixed(2)}`;
-        currentItem.querySelector(".payout-status").textContent =
-          data.status.charAt(0).toUpperCase() + data.status.slice(1);
-      }
+      payoutElement.innerHTML = `
+      <!-- Wrapper OrderId/Date -->
+                  <div class="payouts-item-wrapper">
+                    <p class="default-paragraph payout-id">Order #${
+                      doc.data().orderId
+                    }</p>
+                    <p class="default-paragraph payout-date" id="payout-date">
+                      ${formatFirebaseDate(doc.data().processingDate)}
+                    </p>
+                  </div>
+
+                  <!-- Wrapper Amount/Status -->
+                  <div class="payouts-item-wrapper space-between">
+                    <p
+                      class="default-paragraph payout-amount"
+                      id="payout-amount"
+                    >
+                      $${doc.data().amount.toFixed(2)}
+                    </p>
+                    <p
+                      class="status default-paragraph ${
+                        doc.data().status
+                      } payout-status"
+                      id="payout-status"
+                    >
+                      ${
+                        doc.data().status.charAt(0).toUpperCase() +
+                        doc.data().status.slice(1)
+                      }
+                    </p>
+                  </div>
+      
+      `;
+
+      payoutList.appendChild(payoutElement);
     });
 
     /**
      * Update summary statistics in the DOM
      * Displays total amounts and counts for different payout statuses
+     * @param {stats} - stats data from firebase API
      */
     updateStatisticsDisplay(stats);
   } catch (error) {
