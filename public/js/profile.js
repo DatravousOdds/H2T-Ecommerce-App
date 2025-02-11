@@ -269,7 +269,7 @@ function filterPayouts(payoutRef, filterType) {
  * @throws {Error} When Firebase API fails to retrieve payout data
  * @returns {Promise<void>}
  */
-async function loadPaymentInfoData(userData, filter = "all") {
+async function loadPaymentInfoData(userData) {
   if (!userData) return null;
   const paymentData = userData.payments;
   const walletData = userData.wallet;
@@ -332,7 +332,7 @@ async function loadPaymentInfoData(userData, filter = "all") {
     };
 
     const [querySnapshot, stats] = await Promise.all([
-      getDocs(filterPayouts),
+      getDocs(filteredPayouts),
       getTotalStats()
     ]);
 
