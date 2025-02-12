@@ -93,6 +93,8 @@ async function loadProfileData() {
       loadFavoritesData(userData);
       loadNotificationData(userData);
       loadPaymentInfoData(userData);
+      // Initialize the payout filters after loading payment info
+      initializePayoutsFilters(userData);
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
@@ -176,12 +178,12 @@ function filterPayouts(payoutRef, filterType) {
    * Apply status filter if specified
    * @type {query}
    */
-  switch (filter) {
+  switch (filterType) {
     case "pending":
       // get only 2 most recent pending payouts
       baseQuery = query(
         payoutRef,
-        where("status", "==", filter),
+        where("status", "==", filterType),
         orderBy("processingDate", "desc"),
         limit(2)
       );
@@ -224,7 +226,7 @@ function filterPayouts(payoutRef, filterType) {
     case "completed":
       baseQuery = query(
         payoutRef,
-        where("status", "==", filter),
+        where("status", "==", filterType),
         orderBy("processingDate", "desc"),
         limit(2)
       );
@@ -233,7 +235,7 @@ function filterPayouts(payoutRef, filterType) {
     case "processing":
       baseQuery = query(
         payoutRef,
-        where("status", "==", filter),
+        where("status", "==", filterType),
         orderBy("processingDate", "desc"),
         limit(2)
       );
@@ -246,118 +248,36 @@ function filterPayouts(payoutRef, filterType) {
   }
 }
 
-/**
- * Loads and displays payment information and payout data for a user
- * @param {Object} userData - Object containing user's information
- * @param {Object} userData.wallet - User's wallet information
- * @param {number} userData.wallet.balance - Current wallet balance
- * @param {number} userData.wallet.monthlyActivity - Monthly transaction activity
- * @param {number} userData.wallet.pendingBalance - Pending balance amount
- * @param {string} userData.wallet.currency - Currency type
- * @param {Object} userData.payments - User's payment information
- * @param {number} userData.payments.upcomingPayouts - Number of upcoming payouts
- * @param {string} userData.payments.payoutSchedule - Schedule for payouts
- * @param {string} userData.email - User's email address used for database queries
- * @param {string} [filter="all"] - Filter criteria for payouts. Can be:
- *   - "all" (default): Shows all payouts
- *   - "pending": Shows only pending payouts
- *   - "completed": Shows only completed payouts
- *   - "processing": Shows only processing payouts
- *   - "today": Shows payouts from today
- *   - "this-week": Shows payouts from current week
- *   - "this-month": Shows payouts from current month
- * @throws {Error} When Firebase API fails to retrieve payout data
- * @returns {Promise<void>}
- */
-async function loadPaymentInfoData(userData) {
-  if (!userData) return null;
-  const paymentData = userData.payments;
-  const walletData = userData.wallet;
+function initializePayoutsFilters(userData) {
+  const filterSelect = document.querySelector(".payout-filter");
 
-  updateWalletStatisticsDisplay(walletData);
+  filterSelect.addEventListener("change", async (e) => {
+    try {
+      await updatePayoutDisplay(userData, e.target.value);
+    } catch (error) {
+      console.error("Error filtering payouts:", error);
+    }
+  });
+}
 
-  // TODO: create function to load schedule payout info
-  document.querySelector("#upcoming-payouts").textContent =
-    paymentData.upcomingPayouts;
-  document.querySelector("#payout-schedule").textContent =
-    paymentData.payoutSchedule;
+async function updatePayoutDisplay(userData, filterType) {
   try {
-    /**
-     * Query and filter payouts from Firebase
-     * @type {CollectioinReference}
-     */
     const payoutsRef = collection(
       db,
       "userProfiles",
       userData.email,
       "payouts"
     );
+    const filteredPayouts = filterPayouts(payoutsRef, filterType);
+    const querySnapshot = await getDocs(filteredPayouts);
+    console.log("Query filtered payouts:", querySnapshot);
 
-    // Get current filter selection
-    const filterSelect = document.querySelector(".payout-filter");
-    const currentFilter = filterSelect.value;
-    console.log(currentFilter);
-
-    const filteredPayouts = filterPayouts(payoutsRef, currentFilter);
-
-    // Payout stats
-    const getTotalStats = async () => {
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const statsQuery = query(
-        payoutsRef,
-        where("processingDate", ">=", monthStart)
-      );
-      const statsSnapshot = await getDocs(statsQuery);
-
-      let stats = {
-        completed: 0,
-        processing: 0,
-        pending: 0,
-        total: 0
-      };
-      console.log("Stats Snapshot:", statsSnapshot);
-
-      // increment stats basic on stat type
-      statsSnapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log(data);
-        stats[data.status]++;
-        stats.total += data.amount;
-      });
-
-      console.log("current stats:", stats);
-
-      return stats;
-    };
-
-    const [querySnapshot, stats] = await Promise.all([
-      getDocs(filteredPayouts),
-      getTotalStats()
-    ]);
-
-    /**
-     * Fetch and process payout documents
-     * @type {querySnapshot}
-     */
-    const payoutDocs = Array.from(querySnapshot.docs);
-
-    console.log("Payouts", payoutDocs);
-    console.log(payoutDocs.length);
-
-    /**
-     * Select all payouts elements in the DOM
-     * @type {NodeList}
-     */
-    const payoutItems = document.querySelectorAll(".payouts-item");
-
-    // Hide all items first
-    payoutItems.forEach((item) => {
-      item.style.display = "none";
-    });
+    // Clear and update payout display
+    const payoutList = document.querySelector("#payouts-list");
+    payoutList.innerHTML = "";
 
     // generate payouts dynamically
-    payoutDocs.forEach((doc) => {
+    querySnapshot.forEach((doc) => {
       const payoutList = document.querySelector("#payouts-list");
       const payoutElement = document.createElement("div");
       payoutElement.classList.add("payouts-item");
@@ -398,20 +318,44 @@ async function loadPaymentInfoData(userData) {
 
       payoutList.appendChild(payoutElement);
     });
+  } catch (error) {}
+}
 
-    /**
-     * Update summary statistics in the DOM
-     * Displays total amounts and counts for different payout statuses
-     * @param {stats} - stats data from firebase API
-     */
-    updateStatisticsDisplay(stats);
-  } catch (error) {
-    /**
-     * Handles any errors that occur during the payout fetching process
-     * @param {Error} error - The error object thrown during execution
-     */
-    console.error("Error occured when fetching payouts:", error);
-  }
+/**
+ * Loads and displays payment information and payout data for a user
+ * @param {Object} userData - Object containing user's information
+ * @param {Object} userData.wallet - User's wallet information
+ * @param {number} userData.wallet.balance - Current wallet balance
+ * @param {number} userData.wallet.monthlyActivity - Monthly transaction activity
+ * @param {number} userData.wallet.pendingBalance - Pending balance amount
+ * @param {string} userData.wallet.currency - Currency type
+ * @param {Object} userData.payments - User's payment information
+ * @param {number} userData.payments.upcomingPayouts - Number of upcoming payouts
+ * @param {string} userData.payments.payoutSchedule - Schedule for payouts
+ * @param {string} userData.email - User's email address used for database queries
+ * @param {string} [filter="all"] - Filter criteria for payouts. Can be:
+ *   - "all" (default): Shows all payouts
+ *   - "pending": Shows only pending payouts
+ *   - "completed": Shows only completed payouts
+ *   - "processing": Shows only processing payouts
+ *   - "today": Shows payouts from today
+ *   - "this-week": Shows payouts from current week
+ *   - "this-month": Shows payouts from current month
+ * @throws {Error} When Firebase API fails to retrieve payout data
+ * @returns {Promise<void>}
+ */
+async function loadPaymentInfoData(userData) {
+  if (!userData) return null;
+  const paymentData = userData.payments;
+  const walletData = userData.wallet;
+
+  updateWalletStatisticsDisplay(walletData);
+  document.querySelector("#upcoming-payouts").textContent =
+    paymentData.upcomingPayouts;
+  document.querySelector("#payout-schedule").textContent =
+    paymentData.payoutSchedule;
+
+  await updatePayoutDisplay(userData, "all");
 }
 
 function updateStatisticsDisplay(stats) {
@@ -421,6 +365,46 @@ function updateStatisticsDisplay(stats) {
   document.querySelector("#completed-payouts").textContent = stats.completed;
   document.querySelector("#pending-payouts").textContent = stats.pending;
   document.querySelector("#processing-payouts").textContent = stats.processing;
+}
+
+async function updatePayoutStats(payoutsRef) {
+  try {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const statsQuery = query(
+      payoutsRef,
+      where("processingDate", ">=", monthStart)
+    );
+    const statsSnapshot = await getDocs(statsQuery);
+
+    let stats = {
+      completed: 0,
+      processing: 0,
+      pending: 0,
+      total: 0
+    };
+    console.log("Stats Snapshot:", statsSnapshot);
+
+    // increment stats basic on stat type
+    statsSnapshot.forEach((doc) => {
+      const data = doc.data();
+      console.log(data);
+      stats[data.status]++;
+      stats.total += data.amount;
+    });
+
+    // Update stats display in UI
+    document.querySelector("#completed-count").textContent = stats.completed;
+    document.querySelector("#processing-count").textContent = stats.processing;
+    document.querySelector("#pending-count").textContent = stats.pending;
+    document.querySelector(
+      "#total-amount"
+    ).textContent = `$${stats.total.toFixed(2)}`;
+
+    console.log("current stats:", stats);
+
+    return stats;
+  } catch (error) {}
 }
 
 function updateWalletStatisticsDisplay(walletData) {

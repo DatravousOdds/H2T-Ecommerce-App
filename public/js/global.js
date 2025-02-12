@@ -611,6 +611,9 @@ class AdminUser {}
 
 class User extends AdminUser {}
 
+// Profile Utilities
+class Profile {}
+
 // Usage Example:
 const validator = new PaymentValidation();
 const security = new PaymentSecurity();
