@@ -98,12 +98,15 @@ async function loadProfileData() {
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
+      loadPaymentMethods(userData);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
     throw error;
   }
 }
+
+function loadPaymentMethods(userData) {}
 
 function loadProfileDisplayData(userData) {
   if (userData.backgroundImage) {
