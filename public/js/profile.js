@@ -106,7 +106,20 @@ async function loadProfileData() {
   }
 }
 
-function loadPaymentMethods(userData) {}
+async function loadPaymentMethods(userData) {
+  if (!userData) return null;
+  try {
+    const userProfileRef = doc(db, "userProfiles", userData.email);
+
+    const bankAccountsRef = collection(userProfileRef, "bankAccounts");
+    const creditCardsRef = collection(userProfileRef, "creditCards");
+
+    console.log("bank:", bankAccountsRef);
+    console.log("credit cards:", creditCardsRef);
+  } catch (error) {
+    console.error("Error happened when fetching payment information");
+  }
+}
 
 function loadProfileDisplayData(userData) {
   if (userData.backgroundImage) {
@@ -128,7 +141,6 @@ function loadProfileDisplayData(userData) {
     userData.stats.following;
   document.querySelector("#current-rating").textContent = userData.stats.rating;
 }
-
 function loadPersonalInfoData(userData) {
   //  personal information
   document.querySelector("#personal-fname").value = userData.FirstName;
@@ -136,7 +148,6 @@ function loadPersonalInfoData(userData) {
   document.querySelector("#personal-email").value = userData.Email;
   document.querySelector("#personal-phoneNumber").value = userData.phoneNumber;
 }
-
 function loadShippingInfoData(userData) {
   // shipping information
   document.querySelector("#shipping-fname").value = userData.FirstName;
@@ -149,7 +160,6 @@ function loadShippingInfoData(userData) {
   //   userData.postalCode || "";
   document.querySelector("#shipping-phoneNumber").value = userData.phoneNumber;
 }
-
 function loadReviewData(userData) {
   // review section
   document.querySelector("#average-rating").textContent =
@@ -263,6 +273,42 @@ function initializePayoutsFilters(userData) {
   });
 }
 
+function updateStatisticsDisplay(stats) {
+  document.querySelector(
+    "#totalPayoutAmount"
+  ).textContent = `$${stats.total.toFixed(2)}`;
+  document.querySelector("#completed-payouts").textContent = stats.completed;
+  document.querySelector("#pending-payouts").textContent = stats.pending;
+  document.querySelector("#processing-payouts").textContent = stats.processing;
+}
+
+function updateWalletStatisticsDisplay(walletData) {
+  // load wallet info
+  document.querySelector(
+    "#act-wallet-balance"
+  ).textContent = `$${walletData.balance.toFixed(2)}`;
+
+  document.querySelector(
+    "#monthly-activity"
+  ).textContent = `$${walletData.monthlyActivity.toFixed(2)}`;
+  document.querySelector(
+    "#pending-balance"
+  ).textContent = `$${walletData.pendingBalance.toFixed(2)}`;
+  document.querySelector("#currency-info").textContent = walletData.currency;
+  document.querySelector("#update-status").textContent = formatTimestamp(
+    walletData.lastUpdated
+  );
+}
+
+function formatFirebaseDate(timestamp) {
+  const date = timestamp.toDate();
+  return date.toLocaleDateString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric"
+  });
+}
+
 async function updatePayoutDisplay(userData, filterType) {
   try {
     const payoutsRef = collection(
@@ -323,7 +369,6 @@ async function updatePayoutDisplay(userData, filterType) {
     });
   } catch (error) {}
 }
-
 /**
  * Loads and displays payment information and payout data for a user
  * @param {Object} userData - Object containing user's information
@@ -360,16 +405,6 @@ async function loadPaymentInfoData(userData) {
 
   await updatePayoutDisplay(userData, "all");
 }
-
-function updateStatisticsDisplay(stats) {
-  document.querySelector(
-    "#totalPayoutAmount"
-  ).textContent = `$${stats.total.toFixed(2)}`;
-  document.querySelector("#completed-payouts").textContent = stats.completed;
-  document.querySelector("#pending-payouts").textContent = stats.pending;
-  document.querySelector("#processing-payouts").textContent = stats.processing;
-}
-
 async function updatePayoutStats(payoutsRef) {
   try {
     const now = new Date();
@@ -410,57 +445,30 @@ async function updatePayoutStats(payoutsRef) {
   } catch (error) {}
 }
 
-function updateWalletStatisticsDisplay(walletData) {
-  // load wallet info
-  document.querySelector(
-    "#act-wallet-balance"
-  ).textContent = `$${walletData.balance.toFixed(2)}`;
-
-  document.querySelector(
-    "#monthly-activity"
-  ).textContent = `$${walletData.monthlyActivity.toFixed(2)}`;
-  document.querySelector(
-    "#pending-balance"
-  ).textContent = `$${walletData.pendingBalance.toFixed(2)}`;
-  document.querySelector("#currency-info").textContent = walletData.currency;
-  document.querySelector("#update-status").textContent = formatTimestamp(
-    walletData.lastUpdated
-  );
-}
-
-function formatFirebaseDate(timestamp) {
-  const date = timestamp.toDate();
-  return date.toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric"
-  });
-}
-
-function loadSellingData(userData) {
+async function loadSellingData(userData) {
   if (userData) {
     // load selling info
   }
 }
 
-function loadFavoritesData(userData) {
+async function loadFavoritesData(userData) {
   if (userData) {
     // load user's favorite items
   }
 }
 
-function loadNotificationData(userData) {
+async function loadNotificationData(userData) {
   if (userData) {
     // load user notification settings
   }
 }
 
-function loadPurchasesData(userData) {
+async function loadPurchasesData(userData) {
   if (userData) {
   }
 }
 
-function loadSettingsData(userData) {
+async function loadSettingsData(userData) {
   if (userData) {
   }
 }
