@@ -109,13 +109,25 @@ async function loadProfileData() {
 async function loadPaymentMethods(userData) {
   if (!userData) return null;
   try {
+    // user profile reference
     const userProfileRef = doc(db, "userProfiles", userData.email);
 
+    // references to bank and credit card documents
     const bankAccountsRef = collection(userProfileRef, "bankAccounts");
     const creditCardsRef = collection(userProfileRef, "creditCards");
 
-    console.log("bank:", bankAccountsRef);
-    console.log("credit cards:", creditCardsRef);
+    // fetch bank and credit card information at the same time
+    const [bankAccountSnapshot, creditCardsSnapshot] = await Promise.all([
+      getDocs(bankAccountsRef, getDocs(creditCardsRef))
+    ]);
+
+    // map bank information to an object
+    const bankAccounts = bankAccountSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    console.log("Bank Account Information: ", bankAccounts);
   } catch (error) {
     console.error("Error happened when fetching payment information");
   }
