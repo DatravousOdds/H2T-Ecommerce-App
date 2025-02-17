@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ".purchases-content-section"
   );
 
-  console.log("purchaseContentSections", purchaseContentSections);
+  // console.log("purchaseContentSections", purchaseContentSections);
   purchaseTypeItems.forEach((item, index) => {
     item.addEventListener("click", () => {
       purchaseTypeItems.forEach((item) => item.classList.remove("active"));

@@ -23,7 +23,7 @@ const fetchUserProfile = async (user) => {
         email: user.email,
         ...docSnap.data()
       };
-      console.log("User profile found:", userData);
+      // console.log("User profile found:", userData);
       return userData;
     } else {
       console.log("No profile document exists for user:", user.email);
@@ -48,7 +48,7 @@ export function checkUserStatus() {
 
         if (user) {
           try {
-            console.log("User is authenticated:", user.email);
+            // console.log("User is authenticated:", user.email);
             const userData = await fetchUserProfile(user);
             resolve(userData);
           } catch (error) {

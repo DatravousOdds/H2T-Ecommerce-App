@@ -95,10 +95,10 @@ async function loadProfileData() {
       loadPaymentInfoData(userData);
       // Initialize the payout filters after loading payment info
       initializePayoutsFilters(userData);
+      initializePaymentMethods(userData);
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
-      loadPaymentMethods(userData);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
@@ -118,7 +118,8 @@ async function loadPaymentMethods(userData) {
 
     // fetch bank and credit card information at the same time
     const [bankAccountSnapshot, creditCardsSnapshot] = await Promise.all([
-      getDocs(bankAccountsRef, getDocs(creditCardsRef))
+      getDocs(bankAccountsRef),
+      getDocs(creditCardsRef)
     ]);
 
     // map bank information to an object
@@ -127,10 +128,112 @@ async function loadPaymentMethods(userData) {
       ...doc.data()
     }));
 
-    console.log("Bank Account Information: ", bankAccounts);
+    // map credit card information to an object
+    const creditCardAccounts = creditCardsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return { bankAccounts, creditCardAccounts };
   } catch (error) {
     console.error("Error happened when fetching payment information");
+    throw error; // Propagate error to caller
   }
+}
+
+async function displayPaymentMethods(userData) {
+  if (!userData) return;
+
+  const cardListContainer = document.querySelector(CARD_LIST_SELECTOR);
+  if (!cardListContainer) return;
+
+  try {
+    // Clear existing content
+    cardListContainer.innerHTML = "";
+
+    // Load payment methods from firebase
+    const paymentMethods = await loadPaymentMethods(userData);
+
+    // if there is not payment methods available
+    if (!paymentMethods) {
+      showEmptyState(cardListContainer);
+      return;
+    }
+
+    // Display credit card
+    paymentMethods.creditCardAccounts.forEach((card) => {
+      const cardElement = CARD_WRAPPER_TEMPLATE(
+        card.brand,
+        card.last4,
+        `${card.expiryMonth}/${card.expiryYear}`
+      );
+
+      console.log(cardElement);
+
+      // Insert inside the parent element after first element
+      cardListContainer.insertAdjacentHTML("beforeend", cardElement);
+    });
+
+    // Display bank accounts
+    paymentMethods.bankAccounts.forEach((bank) => {
+      const bankElement = BANK_WRAPPER_TEMPLATE(
+        bank.bankName,
+        bank.accountType,
+        bank.routingNumberLast4
+      );
+
+      cardListContainer.insertAdjacentHTML("beforeend", bankElement);
+    });
+
+    // Add the "Add new card" option at the end
+    const addCardElement = `
+      <div class="card-wrapper add-card">
+        <div>
+          <p class="margin-bottom-0">Add card or bank account</p>
+        </div>
+        <div class="card-options" id="add-new-card">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
+    `;
+    cardListContainer.insertAdjacentHTML("beforeend", addCardElement);
+
+    // add card event listeners
+    attachPaymentMethodsModalEventListener();
+  } catch (error) {
+    console.error("Error occured when fetching card information ", error);
+    showEmptyState(cardListContainer);
+  }
+}
+
+// Help functions
+function showEmptyState(container) {
+  container.innerHTML = `<!-- COF Container-->
+              <div class="card-wrapper add-card">
+                <div>
+                  <p class="margin-bottom-0">Add card or bank account</p>
+                </div>
+
+                <div class="card-options" id="add-new-card">
+                  <i class="fa-solid fa-plus"></i>
+                </div>
+              </div>`;
+
+  attachPaymentMethodsModalEventListener();
+}
+
+function attachPaymentMethodsModalEventListener() {
+  document.addEventListener("click", (e) => {
+    // Handle opening modal
+    if (e.target.closest(".add-card")) {
+      openPopupMenu(".payment-method-popup");
+    }
+
+    // Handle closing modal
+    if (e.target.closest("#closePopup")) {
+      closePopupMenu(".payment-method-popup");
+    }
+  });
 }
 
 function loadProfileDisplayData(userData) {
@@ -273,7 +376,7 @@ function filterPayouts(payoutRef, filterType) {
   }
 }
 
-function initializePayoutsFilters(userData) {
+async function initializePayoutsFilters(userData) {
   const filterSelect = document.querySelector(".payout-filter");
 
   filterSelect.addEventListener("change", async (e) => {
@@ -283,6 +386,14 @@ function initializePayoutsFilters(userData) {
       console.error("Error filtering payouts:", error);
     }
   });
+}
+
+async function initializePaymentMethods(userData) {
+  try {
+    await displayPaymentMethods(userData);
+  } catch (error) {
+    console.error("Failed to initialize payment methods:", error);
+  }
 }
 
 function updateStatisticsDisplay(stats) {
@@ -331,7 +442,7 @@ async function updatePayoutDisplay(userData, filterType) {
     );
     const filteredPayouts = filterPayouts(payoutsRef, filterType);
     const querySnapshot = await getDocs(filteredPayouts);
-    console.log("Query filtered payouts:", querySnapshot);
+    // console.log("Query filtered payouts:", querySnapshot);
 
     // Clear and update payout display
     const payoutList = document.querySelector("#payouts-list");
@@ -374,6 +485,7 @@ async function updatePayoutDisplay(userData, filterType) {
                       }
                     </p>
                   </div>
+                  
       
       `;
 
@@ -568,16 +680,6 @@ shippingInformationForm.addEventListener("submit", async (e) => {
   }
 });
 
-const cardWrappers = document.querySelectorAll(".payment-card");
-cardWrappers.forEach((card) => {
-  // Check if the card already has a "Set Default" span, if not
-  if (!card.querySelector(".set-default-card")) {
-    const setDefaultBtn = document.createElement("button");
-    setDefaultBtn.classList.add("set-default-card");
-    card.appendChild(setDefaultBtn);
-  }
-});
-
 function openPopupMenu(menuSelector) {
   const overlay = document.querySelector(menuSelector);
   if (!overlay) {
@@ -737,8 +839,18 @@ function formatTimestamp(timestamp) {
   return `${years} ${years === 1 ? "year" : "years"} ago`;
 }
 
-/* Add card Popup Functionality */
+// Cards on File
+const cardWrappers = document.querySelectorAll(".payment-card");
+cardWrappers.forEach((card) => {
+  // Check if the card already has a "Set Default" span, if not set default
+  if (!card.querySelector(".set-default-card")) {
+    const setDefaultBtn = document.createElement("button");
+    setDefaultBtn.classList.add("set-default-card");
+    card.appendChild(setDefaultBtn);
+  }
+});
 
+/* Add card Popup Functionality */
 function validateCardForm(element, errorMessage, options = {}) {
   const value = element.value.trim();
   const existingError = element.parentElement.querySelector(".error-message");
@@ -765,7 +877,7 @@ function validateCardForm(element, errorMessage, options = {}) {
 /**
  *
  * @param {element} element - appends error div to the parent element
- * @param {*} errorMessage - display the error message
+ * @param {errorMessage} errorMessage - display the error message
  * @returns - true if there is an error, false if there is not any errors
  */
 function validateExpiry(element, errorMessage) {
@@ -991,6 +1103,7 @@ function clearFormErrors(form) {
 
   if (form instanceof HTMLFormElement) form.reset();
 }
+
 // Define functions
 function showCardForm() {
   methodSelection.style.display = "none";
@@ -1063,18 +1176,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", resetFlow);
 });
 
-const addNewCard = document.querySelector(".add-card");
-const closePopMenu = document.getElementById("closePopup");
-
-addNewCard.addEventListener("click", () => {
-  openPopupMenu(".payment-method-popup");
-});
-
-closePopMenu.addEventListener("click", () => {
-  // popupMenu.classList.remove("active");
-  closePopupMenu(".payment-method-popup");
-});
-
 // Event Listener for deleting card on file
 document.addEventListener("click", (e) => {
   if (e.target.matches(".delete-card i")) {
@@ -1085,6 +1186,8 @@ document.addEventListener("click", (e) => {
   }
 });
 
+function attachPaymentMethodEventListeners(container) {}
+
 // Closes dropdown menu when click outside of menu
 document.addEventListener("click", (event) => {
   closeDropdown(event, "select-year", "year-header", "yearIcon");
@@ -1093,16 +1196,15 @@ document.addEventListener("click", (event) => {
 });
 
 // Add Card functionality
-
 const CARD_LIST_SELECTOR = ".card-list";
-const CARD_WRAPPER_TEMPLATE = (name, lastFourDigits, expiry) => `
+const CARD_WRAPPER_TEMPLATE = (cardHolderName, lastFourDigits, expiry) => `
   <div class="card-wrapper">
     <div class="payment-card">
       <div class="card-icon">
         <i class="fa-brands fa-cc-discover"></i>
       </div>
       <div class="card-inner">
-        <p class="default-paragraph card-name">${name} ****${lastFourDigits}</p>
+        <p class="default-paragraph card-name">${cardHolderName} ****${lastFourDigits}</p>
         <p class="default-paragraph card-expiry">Expires on ${expiry}</p>
       </div>
     </div>
@@ -1139,6 +1241,7 @@ const BANK_WRAPPER_TEMPLATE = (nameOfBank, accountType, lastFourDigits) => `
   </div>
 `;
 
+/* View Details Functionality */
 const closeBtnForDetails = document.querySelector(
   ".view-details-menu .close-button"
 );
@@ -1147,7 +1250,7 @@ closeBtnForDetails.addEventListener("click", () => {
   closePopupMenu(".view-details-menu");
 });
 
-/* View Details Functionality */
+// Update card information
 const updateCardBtn = document.querySelector("#updateCard");
 const continueBtn = document.querySelector("#step-1-verify-continue");
 const cardHolder = document.querySelector(".view-details-menu #card-holder");
@@ -1274,13 +1377,15 @@ const bankAccountNumber = document.querySelector(
 const bankAccountType = document.querySelector(
   "#view-bank-details #account-type"
 );
+
+// Close bank details
 const bankDetailsCloseBtn = document.querySelector(
   "#view-bank-details .close-button"
 );
-
 bankDetailsCloseBtn.addEventListener("click", () => {
   closePopupMenu(".bank-modal-overlay");
 });
+
 // Edit Bank Account Validation
 const editBankAccountForm = document.querySelector("#edit-bank-form");
 const streetAddress = document.querySelector("#edit-bank-form #street");
@@ -1293,6 +1398,7 @@ const editBankAccountMenuCloseBtn = document.querySelector(
   ".edit-bank-header button"
 );
 
+// Changes for bank
 const saveChangesBtn = document.querySelector(
   ".edit-bank-footer #saveChangesBtn"
 );
@@ -1673,11 +1779,9 @@ editBankAccountCancelBtn.addEventListener("click", (e) => {
 const viewPayoutsBtn = document.querySelector(".view-all-payouts-link");
 const viewPayoutsMenu = document.querySelector(".view-all-payouts-menu");
 const closePayoutsMenu = document.getElementById("close-view-all-payouts");
-
 viewPayoutsBtn.addEventListener("click", () => {
   viewPayoutsMenu.style.display = "flex";
 });
-
 closePayoutsMenu.addEventListener("click", () => {
   viewPayoutsMenu.style.display = "none";
 });
@@ -1710,6 +1814,7 @@ url.addEventListener("change", () => {
   }
 });
 
+/** Bio Section functionality */
 // Hide bio by default
 bioTextarea.style.display = "none";
 

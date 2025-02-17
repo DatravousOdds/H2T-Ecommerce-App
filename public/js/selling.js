@@ -1,7 +1,7 @@
 const sellingNavButtons = document.querySelectorAll(".nav-button");
 const sellingSections = document.querySelectorAll(".content-section");
-console.log("sellingNavButtons", sellingNavButtons);
-console.log("sellingSections", sellingSections);
+// console.log("sellingNavButtons", sellingNavButtons);
+// console.log("sellingSections", sellingSections);
 // Dashboard navigation
 sellingNavButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -25,9 +25,9 @@ const filterSections = document.querySelectorAll(
   ".products-content .content-section"
 );
 
-console.log("filterSections", filterSections);
+// console.log("filterSections", filterSections);
 
-console.log("filterButtons", filterButtons);
+// console.log("filterButtons", filterButtons);
 
 filterButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
