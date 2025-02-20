@@ -136,12 +136,35 @@ async function loadPaymentMethods(userData) {
     }));
 
     // load credit card transactions
-    if (creditCardAccounts.length > 0) {
-      console.log("total credit cards: ", creditCardAccounts.length);
-      const firstCardId = creditCardAccounts[0].id;
-      const transactions = await loadPaymentTransactions(userData, firstCardId);
-      console.log("Here are total transcations: ", transactions);
-    }
+    const transactionPromises = creditCardAccounts.map(async (card) => {
+      const cardId = card.id;
+      // console.log("Card id:", cardId);
+      const transactions = await loadPaymentTransactions(userData, cardId);
+      // console.log("transactions: ", transactions);
+      return { cardId, transactions };
+    });
+
+    const allTransactions = await Promise.all(transactionPromises);
+    console.log(allTransactions);
+
+    const transactionElements = allTransactions.flatMap((cardData) =>
+      cardData.transactions.map((tran) => {
+        const transDiv = document.createElement("div");
+        transDiv.className = "trans";
+        transDiv.innerHTML = `
+            <p>${tran.itemName}</p>
+            <p>$${tran.amount}</p>
+            `;
+        return transDiv;
+      })
+    );
+    const recentTransactions = document.querySelector("#r-trans");
+    // clear existing content
+    recentTransactions.innerHTML = "";
+    // add all transaction elements
+    transactionElements.forEach((element) => {
+      recentTransactions.appendChild(element);
+    });
 
     return { bankAccounts, creditCardAccounts };
   } catch (error) {
@@ -152,25 +175,25 @@ async function loadPaymentMethods(userData) {
 
 async function loadPaymentTransactions(userData, cardId) {
   // if there is not any user data return null
-  if (!userData) return null;
+  if (!userData || !cardId) return null;
 
   const userProfileRef = doc(db, "userProfiles", userData.email);
-  const creditCards = collection(userProfileRef, "creditCards", cardId);
+  const creditCards = doc(userProfileRef, "creditCards", cardId);
   const transactionsRef = collection(creditCards, "transactions");
 
-  console.log("User Profile: ", userProfileRef);
-  console.log("User transaction: ", transactionsRef);
+  // console.log("User Profile: ", userProfileRef);
+  // console.log("User transaction: ", transactionsRef);
 
   const transactionSnapShot = await getDocs(transactionsRef);
 
-  console.log("Transactions snapshot: ", transactionSnapShot);
+  // console.log("Transactions snapshot: ", transactionSnapShot);
 
   const transactions = transactionSnapShot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data()
   }));
+  // console.log("Current transactions: ", transactions);
   return transactions;
-  console.log("Current transactions: ", transactions);
 }
 
 async function displayPaymentMethods(userData) {
@@ -252,14 +275,14 @@ async function displayCardDetails(object) {
   // console.log("Card holder: ", cardHolder);
   // console.log("Expiration Date: ", expiry);
   // console.log("Billing Address: ", billingAddress);
-  console.log("Domestic fees: ", domesticFee);
-  console.log("International fee: ", internationalFee);
-  console.log("Ach fees: ", achFee);
+  // console.log("Domestic fees: ", domesticFee);
+  // console.log("International fee: ", internationalFee);
+  // console.log("Ach fees: ", achFee);
 
   if (!object) return;
 
   try {
-    console.log("User Data object:", object);
+    // console.log("User Data object:", object);
     // fill in each card's card detail information
     object.creditCardAccounts.forEach((doc) => {
       cardEnding.textContent = `Card ending in ${doc.last4}`;
@@ -274,6 +297,16 @@ async function displayCardDetails(object) {
     console.error("Error occur when retrieving:", error);
     throw error;
   }
+}
+
+async function displayBankDetails(userData) {
+  // grab needed dom elements
+  const bankType = document.querySelector("#bank-type");
+  const bankEnding = document.querySelector("#bank-ending");
+  const accountHolder = document.querySelector("#account-holder");
+  const routingNumber = document.querySelector("#routing-number");
+  const accountNumber = document.querySelector("#account-number");
+  const accountType = document.querySelector("#account-type");
 }
 
 // Help functions
