@@ -99,7 +99,7 @@ async function loadProfileData() {
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
-      loadPaymentTransactions(userData);
+      loadCreditCardTransactions(userData);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
@@ -145,7 +145,7 @@ async function loadPaymentMethods(userData) {
     });
 
     const allTransactions = await Promise.all(transactionPromises);
-    console.log(allTransactions);
+    // console.log(allTransactions);
 
     const transactionElements = allTransactions.flatMap((cardData) =>
       cardData.transactions.map((tran) => {
@@ -173,7 +173,7 @@ async function loadPaymentMethods(userData) {
   }
 }
 
-async function loadPaymentTransactions(userData, cardId) {
+async function loadCreditCardTransactions(userData, cardId) {
   // if there is not any user data return null
   if (!userData || !cardId) return null;
 
@@ -194,6 +194,24 @@ async function loadPaymentTransactions(userData, cardId) {
   }));
   // console.log("Current transactions: ", transactions);
   return transactions;
+}
+
+async function loadBankTransactions(userData, bankId) {
+  if (!userData || !bankId) return null;
+
+  try {
+    const userProfileRef = doc(db, "userProfiles", userData.email);
+    const bankAccounts = doc(userProfileRef, "bankAccounts", bankId);
+    const transactionsRef = collection(bankAccounts, "transactions");
+
+    const transactionSnapShot = await getDocs(transactionsRef);
+    return transactionSnapShot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Error occured when fetching bank account transactions");
+  }
 }
 
 async function displayPaymentMethods(userData) {
@@ -257,6 +275,7 @@ async function displayPaymentMethods(userData) {
     attachPaymentMethodsModalEventListener();
     // show card details
     displayCardDetails(paymentMethods);
+    displayBankDetails(paymentMethods);
   } catch (error) {
     console.error("Error occured when fetching card information ", error);
     showEmptyState(cardListContainer);
@@ -299,7 +318,7 @@ async function displayCardDetails(object) {
   }
 }
 
-async function displayBankDetails(userData) {
+async function displayBankDetails(object) {
   // grab needed dom elements
   const bankType = document.querySelector("#bank-type");
   const bankEnding = document.querySelector("#bank-ending");
@@ -307,6 +326,24 @@ async function displayBankDetails(userData) {
   const routingNumber = document.querySelector("#routing-number");
   const accountNumber = document.querySelector("#account-number");
   const accountType = document.querySelector("#account-type");
+
+  if (!object) return null;
+
+  try {
+    console.log("User Data object:", object);
+    // fill in each card's card detail information
+    object.bankAccounts.forEach((doc) => {
+      bankType.textContent = doc.bankName;
+      bankEnding.textContent = `Bank ending in ${doc.accountNumberLast4}`;
+      accountHolder.textContent = doc.accountHolderName;
+      accountNumber.textContent = `****${doc.accountNumberLast4}`;
+      accountType.textContent = doc.accountType;
+      routingNumber.textContent = `****${doc.routingNumberLast4}`;
+    });
+  } catch (error) {
+    console.error("Error occur when retrieving:", error);
+    throw error;
+  }
 }
 
 // Help functions
