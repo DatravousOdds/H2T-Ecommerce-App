@@ -139,7 +139,7 @@ async function loadPaymentMethods(userData) {
     const transactionPromises = creditCardAccounts.map(async (card) => {
       const cardId = card.id;
       // console.log("Card id:", cardId);
-      const transactions = await loadPaymentTransactions(userData, cardId);
+      const transactions = await loadCreditCardTransactions(userData, cardId);
       // console.log("transactions: ", transactions);
       return { cardId, transactions };
     });
