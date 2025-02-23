@@ -144,9 +144,71 @@ async function loadPaymentMethods(userData) {
       return { cardId, transactions };
     });
 
+    // load bank transactions
+    const bankTransactionsPromise = bankAccounts.map(async (acc) => {
+      const bankId = acc.id;
+      // console.log("bank id: ", bankId);
+      const transactions = await loadBankTransactions(userData, bankId);
+      console.log("Bank Account transactions: ", transactions);
+      return { bankId, transactions };
+    });
+
+    const allBankActivity = await Promise.all(bankTransactionsPromise);
+    // console.log(allBankActivity);
+
     const allTransactions = await Promise.all(transactionPromises);
     // console.log(allTransactions);
 
+    const activityElements = allBankActivity.flatMap((bankData) => {
+      // Return the map array
+      return bankData.transactions.map((act) => {
+        const activityItem = document.createElement("div");
+        activityItem.className = "activity-item";
+        if (act.type === "Deposit") {
+          activityItem.innerHTML = `
+                   <div class="activity-item-wrapper">
+                    <label class="details-label font-500">${act.type}</label>
+                    <label class="detail-value font-500 deposit">
+                       +$${act.amount} ${act.currency}
+                      </label>
+                    </div>
+                    <div class="activity-item-wrapper">
+                      <p class="default-paragraph">${formatFirebaseDate(
+                        act.date
+                      )}</p>
+                      <p class="status-indicator ${getStatusClass(
+                        act.status
+                      )}" >${act.status}</p>
+                    </div>`;
+        } else {
+          activityItem.className = "activity-item";
+          activityItem.innerHTML = `
+                  <div class="activity-item-wrapper">
+                    <label class="details-label font-500">${act.type}</label>
+                    <label class="detail-value font-500 withdraw">$${
+                      act.amount
+                    } ${act.currency}</label>
+                  </div>
+                  <div class="activity-item-wrapper">
+                    <p class="default-paragraph">${formatFirebaseDate(
+                      act.date
+                    )}</p>
+                    <p class="status-indicator ${getStatusClass(act.status)}">${
+            act.status
+          }</p>
+                  </div>`;
+        }
+        return activityItem; // Return the element
+      });
+    });
+    const recentActivity = document.querySelector("#recent-activity");
+    recentActivity.innerHTML = "";
+    // add all elements
+    activityElements.forEach((element) => {
+      recentActivity.appendChild(element);
+    });
+
+    // credit cards transactions
     const transactionElements = allTransactions.flatMap((cardData) =>
       cardData.transactions.map((tran) => {
         const transDiv = document.createElement("div");
@@ -205,15 +267,79 @@ async function loadBankTransactions(userData, bankId) {
     const transactionsRef = collection(bankAccounts, "transactions");
 
     const transactionSnapShot = await getDocs(transactionsRef);
-    return transactionSnapShot.docs.map((doc) => ({
+
+    console.log("Transaction snapshot:", transactionSnapShot);
+
+    const bankTransactions = transactionSnapShot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    console.log("Bank Transactions: ", bankTransactions);
+    return bankTransactions;
   } catch (error) {
     console.error("Error occured when fetching bank account transactions");
   }
 }
 
+function loadProfileDisplayData(userData) {
+  if (userData.backgroundImage) {
+    const profileBackground = document.querySelector(".profile-background");
+    profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
+  } else {
+    console.log("No user data available");
+  }
+  // profile picture image
+  document.querySelector("#profile-picture").value = userData.profileImage;
+  // profile username
+  document.querySelector("#username").value = userData.username;
+  document.querySelector("#timestamp-container").value = userData.joinedDate;
+  document.querySelector("#verified-tag").value = userData.isVerified;
+  // user stats
+  document.querySelector("#followers-count").textContent =
+    userData.stats.followers;
+  document.querySelector("#following-count").textContent =
+    userData.stats.following;
+  document.querySelector("#current-rating").textContent = userData.stats.rating;
+}
+function loadPersonalInfoData(userData) {
+  //  personal information
+  document.querySelector("#personal-fname").value = userData.FirstName;
+  document.querySelector("#personal-lname").value = userData.LastName;
+  document.querySelector("#personal-email").value = userData.Email;
+  document.querySelector("#personal-phoneNumber").value = userData.phoneNumber;
+}
+function loadShippingInfoData(userData) {
+  // shipping information
+  document.querySelector("#shipping-fname").value = userData.FirstName;
+  document.querySelector("#shipping-lname").value = userData.LastName;
+  document.querySelector("#shipping-address").value = userData.address1;
+  document.querySelector("#shipping-address2").value = userData.address2;
+  document.querySelector("#shipping-city").value = userData.city;
+  document.querySelector("#shipping-state").value = userData.state;
+  // document.querySelector("#shipping-postalCode").value =
+  //   userData.postalCode || "";
+  document.querySelector("#shipping-phoneNumber").value = userData.phoneNumber;
+}
+function loadReviewData(userData) {
+  // review section
+  document.querySelector("#average-rating").textContent =
+    userData.ratings.metrics.averageRating;
+  document.querySelector("#total-ratings").textContent =
+    userData.ratings.metrics.totalRatings;
+  // review counts
+  for (let i = 1; i <= 5; i++) {
+    const element = document.querySelector(`#rating-count-${i}`);
+    if (element) {
+      const ratingCount = userData.ratings.ratingCounts[i] || 0;
+      const reviewText = ratingCount === 1 ? "review" : "reviews";
+      element.textContent = `${ratingCount} ${reviewText}`;
+    }
+  }
+  // review categories
+}
+
+// Display functions
 async function displayPaymentMethods(userData) {
   if (!userData) return;
 
@@ -362,6 +488,43 @@ function showEmptyState(container) {
   attachPaymentMethodsModalEventListener();
 }
 
+const TRANSACTION_STATUS = {
+  PENDING: "pending",
+  COMPLETED: "completed",
+  FAILED: "failed"
+};
+
+// Define status styles configuration
+const STATUS_STYLES = {
+  [TRANSACTION_STATUS.PENDING]: {
+    className: "status-pending",
+    backgroundColor: "#FFF4E5",
+    color: "#FF9800"
+  },
+  [TRANSACTION_STATUS.COMPLETED]: {
+    className: "status-completed",
+    backgroundColor: "#E8F5E9",
+    color: "#4CAF50"
+  },
+  [TRANSACTION_STATUS.FAILED]: {
+    className: "status-failed",
+    backgroundColor: "#FFEBEE",
+    color: "#F44336"
+  }
+};
+
+function getStatusClass(status) {
+  const normalizedStatus = status?.toLowerCase();
+  const statusStyle = STATUS_STYLES[normalizedStatus];
+
+  if (!statusStyle) {
+    console.warn(`Unknown transaction status: ${status}`);
+    return STATUS_STYLES[TRANSACTION_STATUS.PENDING].className; // Default class
+  }
+
+  return statusStyle.className;
+}
+
 function attachPaymentMethodsModalEventListener() {
   document.addEventListener("click", (e) => {
     // Handle opening modal
@@ -374,63 +537,6 @@ function attachPaymentMethodsModalEventListener() {
       closePopupMenu(".payment-method-popup");
     }
   });
-}
-
-function loadProfileDisplayData(userData) {
-  if (userData.backgroundImage) {
-    const profileBackground = document.querySelector(".profile-background");
-    profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
-  } else {
-    console.log("No user data available");
-  }
-  // profile picture image
-  document.querySelector("#profile-picture").value = userData.profileImage;
-  // profile username
-  document.querySelector("#username").value = userData.username;
-  document.querySelector("#timestamp-container").value = userData.joinedDate;
-  document.querySelector("#verified-tag").value = userData.isVerified;
-  // user stats
-  document.querySelector("#followers-count").textContent =
-    userData.stats.followers;
-  document.querySelector("#following-count").textContent =
-    userData.stats.following;
-  document.querySelector("#current-rating").textContent = userData.stats.rating;
-}
-function loadPersonalInfoData(userData) {
-  //  personal information
-  document.querySelector("#personal-fname").value = userData.FirstName;
-  document.querySelector("#personal-lname").value = userData.LastName;
-  document.querySelector("#personal-email").value = userData.Email;
-  document.querySelector("#personal-phoneNumber").value = userData.phoneNumber;
-}
-function loadShippingInfoData(userData) {
-  // shipping information
-  document.querySelector("#shipping-fname").value = userData.FirstName;
-  document.querySelector("#shipping-lname").value = userData.LastName;
-  document.querySelector("#shipping-address").value = userData.address1;
-  document.querySelector("#shipping-address2").value = userData.address2;
-  document.querySelector("#shipping-city").value = userData.city;
-  document.querySelector("#shipping-state").value = userData.state;
-  // document.querySelector("#shipping-postalCode").value =
-  //   userData.postalCode || "";
-  document.querySelector("#shipping-phoneNumber").value = userData.phoneNumber;
-}
-function loadReviewData(userData) {
-  // review section
-  document.querySelector("#average-rating").textContent =
-    userData.ratings.metrics.averageRating;
-  document.querySelector("#total-ratings").textContent =
-    userData.ratings.metrics.totalRatings;
-  // review counts
-  for (let i = 1; i <= 5; i++) {
-    const element = document.querySelector(`#rating-count-${i}`);
-    if (element) {
-      const ratingCount = userData.ratings.ratingCounts[i] || 0;
-      const reviewText = ratingCount === 1 ? "review" : "reviews";
-      element.textContent = `${ratingCount} ${reviewText}`;
-    }
-  }
-  // review categories
 }
 
 /**

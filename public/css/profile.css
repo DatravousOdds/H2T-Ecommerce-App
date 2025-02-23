@@ -326,8 +326,8 @@ button:disabled {
 }
 
 .default-paragraph {
-  padding: 0;
-  margin: 0;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .wrapper-row {
@@ -1055,10 +1055,10 @@ button:disabled {
   gap: 1rem;
 }
 
-#view-details .details-label {
-  font-weight: 500;
-  font-size: 0.875rem;
-  color: #6b7280;
+#view-detail .details-label {
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
 }
 
 .details-item i {
@@ -3427,6 +3427,7 @@ h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 #view-bank-details .view-all-activity {
@@ -4515,8 +4516,37 @@ h6 {
   display: none;
 }
 
+/* Bank Activites Status */
+
+.status-indicator {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0 !important;
+}
+
+.status-completed {
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+
+.status-pending {
+  background-color: #fff4e5;
+  color: #ff9800;
+}
+
+.status-failed {
+  background-color: #ffebee;
+  color: #f44336;
+}
+
 .deposit {
   color: var(--success-green-600);
+}
+
+.withdraw {
+  color: var(--alert-red-600);
 }
 
 .inline {
