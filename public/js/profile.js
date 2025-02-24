@@ -93,9 +93,12 @@ async function loadProfileData() {
       loadFavoritesData(userData);
       loadNotificationData(userData);
       loadPaymentInfoData(userData);
+      loadAllPayouts(userData);
       // Initialize the payout filters after loading payment info
       initializePayoutsFilters(userData);
+      initializeAllPayoutsFilters(userData);
       initializePaymentMethods(userData);
+
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
@@ -104,6 +107,44 @@ async function loadProfileData() {
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
     throw error;
+  }
+}
+
+async function loadAllPayouts(userData, filterType = "all") {
+  if (!userData) return null;
+  try {
+    // Database operations
+    const userProfileRef = doc(db, "userProfiles", userData.email);
+    const payoutsRef = collection(userProfileRef, "payouts");
+
+    // firebase filter logic
+    let query = payoutsRef;
+    if (filterType === "today") {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      query = query
+        .where("date", ">=", startOfDay)
+        .where("date", "<=", endOfDay);
+    }
+
+    const allPayouts = await getDocs(query);
+
+    const payoutsArray = allPayouts.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    // UI update
+    updatePayoutsDisplay(payoutsArray);
+
+    return payoutsArray; // return the payout data to use where needed
+  } catch (error) {
+    console.error("Error happen when fetching payout", error);
+    return []; // return empty array if an error occurs
   }
 }
 
@@ -168,14 +209,12 @@ async function loadPaymentMethods(userData) {
           activityItem.innerHTML = `
                    <div class="activity-item-wrapper">
                     <label class="details-label font-500">${act.type}</label>
+                    <p class="detail-date">${formatFirebaseDate(act.date)}</p>
+                    </div>
+                    <div class="activity-item-wrapper">
                     <label class="detail-value font-500 deposit">
                        +$${act.amount} ${act.currency}
                       </label>
-                    </div>
-                    <div class="activity-item-wrapper">
-                      <p class="default-paragraph">${formatFirebaseDate(
-                        act.date
-                      )}</p>
                       <p class="status-indicator ${getStatusClass(
                         act.status
                       )}" >${act.status}</p>
@@ -185,14 +224,13 @@ async function loadPaymentMethods(userData) {
           activityItem.innerHTML = `
                   <div class="activity-item-wrapper">
                     <label class="details-label font-500">${act.type}</label>
+                    <p class="detail-date">${formatFirebaseDate(act.date)}</p>
+                    
+                  </div>
+                  <div class="activity-item-wrapper">
                     <label class="detail-value font-500 withdraw">$${
                       act.amount
                     } ${act.currency}</label>
-                  </div>
-                  <div class="activity-item-wrapper">
-                    <p class="default-paragraph">${formatFirebaseDate(
-                      act.date
-                    )}</p>
                     <p class="status-indicator ${getStatusClass(act.status)}">${
             act.status
           }</p>
@@ -293,7 +331,9 @@ function loadProfileDisplayData(userData) {
   document.querySelector("#profile-picture").value = userData.profileImage;
   // profile username
   document.querySelector("#username").value = userData.username;
+
   document.querySelector("#timestamp-container").value = userData.joinedDate;
+
   document.querySelector("#verified-tag").value = userData.isVerified;
   // user stats
   document.querySelector("#followers-count").textContent =
@@ -339,7 +379,7 @@ function loadReviewData(userData) {
   // review categories
 }
 
-// Display functions
+// UI displays
 async function displayPaymentMethods(userData) {
   if (!userData) return;
 
@@ -472,6 +512,44 @@ async function displayBankDetails(object) {
   }
 }
 
+// UI updates
+function updatePayoutsDisplay(payouts) {
+  const filterPayoutList = document.querySelector(".filter-payout-list");
+  if (!filterPayoutList) reutrn;
+
+  filterPayoutList.innerHTML = "";
+
+  payouts.forEach((payout) => {
+    // Create and append new elements
+    const payoutItemDiv = document.createElement("div");
+    payoutItemDiv.className = "filter-payout-item";
+    payoutItemDiv.innerHTML = `
+                      <p class="default-paragraph" id="order-date">
+                        ${formatRelativeTime(payout.date)}
+                      </p>
+                      <p class="default-paragraph" id="order-id">
+                        #${payout.orderId}
+                      </p>
+                      <p class="default-paragraph" id="order-type">
+                        ${payout.type}
+                      </p>
+                      <p class="default-paragraph" id="order-amount">$${
+                        payout.amount
+                      }</p>
+                      <div class="status-wrapper">
+                        <p class="default-paragraph" id="order-status">
+                          ${payout.status}
+                        </p>
+                      </div>
+                      <p class="default-paragraph" id="order-processingDate">
+                        ${formatRelativeTime(payout.processingDate)}
+                      </p>
+                    `;
+    // Append each item to the list
+    filterPayoutList.appendChild(payoutItemDiv);
+  });
+}
+
 // Help functions
 function showEmptyState(container) {
   container.innerHTML = `<!-- COF Container-->
@@ -486,6 +564,51 @@ function showEmptyState(container) {
               </div>`;
 
   attachPaymentMethodsModalEventListener();
+}
+
+function formatFirebaseDate(timestamp) {
+  const date = timestamp.toDate();
+  return date.toLocaleDateString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric"
+  });
+}
+
+function formatRelativeTime(timestamp) {
+  if (!timestamp) return "";
+  // console.log("firebase date:", firebaseDate);
+  const firebaseDate = new Date(timestamp.seconds * 1000);
+  const now = new Date();
+  const diff = now - firebaseDate;
+  console.log("Timestamp: ", timestamp);
+  console.log("now time: ", now);
+  console.log("Diff: ", diff);
+
+  // Convert time differences to minutes, hours, days
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  console.log("minutes: ", minutes);
+  console.log("hours: ", hours);
+  console.log("days: ", days);
+
+  if (minutes < 1) {
+    return "just now";
+  } else if (minutes < 60) {
+    return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
+  } else if (hours < 24) {
+    return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+  } else if (days < 7) {
+    return `${days} ${days === 1 ? "day" : "days"} ago`;
+  } else {
+    return firebaseDate.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
+  }
 }
 
 const TRANSACTION_STATUS = {
@@ -622,6 +745,40 @@ function filterPayouts(payoutRef, filterType) {
   }
 }
 
+function filterPayoutsByDate(payouts, filterType) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  switch (filterType) {
+    case "today":
+      return payouts.filter((payout) => {
+        const payoutDate = new Date(payout.date.seconds * 1000);
+        payoutDate.setHours(0, 0, 0, 0);
+        return payoutDate.getTime() === today.getTime();
+      });
+    case "all":
+    default:
+      return payouts;
+  }
+}
+
+function sortPayouts(payouts, sortType) {
+  return [...payouts].sort((a, b) => {
+    const dateA = new Date(a.date.seconds * 1000);
+    const dateB = new Date(b.date.seconds * 1000);
+
+    switch (sortType) {
+      case "newest":
+        return dateB - dateA;
+      case "oldest":
+        return dateA - dateB;
+      default:
+        console.warn("Invalid sort type:", sortType);
+        return dateB - dateA; // default to newest if invalid sort
+    }
+  });
+}
+
 async function initializePayoutsFilters(userData) {
   const filterSelect = document.querySelector(".payout-filter");
 
@@ -631,6 +788,28 @@ async function initializePayoutsFilters(userData) {
     } catch (error) {
       console.error("Error filtering payouts:", error);
     }
+  });
+}
+
+async function initializeAllPayoutsFilters(userData) {
+  const payoutsFilter = document.querySelector(
+    ".view-all-payouts-container #payouts-filter"
+  );
+  const payoutsSort = document.querySelector(
+    ".view-all-payouts-container #payouts-sort"
+  );
+
+  let payouts = await loadAllPayouts(userData);
+
+  payoutsFilter.addEventListener("change", async () => {
+    payouts = await loadAllPayouts(userData, payoutsFilter.values);
+    const sortedPayouts = sortPayouts(payouts, payoutsSort.value);
+    updatePayoutDisplay(sortedPayouts);
+  });
+
+  payoutsSort.addEventListener("change", () => {
+    const sortedPayouts = sortPayouts(payouts, payoutsSort.value);
+    updatePayoutDisplay(sortedPayouts);
   });
 }
 
@@ -664,18 +843,9 @@ function updateWalletStatisticsDisplay(walletData) {
     "#pending-balance"
   ).textContent = `$${walletData.pendingBalance.toFixed(2)}`;
   document.querySelector("#currency-info").textContent = walletData.currency;
-  document.querySelector("#update-status").textContent = formatTimestamp(
+  document.querySelector("#update-status").textContent = formatRelativeTime(
     walletData.lastUpdated
   );
-}
-
-function formatFirebaseDate(timestamp) {
-  const date = timestamp.toDate();
-  return date.toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric"
-  });
 }
 
 async function updatePayoutDisplay(userData, filterType) {
