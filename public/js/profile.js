@@ -118,7 +118,7 @@ async function loadAllPayouts(userData, filterType = "all") {
     const payoutsRef = collection(userProfileRef, "payouts");
 
     // firebase filter logic
-    let query = payoutsRef;
+    let payoutsQuery = payoutsRef;
     if (filterType === "today") {
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
@@ -126,12 +126,16 @@ async function loadAllPayouts(userData, filterType = "all") {
       const endOfDay = new Date();
       endOfDay.setHours(23, 59, 59, 999);
 
-      query = query
-        .where("date", ">=", startOfDay)
-        .where("date", "<=", endOfDay);
+      payoutsQuery = query(
+        payoutsRef,
+        where("date", ">=", startOfDay),
+        where("date", "<=", endOfDay)
+      );
+    } else {
+      payoutsQuery = query(payoutsRef);
     }
 
-    const allPayouts = await getDocs(query);
+    const allPayouts = await getDocs(payoutsQuery);
 
     const payoutsArray = allPayouts.docs.map((doc) => ({
       id: doc.id,
@@ -581,18 +585,18 @@ function formatRelativeTime(timestamp) {
   const firebaseDate = new Date(timestamp.seconds * 1000);
   const now = new Date();
   const diff = now - firebaseDate;
-  console.log("Timestamp: ", timestamp);
-  console.log("now time: ", now);
-  console.log("Diff: ", diff);
+  // console.log("Timestamp: ", timestamp);
+  // console.log("now time: ", now);
+  // console.log("Diff: ", diff);
 
   // Convert time differences to minutes, hours, days
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
 
-  console.log("minutes: ", minutes);
-  console.log("hours: ", hours);
-  console.log("days: ", days);
+  // console.log("minutes: ", minutes);
+  // console.log("hours: ", hours);
+  // console.log("days: ", days);
 
   if (minutes < 1) {
     return "just now";
@@ -802,14 +806,14 @@ async function initializeAllPayoutsFilters(userData) {
   let payouts = await loadAllPayouts(userData);
 
   payoutsFilter.addEventListener("change", async () => {
-    payouts = await loadAllPayouts(userData, payoutsFilter.values);
-    const sortedPayouts = sortPayouts(payouts, payoutsSort.value);
-    updatePayoutDisplay(sortedPayouts);
+    console.log("filter:", payoutsFilter.value);
+    payouts = await loadAllPayouts(userData, payoutsFilter.value);
   });
 
   payoutsSort.addEventListener("change", () => {
+    console.log("Sorting:", payoutsSort.value);
     const sortedPayouts = sortPayouts(payouts, payoutsSort.value);
-    updatePayoutDisplay(sortedPayouts);
+    // updatePayoutDisplay(sortedPayouts);
   });
 }
 
@@ -1620,8 +1624,8 @@ const CARD_WRAPPER_TEMPLATE = (cardHolderName, lastFourDigits, expiry) => `
         <i class="fa-brands fa-cc-discover"></i>
       </div>
       <div class="card-inner">
-        <p class="default-paragraph card-name">${cardHolderName} ****${lastFourDigits}</p>
-        <p class="default-paragraph card-expiry">Expires on ${expiry}</p>
+        <p class="card-name">${cardHolderName} ****${lastFourDigits}</p>
+        <p class="card-expiry">Expires on ${expiry}</p>
       </div>
     </div>
     <div class="card-options">
@@ -1642,8 +1646,8 @@ const BANK_WRAPPER_TEMPLATE = (nameOfBank, accountType, lastFourDigits) => `
         <i class="fa-solid fa-building-columns"></i>
       </div>
       <div class="card-inner">
-        <p class="default-paragraph bank-name" >${nameOfBank}</p>
-        <p class="default-paragraph account-type">${accountType} ****${lastFourDigits}</p>
+        <p class="bank-name" >${nameOfBank}</p>
+        <p class="account-type">${accountType} ****${lastFourDigits}</p>
       </div>
     </div>
     <div class="card-options">
