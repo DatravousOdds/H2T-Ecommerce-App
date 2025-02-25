@@ -2825,6 +2825,15 @@ h6 {
     /* Slightly deeper on hover */ 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
+/* No payouts UI */
+.p-container {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .card-info h6 {
   color: #d82c2f;
 }
@@ -2950,6 +2959,7 @@ h6 {
   font-size: 14px;
   color: #6b7280;
   font-weight: 600;
+  margin: 0 !important;
 }
 
 .card-wrapper .card-options {

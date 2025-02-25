@@ -868,49 +868,77 @@ async function updatePayoutDisplay(userData, filterType) {
     const payoutList = document.querySelector("#payouts-list");
     payoutList.innerHTML = "";
 
-    // generate payouts dynamically
-    querySnapshot.forEach((doc) => {
-      const payoutList = document.querySelector("#payouts-list");
-      const payoutElement = document.createElement("div");
-      payoutElement.classList.add("payouts-item");
-
-      payoutElement.innerHTML = `
-      <!-- Wrapper OrderId/Date -->
-                  <div class="payouts-item-wrapper">
-                    <p class="default-paragraph payout-id">Order #${
-                      doc.data().orderId
-                    }</p>
-                    <p class="default-paragraph payout-date" id="payout-date">
-                      ${formatFirebaseDate(doc.data().processingDate)}
+    // Check if there are any payouts
+    if (querySnapshot.empty) {
+      payoutList.innerHTML = `
+      <!-- No current payouts Modal -->
+              <div id="no-payouts-menu" class="no-payouts-menu">
+                <div class="p-container">
+                  <div class="no-payout-icons">
+                    <!-- Icon-->
+                    <div class="no-payouts-inner-circle">
+                      <i class="fa-solid fa-calendar"></i>
+                    </div>
+                  </div>
+                  <!-- subheader-->
+                  <div class="no-payouts-subheader">
+                    <h2>No payouts for today</h2>
+                  </div>
+                  <!-- description -->
+                  <div class="no-payout-description">
+                    <p>
+                      Payouts will appear here when you receive new orders. They
+                      typically process within 2-3 business days
                     </p>
                   </div>
-
-                  <!-- Wrapper Amount/Status -->
-                  <div class="payouts-item-wrapper space-between">
-                    <p
-                      class="default-paragraph payout-amount"
-                      id="payout-amount"
-                    >
-                      $${doc.data().amount.toFixed(2)}
-                    </p>
-                    <p
-                      class="status default-paragraph ${
-                        doc.data().status
-                      } payout-status"
-                      id="payout-status"
-                    >
-                      ${
-                        doc.data().status.charAt(0).toUpperCase() +
-                        doc.data().status.slice(1)
-                      }
-                    </p>
-                  </div>
-                  
-      
+                </div>
+              </div>
       `;
+    } else {
+      // generate payouts dynamically
+      querySnapshot.forEach((doc) => {
+        const payoutList = document.querySelector("#payouts-list");
+        const payoutElement = document.createElement("div");
+        payoutElement.classList.add("payouts-item");
 
-      payoutList.appendChild(payoutElement);
-    });
+        payoutElement.innerHTML = `
+  <!-- Wrapper OrderId/Date -->
+              <div class="payouts-item-wrapper">
+                <p class="default-paragraph payout-id">Order #${
+                  doc.data().orderId
+                }</p>
+                <p class="default-paragraph payout-date" id="payout-date">
+                  ${formatFirebaseDate(doc.data().processingDate)}
+                </p>
+              </div>
+
+              <!-- Wrapper Amount/Status -->
+              <div class="payouts-item-wrapper space-between">
+                <p
+                  class="default-paragraph payout-amount"
+                  id="payout-amount"
+                >
+                  $${doc.data().amount.toFixed(2)}
+                </p>
+                <p
+                  class="status default-paragraph ${
+                    doc.data().status
+                  } payout-status"
+                  id="payout-status"
+                >
+                  ${
+                    doc.data().status.charAt(0).toUpperCase() +
+                    doc.data().status.slice(1)
+                  }
+                </p>
+              </div>
+              
+  
+  `;
+
+        payoutList.appendChild(payoutElement);
+      });
+    }
   } catch (error) {}
 }
 /**
