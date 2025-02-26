@@ -7,6 +7,15 @@ body {
   font-family: sans-serif !important;
 }
 
+.forgot-password-link {
+  margin-top: 10px;
+  font-size: 14px;
+  display: flex;
+  text-align: center;
+  justify-content: end;
+  text-decoration: none;
+}
+
 .loader {
   position: fixed;
   top: 50%;
