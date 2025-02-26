@@ -3524,135 +3524,80 @@
 
           <!-- Payments Reports and Taxes -->
           <div class="inner-wrapper" id="payments-reports">
-            <div class="filter-container">
-              <div class="dropdown-section-sm">
-                <div
-                  class="filter-1 default-button dropdown-header"
-                  id="filter"
-                >
-                  <span class="filter-icon" id="filter-icon">
-                    <i class="fa-solid fa-filter"></i>
-                  </span>
-                  <p class="default-paragraph">Filter</p>
-                </div>
+            <div class="card">
+              <!-- Filter Bar -->
+              <div class="filter-container">
+                <!-- Filter Dropdown-->
+                <div class="dropdown filter-dropdown">
+                  <button class="btn filter-btn" id="filterBtn">
+                    <i class="far far-filter"></i>
+                    <span>Filter</span>
+                  </button>
 
-                <!-- Dropdown Menu for small  -->
-                <div id="year-selection" class="year-dropdown">
-                  <ul id="sm-list" class="list-options">
-                    <li class="options">Clear All Filter</li>
-                    <li class="options">Reset</li>
-                    <li class="options">Refunds</li>
-                    <li class="options">Platform Fees</li>
-                    <li class="options">High Volume (>$1000)</li>
-                  </ul>
+                  <!-- Dropdown Menu for small  -->
+                  <div class="dropdown-menu" id="filterMenu">
+                    <ul>
+                      <li>Clear All Filter</li>
+                      <li>Reset</li>
+                      <li>Refund</li>
+                      <li>Platform Fees</li>
+                      <li>High Volume (>$1000)</li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
+                <!-- Year Dropdown -->
+                <div class="dropdown year-dropdown-container">
+                  <button class="btn year-btn" id="yearBtn">
+                    <i class="far far-calendar"></i>
+                    <span id="selectedYear">2024</span>
+                  </button>
 
-              <div class="dropdown-section-sm">
-                <div
-                  class="default-button filter-1 dropdown-header"
-                  id="year-header"
-                >
-                  <i class="fa-regular fa-calendar"></i>
-                  <p class="selected-year default-paragraph">2024</p>
-                  <span class="dropdown-icon" id="yearIcon"
-                    ><i class="fa-solid fa-angle-down"></i
-                  ></span>
-                </div>
-
-                <!-- Dropdown section for Year -->
-                <div id="select-year" class="year-dropdown">
-                  <ul id="list" class="">
-                    <li class="options">2024</li>
-                    <li class="options">2023</li>
-                    <li class="options">2022</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- Dropdown section for 'Statements' with toggle icon -->
-            <div class="dropdown-section" id="dropdown-toggle">
-              <div class="dropdown-header inline">
-                <div class="dropdown-header-wrapper">
-                  <h4 class="p1" id="statement-header">Monthly Statements</h4>
-                  <span class="dropdown-icon" id="statementIcon"
-                    ><i class="fa-solid fa-angle-down"></i
-                  ></span>
+                  <!-- Dropdown section for Year -->
+                  <div class="dropdown-menu year-dropdown" id="yearMenu">
+                    <ul id="list" class="">
+                      <li date-year="2024">2024</li>
+                      <li date-year="2023">2023</li>
+                      <li date-year="2022">2022</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
-              <!-- Statements-->
-              <div class="dropdown-menu" id="dropdown-menu">
-                <div>
-                  <div class="stmt-wrapper">
-                    <div class="inner-wrapper stmt">
-                      <div class="stmt-icon">
-                        <i class="fa-regular fa-file-lines"></i>
+              <!-- Monthly Statement Section -->
+              <div class="statement-section">
+                <div class="section-header" id="statementHeader">
+                  <h3>Monthly Statements</h3>
+                  <i class="fas fa-chevron-down icon"></i>
+                </div>
+                <div class="statement-list active" id="statementList">
+                  <!-- Statement Item 1 -->
+                  <div class="statement-item">
+                    <div class="statement-info">
+                      <div class="icon-container">
+                        <i class="far-file-alt"></i>
                       </div>
-                      <div class="statement-text-wrapper">
-                        <p>Jan Statements</p>
-                        <p class="default-paragraph">2024</p>
+                      <div class="statement-text">
+                        <p class="title">Jan Statements</p>
+                        <p class="subtitle">2024</p>
                       </div>
-                    </div>
-                    <div>
-                      <a href="#">
-                        <i class="fa-solid fa-download"></i>
-                        View Details
+                      <a href="#" class="statement-action">
+                        <i class="fas fa-download">
+                          <span>View Details</span>
+                        </i>
                       </a>
                     </div>
                   </div>
                 </div>
-
-                <div>
-                  <div class="stmt-wrapper">
-                    <div class="inner-wrapper stmt">
-                      <div class="stmt-icon">
-                        <i class="fa-regular fa-file-lines"></i>
-                      </div>
-                      <div class="statement-text-wrapper">
-                        <p>Jan Statements</p>
-                        <p class="default-paragraph">2024</p>
-                      </div>
-                    </div>
-                    <a href="#">
-                      <i class="fa-solid fa-download"></i>
-                      View Details
-                    </a>
-                  </div>
-                </div>
-
-                <div>
-                  <div class="stmt-wrapper">
-                    <div class="inner-wrapper stmt">
-                      <div class="stmt-icon">
-                        <i class="fa-regular fa-file-lines"></i>
-                      </div>
-                      <div class="statement-text-wrapper">
-                        <p>Jan Statements</p>
-                        <p class="default-paragraph">2024</p>
-                      </div>
-                    </div>
-                    <a href="#">
-                      <i class="fa-solid fa-download"></i>
-                      View Details
-                    </a>
-                  </div>
-                </div>
               </div>
-            </div>
 
-            <!-- Tax Center -->
-            <div class="dropdown-section" id="dropdown-toggle">
-              <div class="dropdown-header inline">
-                <h4 class="p1">Tax Center</h4>
-                <span class="dropdown-icon" id="taxCenterIcon"
-                  ><i class="fa-solid fa-angle-down"></i
-                ></span>
-              </div>
-              <!-- W-9 form Section -->
-              <div class="dropdown-menu" id="dropdown-menu">
-                <div>
+              <!-- Tax Center -->
+              <div class="tax-section">
+                <div class="section-header" id="taxHeader">
+                  <h4>Tax Center</h4>
+                  <i class="fas fa-chevron-down icon"></i>
+                </div>
+                <!-- W-9 form Section -->
+                <div class="tax-content active" id="taxContent">
                   <b>Not available for Aug 2024</b>
                 </div>
               </div>
