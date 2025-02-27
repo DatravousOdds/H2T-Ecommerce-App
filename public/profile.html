@@ -282,7 +282,7 @@
                         name="personal-fname"
                         id="personal-fname"
                         placeholder="Your name.."
-                        value="Sara"
+                        value=""
                         disabled
                       />
                       <span class="error-message" id="fnameError"></span>
@@ -3534,7 +3534,7 @@
                 </button>
 
                 <!-- Dropdown Menu for small  -->
-                <div class="dropdown-menu" id="filterMenu">
+                <div class="filter-dropdown-menu" id="filterMenu">
                   <ul>
                     <li>Clear All Filter</li>
                     <li>Reset</li>
@@ -3547,16 +3547,16 @@
               <!-- Year Dropdown -->
               <div class="dropdown year-dropdown-container">
                 <button class="btn year-btn" id="yearBtn">
-                  <i class="far far-calendar"></i>
+                  <i class="far fa-calendar"></i>
                   <span id="selectedYear">2024</span>
                 </button>
 
                 <!-- Dropdown section for Year -->
-                <div class="dropdown-menu year-dropdown" id="yearMenu">
-                  <ul id="list" class="">
-                    <li date-year="2024">2024</li>
-                    <li date-year="2023">2023</li>
-                    <li date-year="2022">2022</li>
+                <div class="filter-dropdown-menu year-dropdown" id="yearMenu">
+                  <ul>
+                    <li data-year="2024">2024</li>
+                    <li data-year="2023">2023</li>
+                    <li data-year="2022">2022</li>
                   </ul>
                 </div>
               </div>
@@ -3596,7 +3596,36 @@
               </div>
               <!-- W-9 form Section -->
               <div class="tax-content active" id="taxContent">
-                <b>Not available for Aug 2024</b>
+                <div class="tax-container">
+                  <!-- Tax Warning -->
+                  <div class="tax-center-warn">
+                    <i class="fa-solid fa-question"></i>
+                    <div class="tax-description">
+                      <p>
+                        Head-To-Toes provides tax documents to help sellers
+                        comply with tax obligations. We recommend consulting
+                        with a tax professional for advice on your specific
+                        situation.
+                      </p>
+                      <p>
+                        Learn more about seller taxes
+                        <span class="tax-link"
+                          ><i class="fa-solid fa-arrow-up-right-from-square"></i
+                        ></span>
+                      </p>
+                    </div>
+                  </div>
+                  <!-- Tabs -->
+                  <div class="tax-document-section">
+                    <label for="tax-year">Select Tax Year</label>
+                    <select name="tax-year" id="taxYear">
+                      <option value="">2024</option>
+                      <option value="">2023</option>
+                      <option value="">2022</option>
+                    </select>
+                    <div class="tax-selection-results">div.</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
