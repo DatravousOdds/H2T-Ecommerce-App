@@ -3598,9 +3598,9 @@
               <div class="tax-content active" id="taxContent">
                 <div class="tax-container">
                   <!-- Tax Warning -->
-                  <div class="tax-center-warn">
+                  <div class="tax-warning-box">
                     <i class="fa-solid fa-question"></i>
-                    <div class="tax-description">
+                    <div class="tax-warning-text">
                       <p>
                         Head-To-Toes provides tax documents to help sellers
                         comply with tax obligations. We recommend consulting
@@ -3609,21 +3609,181 @@
                       </p>
                       <p>
                         Learn more about seller taxes
-                        <span class="tax-link"
+                        <a href="#" class="tax-external-link"
                           ><i class="fa-solid fa-arrow-up-right-from-square"></i
-                        ></span>
+                        ></a>
                       </p>
                     </div>
                   </div>
-                  <!-- Tabs -->
-                  <div class="tax-document-section">
-                    <label for="tax-year">Select Tax Year</label>
-                    <select name="tax-year" id="taxYear">
-                      <option value="">2024</option>
-                      <option value="">2023</option>
-                      <option value="">2022</option>
-                    </select>
-                    <div class="tax-selection-results">div.</div>
+
+                  <!-- Tax Center Navigation -->
+                  <nav class="tax-nav">
+                    <ul class="tax-nav-tabs">
+                      <li class="tax-nav-item active" data-tab="tax-documents">
+                        Tax Documents
+                      </li>
+                      <li class="tax-nav-item" data-tab="tax-settings">
+                        Tax Settings
+                      </li>
+                    </ul>
+                  </nav>
+
+                  <!-- Tax Documents Tab Content -->
+                  <div class="tax-tab-content active" id="tax-documents">
+                    <div class="tax-year-selector">
+                      <label for="tax-year" class="tax-year-label"
+                        >Select Tax Year</label
+                      >
+                      <select
+                        name="tax-year"
+                        id="taxYear"
+                        class="tax-year-dropdown"
+                      >
+                        <option value="2024">2024 (Current Year)</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                      </select>
+                    </div>
+
+                    <div class="tax-forms-container">
+                      <div class="tax-form-item">
+                        <div class="tax-form-info">
+                          <div class="icon-container">
+                            <i class="far fa-file-alt"></i>
+                          </div>
+                          <div class="tax-form-details">
+                            <p class="form-title">Form 1099-k</p>
+                            <p class="form-description">
+                              Payment Card and Third Party Network Transactions
+                            </p>
+                            <p class="form-status">
+                              Status: Issued on Jan 20, 2024
+                            </p>
+                            <p class="form-deadline">
+                              Due Date: January 31, 2024
+                            </p>
+                          </div>
+                        </div>
+                        <a href="#" class="tax-form-download">
+                          <i class="fas fa-download"></i>
+                          <span>Download</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <!-- Important Tax Dates -->
+                    <div class="tax-important-dates">
+                      <h2 class="tax-dates-title">Important Tax Dates</h2>
+                      <div class="tax-dates-list">
+                        <div class="tax-date-item">
+                          <div class="tax-date-month">
+                            <span>JAN 31</span>
+                          </div>
+                          <div class="tax-date-info">
+                            <span class="tax-date-event"
+                              >Form 1099-K Issued</span
+                            >
+                            <p class="tax-date-description">
+                              You'll receive this if you had over $600 in sales
+                            </p>
+                          </div>
+                        </div>
+                        <div class="tax-date-item">
+                          <div class="tax-date-month">
+                            <span>APR 15</span>
+                          </div>
+                          <div class="tax-date-info">
+                            <span class="tax-date-event"
+                              >Federal Tax Filling Deadline</span
+                            >
+                            <p class="tax-date-description">
+                              Individual tax returns due for most sellers
+                            </p>
+                          </div>
+                        </div>
+                        <div class="tax-date-item">
+                          <div class="tax-date-month">
+                            <span>VARIES</span>
+                          </div>
+                          <div class="tax-date-info">
+                            <span class="tax-date-event"
+                              >State Sales Tax Due Dates</span
+                            >
+                            <p class="tax-date-description">
+                              Check your state requirements for filling
+                              frequency
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tax Settings Tab Content -->
+                  <div class="tax-tab-content" id="tax-settings">
+                    <div class="tax-information-preview">
+                      <h2>Your Tax Information</h2>
+
+                      <!-- Tax ID field -->
+                      <div class="tax-info-field">
+                        <div class="field-label">Tax ID (SSN/EIN)</div>
+                        <div class="field-value">***-**-1234</div>
+                      </div>
+
+                      <!-- Tax Form Type field -->
+                      <div class="tax-info-field">
+                        <div class="field-label">Tax Form Type</div>
+                        <div class="field-value">Form W-9</div>
+                      </div>
+
+                      <!-- Business Type field  -->
+                      <div class="tax-info-field">
+                        <div class="field-label">Business Type</div>
+                        <div class="field-value">Sole Proprietor</div>
+                      </div>
+
+                      <!-- Tax Withholding field -->
+                      <div class="tax-info-field">
+                        <div class="field-label">Tax Withholding</div>
+                        <div class="field-value">0%</div>
+                      </div>
+
+                      <!-- State field -->
+                      <div class="tax-info-field">
+                        <div class="field-label">State</div>
+                        <div class="field-value">California</div>
+                      </div>
+
+                      <!-- Last Updated field -->
+                      <div class="tax-info-field">
+                        <div class="field-label">Last Updated</div>
+                        <div class="field-value">March 15, 2024</div>
+                      </div>
+
+                      <!-- Action buttons -->
+                      <div class="tax-actions">
+                        <button class="btn btn-primary">
+                          Update Tax Information
+                        </button>
+                        <button class="btn btn-outline">Submit New W-9</button>
+                      </div>
+                    </div>
+                    <div class="sales-tax-nexus">
+                      <h2>Sales Tax Nexus</h2>
+                      <div class="tax-nexus">
+                        <p>
+                          As a marketplace seller, Head-To-Toes collects and
+                          remits sales tax on your behalf in states where we
+                          have marketplace facilitator status. In order states,
+                          you may be responsible for collection and remitting
+                          sales tax.
+                        </p>
+                      </div>
+                      <a href="#" class="sales-tax-link"
+                        >View states where Head-To-Toes collects sales tax
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>

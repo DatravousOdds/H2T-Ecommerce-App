@@ -4727,13 +4727,13 @@ h6 {
 }
 
 .section-header h3 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .section-header .icon {
   /* transition: transform 0.3s !important; */
-  font-size: 12px;
+  font-size: 14px;
   height: 0;
   width: 0;
 }
@@ -4787,6 +4787,7 @@ h6 {
 
 .statement-text p {
   line-height: 1.4;
+  font-size: 14px;
 }
 
 .statement-text .title {
@@ -4795,7 +4796,7 @@ h6 {
 }
 
 .statement-text .subtitle {
-  font-size: 13px;
+  font-size: 14px;
   color: #777;
   margin: 0;
 }
@@ -4813,6 +4814,189 @@ h6 {
   text-decoration: underline;
 }
 
+/* Tax Navigation Styles */
+.tax-nav .tax-nav-tabs {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.tax-nav .tax-nav-tabs li {
+  font-weight: 600;
+  color: #707684;
+  padding-bottom: 12px;
+  cursor: pointer;
+}
+
+.tax-warning-box {
+  align-items: baseline;
+  display: flex;
+  border-radius: 12px;
+  background-color: #eef6ff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tax-warning-box i {
+  padding: 12px;
+  color: #2463eb;
+}
+
+.tax-tab-content {
+  margin-top: 0;
+  border-top: 1px solid #e4e4e7;
+  position: relative;
+  z-index: 1;
+}
+
+.tax-nav-item.active {
+  color: #2463eb !important;
+  position: relative;
+}
+
+.tax-nav-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px; /* Position it at the exact bottom */
+  left: 0;
+  width: 100%;
+  height: 2px; /* Slightly thicker line looks better */
+  background-color: #2463eb;
+  z-index: 3;
+}
+
+.tax-year-selector {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.tax-nav {
+  margin-top: 1rem;
+  position: relative;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.tax-warning-box .tax-description {
+  color: #1d40af;
+}
+
+.tax-date-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tax-warning-box .tax-warning-text p {
+  color: #2463eb;
+  margin: 0;
+}
+
+.tax-date-month {
+  padding: 0.5rem;
+  background-color: #e4e7eb;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 3rem;
+}
+
+.tax-date-description {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.tax-dates-list {
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  margin-bottom: 1rem;
+}
+
+.tax-date-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.tax-year-dropdown {
+  border-radius: 6px;
+  border: 1px solid #d1d5da;
+  padding: 6px;
+}
+
+.tax-dates-title {
+  font-size: 20px;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-title {
+  font-weight: 500;
+  color: #000 !important;
+}
+
+.form-description {
+  font-size: 12px;
+}
+
+.tax-form-details p {
+  margin: 0;
+}
+
+.tax-forms-container {
+  padding-bottom: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #f3f4f6;
+  width: 100%;
+}
+
+.tax-form-item {
+  margin-top: 1rem;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.tax-form-download {
+  color: #2463eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  margin-left: auto;
+  text-decoration: none;
+}
+
+.tax-form-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.tax-information {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tax-information-preview h2 {
+  font-size: 20px;
+}
+
+.form-info p {
+  font-size: 16px;
+  margin: 0;
+}
+
 .tax-content {
   padding: 16px;
   font-weight: 500;
@@ -4821,6 +5005,68 @@ h6 {
 
 .tax-content.active {
   display: block;
+}
+
+/* Tax Information Section */
+
+.tax-information-preview {
+  margin-top: 1rem;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: #f9fafb;
+}
+
+.sales-tax-nexus {
+  margin-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.sales-tax-nexus h2 {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 20px;
+}
+
+.sales-tax-link {
+  text-decoration: none;
+}
+
+.sales-tax-link:hover {
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+.sales-tax-link i {
+  font-size: 12px;
+}
+
+.tax-info-field {
+  padding: 6px;
+  margin-bottom: 16px;
+}
+
+.tax-info-field .field-label {
+  color: #6a7280;
+}
+
+.tax-info-field .field-value {
+  font-weight: 500;
+  color: #000;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+.tax-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-outline {
+  border: 1px solid #d1d5da !important;
+  background-color: white;
+  color: #333;
 }
 
 .statements {
@@ -6512,7 +6758,7 @@ details h3 {
 }
 
 /* Navigation container */
-.nav-menu-container {
+.tax-nav-tabs-container {
   width: 100%;
   overflow: hidden;
   margin-bottom: 1.5rem;
