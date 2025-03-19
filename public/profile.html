@@ -3768,6 +3768,114 @@
                         <button class="btn btn-outline">Submit New W-9</button>
                       </div>
                     </div>
+
+                    <!-- Edit form (initially hidden) -->
+                    <div
+                      class="tax-information-form"
+                      id="tax-form"
+                      style="display: none"
+                    >
+                      <form action="" method="POST" id="taxInformationForm">
+                        <!-- Tax ID Field -->
+                        <div class="tax-fields">
+                          <label for="taxId" class="taxId"
+                            >Tax ID (SSN/EIN)*</label
+                          >
+                          <div class="input-wrapper">
+                            <input
+                              id="taxId"
+                              name="taxId"
+                              class="taxId-input"
+                              type="password"
+                              pattern="\d{3}-\d{2}-\d{4}"
+                              required
+                              aria-describedby="taxIdFormat"
+                            />
+                            <button
+                              class="toggle-visibility"
+                              aria-label="Toggle Tax ID visibility"
+                            >
+                              <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <p id="taxIdFormat" class="taxId-format">
+                              Format: XXX-XX-XXXX
+                            </p>
+                          </div>
+                        </div>
+                        <!-- Tax Form Type Field -->
+                        <div class="tax-fields">
+                          <label for="taxType" class="taxType"
+                            >Tax Form Type*</label
+                          >
+                          <select name="taxType" id="taxType" required>
+                            <option value="">Select a form type</option>
+                            <option value="Form 1099">Form 1099</option>
+                            <option value="Form W-8BEN">Form W-8BEN</option>
+                            <option value="Form W-9">Form W-9</option>
+                          </select>
+                        </div>
+                        <!-- Business Type Field-->
+                        <div class="tax-fields">
+                          <label for="businessType" class="businessType"
+                            >Business Type</label
+                          >
+                          <select name="businessType" id="businessType">
+                            <option value="">Select business type</option>
+                            <option value="soleProprietor">
+                              Sole Proprietor
+                            </option>
+                            <option value="llc">LLC</option>
+                            <option value="corporation">Corporation</option>
+                            <option value="partnership">Partnership</option>
+                          </select>
+                        </div>
+
+                        <!-- Tax Withholding Field-->
+                        <div class="tax-fields">
+                          <label for="taxWithholding" class="taxWithholding"
+                            >Tax Withholding</label
+                          >
+                          <div class="input-group">
+                            <input
+                              type="number"
+                              name="taxWithholding"
+                              class="tax-withholding-input"
+                              id="taxWithholding"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              required
+                            />
+                            <span class="percentage-icon">%</span>
+                          </div>
+                        </div>
+
+                        <!-- State Field -->
+                        <div class="tax-fields">
+                          <label for="tax-state" class="tax-state"
+                            >State*</label
+                          >
+                          <select name="tax-state" id="tax-state" required>
+                            <option value="">Select a state</option>
+                            <option value="CA">California</option>
+                            <option value="TX">Texas</option>
+                            <option value="NY">New York</option>
+                            <option value="FL">Florida</option>
+                          </select>
+                        </div>
+
+                        <!-- Form controls-->
+                        <div class="tax-form-controls">
+                          <button type="submit" class="btn btn-primary">
+                            Save changes
+                          </button>
+                          <button type="reset" class="btn btn-secondary">
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
                     <div class="sales-tax-nexus">
                       <h2>Sales Tax Nexus</h2>
                       <div class="tax-nexus">
