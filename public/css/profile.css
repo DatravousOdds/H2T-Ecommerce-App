@@ -4820,6 +4820,7 @@ h6 {
   display: flex;
   gap: 1rem;
   padding-bottom: 0;
+  padding-left: 0 !important;
   margin-bottom: 0;
   position: relative;
   z-index: 2;
@@ -4852,6 +4853,11 @@ h6 {
   border-top: 1px solid #e4e4e7;
   position: relative;
   z-index: 1;
+  display: none;
+}
+
+.tax-tab-content.active {
+  display: block;
 }
 
 .tax-nav-item.active {
