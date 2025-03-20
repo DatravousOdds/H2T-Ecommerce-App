@@ -5087,6 +5087,91 @@ h6 {
   gap: 4px;
 }
 
+/* Tax Information Form */
+.tax-information-form {
+  margin-top: 1rem;
+  border-radius: 12px;
+  padding: 1rem;
+  display: block; /* initial show form until styling done */
+  background-color: #f9fafb;
+}
+
+.tax-information-form .tax-fields {
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+  padding: 0.5rem;
+}
+
+.tax-information-form label {
+  color: #6a7280;
+}
+
+.tax-information-form input {
+  width: 100%;
+  border-radius: 4px;
+  padding: 10px;
+  border: 2px solid #d5d5d5;
+  margin: 4px auto;
+  transition: border-color 0.2s;
+}
+
+.tax-information-form input:focus {
+  border-color: var(--primary-red-hover);
+}
+
+.tax-information-form select {
+  border-radius: 8px;
+  padding: 14px;
+  border: 2px solid #d5d5d5;
+  transition: border-color 0.2s;
+}
+
+.tax-information-form select:focus {
+  border-color: var(--primary-red);
+}
+
+.tax-information-form .tax-form-controls {
+  display: flex;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.toggle-visibility {
+  position: absolute;
+  border: none;
+  background: none;
+  font-size: 2rem;
+  right: 1rem;
+  top: 0;
+}
+
+.tax-withholding-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.tax-withholding-container {
+  width: 90px !important;
+  padding-right: 30px !important;
+}
+
+.tax-withholding-container input {
+  border-radius: 6px;
+}
+
+.percentage-icon {
+  position: absolute;
+  left: 71px;
+  top: 16px;
+  color: #6a7280;
+  font-size: 16px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
 .dropdown-header-wrapper {
   display: flex;
   align-items: center;
