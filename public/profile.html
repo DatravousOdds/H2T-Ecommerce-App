@@ -3586,6 +3586,26 @@
                   </a>
                 </div>
               </div>
+
+              <!-- No statements available modal -->
+              <div
+                class="no-statement-modal"
+                id="no-statement-modal"
+                role="dialog"
+                aria-labelledby="no-statement-title"
+                aria-describedby="no-statement-description"
+              >
+                <div class="no-statement-modal-content">
+                  <div class="no-statement-icon">
+                    <i class="far fa-file-alt" aria-hidden="true"></i>
+                  </div>
+                  <h3 class="no-statement-title">No statements available</h3>
+                  <p class="no-statement-description">
+                    There are currently no statements for this period.
+                    Statements will appear here once they become available.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <!-- Tax Center -->
@@ -3645,6 +3665,29 @@
                       </select>
                     </div>
 
+                    <!-- No form 1099k modal -->
+                    <div
+                      class="no-form-1099k-modal"
+                      id="no-form-1099k-modal"
+                      role="dialog"
+                      aria-labelledby="no-form-1099k-title"
+                      aria-describedby="no-form-1099k-description"
+                    >
+                      <div class="no-form-1099k-modal-content">
+                        <div class="no-form-1099k-icon">
+                          <i class="far fa-file-alt" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="no-form-1099k-title">
+                          No Form 1099-K Available
+                        </h3>
+                        <p class="no-form-1099k-description">
+                          There are no Form 1099-K documents available for the
+                          selected tax year. You'll receive this form if you had
+                          over $600 in sales.
+                        </p>
+                      </div>
+                    </div>
+
                     <div class="tax-forms-container">
                       <div class="tax-form-item">
                         <div class="tax-form-info">
@@ -3664,7 +3707,7 @@
                             </p>
                           </div>
                         </div>
-                        <a href="#" class="tax-form-download">
+                        <a href="#" class="tax-form-download" id="downloadLink">
                           <i class="fas fa-download"></i>
                           <span>Download</span>
                         </a>
@@ -3762,7 +3805,11 @@
 
                       <!-- Action buttons -->
                       <div class="tax-actions">
-                        <button class="btn btn-primary">
+                        <button
+                          id="updateTaxInfoBtn"
+                          type="button"
+                          class="btn update-tax-info-btn"
+                        >
                           Update Tax Information
                         </button>
                         <button class="btn btn-outline">Submit New W-9</button>
@@ -3770,12 +3817,9 @@
                     </div>
 
                     <!-- Edit form (initially hidden) -->
-                    <div
-                      class="tax-information-form"
-                      id="tax-form"
-                      style="display: block"
-                    >
+                    <div class="tax-information-form" id="tax-form">
                       <form action="" method="POST" id="taxInformationForm">
+                        <h2>Update Your Tax Information</h2>
                         <!-- Tax ID Field -->
                         <div class="tax-fields">
                           <label for="taxId" class="taxId"
@@ -3790,8 +3834,11 @@
                               pattern="\d{3}-\d{2}-\d{4}"
                               required
                               aria-describedby="taxIdFormat"
+                              value="***_**-1234"
+                              placeholder="XXX-XX-XXXX"
                             />
                             <button
+                              type="button"
                               class="toggle-visibility"
                               aria-label="Toggle Tax ID visibility"
                             >
@@ -3844,6 +3891,7 @@
                               min="0"
                               max="100"
                               step="0.1"
+                              placeholder="0"
                               required
                             />
                             <span class="percentage-icon">%</span>
@@ -3866,7 +3914,7 @@
 
                         <!-- Form controls-->
                         <div class="tax-form-controls">
-                          <button type="submit" class="btn btn-primary">
+                          <button type="submit" class="btn save-changes-btn">
                             Save changes
                           </button>
                           <button type="reset" class="btn btn-secondary">

@@ -2834,6 +2834,20 @@ h6 {
   justify-content: center;
 }
 
+.no-payout-icons {
+  padding: 12px 1rem;
+  background: #f3f4f6;
+  border-radius: 24px;
+}
+
+.no-payouts-inner-circle {
+  color: #9ca3af;
+}
+
+.no-payout-description {
+  font-weight: 500;
+}
+
 .card-info h6 {
   color: #d82c2f;
 }
@@ -3495,8 +3509,12 @@ h6 {
 
 .view-all-payouts a {
   font-weight: 500;
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
+}
+
+.view-all-payouts a:hover {
+  text-decoration: underline;
 }
 
 #payouts .inner-wrapper {
@@ -4805,7 +4823,7 @@ h6 {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #4169e1;
+  color: var(--primary-red);
   font-size: 14px;
   text-decoration: none;
 }
@@ -4837,14 +4855,14 @@ h6 {
   align-items: baseline;
   display: flex;
   border-radius: 12px;
-  background-color: #eef6ff;
+  background-color: #e53f4717;
   padding: 1rem;
   margin-bottom: 1rem;
 }
 
 .tax-warning-box i {
   padding: 12px;
-  color: #2463eb;
+  color: var(--primary-red);
   font-size: 1rem;
 }
 
@@ -4861,7 +4879,7 @@ h6 {
 }
 
 .tax-nav-item.active {
-  color: #2463eb !important;
+  color: var(--primary-red) !important;
   position: relative;
 }
 
@@ -4872,7 +4890,7 @@ h6 {
   left: 0;
   width: 100%;
   height: 2px; /* Slightly thicker line looks better */
-  background-color: #2463eb;
+  background-color: var(--primary-red);
   z-index: 3;
 }
 
@@ -4899,7 +4917,7 @@ h6 {
 }
 
 .tax-warning-box .tax-warning-text p {
-  color: #2463eb;
+  color: var(--primary-red);
   margin: 0;
 }
 
@@ -4974,7 +4992,7 @@ h6 {
 }
 
 .tax-form-download {
-  color: #2463eb;
+  color: var(--primary-red);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -4995,7 +5013,8 @@ h6 {
   gap: 12px;
 }
 
-.tax-information-preview h2 {
+.tax-information-preview h2,
+.tax-information-form h2 {
   font-size: 20px;
 }
 
@@ -5021,6 +5040,29 @@ h6 {
   padding: 16px;
   border-radius: 12px;
   background-color: #f9fafb;
+  display: block;
+}
+
+.tax-information-preview.remove {
+  display: none;
+}
+
+.tax-information-preview.show {
+  display: block;
+}
+
+/* Buttons */
+
+.tax-form-controls .save-changes-btn,
+.tax-actions .update-tax-info-btn {
+  background-color: var(--primary-red);
+  color: var(--bg-white);
+}
+
+.tax-form-controls .save-changes-btn:hover,
+.tax-actions .update-tax-info-btn:hover {
+  background-color: var(--black);
+  color: var(--bg-white);
 }
 
 .sales-tax-nexus {
@@ -5037,11 +5079,12 @@ h6 {
 
 .sales-tax-link {
   text-decoration: none;
+  color: var(--primary-red);
 }
 
 .sales-tax-link:hover {
   text-decoration: underline;
-  color: #2563eb;
+  color: var(--black);
 }
 
 .sales-tax-link i {
@@ -5055,6 +5098,10 @@ h6 {
 
 .tax-info-field .field-label {
   color: #6a7280;
+}
+
+.tax-information-preview .button-primary {
+  background-color: var(--primary-red);
 }
 
 .tax-info-field .field-value {
@@ -5076,6 +5123,46 @@ h6 {
   color: #333;
 }
 
+/* Statements */
+
+.no-form-1099k-modal-content {
+  display: none; /* until testing is done */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.no-statement-modal-content
+ {
+  display: none; /* until testing is done */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.no-statement-modal-content .no-statement-icon,
+.no-form-1099k-icon {
+  padding: 10px 16px;
+  background-color: #f3f4f6;
+  border-radius: 25px;
+}
+
+.no-statement-icon i,
+.no-form-1099k-icon i {
+  color: #9ca3af;
+}
+
+.no-statement-description,
+.no-form-1099k-description {
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
 .statements {
   border: 1px solid #e4e4e7;
 }
@@ -5092,8 +5179,12 @@ h6 {
   margin-top: 1rem;
   border-radius: 12px;
   padding: 1rem;
-  display: block; /* initial show form until styling done */
+  display: none; /* initial show form until styling done */
   background-color: #f9fafb;
+}
+
+.tax-information-form.show {
+  display: block;
 }
 
 .tax-information-form .tax-fields {
@@ -5109,7 +5200,7 @@ h6 {
 
 .tax-information-form input {
   width: 100%;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 10px;
   border: 2px solid #d5d5d5;
   margin: 4px auto;
@@ -5137,6 +5228,10 @@ h6 {
   gap: 1rem;
 }
 
+.tax-information-form .input-wrapper {
+  position: relative;
+}
+
 .toggle-visibility {
   position: absolute;
   border: none;
@@ -5144,6 +5239,7 @@ h6 {
   font-size: 2rem;
   right: 1rem;
   top: 0;
+  color: var(--primary-red);
 }
 
 .tax-withholding-container {
@@ -5159,7 +5255,7 @@ h6 {
 }
 
 .tax-withholding-container input {
-  border-radius: 6px;
+  border-radius: 6px !important;
 }
 
 .percentage-icon {
@@ -8868,6 +8964,15 @@ input:checked + .slider:before {
   .search-wrapper {
     width: 100%;
     max-width: 100%;
+  }
+
+  /* Tax Information */
+  .tax-withholding-input {
+    width: 70px !important;
+  }
+
+  .percentage-icon {
+    left: 55px;
   }
 }
 

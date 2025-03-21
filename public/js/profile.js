@@ -11,7 +11,7 @@ import {
   query,
   where,
   limit,
-  orderBy
+  orderBy,
 } from "./firebase-client.js";
 import { checkUserStatus } from "./auth.js";
 
@@ -21,7 +21,7 @@ const updateProfile = async (email, updateData) => {
     const userDocRef = doc(db, "userProfiles", email);
     await updateDoc(userDocRef, {
       ...updateData,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
     showAlert("Profile updated successfully", "success");
   } catch (error) {
@@ -38,7 +38,7 @@ const updateShippingInfo = async (email, shippingData) => {
       address2: shippingData.address2,
       state: shippingData.state,
       postalCode: shippingData.postalCode,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
     showAlert("Shupping information updated", "success");
   } catch (error) {
@@ -55,7 +55,7 @@ const updateProfilePicture = async (email, imageUrl) => {
     // Then update profile
     await db.collection("userProfiles").doc(email).update({
       profileImage: imageUrl,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
 
     showAlert("Profile picture updated", "success");
@@ -139,7 +139,7 @@ async function loadAllPayouts(userData, filterType = "all") {
 
     const payoutsArray = allPayouts.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
 
     // UI update
@@ -165,19 +165,19 @@ async function loadPaymentMethods(userData) {
     // fetch bank and credit card information at the same time
     const [bankAccountSnapshot, creditCardsSnapshot] = await Promise.all([
       getDocs(bankAccountsRef),
-      getDocs(creditCardsRef)
+      getDocs(creditCardsRef),
     ]);
 
     // map bank information to an object
     const bankAccounts = bankAccountSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
 
     // map credit card information to an object
     const creditCardAccounts = creditCardsSnapshot.docs.map((doc) => ({
       id: doc.id, // credit card id
-      ...doc.data()
+      ...doc.data(),
     }));
 
     // load credit card transactions
@@ -294,7 +294,7 @@ async function loadCreditCardTransactions(userData, cardId) {
 
   const transactions = transactionSnapShot.docs.map((doc) => ({
     id: doc.id,
-    ...doc.data()
+    ...doc.data(),
   }));
   // console.log("Current transactions: ", transactions);
   return transactions;
@@ -314,7 +314,7 @@ async function loadBankTransactions(userData, bankId) {
 
     const bankTransactions = transactionSnapShot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
 
     console.log("Bank Transactions: ", bankTransactions);
@@ -575,7 +575,7 @@ function formatFirebaseDate(timestamp) {
   return date.toLocaleDateString("en-US", {
     month: "2-digit",
     day: "2-digit",
-    year: "numeric"
+    year: "numeric",
   });
 }
 
@@ -610,7 +610,7 @@ function formatRelativeTime(timestamp) {
     return firebaseDate.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
-      year: "numeric"
+      year: "numeric",
     });
   }
 }
@@ -618,7 +618,7 @@ function formatRelativeTime(timestamp) {
 const TRANSACTION_STATUS = {
   PENDING: "pending",
   COMPLETED: "completed",
-  FAILED: "failed"
+  FAILED: "failed",
 };
 
 // Define status styles configuration
@@ -626,18 +626,18 @@ const STATUS_STYLES = {
   [TRANSACTION_STATUS.PENDING]: {
     className: "status-pending",
     backgroundColor: "#FFF4E5",
-    color: "#FF9800"
+    color: "#FF9800",
   },
   [TRANSACTION_STATUS.COMPLETED]: {
     className: "status-completed",
     backgroundColor: "#E8F5E9",
-    color: "#4CAF50"
+    color: "#4CAF50",
   },
   [TRANSACTION_STATUS.FAILED]: {
     className: "status-failed",
     backgroundColor: "#FFEBEE",
-    color: "#F44336"
-  }
+    color: "#F44336",
+  },
 };
 
 function getStatusClass(status) {
@@ -991,7 +991,7 @@ async function updatePayoutStats(payoutsRef) {
       completed: 0,
       processing: 0,
       pending: 0,
-      total: 0
+      total: 0,
     };
     console.log("Stats Snapshot:", statsSnapshot);
 
@@ -1098,7 +1098,7 @@ personalInformationForm.addEventListener("submit", async (e) => {
       lastName: document.querySelector("#lname").value,
       phoneNumber: document.querySelector("#phoneNumber").value,
       username: document.querySelector("#profile-username").value,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
     console.log("Updated Data: ", updateData);
     await updateProfile(user.email, updateData);
@@ -1121,7 +1121,7 @@ shippingInformationForm.addEventListener("submit", async (e) => {
       country: document.querySelector("#shippingInformation #country").value,
       phoneNumber: document.querySelector("#shippingInformation #phoneNumber")
         .value,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
 
     await updateShippingInfo(user.email, shippingData);
@@ -1437,7 +1437,7 @@ if (cardForm) {
       cardNumber: document.querySelector("#cardForm #cardNumber"),
       cvv: document.querySelector("#cardForm #cvv"),
       expiry: document.querySelector("#cardForm #expiry"),
-      billingAddress: document.querySelector("#cardForm #billingAddress")
+      billingAddress: document.querySelector("#cardForm #billingAddress"),
     };
 
     if (!formElements) {
@@ -1496,7 +1496,7 @@ if (bankForm) {
     const formElements = {
       accountHolderName: document.querySelector("#bankForm #accountHolderName"),
       routingNumber: document.querySelector("#bankForm #routingNumber"),
-      accountNumber: document.querySelector("#bankForm #accountNumber")
+      accountNumber: document.querySelector("#bankForm #accountNumber"),
     };
 
     let hasError = false;
@@ -2100,7 +2100,7 @@ function handleAddCard(event) {
     cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
     expirationDate: document.querySelector("#cardForm #expiry")?.value,
     billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
-    cardEnding: document.querySelector("#card-ending")
+    cardEnding: document.querySelector("#card-ending"),
   };
 
   // Get the last 4 digits of the card
@@ -2140,7 +2140,7 @@ function handleAddBank(event) {
     accountType: document.querySelector("#bankForm .bank-detail-value")
       ?.textContent,
     bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
-      ?.textContent
+      ?.textContent,
   };
 
   const lastFourDigits = newBank.accountNumber.slice(-4);
@@ -2543,7 +2543,7 @@ submitReplyBtn.forEach((btn) => {
     // Get current user
     const currentUser = {
       pfp: reviewCard.querySelector(".user-review-img").src,
-      username: reviewCard.querySelector(".username-wrapper").textContent
+      username: reviewCard.querySelector(".username-wrapper").textContent,
     };
 
     // Get form Data
@@ -2551,7 +2551,7 @@ submitReplyBtn.forEach((btn) => {
       pfp: currentUser.pfp,
       username: currentUser.username,
       text: replyText,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Check if there is already a replies container
@@ -3058,6 +3058,90 @@ yearOptions.forEach((option) => {
 // Statements section toggle
 const statementsHeader = document.getElementById("statementHeader");
 const statementsList = document.getElementById("statementList");
+// Tax Information buttons elements
+const updateTaxInfoBtn = document.getElementById("updateTaxInfoBtn");
+const toggleButton = document.querySelector(".toggle-visibility");
+const passwordInput = document.getElementById("taxId");
+const taxCancelBtn = document.querySelector(
+  "#taxInformationForm .btn-secondary"
+);
+// Tax forms
+const taxInformationPreview = document.querySelector(
+  ".tax-information-preview"
+);
+const taxInformationForm = document.getElementById("tax-form");
+const taxForm = document.getElementById("taxInformationForm");
+// Tax section toggle
+const taxHeader = document.getElementById("taxHeader");
+const taxContent = document.getElementById("taxContent");
+// Download link elements
+const downloadLink = document.getElementById("downloadLink");
+// Event listeners
+downloadLink.addEventListener("click", function (event) {
+  event.preventDefault();
+  console.log("Download link clicked");
+  downloadBlob();
+});
+
+// Helper functions
+function downloadBlob(
+  content = "this is the statement that will be download",
+  filename = "statement.txt",
+  mimeType = "text/plain"
+) {
+  // create a blob
+  const blob = new Blob([content], { type: mimeType });
+
+  // create a URL for the blob
+  const url = URL.createObjectURL(blob);
+
+  // Set link properties
+  const tempLink = document.createElement("a");
+  tempLink.href = url;
+  tempLink.download = filename;
+
+  document.body.appendChild(tempLink);
+  tempLink.click();
+  document.body.removeChild(tempLink);
+
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 100);
+}
+
+toggleButton.addEventListener("click", () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggleButton.innerHTML = `<i class="fa-solid fa-eye-slash"></i>`;
+  } else {
+    passwordInput.type = "password";
+    toggleButton.innerHTML = `<i class="fa-solid fa-eye"></i>`;
+  }
+});
+updateTaxInfoBtn.addEventListener("click", () => {
+  console.log("Update Tax Information button was clicked");
+  if (taxInformationPreview.classList.contains("show")) {
+    taxInformationPreview.classList.remove("show");
+  }
+  taxInformationPreview.classList.add("remove");
+  taxInformationForm.classList.add("show");
+});
+taxForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  // validate form logic here
+
+  console.log("Changes have been submitted!");
+
+  // remove form
+  taxInformationForm.classList.remove("show");
+  // show preview
+  taxInformationPreview.classList.add("show");
+  // show success message
+});
+taxCancelBtn.addEventListener("click", () => {
+  taxInformationForm.classList.remove("show");
+  taxInformationPreview.classList.add("show");
+});
 
 statementsHeader.addEventListener("click", function () {
   console.log("statement header has been clicked");
@@ -3068,10 +3152,6 @@ statementsHeader.addEventListener("click", function () {
 const taxContentSections = document.querySelectorAll(".tax-tab-content");
 
 console.log(taxContentSections);
-
-// Tax section toggle
-const taxHeader = document.getElementById("taxHeader");
-const taxContent = document.getElementById("taxContent");
 
 taxHeader.addEventListener("click", function () {
   this.classList.toggle("active");
@@ -3193,7 +3273,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -3208,7 +3288,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -3241,7 +3321,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -3315,7 +3395,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".funds-container .close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
