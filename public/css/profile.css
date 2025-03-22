@@ -2825,6 +2825,8 @@ h6 {
     /* Slightly deeper on hover */ 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
+/* No All Payouts Modal */
+
 /* No payouts UI */
 .p-container {
   text-align: center;
@@ -5134,8 +5136,7 @@ h6 {
   padding: 0.5rem;
 }
 
-.no-statement-modal-content
- {
+.no-statement-modal-content {
   display: none; /* until testing is done */
   flex-direction: column;
   align-items: center;

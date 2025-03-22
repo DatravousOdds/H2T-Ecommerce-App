@@ -11,7 +11,7 @@ import {
   query,
   where,
   limit,
-  orderBy,
+  orderBy
 } from "./firebase-client.js";
 import { checkUserStatus } from "./auth.js";
 
@@ -21,7 +21,7 @@ const updateProfile = async (email, updateData) => {
     const userDocRef = doc(db, "userProfiles", email);
     await updateDoc(userDocRef, {
       ...updateData,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     });
     showAlert("Profile updated successfully", "success");
   } catch (error) {
@@ -38,7 +38,7 @@ const updateShippingInfo = async (email, shippingData) => {
       address2: shippingData.address2,
       state: shippingData.state,
       postalCode: shippingData.postalCode,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     });
     showAlert("Shupping information updated", "success");
   } catch (error) {
@@ -55,7 +55,7 @@ const updateProfilePicture = async (email, imageUrl) => {
     // Then update profile
     await db.collection("userProfiles").doc(email).update({
       profileImage: imageUrl,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     });
 
     showAlert("Profile picture updated", "success");
@@ -139,7 +139,7 @@ async function loadAllPayouts(userData, filterType = "all") {
 
     const payoutsArray = allPayouts.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data()
     }));
 
     // UI update
@@ -165,19 +165,19 @@ async function loadPaymentMethods(userData) {
     // fetch bank and credit card information at the same time
     const [bankAccountSnapshot, creditCardsSnapshot] = await Promise.all([
       getDocs(bankAccountsRef),
-      getDocs(creditCardsRef),
+      getDocs(creditCardsRef)
     ]);
 
     // map bank information to an object
     const bankAccounts = bankAccountSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data()
     }));
 
     // map credit card information to an object
     const creditCardAccounts = creditCardsSnapshot.docs.map((doc) => ({
       id: doc.id, // credit card id
-      ...doc.data(),
+      ...doc.data()
     }));
 
     // load credit card transactions
@@ -294,7 +294,7 @@ async function loadCreditCardTransactions(userData, cardId) {
 
   const transactions = transactionSnapShot.docs.map((doc) => ({
     id: doc.id,
-    ...doc.data(),
+    ...doc.data()
   }));
   // console.log("Current transactions: ", transactions);
   return transactions;
@@ -314,7 +314,7 @@ async function loadBankTransactions(userData, bankId) {
 
     const bankTransactions = transactionSnapShot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data()
     }));
 
     console.log("Bank Transactions: ", bankTransactions);
@@ -461,13 +461,6 @@ async function displayCardDetails(object) {
   const internationalFee = document.querySelector("#international-fee");
   const achFee = document.querySelector("#ach-fee");
 
-  // console.log("Card holder: ", cardHolder);
-  // console.log("Expiration Date: ", expiry);
-  // console.log("Billing Address: ", billingAddress);
-  // console.log("Domestic fees: ", domesticFee);
-  // console.log("International fee: ", internationalFee);
-  // console.log("Ach fees: ", achFee);
-
   if (!object) return;
 
   try {
@@ -523,6 +516,10 @@ function updatePayoutsDisplay(payouts) {
 
   filterPayoutList.innerHTML = "";
 
+  if (!payouts || payouts.length === 0) {
+    showNoPayoutsModal(filterPayoutList);
+  }
+
   payouts.forEach((payout) => {
     // Create and append new elements
     const payoutItemDiv = document.createElement("div");
@@ -570,12 +567,37 @@ function showEmptyState(container) {
   attachPaymentMethodsModalEventListener();
 }
 
+function showNoPayoutsModal(container) {
+  // place template into DOM
+  container.innerHTML = `<div id="no-payouts-menu" class="no-payouts-menu">
+                <div class="p-container">
+                  <div class="no-payout-icons">
+                   
+                    <div class="no-payouts-inner-circle">
+                      <i class="fa-solid fa-calendar"></i>
+                    </div>
+                  </div>
+                  
+                  <div class="no-payouts-subheader">
+                    <h2>No payouts today</h2>
+                  </div>
+                  
+                  <div class="no-payout-description">
+                    <p>
+                      Payouts will appear here when you receive new orders. They
+                      typically process within 2-3 business days
+                    </p>
+                  </div>
+                </div>
+              </div>`;
+}
+
 function formatFirebaseDate(timestamp) {
   const date = timestamp.toDate();
   return date.toLocaleDateString("en-US", {
     month: "2-digit",
     day: "2-digit",
-    year: "numeric",
+    year: "numeric"
   });
 }
 
@@ -610,7 +632,7 @@ function formatRelativeTime(timestamp) {
     return firebaseDate.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
-      year: "numeric",
+      year: "numeric"
     });
   }
 }
@@ -618,7 +640,7 @@ function formatRelativeTime(timestamp) {
 const TRANSACTION_STATUS = {
   PENDING: "pending",
   COMPLETED: "completed",
-  FAILED: "failed",
+  FAILED: "failed"
 };
 
 // Define status styles configuration
@@ -626,18 +648,18 @@ const STATUS_STYLES = {
   [TRANSACTION_STATUS.PENDING]: {
     className: "status-pending",
     backgroundColor: "#FFF4E5",
-    color: "#FF9800",
+    color: "#FF9800"
   },
   [TRANSACTION_STATUS.COMPLETED]: {
     className: "status-completed",
     backgroundColor: "#E8F5E9",
-    color: "#4CAF50",
+    color: "#4CAF50"
   },
   [TRANSACTION_STATUS.FAILED]: {
     className: "status-failed",
     backgroundColor: "#FFEBEE",
-    color: "#F44336",
-  },
+    color: "#F44336"
+  }
 };
 
 function getStatusClass(status) {
@@ -991,7 +1013,7 @@ async function updatePayoutStats(payoutsRef) {
       completed: 0,
       processing: 0,
       pending: 0,
-      total: 0,
+      total: 0
     };
     console.log("Stats Snapshot:", statsSnapshot);
 
@@ -1098,7 +1120,7 @@ personalInformationForm.addEventListener("submit", async (e) => {
       lastName: document.querySelector("#lname").value,
       phoneNumber: document.querySelector("#phoneNumber").value,
       username: document.querySelector("#profile-username").value,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
     console.log("Updated Data: ", updateData);
     await updateProfile(user.email, updateData);
@@ -1121,7 +1143,7 @@ shippingInformationForm.addEventListener("submit", async (e) => {
       country: document.querySelector("#shippingInformation #country").value,
       phoneNumber: document.querySelector("#shippingInformation #phoneNumber")
         .value,
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
 
     await updateShippingInfo(user.email, shippingData);
@@ -1437,7 +1459,7 @@ if (cardForm) {
       cardNumber: document.querySelector("#cardForm #cardNumber"),
       cvv: document.querySelector("#cardForm #cvv"),
       expiry: document.querySelector("#cardForm #expiry"),
-      billingAddress: document.querySelector("#cardForm #billingAddress"),
+      billingAddress: document.querySelector("#cardForm #billingAddress")
     };
 
     if (!formElements) {
@@ -1496,7 +1518,7 @@ if (bankForm) {
     const formElements = {
       accountHolderName: document.querySelector("#bankForm #accountHolderName"),
       routingNumber: document.querySelector("#bankForm #routingNumber"),
-      accountNumber: document.querySelector("#bankForm #accountNumber"),
+      accountNumber: document.querySelector("#bankForm #accountNumber")
     };
 
     let hasError = false;
@@ -2100,7 +2122,7 @@ function handleAddCard(event) {
     cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
     expirationDate: document.querySelector("#cardForm #expiry")?.value,
     billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
-    cardEnding: document.querySelector("#card-ending"),
+    cardEnding: document.querySelector("#card-ending")
   };
 
   // Get the last 4 digits of the card
@@ -2140,7 +2162,7 @@ function handleAddBank(event) {
     accountType: document.querySelector("#bankForm .bank-detail-value")
       ?.textContent,
     bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
-      ?.textContent,
+      ?.textContent
   };
 
   const lastFourDigits = newBank.accountNumber.slice(-4);
@@ -2543,7 +2565,7 @@ submitReplyBtn.forEach((btn) => {
     // Get current user
     const currentUser = {
       pfp: reviewCard.querySelector(".user-review-img").src,
-      username: reviewCard.querySelector(".username-wrapper").textContent,
+      username: reviewCard.querySelector(".username-wrapper").textContent
     };
 
     // Get form Data
@@ -2551,7 +2573,7 @@ submitReplyBtn.forEach((btn) => {
       pfp: currentUser.pfp,
       username: currentUser.username,
       text: replyText,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     // Check if there is already a replies container
@@ -3273,7 +3295,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username",
+          "profile-username"
         ];
 
         personalFormIds.forEach((id) => {
@@ -3288,7 +3310,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError",
+          "usernameError"
         ];
 
         personalErrorIds.forEach((id) => {
@@ -3321,7 +3343,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError",
+          "addressError"
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -3395,7 +3417,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".funds-container .close-button"),
-  walletAmount: document.querySelector(".wallet-amount"),
+  walletAmount: document.querySelector(".wallet-amount")
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
