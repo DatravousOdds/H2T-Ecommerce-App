@@ -1505,11 +1505,12 @@ button:disabled {
   gap: 1rem;
 }
 
-.reply-dropdown {
+/* .reply-dropdown-content {
   position: relative;
-}
+} */
 
 .reply-dropdown-btn {
+  position: relative;
   background-color: transparent;
   border: none;
   font-size: 1rem;
@@ -1519,18 +1520,19 @@ button:disabled {
 }
 
 .reply-dropdown-btn:hover {
-  background-color: rbga(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .reply-dropdown-content {
   position: absolute;
-  right: 4rem;
-  /* top: 100%; */
+  right: -1rem;
+  top: 100%;
   background: white;
   border: 1px solid #eee;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-width: 120px;
+  width: 100%;
+  min-width: 150px;
   z-index: 10;
 }
 
@@ -4764,11 +4766,17 @@ h6 {
 
 /* Statement items */
 .statement-list {
-  display: none;
+  display: block;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
 .statement-list.active {
-  display: block;
+  /* display: block; */
+  max-height: 500px;
+  opacity: 1;
 }
 
 .statement-item {
@@ -5028,11 +5036,17 @@ h6 {
 .tax-content {
   padding: 16px;
   font-weight: 500;
-  display: none;
+  display: block;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
 .tax-content.active {
-  display: block;
+  max-height: 2000px;
+  opacity: 1;
+  height: auto;
 }
 
 /* Tax Information Section */
@@ -6533,9 +6547,9 @@ details h3 {
     margin-bottom: 0;
   }
 
-  .reply-card .reply-actions .reply-dropdown-content {
+  /* .reply-card .reply-actions .reply-dropdown-content {
     right: 32px;
-  }
+  } */
 
   .review-card .user-info .username-wrapper {
     font-size: 12px;
@@ -8644,6 +8658,11 @@ input:checked + .slider:before {
     width: 100%;
     display: flex;
     justify-content: center;
+  }
+
+  /* Shipping Information */
+  #shippingInformation .form-group {
+    display: block;
   }
 }
 

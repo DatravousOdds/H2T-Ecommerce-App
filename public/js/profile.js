@@ -331,6 +331,8 @@ function loadProfileDisplayData(userData) {
   } else {
     console.log("No user data available");
   }
+  console.log("Followers: ", formatFollowers(userData.stats.followers));
+  console.log("Following: ", formatFollowers(userData.stats.following));
   // profile picture image
   document.querySelector("#profile-picture").value = userData.profileImage;
   // profile username
@@ -340,10 +342,13 @@ function loadProfileDisplayData(userData) {
 
   document.querySelector("#verified-tag").value = userData.isVerified;
   // user stats
-  document.querySelector("#followers-count").textContent =
-    userData.stats.followers;
-  document.querySelector("#following-count").textContent =
-    userData.stats.following;
+  document.querySelector("#followers-count").textContent = formatFollowers(
+    userData.stats.followers
+  );
+  document.querySelector("#following-count").textContent = formatFollowers(
+    userData.stats.following
+  );
+
   document.querySelector("#current-rating").textContent = userData.stats.rating;
 }
 function loadPersonalInfoData(userData) {
@@ -509,6 +514,96 @@ async function displayBankDetails(object) {
   }
 }
 
+async function updatePayoutDisplay(userData, filterType) {
+  try {
+    const payoutsRef = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "payouts"
+    );
+    const filteredPayouts = filterPayouts(payoutsRef, filterType);
+    const querySnapshot = await getDocs(filteredPayouts);
+    // console.log("Query filtered payouts:", querySnapshot);
+
+    // Clear and update payout display
+    const payoutList = document.querySelector("#payouts-list");
+    payoutList.innerHTML = "";
+
+    // Check if there are any payouts
+    if (querySnapshot.empty) {
+      payoutList.innerHTML = `
+      <!-- No current payouts Modal -->
+              <div id="no-payouts-menu" class="no-payouts-menu">
+                <div class="p-container">
+                  <div class="no-payout-icons">
+                    <!-- Icon-->
+                    <div class="no-payouts-inner-circle">
+                      <i class="fa-solid fa-calendar"></i>
+                    </div>
+                  </div>
+                  <!-- subheader-->
+                  <div class="no-payouts-subheader">
+                    <h2>No payouts for today</h2>
+                  </div>
+                  <!-- description -->
+                  <div class="no-payout-description">
+                    <p>
+                      Payouts will appear here when you receive new orders. They
+                      typically process within 2-3 business days
+                    </p>
+                  </div>
+                </div>
+              </div>
+      `;
+    } else {
+      // generate payouts dynamically
+      querySnapshot.forEach((doc) => {
+        const payoutList = document.querySelector("#payouts-list");
+        const payoutElement = document.createElement("div");
+        payoutElement.classList.add("payouts-item");
+
+        payoutElement.innerHTML = `
+  <!-- Wrapper OrderId/Date -->
+              <div class="payouts-item-wrapper">
+                <p class="default-paragraph payout-id">Order #${
+                  doc.data().orderId
+                }</p>
+                <p class="default-paragraph payout-date" id="payout-date">
+                  ${formatFirebaseDate(doc.data().processingDate)}
+                </p>
+              </div>
+
+              <!-- Wrapper Amount/Status -->
+              <div class="payouts-item-wrapper space-between">
+                <p
+                  class="default-paragraph payout-amount"
+                  id="payout-amount"
+                >
+                  $${doc.data().amount.toFixed(2)}
+                </p>
+                <p
+                  class="status default-paragraph ${
+                    doc.data().status
+                  } payout-status"
+                  id="payout-status"
+                >
+                  ${
+                    doc.data().status.charAt(0).toUpperCase() +
+                    doc.data().status.slice(1)
+                  }
+                </p>
+              </div>
+              
+  
+  `;
+
+        payoutList.appendChild(payoutElement);
+      });
+    }
+  } catch (error) {}
+}
+
 // UI updates
 function updatePayoutsDisplay(payouts) {
   const filterPayoutList = document.querySelector(".filter-payout-list");
@@ -635,6 +730,27 @@ function formatRelativeTime(timestamp) {
       year: "numeric"
     });
   }
+}
+
+function formatFollowers(count) {
+  // Return the original count if it's not a valid number
+  if (typeof count !== "number" || isNaN(count)) {
+    return count;
+  }
+
+  // Format to K (thousands)
+  if ((count >= 1000) & (count < 1000000)) {
+    console.log("count / 1000 = ", count / 1000);
+    return (count / 1000).toFixed(count % 1000 === 0 ? 0 : 1) + "K";
+  } else if (count >= 1000000 && count < 1000000000) {
+    console.log("count / 1000000000 = ", count / 1000000000);
+    return (count / 1000000).toFixed(count % 1000000 === 0 ? 0 : 1) + "M";
+  } else if (count >= 1000000000) {
+    console.log("count / 1000000000 = ", count / 1000000000);
+    return (count / 1000000000).toFixed(count % 1000000000 === 0 ? 0 : 1) + "B";
+  }
+
+  return count.toString();
 }
 
 const TRANSACTION_STATUS = {
@@ -805,6 +921,7 @@ function sortPayouts(payouts, sortType) {
   });
 }
 
+// Initializing Methods
 async function initializePayoutsFilters(userData) {
   const filterSelect = document.querySelector(".payout-filter");
 
@@ -874,95 +991,6 @@ function updateWalletStatisticsDisplay(walletData) {
   );
 }
 
-async function updatePayoutDisplay(userData, filterType) {
-  try {
-    const payoutsRef = collection(
-      db,
-      "userProfiles",
-      userData.email,
-      "payouts"
-    );
-    const filteredPayouts = filterPayouts(payoutsRef, filterType);
-    const querySnapshot = await getDocs(filteredPayouts);
-    // console.log("Query filtered payouts:", querySnapshot);
-
-    // Clear and update payout display
-    const payoutList = document.querySelector("#payouts-list");
-    payoutList.innerHTML = "";
-
-    // Check if there are any payouts
-    if (querySnapshot.empty) {
-      payoutList.innerHTML = `
-      <!-- No current payouts Modal -->
-              <div id="no-payouts-menu" class="no-payouts-menu">
-                <div class="p-container">
-                  <div class="no-payout-icons">
-                    <!-- Icon-->
-                    <div class="no-payouts-inner-circle">
-                      <i class="fa-solid fa-calendar"></i>
-                    </div>
-                  </div>
-                  <!-- subheader-->
-                  <div class="no-payouts-subheader">
-                    <h2>No payouts for today</h2>
-                  </div>
-                  <!-- description -->
-                  <div class="no-payout-description">
-                    <p>
-                      Payouts will appear here when you receive new orders. They
-                      typically process within 2-3 business days
-                    </p>
-                  </div>
-                </div>
-              </div>
-      `;
-    } else {
-      // generate payouts dynamically
-      querySnapshot.forEach((doc) => {
-        const payoutList = document.querySelector("#payouts-list");
-        const payoutElement = document.createElement("div");
-        payoutElement.classList.add("payouts-item");
-
-        payoutElement.innerHTML = `
-  <!-- Wrapper OrderId/Date -->
-              <div class="payouts-item-wrapper">
-                <p class="default-paragraph payout-id">Order #${
-                  doc.data().orderId
-                }</p>
-                <p class="default-paragraph payout-date" id="payout-date">
-                  ${formatFirebaseDate(doc.data().processingDate)}
-                </p>
-              </div>
-
-              <!-- Wrapper Amount/Status -->
-              <div class="payouts-item-wrapper space-between">
-                <p
-                  class="default-paragraph payout-amount"
-                  id="payout-amount"
-                >
-                  $${doc.data().amount.toFixed(2)}
-                </p>
-                <p
-                  class="status default-paragraph ${
-                    doc.data().status
-                  } payout-status"
-                  id="payout-status"
-                >
-                  ${
-                    doc.data().status.charAt(0).toUpperCase() +
-                    doc.data().status.slice(1)
-                  }
-                </p>
-              </div>
-              
-  
-  `;
-
-        payoutList.appendChild(payoutElement);
-      });
-    }
-  } catch (error) {}
-}
 /**
  * Loads and displays payment information and payout data for a user
  * @param {Object} userData - Object containing user's information
@@ -2406,6 +2434,8 @@ closeReviewModal.addEventListener("click", () => {
 // Review actions: view all replies
 const viewAllRepliesBtn = document.querySelectorAll(".view-all-replies");
 const hideRepliesBtn = document.querySelectorAll(".hide-replies");
+// Review actions: like review
+const likeBtn = document.querySelectorAll(".like-btn");
 
 viewAllRepliesBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -2441,9 +2471,6 @@ hideRepliesBtn.forEach((btn) => {
     viewAllRepliesBtn.classList.remove("hidden");
   });
 });
-
-// Review actions: like review
-const likeBtn = document.querySelectorAll(".like-btn");
 
 likeBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -3045,7 +3072,12 @@ smallDropdownSection.forEach((smallMenu) => {
 // Filter dropdown toggle
 const filterBtn = document.getElementById("filterBtn");
 const filterMenu = document.getElementById("filterMenu");
+// Year elements
+const yearBtn = document.getElementById("yearBtn");
+const yearMenu = document.getElementById("yearMenu");
+const selectedYear = document.getElementById("selectedYear");
 
+// Event Listeners
 filterBtn.addEventListener("click", function () {
   console.log("filter dropdown menu");
   filterMenu.style.display =
@@ -3053,12 +3085,6 @@ filterBtn.addEventListener("click", function () {
   // Close filter dropdown if open
   yearMenu.style.display = "none";
 });
-
-const yearBtn = document.getElementById("yearBtn");
-const yearMenu = document.getElementById("yearMenu");
-const selectedYear = document.getElementById("selectedYear");
-
-console.log("This is the current selected year:", selectedYear.textContent);
 
 yearBtn.addEventListener("click", function () {
   console.log("year button is clicked");
@@ -3173,8 +3199,6 @@ statementsHeader.addEventListener("click", function () {
 
 const taxContentSections = document.querySelectorAll(".tax-tab-content");
 
-console.log(taxContentSections);
-
 taxHeader.addEventListener("click", function () {
   this.classList.toggle("active");
   taxContent.classList.toggle("active");
@@ -3191,7 +3215,6 @@ document.addEventListener("click", function (event) {
 });
 
 const taxNavItems = document.querySelectorAll(".tax-nav-item");
-console.log("tax nav items:", taxNavItems);
 
 // Event listeners
 taxNavItems.forEach((item) => {
