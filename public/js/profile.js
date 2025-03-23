@@ -8,10 +8,11 @@ import {
   setDoc,
   updateDoc,
   getDocs,
+  getDoc,
   query,
   where,
   limit,
-  orderBy
+  orderBy,
 } from "./firebase-client.js";
 import { checkUserStatus } from "./auth.js";
 
@@ -21,7 +22,7 @@ const updateProfile = async (email, updateData) => {
     const userDocRef = doc(db, "userProfiles", email);
     await updateDoc(userDocRef, {
       ...updateData,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
     showAlert("Profile updated successfully", "success");
   } catch (error) {
@@ -38,7 +39,7 @@ const updateShippingInfo = async (email, shippingData) => {
       address2: shippingData.address2,
       state: shippingData.state,
       postalCode: shippingData.postalCode,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
     showAlert("Shupping information updated", "success");
   } catch (error) {
@@ -55,7 +56,7 @@ const updateProfilePicture = async (email, imageUrl) => {
     // Then update profile
     await db.collection("userProfiles").doc(email).update({
       profileImage: imageUrl,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     });
 
     showAlert("Profile picture updated", "success");
@@ -103,6 +104,7 @@ async function loadProfileData() {
       loadPurchasesData(userData);
       loadSettingsData(userData);
       loadCreditCardTransactions(userData);
+      loadStatements(userData);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
@@ -139,7 +141,7 @@ async function loadAllPayouts(userData, filterType = "all") {
 
     const payoutsArray = allPayouts.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
 
     // UI update
@@ -165,19 +167,19 @@ async function loadPaymentMethods(userData) {
     // fetch bank and credit card information at the same time
     const [bankAccountSnapshot, creditCardsSnapshot] = await Promise.all([
       getDocs(bankAccountsRef),
-      getDocs(creditCardsRef)
+      getDocs(creditCardsRef),
     ]);
 
     // map bank information to an object
     const bankAccounts = bankAccountSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
 
     // map credit card information to an object
     const creditCardAccounts = creditCardsSnapshot.docs.map((doc) => ({
       id: doc.id, // credit card id
-      ...doc.data()
+      ...doc.data(),
     }));
 
     // load credit card transactions
@@ -294,7 +296,7 @@ async function loadCreditCardTransactions(userData, cardId) {
 
   const transactions = transactionSnapShot.docs.map((doc) => ({
     id: doc.id,
-    ...doc.data()
+    ...doc.data(),
   }));
   // console.log("Current transactions: ", transactions);
   return transactions;
@@ -314,15 +316,109 @@ async function loadBankTransactions(userData, bankId) {
 
     const bankTransactions = transactionSnapShot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
 
     console.log("Bank Transactions: ", bankTransactions);
     return bankTransactions;
   } catch (error) {
-    console.error("Error occured when fetching bank account transactions");
+    console.error("Error occurred when fetching bank account transactions");
   }
 }
+
+async function loadStatements(userData, statementId = "2025-01") {
+  const statementList = document.querySelector(".statement-list");
+
+  // clear existing content
+  statementList.innerHTML = "";
+
+  if (!userData || !statementId) return null;
+
+  try {
+    const statementDocRef = doc(
+      db,
+      "userProfiles",
+      userData.email,
+      "statements",
+      statementId
+    );
+
+    const statementSnapshot = await getDoc(statementDocRef);
+
+    console.log("Statements Snapshot: ", statementSnapshot);
+
+    if (statementSnapshot.empty) {
+      // show no statements modal
+      showNoStatementsModal(statementList);
+      return;
+    }
+    // console.log("Statement Data: ", statementSnapshot.data());
+    statementSnapshot.forEach((doc) => {
+      // get data from each document
+      const statement = doc.data();
+
+      // create html structure
+      const statementItem = document.createElement("div");
+
+      // download url
+      const downloadUrl = statement.downloadUrl || "#";
+
+      statementItem.innerHTML = `
+      <div class="statement-info">
+        <div class="icon-container">
+          <i class="far fa-file-alt"></i>
+        </div>
+        <div class="statement-text">
+          <p class="title">${statementItem.title}</p>
+          <p class="subtitle">${statementItem.year}</p>
+        </div>
+      </div>
+      <a href="${downloadUrl}" class="statement-action">
+        <i class="fas fa-download"></i>
+        <span>View Details</span>
+      </a>
+      `;
+
+      statementList.appendChild(statementItem);
+    });
+  } catch (error) {
+    console.log("Error occurred loading data: ", error);
+  }
+}
+
+// help function
+function showNoStatementsModal(container) {
+  container.innerHTML = `
+  <div
+                class="no-statement-modal"
+                id="no-statement-modal"
+                role="dialog"
+                aria-labelledby="no-statement-title"
+                aria-describedby="no-statement-description"
+              >
+                <div class="no-statement-modal-content">
+                  <div class="no-statement-icon">
+                    <i class="far fa-file-alt" aria-hidden="true"></i>
+                  </div>
+                  <h3 class="no-statement-title">No statements available</h3>
+                  <p class="no-statement-description">
+                    There are currently no statements for this period.
+                    Statements will appear here once they become available.
+                  </p>
+                </div>
+              </div>
+  `;
+}
+
+// Testing function
+document.addEventListener("DOMContentLoaded", async () => {
+  const userData = {
+    email: "test@example.com", // Make sure this exactly matches your document ID
+  };
+
+  const result = await loadStatements(userData, "2025-01");
+  console.log("Test result:", result);
+});
 
 function loadProfileDisplayData(userData) {
   if (userData.backgroundImage) {
@@ -694,7 +790,7 @@ function formatFirebaseDate(timestamp) {
   return date.toLocaleDateString("en-US", {
     month: "2-digit",
     day: "2-digit",
-    year: "numeric"
+    year: "numeric",
   });
 }
 
@@ -729,7 +825,7 @@ function formatRelativeTime(timestamp) {
     return firebaseDate.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
-      year: "numeric"
+      year: "numeric",
     });
   }
 }
@@ -758,7 +854,7 @@ function formatFollowers(count) {
 const TRANSACTION_STATUS = {
   PENDING: "pending",
   COMPLETED: "completed",
-  FAILED: "failed"
+  FAILED: "failed",
 };
 
 // Define status styles configuration
@@ -766,18 +862,18 @@ const STATUS_STYLES = {
   [TRANSACTION_STATUS.PENDING]: {
     className: "status-pending",
     backgroundColor: "#FFF4E5",
-    color: "#FF9800"
+    color: "#FF9800",
   },
   [TRANSACTION_STATUS.COMPLETED]: {
     className: "status-completed",
     backgroundColor: "#E8F5E9",
-    color: "#4CAF50"
+    color: "#4CAF50",
   },
   [TRANSACTION_STATUS.FAILED]: {
     className: "status-failed",
     backgroundColor: "#FFEBEE",
-    color: "#F44336"
-  }
+    color: "#F44336",
+  },
 };
 
 function getStatusClass(status) {
@@ -1043,7 +1139,7 @@ async function updatePayoutStats(payoutsRef) {
       completed: 0,
       processing: 0,
       pending: 0,
-      total: 0
+      total: 0,
     };
     console.log("Stats Snapshot:", statsSnapshot);
 
@@ -1150,7 +1246,7 @@ personalInformationForm.addEventListener("submit", async (e) => {
       lastName: document.querySelector("#lname").value,
       phoneNumber: document.querySelector("#phoneNumber").value,
       username: document.querySelector("#profile-username").value,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
     console.log("Updated Data: ", updateData);
     await updateProfile(user.email, updateData);
@@ -1173,7 +1269,7 @@ shippingInformationForm.addEventListener("submit", async (e) => {
       country: document.querySelector("#shippingInformation #country").value,
       phoneNumber: document.querySelector("#shippingInformation #phoneNumber")
         .value,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
 
     await updateShippingInfo(user.email, shippingData);
@@ -1489,7 +1585,7 @@ if (cardForm) {
       cardNumber: document.querySelector("#cardForm #cardNumber"),
       cvv: document.querySelector("#cardForm #cvv"),
       expiry: document.querySelector("#cardForm #expiry"),
-      billingAddress: document.querySelector("#cardForm #billingAddress")
+      billingAddress: document.querySelector("#cardForm #billingAddress"),
     };
 
     if (!formElements) {
@@ -1548,7 +1644,7 @@ if (bankForm) {
     const formElements = {
       accountHolderName: document.querySelector("#bankForm #accountHolderName"),
       routingNumber: document.querySelector("#bankForm #routingNumber"),
-      accountNumber: document.querySelector("#bankForm #accountNumber")
+      accountNumber: document.querySelector("#bankForm #accountNumber"),
     };
 
     let hasError = false;
@@ -2152,7 +2248,7 @@ function handleAddCard(event) {
     cardNumber: document.querySelector("#cardForm #cardNumber")?.value,
     expirationDate: document.querySelector("#cardForm #expiry")?.value,
     billingAddress: document.querySelector("#cardForm #billingAddress")?.value,
-    cardEnding: document.querySelector("#card-ending")
+    cardEnding: document.querySelector("#card-ending"),
   };
 
   // Get the last 4 digits of the card
@@ -2192,7 +2288,7 @@ function handleAddBank(event) {
     accountType: document.querySelector("#bankForm .bank-detail-value")
       ?.textContent,
     bank: document.querySelector("#bankForm .bank-detail-value:nth-child(2)")
-      ?.textContent
+      ?.textContent,
   };
 
   const lastFourDigits = newBank.accountNumber.slice(-4);
@@ -2594,7 +2690,7 @@ submitReplyBtn.forEach((btn) => {
     // Get current user
     const currentUser = {
       pfp: reviewCard.querySelector(".user-review-img").src,
-      username: reviewCard.querySelector(".username-wrapper").textContent
+      username: reviewCard.querySelector(".username-wrapper").textContent,
     };
 
     // Get form Data
@@ -2602,7 +2698,7 @@ submitReplyBtn.forEach((btn) => {
       pfp: currentUser.pfp,
       username: currentUser.username,
       text: replyText,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Check if there is already a replies container
@@ -3320,7 +3416,7 @@ profileSection.forEach((section) => {
           "lname",
           "email",
           "phoneNumber",
-          "profile-username"
+          "profile-username",
         ];
 
         personalFormIds.forEach((id) => {
@@ -3335,7 +3431,7 @@ profileSection.forEach((section) => {
           "lnameError",
           "emailError",
           "phoneError",
-          "usernameError"
+          "usernameError",
         ];
 
         personalErrorIds.forEach((id) => {
@@ -3368,7 +3464,7 @@ profileSection.forEach((section) => {
           "fnameError",
           "lnameError",
           "countryError",
-          "addressError"
+          "addressError",
         ];
 
         shippingErrorIds.forEach((id) => {
@@ -3442,7 +3538,7 @@ const elements = {
   addFundsBtn: document.getElementById("add-funds"),
   addFundsButton: document.getElementById("add-funds-btn"),
   addFundsCloseBtn: document.querySelector(".funds-container .close-button"),
-  walletAmount: document.querySelector(".wallet-amount")
+  walletAmount: document.querySelector(".wallet-amount"),
 };
 
 const AMOUNTS = [10, 25, 50, 75, 100, 150, 200, 300, 400, 500];
