@@ -331,14 +331,15 @@ function loadProfileDisplayData(userData) {
   } else {
     console.log("No user data available");
   }
-  console.log("Followers: ", formatFollowers(userData.stats.followers));
-  console.log("Following: ", formatFollowers(userData.stats.following));
+
   // profile picture image
   document.querySelector("#profile-picture").value = userData.profileImage;
   // profile username
-  document.querySelector("#username").value = userData.username;
+  document.querySelector("#username").textContent = `@${userData.Username}`;
 
-  document.querySelector("#timestamp-container").value = userData.joinedDate;
+  document.querySelector(".timestamp").textContent = `Joined ${new Date(
+    formatFirebaseDate(userData.accountInfo.joinedDate)
+  ).getFullYear()}`;
 
   document.querySelector("#verified-tag").value = userData.isVerified;
   // user stats
@@ -357,6 +358,7 @@ function loadPersonalInfoData(userData) {
   document.querySelector("#personal-lname").value = userData.LastName;
   document.querySelector("#personal-email").value = userData.Email;
   document.querySelector("#personal-phoneNumber").value = userData.phoneNumber;
+  document.querySelector("#profile-username").value = userData.Username;
 }
 function loadShippingInfoData(userData) {
   // shipping information
@@ -614,7 +616,7 @@ async function updatePayoutDisplay(userData, filterType) {
 // UI updates
 function updatePayoutsDisplay(payouts) {
   const filterPayoutList = document.querySelector(".filter-payout-list");
-  if (!filterPayoutList) reutrn;
+  if (!filterPayoutList) return;
 
   filterPayoutList.innerHTML = "";
 
@@ -2832,7 +2834,7 @@ updateBioBtn.addEventListener("click", () => {
 
 // UserProfile actions: remove img
 removeBtn.addEventListener("click", () => {
-  profilePicture.src = "/images/1.png";
+  profilePicture.src = "/images/default-avatar.svg";
 
   // Reset the file input to allow uploading the same image again
   fileInput.value = "";

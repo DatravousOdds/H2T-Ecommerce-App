@@ -2583,6 +2583,18 @@ button:disabled {
   font-size: 1.2rem;
 }
 
+/* Profile Rating */
+.rating-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.rating-counter i {
+  color: #ffb400;
+}
+
 .section-p1 {
   padding: 0px 16px 0px 0px !important;
 }
@@ -8694,9 +8706,9 @@ input:checked + .slider:before {
     font-size: 12px;
   }
 
-  .reply-card .reply-dropdown-content {
+  /* .reply-card .reply-dropdown-content {
     right: 4rem;
-  }
+  } */
 
   /* Orders */
   .orders-container {
