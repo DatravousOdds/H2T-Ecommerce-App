@@ -194,17 +194,15 @@ async function loadPaymentMethods(userData) {
     // load bank transactions
     const bankTransactionsPromise = bankAccounts.map(async (acc) => {
       const bankId = acc.id;
-      // console.log("bank id: ", bankId);
+
       const transactions = await loadBankTransactions(userData, bankId);
-      console.log("Bank Account transactions: ", transactions);
+
       return { bankId, transactions };
     });
 
     const allBankActivity = await Promise.all(bankTransactionsPromise);
-    // console.log(allBankActivity);
 
     const allTransactions = await Promise.all(transactionPromises);
-    // console.log(allTransactions);
 
     const activityElements = allBankActivity.flatMap((bankData) => {
       // Return the map array
@@ -312,53 +310,54 @@ async function loadBankTransactions(userData, bankId) {
 
     const transactionSnapShot = await getDocs(transactionsRef);
 
-    console.log("Transaction snapshot:", transactionSnapShot);
-
     const bankTransactions = transactionSnapShot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    console.log("Bank Transactions: ", bankTransactions);
     return bankTransactions;
   } catch (error) {
     console.error("Error occurred when fetching bank account transactions");
   }
 }
 
-async function loadStatements(userData, statementId = "2025-01") {
+async function loadStatements(userData, year = 2025) {
   const statementList = document.querySelector(".statement-list");
 
   // clear existing content
   statementList.innerHTML = "";
 
-  if (!userData || !statementId) return null;
+  if (!userData) return null;
 
   try {
-    const statementDocRef = doc(
+    const statementCollectionRef = collection(
       db,
       "userProfiles",
       userData.email,
-      "statements",
-      statementId
+      "statements"
     );
 
-    const statementSnapshot = await getDoc(statementDocRef);
+    const statementsQuery = query(
+      statementCollectionRef,
+      where("year", "==", year),
+      orderBy("month", "asc")
+    );
 
-    console.log("Statements Snapshot: ", statementSnapshot);
+    const statementsSnapshot = await getDocs(statementsQuery);
 
-    if (statementSnapshot.empty) {
+    if (statementsSnapshot.empty) {
       // show no statements modal
       showNoStatementsModal(statementList);
       return;
     }
-    // console.log("Statement Data: ", statementSnapshot.data());
-    statementSnapshot.forEach((doc) => {
+
+    statementsSnapshot.forEach((doc) => {
       // get data from each document
       const statement = doc.data();
 
       // create html structure
       const statementItem = document.createElement("div");
+      statementItem.className = "statement-item";
 
       // download url
       const downloadUrl = statement.downloadUrl || "#";
@@ -369,8 +368,8 @@ async function loadStatements(userData, statementId = "2025-01") {
           <i class="far fa-file-alt"></i>
         </div>
         <div class="statement-text">
-          <p class="title">${statementItem.title}</p>
-          <p class="subtitle">${statementItem.year}</p>
+          <p class="title">${statement.title}</p>
+          <p class="subtitle">${statement.year}</p>
         </div>
       </div>
       <a href="${downloadUrl}" class="statement-action">
@@ -383,6 +382,71 @@ async function loadStatements(userData, statementId = "2025-01") {
     });
   } catch (error) {
     console.log("Error occurred loading data: ", error);
+  }
+}
+
+async function loadTaxDocuments(userData, year = 2024) {
+  const taxFormsContainer = document.querySelector(".tax-forms-container");
+
+  if (!userData) return null;
+
+  taxFormsContainer.innerHTML = "";
+
+  try {
+    // Create reference to collection
+    const taxCollectionRef = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "taxDocuments"
+    );
+
+    // Get all tax documents
+    const allDocs = await getDocs(taxCollectionRef);
+
+    if (allDocs.empty) {
+      showNoTaxDocumentsModal(taxFormsContainer);
+    }
+
+    allDocs.forEach((doc) => {
+      const taxDocData = doc.data();
+
+      if (taxDocData["1099k"]) {
+        const form1099k = taxDocData["1099k"];
+
+        // Create element
+        const taxFormItem = document.createElement("div");
+        taxFormItem.className = "tax-form-item";
+
+        taxFormItem.innerHTML = `
+        <div class="tax-form-info">
+            <div class="icon-container">
+              <i class="far fa-file-alt"></i>
+            </div>
+            <div class="tax-form-details">
+              <p class="form-title">Form ${taxDocData.formType}</p>
+              <p class="form-description">
+                ${taxDocData.description}
+              </p>
+              <p class="form-status">
+                Status: ${form1099k.status}
+              </p>
+              <p class="form-deadline">
+                Due Date: ${form1099k.dueDate}
+              </p>
+            </div>
+          </div>
+          <a href="${form1099k.downloadUrl}" class="tax-form-download" id="downloadLink">
+            <i class="fas fa-download"></i>
+            <span>Download</span>
+          </a>
+      `;
+
+        taxFormsContainer.appendChild(taxFormItem);
+      }
+    });
+  } catch (error) {
+    console.error("Error happened when trying to load tax documents: ", error);
   }
 }
 
@@ -410,13 +474,36 @@ function showNoStatementsModal(container) {
   `;
 }
 
+function showNoTaxDocumentsModal(container) {
+  container.innerHTML = `
+  <div
+                class="no-statement-modal"
+                id="no-statement-modal"
+                role="dialog"
+                aria-labelledby="no-statement-title"
+                aria-describedby="no-statement-description"
+              >
+                <div class="no-statement-modal-content">
+                  <div class="no-statement-icon">
+                    <i class="far fa-file-alt" aria-hidden="true"></i>
+                  </div>
+                  <h3 class="no-statement-title">No tax documents available</h3>
+                  <p class="no-statement-description">
+                    No tax documents are currently available.
+                  </p>
+                </div>
+              </div>
+  `;
+}
+
 // Testing function
 document.addEventListener("DOMContentLoaded", async () => {
   const userData = {
     email: "test@example.com", // Make sure this exactly matches your document ID
   };
 
-  const result = await loadStatements(userData, "2025-01");
+  const result = await loadStatements(userData, 2025);
+  const taxResults = await loadTaxDocuments(userData, 2024);
   console.log("Test result:", result);
 });
 
@@ -596,7 +683,6 @@ async function displayBankDetails(object) {
   if (!object) return null;
 
   try {
-    console.log("User Data object:", object);
     // fill in each card's card detail information
     object.bankAccounts.forEach((doc) => {
       bankType.textContent = doc.bankName;
@@ -838,13 +924,10 @@ function formatFollowers(count) {
 
   // Format to K (thousands)
   if ((count >= 1000) & (count < 1000000)) {
-    console.log("count / 1000 = ", count / 1000);
     return (count / 1000).toFixed(count % 1000 === 0 ? 0 : 1) + "K";
   } else if (count >= 1000000 && count < 1000000000) {
-    console.log("count / 1000000000 = ", count / 1000000000);
     return (count / 1000000).toFixed(count % 1000000 === 0 ? 0 : 1) + "M";
   } else if (count >= 1000000000) {
-    console.log("count / 1000000000 = ", count / 1000000000);
     return (count / 1000000000).toFixed(count % 1000000000 === 0 ? 0 : 1) + "B";
   }
 
@@ -3290,7 +3373,6 @@ taxCancelBtn.addEventListener("click", () => {
 });
 
 statementsHeader.addEventListener("click", function () {
-  console.log("statement header has been clicked");
   this.classList.toggle("active");
   statementsList.classList.toggle("active");
 });
@@ -3633,6 +3715,48 @@ elements.addFundsCloseBtn.addEventListener("click", () =>
   closePopupMenu(".add-funds-menu")
 );
 
+// Add Funds Button
+elements.addFundsButton.addEventListener("click", () => {
+  const amount = parseFloat(elements.fundsBalance?.value) || 0;
+  notification.success(amount, "deposit");
+  updateBalance(amount, "add");
+  closePopupMenu(".add-funds-menu");
+});
+
+// Withdraw Funds
+elements.confirmWithdrawBtn?.addEventListener("click", () => {
+  const amount = parseFloat(elements.withdrawAmount?.value) || 0;
+  console.log(amount);
+  if (amount <= walletBalance) {
+    notification.success(amount, "withdraw");
+    updateBalance(amount, "withdraw");
+    closePopupMenu(".popup-overlay");
+  } else {
+    notification.error("insufficient funds");
+  }
+});
+
+// View All Activity
+const viewAllActivityBtn = document.querySelector(".view-all-link");
+const viewAllActivityOverlay = document.querySelector(
+  ".view-all-activity-overlay"
+);
+const closeViewAllActivityBtn = document.querySelector(
+  ".close-view-all-activity"
+);
+
+viewAllActivityBtn.addEventListener("click", () => {
+  viewAllActivityOverlay.classList.add("active");
+  document.body.style.overflow = "hidden";
+});
+
+closeViewAllActivityBtn.addEventListener("click", () => {
+  viewAllActivityOverlay.classList.remove("active");
+  document.body.style.overflow = "auto";
+});
+
+// Classes
+
 class PaymentNotification {
   constructor() {
     this.notification = document.querySelector(".payment-nofication");
@@ -3727,43 +3851,3 @@ class PaymentNotification {
 }
 
 const notification = new PaymentNotification();
-
-// Add Funds Button
-elements.addFundsButton.addEventListener("click", () => {
-  const amount = parseFloat(elements.fundsBalance?.value) || 0;
-  notification.success(amount, "deposit");
-  updateBalance(amount, "add");
-  closePopupMenu(".add-funds-menu");
-});
-
-// Withdraw Funds
-elements.confirmWithdrawBtn?.addEventListener("click", () => {
-  const amount = parseFloat(elements.withdrawAmount?.value) || 0;
-  console.log(amount);
-  if (amount <= walletBalance) {
-    notification.success(amount, "withdraw");
-    updateBalance(amount, "withdraw");
-    closePopupMenu(".popup-overlay");
-  } else {
-    notification.error("insufficient funds");
-  }
-});
-
-// View All Activity
-const viewAllActivityBtn = document.querySelector(".view-all-link");
-const viewAllActivityOverlay = document.querySelector(
-  ".view-all-activity-overlay"
-);
-const closeViewAllActivityBtn = document.querySelector(
-  ".close-view-all-activity"
-);
-
-viewAllActivityBtn.addEventListener("click", () => {
-  viewAllActivityOverlay.classList.add("active");
-  document.body.style.overflow = "hidden";
-});
-
-closeViewAllActivityBtn.addEventListener("click", () => {
-  viewAllActivityOverlay.classList.remove("active");
-  document.body.style.overflow = "auto";
-});
