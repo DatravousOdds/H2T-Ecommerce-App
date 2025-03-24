@@ -41,7 +41,7 @@ const updateShippingInfo = async (email, shippingData) => {
       postalCode: shippingData.postalCode,
       lastUpdated: new Date(),
     });
-    showAlert("Shupping information updated", "success");
+    showAlert("Shipping information updated", "success");
   } catch (error) {
     console.error("Error updating shipping:", error);
     showAlert("Error updating shipping information");
@@ -86,6 +86,7 @@ async function loadProfileData() {
   try {
     const userData = await checkUserStatus();
     console.log("User Data imported:", userData);
+    const currentYear = new Date().getFullYear();
     if (userData) {
       loadPersonalInfoData(userData);
       loadShippingInfoData(userData);
@@ -97,6 +98,7 @@ async function loadProfileData() {
       loadAllPayouts(userData);
       // Initialize the payout filters after loading payment info
       initializePayoutsFilters(userData);
+      initializeYearFilter(userData);
       initializeAllPayoutsFilters(userData);
       initializePaymentMethods(userData);
 
@@ -104,7 +106,8 @@ async function loadProfileData() {
       loadPurchasesData(userData);
       loadSettingsData(userData);
       loadCreditCardTransactions(userData);
-      loadStatements(userData);
+      loadStatements(userData, currentYear);
+      loadTaxDocuments(userData, currentYear);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
@@ -321,7 +324,7 @@ async function loadBankTransactions(userData, bankId) {
   }
 }
 
-async function loadStatements(userData, year = 2025) {
+async function loadStatements(userData, year) {
   const statementList = document.querySelector(".statement-list");
 
   // clear existing content
@@ -385,7 +388,7 @@ async function loadStatements(userData, year = 2025) {
   }
 }
 
-async function loadTaxDocuments(userData, year = 2024) {
+async function loadTaxDocuments(userData, year) {
   const taxFormsContainer = document.querySelector(".tax-forms-container");
 
   if (!userData) return null;
@@ -401,14 +404,17 @@ async function loadTaxDocuments(userData, year = 2024) {
       "taxDocuments"
     );
 
-    // Get all tax documents
-    const allDocs = await getDocs(taxCollectionRef);
+    // create query
+    const taxDocQuery = query(taxCollectionRef, where("year", "==", year));
 
-    if (allDocs.empty) {
+    // Get all tax documents
+    const taxSnapshot = await getDocs(taxDocQuery);
+
+    if (taxSnapshot.empty) {
       showNoTaxDocumentsModal(taxFormsContainer);
     }
 
-    allDocs.forEach((doc) => {
+    taxSnapshot.forEach((doc) => {
       const taxDocData = doc.data();
 
       if (taxDocData["1099k"]) {
@@ -460,7 +466,7 @@ async function loadTaxSettings(userData) {
     console.log("user information: ", userDoc.data().taxInformation);
 
     // Check if taxInformation exist and has data
-    if (userDoc.exist() && userDoc.data().taxInformation) {
+    if (userDoc.data().taxInformation) {
       const taxInformationData = userDoc.data().taxInformation;
 
       // Update UI display
@@ -521,19 +527,6 @@ function showNoTaxDocumentsModal(container) {
   `;
 }
 
-// Testing function
-document.addEventListener("DOMContentLoaded", async () => {
-  const userData = {
-    email: "test@example.com", // Make sure this exactly matches your document ID
-  };
-
-  const result = await loadStatements(userData, 2025);
-  const taxResults = await loadTaxDocuments(userData, 2024);
-  const taxSettingResults = await loadTaxSettings(userData);
-  console.log("Test result:", result);
-  console.log("Tax Setting: ", taxSettingResults);
-});
-
 function loadProfileDisplayData(userData) {
   if (userData.backgroundImage) {
     const profileBackground = document.querySelector(".profile-background");
@@ -562,6 +555,7 @@ function loadProfileDisplayData(userData) {
 
   document.querySelector("#current-rating").textContent = userData.stats.rating;
 }
+
 function loadPersonalInfoData(userData) {
   //  personal information
   document.querySelector("#personal-fname").value = userData.FirstName;
@@ -570,6 +564,7 @@ function loadPersonalInfoData(userData) {
   document.querySelector("#personal-phoneNumber").value = userData.phoneNumber;
   document.querySelector("#profile-username").value = userData.Username;
 }
+
 function loadShippingInfoData(userData) {
   // shipping information
   document.querySelector("#shipping-fname").value = userData.FirstName;
@@ -582,6 +577,7 @@ function loadShippingInfoData(userData) {
   //   userData.postalCode || "";
   document.querySelector("#shipping-phoneNumber").value = userData.phoneNumber;
 }
+
 function loadReviewData(userData) {
   // review section
   document.querySelector("#average-rating").textContent =
@@ -598,6 +594,12 @@ function loadReviewData(userData) {
     }
   }
   // review categories
+}
+
+function filterTaxAndStatementByYear(userData, year) {
+  const filterStatements = loadStatements(userData, year);
+
+  const filterTaxDocuments = loadTaxDocuments(userData, year);
 }
 
 // UI displays
@@ -812,6 +814,19 @@ async function updatePayoutDisplay(userData, filterType) {
         payoutList.appendChild(payoutElement);
       });
     }
+  } catch (error) {}
+}
+
+async function filterTaxDocuments(userData, year) {
+  if (!userData || !year) return null;
+
+  try {
+    const taxDocCollectionRef = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "taxDocuments"
+    );
   } catch (error) {}
 }
 
@@ -3314,15 +3329,21 @@ yearBtn.addEventListener("click", function () {
   // Close filter dropdown if open
   filterMenu.style.display = "none";
 });
+function initializeYearFilter(userData) {
+  // Year selection
+  const yearOptions = document.querySelectorAll("#yearMenu li");
+  yearOptions.forEach((option) => {
+    option.addEventListener("click", function () {
+      const year = parseInt(this.dataset.year);
+      console.log("Year: ", year);
+      selectedYear.textContent = this.dataset.year;
+      yearMenu.style.display = "none";
 
-// Year selection
-const yearOptions = document.querySelectorAll("#yearMenu li");
-yearOptions.forEach((option) => {
-  option.addEventListener("click", function () {
-    selectedYear.textContent = this.dataset.year;
-    yearMenu.style.display = "none";
+      // call filter function here with the selected year
+      filterTaxAndStatementByYear(userData, year);
+    });
   });
-});
+}
 
 // Statements section toggle
 const statementsHeader = document.getElementById("statementHeader");
@@ -3345,6 +3366,8 @@ const taxHeader = document.getElementById("taxHeader");
 const taxContent = document.getElementById("taxContent");
 // Download link elements
 const downloadLink = document.getElementById("downloadLink");
+const taxContentSections = document.querySelectorAll(".tax-tab-content");
+
 // Event listeners
 downloadLink.addEventListener("click", function (event) {
   event.preventDefault();
@@ -3417,12 +3440,12 @@ statementsHeader.addEventListener("click", function () {
   statementsList.classList.toggle("active");
 });
 
-const taxContentSections = document.querySelectorAll(".tax-tab-content");
-
 taxHeader.addEventListener("click", function () {
   this.classList.toggle("active");
   taxContent.classList.toggle("active");
 });
+
+/* Tax and Statements filter functionality */
 
 // Close dropdowns when clicking outside
 document.addEventListener("click", function (event) {
