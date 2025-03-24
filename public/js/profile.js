@@ -451,11 +451,28 @@ async function loadTaxDocuments(userData, year = 2024) {
 }
 
 async function loadTaxSettings(userData) {
+  if (!userData) return null;
 
-  if (!userData) return  null;
+  try {
+    const userDocRef = doc(db, "userProfiles", userData.email);
+    const userDoc = await getDoc(userDocRef);
 
-  const 
+    console.log("user information: ", userDoc.data().taxInformation);
 
+    // Check if taxInformation exist and has data
+    if (userDoc.exist() && userDoc.data().taxInformation) {
+      const taxInformationData = userDoc.data().taxInformation;
+
+      // Update UI display
+      updateTaxInfoDisplay(taxInformationData);
+    } else {
+      console.error("Tax Information does not exist: ", error);
+      return null;
+    }
+  } catch (error) {
+    console.log("Error occurred when loading tax information: ", error);
+    return null;
+  }
 }
 
 // help function
@@ -512,7 +529,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const result = await loadStatements(userData, 2025);
   const taxResults = await loadTaxDocuments(userData, 2024);
+  const taxSettingResults = await loadTaxSettings(userData);
   console.log("Test result:", result);
+  console.log("Tax Setting: ", taxSettingResults);
 });
 
 function loadProfileDisplayData(userData) {
@@ -796,7 +815,7 @@ async function updatePayoutDisplay(userData, filterType) {
   } catch (error) {}
 }
 
-// UI updates
+// Update UI elements
 function updatePayoutsDisplay(payouts) {
   const filterPayoutList = document.querySelector(".filter-payout-list");
   if (!filterPayoutList) return;
@@ -836,6 +855,19 @@ function updatePayoutsDisplay(payouts) {
     // Append each item to the list
     filterPayoutList.appendChild(payoutItemDiv);
   });
+}
+
+function updateTaxInfoDisplay(taxData) {
+  document.querySelector("#taxId-value").textContent = taxData.taxId;
+  document.querySelector("#w9-value").textContent = taxData.taxFormType;
+  document.querySelector("#businessType-value").textContent =
+    taxData.businessType;
+  document.querySelector(
+    "#taxWithholding-value"
+  ).textContent = `${taxData.taxWithholding}%`;
+  document.querySelector("#taxState-value").textContent = taxData.state;
+  document.querySelector("#taxLastUpdate-value").textContent =
+    formatFirebaseDate(taxData.lastUpdate);
 }
 
 // Help functions
