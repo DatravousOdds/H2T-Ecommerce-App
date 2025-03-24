@@ -817,18 +817,7 @@ async function updatePayoutDisplay(userData, filterType) {
   } catch (error) {}
 }
 
-async function filterTaxDocuments(userData, year) {
-  if (!userData || !year) return null;
 
-  try {
-    const taxDocCollectionRef = collection(
-      db,
-      "userProfiles",
-      userData.email,
-      "taxDocuments"
-    );
-  } catch (error) {}
-}
 
 // Update UI elements
 function updatePayoutsDisplay(payouts) {
