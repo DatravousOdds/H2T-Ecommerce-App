@@ -450,6 +450,14 @@ async function loadTaxDocuments(userData, year = 2024) {
   }
 }
 
+async function loadTaxSettings(userData) {
+
+  if (!userData) return  null;
+
+  const 
+
+}
+
 // help function
 function showNoStatementsModal(container) {
   container.innerHTML = `
