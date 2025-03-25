@@ -3438,12 +3438,13 @@
               <div class="dropdown year-dropdown-container">
                 <button class="btn year-btn" id="yearBtn">
                   <i class="far fa-calendar"></i>
-                  <span id="selectedYear">2024</span>
+                  <span id="selectedYear"></span>
                 </button>
 
                 <!-- Dropdown section for Year -->
                 <div class="filter-dropdown-menu year-dropdown" id="yearMenu">
                   <ul>
+                    <li data-year="2025">2025</li>
                     <li data-year="2024">2024</li>
                     <li data-year="2023">2023</li>
                     <li data-year="2022">2022</li>
@@ -3462,26 +3463,6 @@
                 <!-- Statement Item 1 -->
                 <div class="statement-item">
                   <!-- This section will dynamically display statement data retrieved from the backend -->
-                </div>
-              </div>
-
-              <!-- No statements available modal -->
-              <div
-                class="no-statement-modal"
-                id="no-statement-modal"
-                role="dialog"
-                aria-labelledby="no-statement-title"
-                aria-describedby="no-statement-description"
-              >
-                <div class="no-statement-modal-content">
-                  <div class="no-statement-icon">
-                    <i class="far fa-file-alt" aria-hidden="true"></i>
-                  </div>
-                  <h3 class="no-statement-title">No statements available</h3>
-                  <p class="no-statement-description">
-                    There are currently no statements for this period.
-                    Statements will appear here once they become available.
-                  </p>
                 </div>
               </div>
             </div>
@@ -3648,7 +3629,9 @@
                       <!-- Tax ID field -->
                       <div class="tax-info-field">
                         <div class="field-label">Tax ID (SSN/EIN)</div>
-                        <div class="field-value" id="taxId-value">***-**-1234</div>
+                        <div class="field-value" id="taxId-value">
+                          ***-**-1234
+                        </div>
                       </div>
 
                       <!-- Tax Form Type field -->
@@ -3660,25 +3643,33 @@
                       <!-- Business Type field  -->
                       <div class="tax-info-field">
                         <div class="field-label">Business Type</div>
-                        <div class="field-value" id="businessType-value">Sole Proprietor</div>
+                        <div class="field-value" id="businessType-value">
+                          Sole Proprietor
+                        </div>
                       </div>
 
                       <!-- Tax Withholding field -->
                       <div class="tax-info-field">
                         <div class="field-label">Tax Withholding</div>
-                        <div class="field-value" id="taxWithholding-value">0%</div>
+                        <div class="field-value" id="taxWithholding-value">
+                          0%
+                        </div>
                       </div>
 
                       <!-- State field -->
                       <div class="tax-info-field">
                         <div class="field-label">State</div>
-                        <div class="field-value" id="taxState-value">California</div>
+                        <div class="field-value" id="taxState-value">
+                          California
+                        </div>
                       </div>
 
                       <!-- Last Updated field -->
                       <div class="tax-info-field">
                         <div class="field-label">Last Updated</div>
-                        <div class="field-value" id="taxLastUpdate-value">March 15, 2024</div>
+                        <div class="field-value" id="taxLastUpdate-value">
+                          March 15, 2024
+                        </div>
                       </div>
 
                       <!-- Action buttons -->

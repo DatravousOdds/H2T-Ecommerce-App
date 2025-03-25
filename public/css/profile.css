@@ -5163,7 +5163,7 @@ h6 {
 }
 
 .no-statement-modal-content {
-  display: none; /* until testing is done */
+  display: flex; /* until testing is done */
   flex-direction: column;
   align-items: center;
   justify-content: center;
