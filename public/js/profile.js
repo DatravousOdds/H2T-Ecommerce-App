@@ -106,6 +106,7 @@ async function loadProfileData() {
       loadPurchasesData(userData);
       loadSettingsData(userData);
       loadCreditCardTransactions(userData);
+      await loadYearFilters(userData);
       loadStatements(userData, currentYear);
       loadTaxDocuments(userData, currentYear);
     }
@@ -597,15 +598,14 @@ function loadReviewData(userData) {
   // review categories
 }
 
-function filterTaxAndStatementByYear(userData, year) {
-  const filterStatements = loadStatements(userData, year);
+async function filterTaxAndStatementByYear(userData, year) {
+  await loadStatements(userData, year);
 
-  const filterTaxDocuments = loadTaxDocuments(userData, year);
+  await loadTaxDocuments(userData, year);
 
   // Update tax year to filtered year
-  const taxYear = document.querySelector(".tax-year-dropdown").value;
+  const taxYear = document.querySelector(".tax-year-dropdown");
   taxYear.value = year;
-  console.log("TaxYear = ", taxYear);
 }
 
 // UI displays
@@ -3306,6 +3306,9 @@ const yearBtn = document.getElementById("yearBtn");
 const yearMenu = document.getElementById("yearMenu");
 const selectedYear = document.getElementById("selectedYear");
 const currentYear = new Date().getFullYear();
+const taxYears = document.querySelectorAll(".tax-year-dropdown option");
+
+console.log("Here are the current tax years: ", taxYears);
 
 // set the default year to the current year
 selectedYear.textContent = currentYear;
@@ -3327,21 +3330,69 @@ yearBtn.addEventListener("click", function () {
   filterMenu.style.display = "none";
 });
 
+async function loadYearFilters(userData) {
+  if (!userData) return;
+
+  try {
+    const taxYearsDocRef = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "taxDocuments"
+    );
+
+    const yearDocsRef = await getDocs(taxYearsDocRef);
+
+    if (!yearDocsRef.empty) {
+      const taxYearList = document.querySelector(".tax-year-list");
+      // clear dropdown
+      taxYearList.innerHTML = "";
+
+      const set = new Set();
+
+      // add doc ids to set
+      yearDocsRef.forEach((doc) => set.add(doc.id));
+
+      // convert set to array
+      const sortedArray = Array.from(set).sort((a, b) => a - b);
+
+      const sortedSet = new Set(sortedArray);
+
+      sortedSet.forEach((year) => {
+        // create a new list item
+        const li = document.createElement("li");
+        li.dataset.year = year;
+        li.textContent = year;
+
+        taxYearList.appendChild(li);
+      });
+
+      initializeYearFilter(userData);
+    }
+
+    console.log("Year documents: ", yearDocsRef);
+  } catch (error) {
+    console.log("Error ocurred when trying to load tax years ", error);
+  }
+}
+
 function initializeYearFilter(userData) {
   // Year selection
   const yearOptions = document.querySelectorAll("#yearMenu li");
   yearOptions.forEach((option) => {
-    option.addEventListener("click", function () {
+    option.addEventListener("click", async function () {
       const year = parseInt(this.dataset.year);
       // console.log("Year: ", year);
       selectedYear.textContent = this.dataset.year;
       yearMenu.style.display = "none";
 
       // call filter function here with the selected year
-      filterTaxAndStatementByYear(userData, year);
+      await filterTaxAndStatementByYear(userData, year);
     });
   });
 }
+
+// Loading tax year from firebase
 
 // Statements section toggle
 const statementsHeader = document.getElementById("statementHeader");
