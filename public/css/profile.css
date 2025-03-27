@@ -3407,6 +3407,7 @@ h6 {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   max-height: calc(100vh - 2rem);
+  overflow-y: auto;
 }
 
 #view-bank-details .header-wrapper {
@@ -3422,6 +3423,7 @@ h6 {
   align-items: center;
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 #view-bank-details .bank-details {
@@ -3441,6 +3443,7 @@ h6 {
   border-radius: 12px;
   border: 1px solid #d6d6d6;
   padding: 1rem;
+  flex-direction: column;
 }
 
 #view-bank-details .recent-activity {
@@ -3454,6 +3457,7 @@ h6 {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 #view-bank-details .activity-item {
@@ -3484,6 +3488,7 @@ h6 {
   border-radius: 8px;
   background-color: #f9fafb;
   padding: 1rem;
+  flex-wrap: wrap;
 }
 
 #view-bank-details .view-all-activity a {
@@ -4918,7 +4923,7 @@ h6 {
 
 .tax-year-selector {
   margin-top: 1rem;
-  display: flex;
+  display: none;
   flex-direction: column;
 }
 
