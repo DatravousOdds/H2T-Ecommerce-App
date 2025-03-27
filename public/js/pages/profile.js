@@ -1,6 +1,10 @@
 "use strict";
 
-import { generateCountries, validateForm, closeDropdown } from "./global.js";
+import {
+  generateCountries,
+  validateForm,
+  closeDropdown
+} from "../core/global.js";
 import {
   db,
   collection,
@@ -13,8 +17,8 @@ import {
   where,
   limit,
   orderBy
-} from "./firebase-client.js";
-import { checkUserStatus } from "./auth.js";
+} from "../api/firebase-client.js";
+import { checkUserStatus } from "../auth/auth.js";
 
 // Update profile information
 const updateProfile = async (email, updateData) => {

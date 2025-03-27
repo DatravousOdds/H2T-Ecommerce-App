@@ -1,4 +1,4 @@
-import { logout, checkUserStatus } from "./auth.js";
+import { logout, checkUserStatus } from "../auth/auth.js";
 
 // Function to handle tabs submenu navigation
 const handleTabs = () => {

@@ -7,7 +7,7 @@ import {
   db,
   doc,
   getDoc
-} from "./firebase-client.js";
+} from "../api/firebase-client.js";
 
 // Fetch user profile
 const fetchUserProfile = async (user) => {
