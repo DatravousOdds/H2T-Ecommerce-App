@@ -1179,7 +1179,7 @@
                     <h2>Total Revenue</h2>
                     <i class="fa-solid fa-dollar-sign blue"></i>
                   </header>
-                  <p class="stat-value">$45,231.89</p>
+                  <p class="stat-value" id="total-revenue-value">$45,231.89</p>
                   <p class="trend-indicator trend-positive">
                     +20.1% from last month
                   </p>
@@ -1189,7 +1189,7 @@
                     <h2>Active Listings</h2>
                     <i class="fa-solid fa-box blue"></i>
                   </header>
-                  <p class="stat-value">456</p>
+                  <p class="stat-value" id="active-listing-value">456</p>
                   <p class="trend-indicator trend-neutral">
                     +19 new listings this month
                   </p>
@@ -1200,7 +1200,7 @@
                     <i class="fa-solid fa-boxes-stacked blue"></i>
                   </header>
 
-                  <p class="stat-value">1,234</p>
+                  <p class="stat-value" id="product-sold-value">1,234</p>
                   <p class="trend-indicator trend-neutral">
                     +123 in the last 30 days
                   </p>
@@ -1211,7 +1211,7 @@
                     <i class="fa-solid fa-star rating"></i>
                   </header>
 
-                  <p class="stat-value">4.5</p>
+                  <p class="stat-value" id="selling-rate-value">4.5</p>
                   <p class="trend-indicator trend-positive">
                     +0.2 from last month
                   </p>
@@ -1539,7 +1539,7 @@
                           <th>ACTIONS</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody class="products-table__body">
                         <tr class="product-row">
                           <td>
                             <div class="product-info">
@@ -5207,6 +5207,10 @@
     <footer class="section-m1"></footer>
 
     <script type="module" src="js/pages/profile.js"></script>
+    <script
+      type="module"
+      src="js/pages/components/profile/dashboard.js"
+    ></script>
     <script src="js/components/footer.js"></script>
     <script type="module" src="js/components/nav.js"></script>
     <script src="js/pages/components/profile/selling.js"></script>
