@@ -1539,7 +1539,7 @@
                           <th>ACTIONS</th>
                         </tr>
                       </thead>
-                      <tbody class="products-table__body">
+                      <tbody id="all-products-table">
                         <!-- <tr class="product-row">
                           <td>
                             <div class="product-info">
@@ -1767,48 +1767,9 @@
                           <!-- Edit, Delete, View Details etc -->
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody id="for-trade-products-table">
                         <tr class="product-row">
-                          <td>
-                            <div class="product-info">
-                              <img
-                                src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                alt="Nike Air Max"
-                                class="product-image"
-                              />
-                              <div class="product-details">
-                                <p class="product-name">Nike Air Max</p>
-                                <p class="product-type">Athletic Shoes</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td>NKE-AM-001</td>
-                          <td>
-                            <span class="status-badge in-stock">In Stock</span>
-                          </td>
-                          <td>New with Tags</td>
-                          <td>15</td>
-                          <td>$229.99</td>
-                          <td>$199.99</td>
-                          <td>2024-11-21</td>
-                          <td>
-                            <button
-                              class="action-button"
-                              aria-label="More options"
-                            >
-                              <svg
-                                class="action-icon"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                              >
-                                <circle cx="12" cy="12" r="1" />
-                                <circle cx="12" cy="5" r="1" />
-                                <circle cx="12" cy="19" r="1" />
-                              </svg>
-                            </button>
-                          </td>
+                          <!-- loaded dynamically from database -->
                         </tr>
                       </tbody>
                     </table>
@@ -1845,7 +1806,7 @@
                           <!-- View Details, Accept, Reject etc -->
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody id="sell-to-us-products-table">
                         <tr class="product-row">
                           <td>
                             <div class="product-info">
