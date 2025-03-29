@@ -5,10 +5,375 @@ import {
   doc,
   getDoc,
   collection,
-  getDocs,
+  getDocs
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
+
+const daftProductsTableTemplate = (product) => `<td>
+                            <div class="product-info">
+                              <div class="product-image-container">
+                                <img
+                                  src=${product.images[0].url}
+                                  alt=${product.images[0].alt}
+                                  class="product-image"
+                                />
+                                <span class="draft-badge">Draft</span>
+                              </div>
+                              <div class="product-details">
+                                <p class="product-name">${product.basicInfo.name}</p>
+                                <p class="product-id">ID: #DFT-2024112</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="completion-info">
+                              <div class="progress-bar">
+                                <div class="progress" style="width: 75%"></div>
+                              </div>
+                              <span class="completion-text">75% Complete</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="missing-info">
+                              <ul class="missing-list">
+                                <li class="missing-item">
+                                  <svg
+                                    class="missing-icon"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    width="12"
+                                    height="12"
+                                  >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line
+                                      x1="12"
+                                      y1="16"
+                                      x2="12"
+                                      y2="16"
+                                    ></line>
+                                  </svg>
+                                  Product Photos
+                                </li>
+                                <li class="missing-item">
+                                  <svg
+                                    class="missing-icon"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    width="12"
+                                    height="12"
+                                  >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line
+                                      x1="12"
+                                      y1="16"
+                                      x2="12"
+                                      y2="16"
+                                    ></line>
+                                  </svg>
+                                  Description
+                                </li>
+                              </ul>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="date-info">
+                              <span class="date">Nov 22, 2024</span>
+                              <span class="time">2:30 PM</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="date-info">
+                              <span class="date">Nov 22, 2024</span>
+                              <span class="time">4:45 PM</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="category-info">
+                              <span class="category-badge">Sneakers</span>
+                              <span class="sub-category">Lifestyle</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="price-info">
+                              <span class="draft-price">$159.99</span>
+                              <span class="price-status">Not Published</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <button
+                                class="action-button edit"
+                                aria-label="Edit Draft"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                                  ></path>
+                                  <path
+                                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                                  ></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button publish"
+                                aria-label="Publish Draft"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path d="M12 20V10"></path>
+                                  <path d="M18 14l-6-6-6 6"></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button delete"
+                                aria-label="Delete Draft"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path d="M3 6h18"></path>
+                                  <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                                  ></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>`;
+
+const outOfStockProductsTemplate = (product) => `<td>
+                            <div class="product-info">ORD-2024-1234</div>
+                          </td>
+                          <td>
+                            <div class="category-info">
+                              <span class="category-badge">Sneakers</span>
+                              <span class="sub-category">Basketball</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="stock-date">
+                              <span class="date">Nov 15, 2024</span>
+                              <span class="time-ago">7 days ago</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="price-info">
+                              <span class="last-price">$199.99</span>
+                              <span class="price-note">Sold Out at Retail</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="demand-info">
+                              <span class="demand-badge high">High Demand</span>
+                              <div class="demand-trend">
+                                <span class="trend-arrow up">↑</span>
+                                <span class="trend-value">32%</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="waitlist-info">
+                              <span class="waitlist-count">124</span>
+                              <span class="waitlist-label">people waiting</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="notification-info">
+                              <span class="notification-count">89</span>
+                              <span class="notification-status"
+                                >Subscribed</span
+                              >
+                            </div>
+                          </td>
+                          <td>
+                            <div class="supplier-info">
+                              <span class="supplier-name">Nike Direct</span>
+                              <span class="restock-estimate"
+                                >Expected: Dec 2024</span
+                              >
+                            </div>
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <button
+                                class="action-button restock"
+                                aria-label="Restock Product"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path d="M3 3v18h18"></path>
+                                  <path d="M18.4 8.64L18.4 15.36"></path>
+                                  <path d="M13.6 10.72L13.6 15.36"></path>
+                                  <path d="M8.8 12.8L8.8 15.36"></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button notify"
+                                aria-label="Send Notifications"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+                                  ></path>
+                                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button archive"
+                                aria-label="Archive Product"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path d="M21 8v13H3V8"></path>
+                                  <path d="M1 3h22v5H1z"></path>
+                                  <path d="M10 12h4"></path>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>`;
+
+const pendingProductsTableTemplate = (product) => `<td>
+                            <div class="trade-items">
+                              <div class="product-info">
+                                <img
+                                  src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                                  alt="Jordan 1"
+                                  class="product-image"
+                                />
+                                <div class="product-details">
+                                  <p class="product-name">Air Jordan 1 High</p>
+                                  <p class="product-condition">
+                                    Condition: 9/10
+                                  </p>
+                                </div>
+                              </div>
+                              <div class="additional-items">+2 more items</div>
+                            </div>
+                          </td>
+                          <td>$450.00</td>
+                          <td>
+                            <div class="trade-items">
+                              <div class="product-info">
+                                <img
+                                  src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                                  alt="Yeezy 350"
+                                  class="product-image"
+                                />
+                                <div class="product-details">
+                                  <p class="product-name">Yeezy Boost 350</p>
+                                  <p class="product-condition">
+                                    Condition: New
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td>$400.00</td>
+                          <td>
+                            <div class="balance-due positive">
+                              +$50.00
+                              <span class="balance-label">Store Credit</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="submission-info">
+                              <span class="date">Nov 22, 2024</span>
+                              <span class="time">14:30</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span class="status-badge pending"
+                              >Pending Review</span
+                            >
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <button
+                                class="action-button view"
+                                aria-label="View Details"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                                  ></path>
+                                  <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button message"
+                                aria-label="Message Customer"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                                  ></path>
+                                </svg>
+                              </button>
+                              <button
+                                class="action-button approve"
+                                aria-label="Approve Trade"
+                              >
+                                <svg
+                                  class="action-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                              </button>
+                            </div>
+                          </td>`;
 
 const allProductsTableTemplate = (product) => `
           <td>
@@ -339,7 +704,7 @@ async function loadProducts(userData) {
       products.forEach((doc) => {
         productsArray.push({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         });
       });
 
