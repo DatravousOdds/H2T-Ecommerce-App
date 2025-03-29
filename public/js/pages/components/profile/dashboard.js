@@ -1,4 +1,5 @@
 import { checkUserStatus } from "../../../auth/auth.js";
+import { formatFirebaseDate } from "../../../core/global.js";
 import {
   db,
   doc,
@@ -204,9 +205,9 @@ async function loadProducts(userData) {
                                   </td>
                                   <td>
                                     <div class="listing-date">
-                                      <span class="date">${
+                                      <span class="date">${formatFirebaseDate(
                                         product.listedDate
-                                      }</span>
+                                      )}</span>
                                       <span class="time-listed">14 days</span>
                                     </div>
                                   </td>

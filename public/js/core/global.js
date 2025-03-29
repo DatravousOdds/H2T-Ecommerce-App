@@ -45,6 +45,15 @@ const generateRegions = (countriesData) => {
   }
 };
 
+function formatFirebaseDate(timestamp) {
+  const date = timestamp.toDate();
+  return date.toLocaleDateString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric"
+  });
+}
+
 function setError(inputElement, errorElement, message) {
   errorElement.textContent = message;
   inputElement.classList.add("input-error");
@@ -630,5 +639,6 @@ export {
   validateAddress,
   generateRegions,
   setError,
-  clearError
+  clearError,
+  formatFirebaseDate
 };
