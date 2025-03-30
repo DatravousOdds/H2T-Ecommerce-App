@@ -23,17 +23,25 @@ const daftProductsTableTemplate = (product) => `<td>
                                 <span class="draft-badge">Draft</span>
                               </div>
                               <div class="product-details">
-                                <p class="product-name">${product.basicInfo.name}</p>
-                                <p class="product-id">ID: #DFT-2024112</p>
+                                <p class="product-name">${
+                                  product.basicInfo.name
+                                }</p>
+                                <p class="product-id">ID: #${
+                                  product.draftId
+                                }</p>
                               </div>
                             </div>
                           </td>
                           <td>
                             <div class="completion-info">
                               <div class="progress-bar">
-                                <div class="progress" style="width: 75%"></div>
+                                <div class="progress" style="width: ${
+                                  product.completionProgress
+                                }%"></div>
                               </div>
-                              <span class="completion-text">75% Complete</span>
+                              <span class="completion-text">${
+                                product.completionProgress
+                              }% Complete</span>
                             </div>
                           </td>
                           <td>
@@ -58,7 +66,7 @@ const daftProductsTableTemplate = (product) => `<td>
                                       y2="16"
                                     ></line>
                                   </svg>
-                                  Product Photos
+                                  ${product.missingInfo[0]}
                                 </li>
                                 <li class="missing-item">
                                   <svg
@@ -79,33 +87,40 @@ const daftProductsTableTemplate = (product) => `<td>
                                       y2="16"
                                     ></line>
                                   </svg>
-                                  Description
+                                  ${product.missingInfo[1]}
                                 </li>
                               </ul>
                             </div>
                           </td>
                           <td>
                             <div class="date-info">
-                              <span class="date">Nov 22, 2024</span>
+                              <span class="date">${formatFirebaseDate(
+                                product.createAt
+                              )}</span>
                               <span class="time">2:30 PM</span>
                             </div>
                           </td>
                           <td>
                             <div class="date-info">
-                              <span class="date">Nov 22, 2024</span>
+                              <span class="date">${formatFirebaseDate(
+                                product.lastEdited
+                              )}</span>
                               <span class="time">4:45 PM</span>
                             </div>
                           </td>
                           <td>
                             <div class="category-info">
-                              <span class="category-badge">Sneakers</span>
-                              <span class="sub-category">Lifestyle</span>
+                              <span class="category-badge">${
+                                product.basicInfo.category
+                              }</span>
+                              <span class="sub-category">${
+                                product.basicInfo.subcategory
+                              }</span>
                             </div>
                           </td>
                           <td>
                             <div class="price-info">
-                              <span class="draft-price">$159.99</span>
-                              <span class="price-status">Not Published</span>
+                              <span class="draft-price">$${product.price}</span>
                             </div>
                           </td>
                           <td>
@@ -169,40 +184,40 @@ const outOfStockProductsTemplate = (product) => `<td>
                           </td>
                           <td>
                             <div class="category-info">
-                              <span class="category-badge">Sneakers</span>
-                              <span class="sub-category">Basketball</span>
+                              <span class="category-badge">${product.basicInfo.category}</span>
+                              <span class="sub-category">${product.basicInfo.subcategory}</span>
                             </div>
                           </td>
                           <td>
                             <div class="stock-date">
-                              <span class="date">Nov 15, 2024</span>
+                              <span class="date">${product.analytics.listedDate}</span>
                               <span class="time-ago">7 days ago</span>
                             </div>
                           </td>
                           <td>
                             <div class="price-info">
-                              <span class="last-price">$199.99</span>
-                              <span class="price-note">Sold Out at Retail</span>
+                              <span class="last-price">$${product.pricing.lastRetailPrice}</span>
+                              <span class="price-note">${product.pricing.notes}</span>
                             </div>
                           </td>
                           <td>
                             <div class="demand-info">
-                              <span class="demand-badge high">High Demand</span>
+                              <span class="demand-badge high">${product.demand.level}</span>
                               <div class="demand-trend">
-                                <span class="trend-arrow up">↑</span>
-                                <span class="trend-value">32%</span>
+                                <span class="trend-arrow ${product.demand.trend}">↑</span>
+                                <span class="trend-value">${product.demand.percentageChange}%</span>
                               </div>
                             </div>
                           </td>
                           <td>
                             <div class="waitlist-info">
-                              <span class="waitlist-count">124</span>
+                              <span class="waitlist-count">${product.waitlist.count}</span>
                               <span class="waitlist-label">people waiting</span>
                             </div>
                           </td>
                           <td>
                             <div class="notification-info">
-                              <span class="notification-count">89</span>
+                              <span class="notification-count">${product.waitlist.subscribers}</span>
                               <span class="notification-status"
                                 >Subscribed</span
                               >
@@ -210,9 +225,9 @@ const outOfStockProductsTemplate = (product) => `<td>
                           </td>
                           <td>
                             <div class="supplier-info">
-                              <span class="supplier-name">Nike Direct</span>
+                              <span class="supplier-name">${product.supplier.name}</span>
                               <span class="restock-estimate"
-                                >Expected: Dec 2024</span
+                                >Expected: ${product.supplier.expectedRestock}</span
                               >
                             </div>
                           </td>
@@ -715,16 +730,25 @@ async function loadProducts(userData) {
       "trades"
     );
 
+    const productDrafts = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "productDrafts"
+    );
+
     const tradesQuery = query(
       tradesCollectionRef,
       where("tradingUserId", "==", userData.email)
     );
 
     // call both promises
-    const [productsSnapshot, tradesSnapshot] = await Promise.all([
-      getDocs(productsCollectionRef),
-      getDocs(tradesQuery),
-    ]);
+    const [productsSnapshot, tradesSnapshot, productDraftsSnapshot] =
+      await Promise.all([
+        getDocs(productsCollectionRef),
+        getDocs(tradesQuery),
+        getDocs(productDrafts),
+      ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
@@ -734,13 +758,17 @@ async function loadProducts(userData) {
       });
     });
 
-    console.log("trade array", tradesArray);
-    // if there are products
-
     const productsArray = [];
-
     productsSnapshot.forEach((doc) => {
       productsArray.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    const productDraftsArray = [];
+    productDraftsSnapshot.forEach((doc) => {
+      productDraftsArray.push({
         id: doc.id,
         ...doc.data(),
       });
@@ -762,9 +790,26 @@ async function loadProducts(userData) {
       (product) => product.status === "out_of_stock"
     );
 
-    const totalProducts = products.size;
+    const activeListing = activeProducts.length;
+
+    const sellToUsRequests = sellToUsProducts.length;
+
+    const totalSales = 
+
 
     // load all products
+    populateTable(
+      productDraftsArray,
+      "draft-products-table",
+      daftProductsTableTemplate
+    );
+
+    populateTable(
+      outOfStockProducts,
+      "out-of-stock-products-table",
+      outOfStockProductsTemplate
+    );
+
     populateTable(
       productsArray,
       "all-products-table",
@@ -801,12 +846,19 @@ async function loadProducts(userData) {
 
 function populateTable(products, tabId, rowTemplate) {
   const table = document.getElementById(tabId);
+  console.log("table", table);
   if (!table) return;
 
   table.innerHTML = "";
 
   if (products.length === 0) {
-    console.log(`There is not products for ${table}`);
+    table.innerHTML = `
+      <tr>
+        <td colspan="10" class="empty-state"> 
+          <p>No Products available </p> 
+        </td>
+      </td>
+    `;
   }
 
   products.forEach((product) => {

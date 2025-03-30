@@ -5958,6 +5958,13 @@ h6 {
   background-color: #f9fafb;
 }
 
+/* Out of Stock styles */
+.empty-state {
+  text-align: center;
+  background-color: #f9f9f9;
+  padding: 24px 20px;
+}
+
 /* Footer Tooltip */
 .payouts-tooltip {
   display: flex;
