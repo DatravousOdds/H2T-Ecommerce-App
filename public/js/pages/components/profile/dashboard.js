@@ -5,7 +5,9 @@ import {
   doc,
   getDoc,
   collection,
-  getDocs
+  getDocs,
+  query,
+  where,
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -269,58 +271,70 @@ const outOfStockProductsTemplate = (product) => `<td>
                             </div>
                           </td>`;
 
-const pendingProductsTableTemplate = (product) => `<td>
-                            <div class="trade-items">
+const pendingTradesProductsTableTemplate = (product) => `<td>
+                            <div class="trade-items" id="trading-items" >
                               <div class="product-info">
                                 <img
-                                  src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                  alt="Jordan 1"
+                                  src=${product.tradingItems[0].imageUrl}
+                                  alt=${product.tradingItems[0].name}
                                   class="product-image"
                                 />
                                 <div class="product-details">
-                                  <p class="product-name">Air Jordan 1 High</p>
+                                  <p class="product-name">${
+                                    product.tradingItems[0].name
+                                  }</p>
                                   <p class="product-condition">
-                                    Condition: 9/10
+                                    Condition: ${
+                                      product.tradingItems[0].condition
+                                    }
                                   </p>
                                 </div>
                               </div>
                               <div class="additional-items">+2 more items</div>
                             </div>
                           </td>
-                          <td>$450.00</td>
+                          <td class="trading-value">$${
+                            product.tradingItems[0].value
+                          }</td>
                           <td>
-                            <div class="trade-items">
+                            <div class="trade-items" id="requestingItems">
                               <div class="product-info">
                                 <img
-                                  src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                  alt="Yeezy 350"
+                                  src=${product.requestingItems[0].imageUrl}
+                                  alt=${product.requestingItems[0].name}
                                   class="product-image"
                                 />
                                 <div class="product-details">
-                                  <p class="product-name">Yeezy Boost 350</p>
+                                  <p class="product-name">${
+                                    product.requestingItems[0].name
+                                  }</p>
                                   <p class="product-condition">
-                                    Condition: New
+                                    Condition: ${
+                                      product.requestingItems[0].condition
+                                    }
                                   </p>
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td>$400.00</td>
+                          <td>$${product.requestingItems[0].value}</td>
                           <td>
                             <div class="balance-due positive">
-                              +$50.00
+                              +$${product.tradeBalance.toFixed(2)}
                               <span class="balance-label">Store Credit</span>
                             </div>
                           </td>
                           <td>
                             <div class="submission-info">
-                              <span class="date">Nov 22, 2024</span>
+                              <span class="date">${formatFirebaseDate(
+                                product.submitted
+                              )}</span>
                               <span class="time">14:30</span>
                             </div>
                           </td>
                           <td>
                             <span class="status-badge pending"
-                              >Pending Review</span
+                              >${product.status}</span
                             >
                           </td>
                           <td>
@@ -420,8 +434,8 @@ const activeProductsTableTemplate = (product) => `
           <td>
             <div class="product-info">
               <img
-                src=${product.images.url}
-                alt=${product.images.alt}
+                src=${product.images[0].url}
+                alt=${product.images[0].alt}
                 class="product-image"
               />
               <div class="product-details">
@@ -472,7 +486,7 @@ const activeProductsTableTemplate = (product) => `
           <td>
             <div class="listing-date">
               <span class="date">${formatFirebaseDate(
-                product.listedDate
+                product.analytics.listedDate
               )}</span>
               <span class="time-listed">14 days</span>
             </div>
@@ -565,9 +579,9 @@ const forTradeProductsTableTemplate = (product) => `
           </td>
           <td>${product.basicInfo.condition}</td>
           <td>${product.inventory.quantity}</td>
-          <td>$${product.compareAtPrice}</td>
-          <td>$${product.sellPrice}</td>
-          <td>${formatFirebaseDate(product.lastUpdated)}</td>
+          <td>$${product.pricing.retailPrice}</td>
+          <td>$${product.pricing.sellPrice}</td>
+          <td>${formatFirebaseDate(product.analytics.lastUpdated)}</td>
           <td>
             <button
               class="action-button"
@@ -616,9 +630,8 @@ const sellToUsProductsTableTemplate = (product) => `
             <span class="demand-badge high">${product.demand}</span>
           </td>
           <td>
-            <span class="status-badge ${product.sellBack.status}">${
-  product.sellBack.status[0].toUpperCase() +
-  product.sellBack.status.substring(1)
+            <span class="status-badge ${product.status}">${
+  product.status[0].toUpperCase() + product.status.substring(1)
 }</span>
           </td>
           <td>
@@ -695,62 +708,92 @@ async function loadProducts(userData) {
       "products"
     );
 
-    const products = await getDocs(productsCollectionRef);
+    const tradesCollectionRef = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "trades"
+    );
 
-    // if there are products
-    if (!products.empty) {
-      const productsArray = [];
+    const tradesQuery = query(
+      tradesCollectionRef,
+      where("tradingUserId", "==", userData.email)
+    );
 
-      products.forEach((doc) => {
-        productsArray.push({
-          id: doc.id,
-          ...doc.data()
-        });
+    // call both promises
+    const [productsSnapshot, tradesSnapshot] = await Promise.all([
+      getDocs(productsCollectionRef),
+      getDocs(tradesQuery),
+    ]);
+
+    const tradesArray = [];
+    tradesSnapshot.forEach((trade) => {
+      tradesArray.push({
+        id: trade.id,
+        ...trade.data(),
       });
+    });
 
-      // load all products
-      populateTable(
-        productsArray,
-        "all-products-table",
-        allProductsTableTemplate
-      );
+    console.log("trade array", tradesArray);
+    // if there are products
 
-      const activeProducts = productsArray.filter(
-        (product) => product.status === "active"
-      );
+    const productsArray = [];
 
-      const forTradeProducts = productsArray.filter(
-        (product) => product.trading === true
-      );
+    productsSnapshot.forEach((doc) => {
+      productsArray.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
 
-      const sellToUsProducts = productsArray.filter(
-        (product) => product.sellBack.inProgress === true
-      );
+    const activeProducts = productsArray.filter(
+      (product) => product.status === "active"
+    );
 
-      const pendingTrades = productsArray.filter(
-        (product) => product.status === "pending" && product.trading === true
-      );
+    const forTradeProducts = productsArray.filter(
+      (product) => product.trading === true
+    );
 
-      const totalProducts = products.size;
+    const sellToUsProducts = productsArray.filter(
+      (product) => product.sellBack.inProgress === true
+    );
 
-      populateTable(
-        activeProducts,
-        "active-products-table",
-        activeProductsTableTemplate
-      );
+    const outOfStockProducts = productsArray.filter(
+      (product) => product.status === "out_of_stock"
+    );
 
-      populateTable(
-        forTradeProducts,
-        "for-trade-products-table",
-        forTradeProductsTableTemplate
-      );
+    const totalProducts = products.size;
 
-      populateTable(
-        sellToUsProducts,
-        "sell-to-us-products-table",
-        sellToUsProductsTableTemplate
-      );
-    }
+    // load all products
+    populateTable(
+      productsArray,
+      "all-products-table",
+      allProductsTableTemplate
+    );
+
+    populateTable(
+      tradesArray,
+      "pending-trades-products-table",
+      pendingTradesProductsTableTemplate
+    );
+
+    populateTable(
+      activeProducts,
+      "active-products-table",
+      activeProductsTableTemplate
+    );
+
+    populateTable(
+      forTradeProducts,
+      "for-trade-products-table",
+      forTradeProductsTableTemplate
+    );
+
+    populateTable(
+      sellToUsProducts,
+      "sell-to-us-products-table",
+      sellToUsProductsTableTemplate
+    );
   } catch (error) {
     console.error("Error occurred when loading products: ", error);
   }
