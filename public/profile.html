@@ -1399,11 +1399,123 @@
                 </form>
 
                 <div class="action-buttons">
-                  <div class="filter-dropdown">
-                    <button type="button" class="filter-btn">
-                      <i class="fa-solid fa-filter"></i>
-                      Filter
-                    </button>
+                  <div class="filter-opt">
+                    <div class="filter-data-container" id="filter-container">
+                      <button type="button" class="filter-btn">
+                        Filter <i class="fa-solid fa-filter"></i>
+                      </button>
+                      <div class="filter-dropdown-content">
+                        <!-- Product filters -->
+                        <div class="filter-section">
+                          <h4>Product</h4>
+                          <div class="filter-group">
+                            <div>
+                              <input type="checkbox" id="category-sneakers" />
+                              <label for="category-sneakers">Sneakers</label>
+                            </div>
+                            <div>
+                              <input type="checkbox" id="category-apparel" />
+                              <label for="category-apparel">Apparel</label>
+                            </div>
+                            <div>
+                              <input type="checkbox" id="accessories" />
+                              <label for="accessories">Accessories</label>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Sales filters -->
+                        <div class="filter-section">
+                          <h4>Brand</h4>
+                          <div class="filter-group">
+                            <div>
+                              <input type="checkbox" id="category-nike" />
+                              <label for="category-nike">Nike</label>
+                            </div>
+                            <div>
+                              <input type="checkbox" id="category-jordan" />
+                              <label for="category-jordan">Jordan</label>
+                            </div>
+                            <div>
+                              <input type="checkbox" id="category-yeezy" />
+                              <label for="category-yeezy">Yeezy</label>
+                            </div>
+                            <div>
+                              <input type="checkbox" id="category-offWhite" />
+                              <label for="category-offWhite">Off-White</label>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Price Range -->
+                        <div class="filter-section">
+                          <h4>Price Range</h4>
+                          <div class="filter-group">
+                            <div>
+                              <input
+                                type="checkbox"
+                                id="category-priceRange-1"
+                              />
+                              <label for="category-priceRange-1">$25-$50</label>
+                            </div>
+                            <div>
+                              <input
+                                type="checkbox"
+                                id="category-priceRange-2"
+                              />
+                              <label for="category-priceRange-2"
+                                >$50-$100</label
+                              >
+                            </div>
+                            <div>
+                              <input
+                                type="checkbox"
+                                id="category-priceRange-3"
+                              />
+                              <label for="category-priceRange-3"
+                                >$100-$150</label
+                              >
+                            </div>
+                            <div>
+                              <input
+                                type="checkbox"
+                                id="category-priceRange-4"
+                              />
+                              <label for="category-priceRange-4"
+                                >Over $150</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Listing Type -->
+                        <div class="filter-section">
+                          <h4>Listing Type</h4>
+                          <div class="filter-group">
+                            <div>
+                              <input
+                                type="checkbox"
+                                id="list-type-newListings"
+                              />
+                              <label for="list-type-newListings"
+                                >New listings</label
+                              >
+                            </div>
+                            <div>
+                              <input type="checkbox" id="OutOfStock" />
+                              <label for="list-type-OutOfStock"
+                                >Out of stock</label
+                              >
+                            </div>
+                            <div>
+                              <input type="checkbox" id="list-type-lowStock" />
+                              <label for="list-type-lowStock">Low stock</label>
+                            </div>
+                            <div>
+                              <input type="checkbox" id="list-type-active" />
+                              <label for="list-type-active">Active</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="trade-request">
                     <button type="button" id="trade-request-btn">

@@ -3672,6 +3672,43 @@ h6 {
   border-radius: 9999px;
 }
 
+/* dashboard filter styles */
+
+.filter-opt {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-opt .filter-data-container {
+  position: relative;
+}
+
+.filter-opt .filter-section h4 {
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+
+
+.filter-opt .filter-group label {
+  font-size: 12px;
+}
+
+.filter-opt .filter-dropdown-content {
+  display: flex;
+  position: absolute;
+  right: 0;
+  margin-top: 5px;
+  min-width: 420px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  gap: 1.2rem;
+  border: 1px solid #eeeff2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+}
 /* Status styles */
 
 .status-badge {
@@ -7305,8 +7342,8 @@ details h3 {
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
-  scrollbar-width: none;
-  overflow-x: auto;
+  /* scrollbar-width: none;
+  overflow-x: auto; */
 }
 
 /* Products Table */

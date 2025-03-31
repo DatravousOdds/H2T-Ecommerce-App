@@ -7,7 +7,7 @@ import {
   collection,
   getDocs,
   query,
-  where,
+  where
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -349,7 +349,10 @@ const pendingTradesProductsTableTemplate = (product) => `<td>
                           </td>
                           <td>
                             <span class="status-badge pending"
-                              >${product.status}</span
+                              >${
+                                product.status[0].toUpperCase() +
+                                product.status.substring(1)
+                              }</span
                             >
                           </td>
                           <td>
@@ -642,11 +645,13 @@ const sellToUsProductsTableTemplate = (product) => `
           <td>$${product.pricing.offerPrice}</td>
           <td>$${product.pricing.tradeValue}</td>
           <td>
-            <span class="demand-badge high">${product.demand}</span>
+            <span class="demand-badge high">${product.demand.level}</span>
           </td>
           <td>
-            <span class="status-badge ${product.status}">${
-  product.status[0].toUpperCase() + product.status.substring(1)
+            <span class="status-badge ${
+              product.sellBack.inProgress === true ? "processing" : "completed"
+            }">${
+  product.sellBack.inProgress === true ? "Processing" : "Completed"
 }</span>
           </td>
           <td>
@@ -747,14 +752,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts),
+        getDocs(productDrafts)
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data(),
+        ...trade.data()
       });
     });
 
@@ -762,7 +767,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -770,7 +775,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -794,15 +799,13 @@ async function loadProducts(userData) {
 
     const sellToUsRequests = sellToUsProducts.length;
 
-    const totalSales = 
-
-
-    // load all products
-    populateTable(
-      productDraftsArray,
-      "draft-products-table",
-      daftProductsTableTemplate
-    );
+    const totalSales =
+      // load all products
+      populateTable(
+        productDraftsArray,
+        "draft-products-table",
+        daftProductsTableTemplate
+      );
 
     populateTable(
       outOfStockProducts,
