@@ -3689,26 +3689,71 @@ h6 {
   font-weight: 600;
 }
 
+.filter-opt .filter-section {
+  flex: 1;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eeeff2;
+}
 
+.filter-opt .filter-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
 
 .filter-opt .filter-group label {
-  font-size: 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filter-group > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-group input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.filter-actions {
+  padding-top: 0.5rem;
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
 }
 
 .filter-opt .filter-dropdown-content {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   position: absolute;
   right: 0;
   margin-top: 5px;
-  min-width: 420px;
+  min-width: 33vw;
   background-color: #fff;
   border-radius: 8px;
   padding: 1rem;
-  gap: 1.2rem;
+  gap: 0.5rem;
   border: 1px solid #eeeff2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   z-index: 100;
 }
+
+.filter-opt .filter-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+/* filter action buttons */
+.filter-actions .btn.primary {
+  color: white;
+  background-color: #ef4444;
+  border: none;
+}
+
 /* Status styles */
 
 .status-badge {
@@ -6577,6 +6622,26 @@ details h3 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  /* filter products */
+  .filter-opt .filter-dropdown-content {
+    left: 0;
+    right: 0;
+    min-width: unset;
+    max-width: 100%;
+    width: 100vw;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    border: 12px 12px 0 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    gap: 1rem;
+  }
+  .filter-list {
+    overflow-x: scroll;
+  }
+
   /* Reviews Modal Styles */
 
   .review-card .user-info .user-review-img img {
@@ -8186,6 +8251,41 @@ input:checked + .slider:before {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 390px) and (max-width: 575.98px) {
+  .filter-list {
+    overflow-x: scroll;
+  }
+
+  /* product filter styles */
+  .filter-opt .filter-group {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .filter-opt .filter-dropdown-content {
+    left: 0;
+    right: 0;
+    min-width: unset;
+    max-width: 100%;
+    width: 100vw;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    border: 12px 12px 0 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    gap: 1rem;
+  }
+
+  .filter-group > div {
+    gap: 0.5rem;
+  }
+
+  .filter-section {
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
   .rating-breakdown .rating-process .rating-bar {
     width: 61%;
   }
@@ -8340,6 +8440,22 @@ input:checked + .slider:before {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+  .filter-opt .filter-dropdown-content {
+    left: 0;
+    right: 0;
+    min-width: unset;
+    max-width: 100%;
+    width: 100vw;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    border: 12px 12px 0 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    gap: 1rem;
+  }
+
   /* Reply Card */
   .reply-card .user-info .user-review-img {
     width: 32px;
