@@ -431,20 +431,20 @@ const allProductsTableTemplate = (product) => `
               <td class="sales-price">$${product.pricing.sellPrice}</td>
               <td class="trade-value">$${product.pricing.tradeValue}</td>
               <td class="sell-to-us-price">$${product.pricing.sellToUsValue}</td>
-              <td
-              <button class="action-button">
-                  <svg
-                  class="action-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  >
-                  <circle cx="12" cy="12" r="1" />
-                  <circle cx="12" cy="5" r="1" />
-                  <circle cx="12" cy="19" r="1" />
-                  </svg>
-              </button>
+              <td>
+                <button class="action-button">
+                    <svg
+                    class="action-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    >
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="12" cy="5" r="1" />
+                    <circle cx="12" cy="19" r="1" />
+                    </svg>
+                </button>
               </td>
       `;
 
@@ -846,6 +846,49 @@ async function loadProducts(userData) {
     console.error("Error occurred when loading products: ", error);
   }
 }
+
+const filters = {
+  productFilters: [], // only allowed filter at time
+  brandFilters: [], // mutiple filters
+  priceRangeFilters: [], // mutiple filters
+  listingTypeFilters: [] // mutiple filters
+};
+
+const filterSectionsInputs = document.querySelectorAll(
+  ".filter-section .filter-group input"
+);
+
+// set event listener on each iput
+filterSectionsInputs.forEach((input) => {
+  input.addEventListener("click", () => {
+    if (input.checked) {
+      const id = input.id;
+      const arr = id.split("-");
+      const category = arr[0];
+      const filterItem = arr[1];
+      switch (category) {
+        case "product":
+          if (filters.productFilters.length <= 1) {
+            filters.productFilters.push(filterItem);
+          }
+
+          break;
+        case "brand":
+          filters.brandFilters.push(filterItem);
+          break;
+        case "price":
+          filters.priceRangeFilters.push(filterItem);
+          break;
+        case "listType":
+          filters.listingTypeFilters.push(filterItem);
+          break;
+      }
+    }
+    console.log("product array", filters);
+  });
+});
+
+console.log("filter Sections: ", filterSections);
 
 function populateTable(products, tabId, rowTemplate) {
   const table = document.getElementById(tabId);

@@ -3742,7 +3742,7 @@ h6 {
 }
 
 .filter-opt .filter-dropdown-content.show {
-  display: block;
+  display: flex;
 }
 
 .filter-opt .filter-group {
@@ -6626,7 +6626,24 @@ details h3 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+  /* dashboards styles */
+  .search-wrapper {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .products-header .action-buttons,
+  .products-header {
+    flex-direction: column;
+    width: 100%;
+  }
+
   /* filter products */
+  .filter-opt .filter-data-container {
+    min-width: 100%;
+    width: 100%;
+  }
+
   .filter-opt .filter-dropdown-content {
     left: 0;
     right: 0;
@@ -7072,7 +7089,7 @@ details h3 {
   border-bottom-color: #e5e7eb;
 }
 
-.filter-btn.active {
+.filter-list .filter-btn.active {
   color: var(--primary-red);
   border-bottom-color: var(--primary-red);
 }
@@ -7407,7 +7424,7 @@ details h3 {
 
 .products-header {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
@@ -7484,7 +7501,7 @@ details h3 {
 .search-wrapper {
   position: relative;
   flex-grow: 1;
-  max-width: 300px;
+  /* max-width: 300px; */
 }
 
 .search-wrapper input {
@@ -8255,6 +8272,18 @@ input:checked + .slider:before {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (max-width: 390px) and (max-width: 575.98px) {
+  /* dashboards styles */
+  .search-wrapper {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .products-header .action-buttons,
+  .products-header {
+    flex-direction: column;
+    width: 100%;
+  }
+
   .filter-list {
     overflow-x: scroll;
   }
@@ -9171,7 +9200,7 @@ input:checked + .slider:before {
   /* Search bar */
   .search-wrapper {
     width: 100%;
-    max-width: 100%;
+    min-width: 100%;
   }
 
   /* Tax Information */
@@ -9186,6 +9215,16 @@ input:checked + .slider:before {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+  /* dashboard styles */
+  .search-wrapper {
+    min-width: 660px;
+    width: 100%;
+  }
+
+  .products-header .action-buttons {
+    width: 100%;
+  }
+
   /* product filter dropdown */
   .filter-opt .filter-dropdown-content {
     left: 0;

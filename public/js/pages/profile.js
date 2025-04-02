@@ -3701,7 +3701,7 @@ profileSection.forEach((section) => {
   });
 });
 
-// Profile Page actions: navigate
+// Profile Page actions: tab navigation
 allTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     const tabId = tab.getAttribute("data-tab");
@@ -3722,6 +3722,27 @@ allTabs.forEach((tab) => {
     // Storage active tab in localStorage
     localStorage.setItem("activeTab", tabId);
   });
+});
+
+// dashboard filter dropdown
+const filterContainer = document.getElementById("filter-container");
+const productsfilterDropdown = document.querySelector(
+  ".filter-opt .filter-dropdown-content"
+);
+
+// Event listeners
+filterContainer.addEventListener("click", (event) => {
+  // Stop the event from bubbling up the dom
+  event.stopPropagation();
+  productsfilterDropdown.classList.toggle("show");
+});
+
+// Prevent menu from closing when clicked inside of it
+productsfilterDropdown.addEventListener("click", (e) => e.stopPropagation());
+
+// Handle outside click for product filter dropdown
+document.addEventListener("click", () => {
+  productsfilterDropdown.classList.remove("show");
 });
 
 // Add funds popup menu
