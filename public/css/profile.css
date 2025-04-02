@@ -3725,7 +3725,7 @@ h6 {
 }
 
 .filter-opt .filter-dropdown-content {
-  display: flex;
+  display: none;
   flex-direction: row;
   flex-wrap: wrap;
   position: absolute;
@@ -3739,6 +3739,10 @@ h6 {
   border: 1px solid #eeeff2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   z-index: 100;
+}
+
+.filter-opt .filter-dropdown-content.show {
+  display: block;
 }
 
 .filter-opt .filter-group {
@@ -8845,6 +8849,13 @@ input:checked + .slider:before {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  /* product filter dropdown */
+  .filter-opt .filter-dropdown-content {
+    left: 0;
+    width: 100%;
+    min-width: 60vw;
+  }
+
   /* Reply Card */
   .reply-card .user-info .user-review-img {
     width: 32px;
@@ -9175,6 +9186,13 @@ input:checked + .slider:before {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
+  /* product filter dropdown */
+  .filter-opt .filter-dropdown-content {
+    left: 0;
+    width: 100%;
+    min-width: 50vw;
+  }
+
   .orders-container {
     grid-template-columns: repeat(2, 1fr);
   }
