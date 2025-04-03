@@ -863,25 +863,20 @@ filterSectionsInputs.forEach((input) => {
   input.addEventListener("click", () => {
     if (input.checked) {
       const id = input.id;
-      const arr = id.split("-");
-      const category = arr[0];
-      const filterItem = arr[1];
-      switch (category) {
-        case "product":
-          if (filters.productFilters.length <= 1) {
-            filters.productFilters.push(filterItem);
-          }
+      console.log("id", id);
+      const label = document
+        .querySelector(`label[for="${id}"]`)
+        .textContent.trim();
 
-          break;
-        case "brand":
-          filters.brandFilters.push(filterItem);
-          break;
-        case "price":
-          filters.priceRangeFilters.push(filterItem);
-          break;
-        case "listType":
-          filters.listingTypeFilters.push(filterItem);
-          break;
+      if (id.startsWith("product-")) {
+        // for single selection replace existing value;
+        filters.productFilters = [label];
+        // Uncheck other input boxes
+        filterSectionsInputs.forEach((otherInput) => {
+          if (otherInput.id.startsWith("product-") && otherInput !== input) {
+            otherInput.checked = false;
+          }
+        });
       }
     }
     console.log("product array", filters);
