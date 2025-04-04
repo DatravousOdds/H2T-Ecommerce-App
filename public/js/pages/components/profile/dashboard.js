@@ -7,7 +7,7 @@ import {
   collection,
   getDocs,
   query,
-  where
+  where,
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -752,14 +752,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts)
+        getDocs(productDrafts),
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data()
+        ...trade.data(),
       });
     });
 
@@ -767,7 +767,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -775,7 +775,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -849,16 +849,17 @@ async function loadProducts(userData) {
 
 const filters = {
   productFilters: [], // only allowed filter at time
-  brandFilters: [], // mutiple filters
-  priceRangeFilters: [], // mutiple filters
-  listingTypeFilters: [] // mutiple filters
+  brandFilters: [], // multiple filters
+  priceRangeFilters: [], // multiple filters
+  listingTypeFilters: [], // multiple filters
 };
 
 const filterSectionsInputs = document.querySelectorAll(
   ".filter-section .filter-group input"
 );
+const clearAllFiltersBtn = document.querySelector(".filter-actions .secondary");
 
-// set event listener on each iput
+// set event listener on each input
 filterSectionsInputs.forEach((input) => {
   input.addEventListener("click", () => {
     if (input.checked) {
@@ -877,11 +878,37 @@ filterSectionsInputs.forEach((input) => {
             otherInput.checked = false;
           }
         });
+      } else if (id.startsWith("brand-")) {
+        filters.brandFilters.push(label);
+      } else if (id.startsWith("price-")) {
+        filters.priceRangeFilters.push(label);
+      } else if (id.startsWith("listType-")) {
+        filters.listingTypeFilters.push(label);
       }
+    } else {
+      // logic to uncheck boxes
+      
     }
     console.log("product array", filters);
   });
 });
+
+clearAllFiltersBtn.addEventListener("click", () => {
+  clearFilter(filterSectionsInputs, filters);
+
+  console.log("product array", filters);
+});
+
+function clearFilter(filterInputs, filters) {
+  // uncheck the boxes
+  filterInputs.forEach((input) => (input.checked = false));
+  for (const key in filters) {
+    if (filters.hasOwnProperty(key)) {
+      // Clear each array
+      filters[key] = [];
+    }
+  }
+}
 
 console.log("filter Sections: ", filterSections);
 
