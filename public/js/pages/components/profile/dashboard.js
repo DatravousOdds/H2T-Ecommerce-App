@@ -7,7 +7,7 @@ import {
   collection,
   getDocs,
   query,
-  where,
+  where
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -752,14 +752,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts),
+        getDocs(productDrafts)
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data(),
+        ...trade.data()
       });
     });
 
@@ -767,7 +767,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -775,7 +775,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -851,24 +851,23 @@ const filters = {
   productFilters: [], // only allowed filter at time
   brandFilters: [], // multiple filters
   priceRangeFilters: [], // multiple filters
-  listingTypeFilters: [], // multiple filters
+  listingTypeFilters: [] // multiple filters
 };
 
 const filterSectionsInputs = document.querySelectorAll(
   ".filter-section .filter-group input"
 );
 const clearAllFiltersBtn = document.querySelector(".filter-actions .secondary");
+const applyFilters = document.querySelector(".filter-actions .primary");
 
 // set event listener on each input
 filterSectionsInputs.forEach((input) => {
   input.addEventListener("click", () => {
+    const id = input.id;
+    const label = document
+      .querySelector(`label[for="${id}"]`)
+      .textContent.trim();
     if (input.checked) {
-      const id = input.id;
-      console.log("id", id);
-      const label = document
-        .querySelector(`label[for="${id}"]`)
-        .textContent.trim();
-
       if (id.startsWith("product-")) {
         // for single selection replace existing value;
         filters.productFilters = [label];
@@ -886,8 +885,24 @@ filterSectionsInputs.forEach((input) => {
         filters.listingTypeFilters.push(label);
       }
     } else {
-      // logic to uncheck boxes
-      
+      // when boxes are unchecked
+      if (id.startsWith("product-")) {
+        filters.productFilters = filters.productFilters.filter(
+          (item) => item !== label
+        );
+      } else if (id.startsWith("brand-")) {
+        filters.brandFilters = filters.brandFilters.filter(
+          (item) => item !== label
+        );
+      } else if (id.startsWith("price-")) {
+        filters.priceRangeFilters = filters.priceRangeFilters.filter(
+          (item) => item !== label
+        );
+      } else if (id.startsWith("listType-")) {
+        filters.listingTypeFilters = filters.listingTypeFilters.filter(
+          (item) => item !== label
+        );
+      }
     }
     console.log("product array", filters);
   });
@@ -897,6 +912,60 @@ clearAllFiltersBtn.addEventListener("click", () => {
   clearFilter(filterSectionsInputs, filters);
 
   console.log("product array", filters);
+});
+
+applyFilters.addEventListener("click", () => {
+  // Array to contains all item
+  const filteredProducts = [];
+
+  // Create reference
+  const productsCollectionRef = collection(
+    db,
+    "userProfiles",
+    userData.email,
+    "products"
+  );
+
+  // if filter has item, then filter
+  if (filters.productFilters.length > 0) {
+    filteredProducts.push(
+      where("productType", "==", filters.productFilters[0])
+    );
+  }
+
+  if (filters.brandFilters.length > 0) {
+    filteredProducts.push(where("brand", "in", filters.brandFilters)); // Use "in", keyword because array has mulitple values
+  }
+
+  if (filters.priceRangeFilters.length > 0) {
+    const maxPrice = Number.MAX_SAFE_INTEGER;
+    const minPrice = 0;
+    // check ranges
+    if (filters.priceRangeFilters.includes("$25-$50")) {
+      minPrice = 25;
+      maxPrice = 50;
+    }
+
+    if (filters.priceRangeFilters.includes("$25-$50")) {
+      minPrice = 25;
+      maxPrice = 50;
+    }
+
+    if (filters.priceRangeFilters.includes("$25-$50")) {
+      minPrice = 25;
+      maxPrice = 50;
+    }
+  }
+
+  if (filters.listingTypeFilters.length > 0) {
+    filteredProducts.push(
+      where("listingType", "in", filters.listingTypeFilters)
+    );
+  }
+
+  // build query
+
+  console.log("products: ", productsCollectionRef);
 });
 
 function clearFilter(filterInputs, filters) {
