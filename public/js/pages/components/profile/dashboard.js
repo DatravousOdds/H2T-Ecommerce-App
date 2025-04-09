@@ -8,7 +8,7 @@ import {
   getDocs,
   query,
   where,
-  orderBy,
+  orderBy
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -738,7 +738,7 @@ const ordersTableTemplate = (product) => `
   </div>
 </td>`;
 
-console.log("dashboard:", userData);
+// console.log("dashboard:", userData);
 
 loadOverviewTabInfo(userData);
 
@@ -800,14 +800,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts),
+        getDocs(productDrafts)
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data(),
+        ...trade.data()
       });
     });
 
@@ -815,7 +815,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -823,7 +823,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -847,13 +847,13 @@ async function loadProducts(userData) {
 
     const sellToUsRequests = sellToUsProducts.length;
 
-    const totalSales =
-      // load all products
-      populateTable(
-        productDraftsArray,
-        "draft-products-table",
-        daftProductsTableTemplate
-      );
+    const totalSales = 0;
+    // load all products
+    populateTable(
+      productDraftsArray,
+      "draft-products-table",
+      daftProductsTableTemplate
+    );
 
     populateTable(
       outOfStockProducts,
@@ -899,16 +899,15 @@ const filters = {
   productFilters: [], // only allowed filter at time
   brandFilters: [], // multiple filters
   priceRangeFilters: [], // multiple filters
-  listingTypeFilters: [], // multiple filters
+  listingTypeFilters: [] // multiple filters
 };
-
 const filterSectionsInputs = document.querySelectorAll(
   ".filter-section .filter-group input"
 );
 const clearAllFiltersBtn = document.querySelector(".filter-actions .secondary");
 const applyFilters = document.querySelector(".filter-actions .primary");
 
-// set event listener on each input
+// Event Listeners
 filterSectionsInputs.forEach((input) => {
   input.addEventListener("click", () => {
     const id = input.id;
@@ -1032,11 +1031,28 @@ applyFilters.addEventListener("click", async function () {
   console.log("filterSnapshot: ", filterSnapshot);
 
   const products = [];
-  filterSnapshot.forEach((doc) => console.log("each product: ", doc));
+  filterSnapshot.forEach((doc) => {
+    products.push({
+      id: doc.id,
+      ...doc.data()
+    });
+  });
+
+  // populate the table
+  populateTable(products, "all-products-table", allProductsTableTemplate);
 
   console.log("filter products: ", products);
 });
 
+// Search bar functionality
+const search = document.getElementById("product-search");
+
+// Event Listeners
+search.addEventListener("input", (e) =>
+  console.log("searching", e.target.value)
+);
+
+// Helper functions
 function clearFilter(filterInputs, filters) {
   // uncheck the boxes
   filterInputs.forEach((input) => (input.checked = false));
