@@ -7,7 +7,8 @@ import {
   collection,
   getDocs,
   query,
-  where
+  where,
+  orderBy,
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -690,6 +691,53 @@ const sellToUsProductsTableTemplate = (product) => `
         
         `;
 
+const ordersTableTemplate = (product) => `
+<td>
+  <div class="product-info">
+    <div class="product-details">
+      <p class="product-id">Order: #${product.orderNumber}</p>
+    </div>
+  </div>
+</td>
+<td>
+  <div class="date-info">
+    <span class="date">${formatFirebaseDate(product.createAt)}</span>
+  </div>
+</td>
+<td>
+  <div class="customer-info">
+    <span class="customer-name">${product.customerId}</span>
+  </div>
+</td>
+<td>
+  <div class="items-info">
+    <span class="items">${product.items.length}</span>
+  </div>
+</td>
+<td>
+  <div class="total-info">
+    <span class="total">$159.99</span>
+  </div>
+</td>
+<td>
+  <div class="status-info">
+    <span class="status-badge pending">Pending</span>
+  </div>
+</td>
+<td>
+  <div class="payment-info">
+    <span class="payment-method">Credit Card</span>
+    <span class="payment-status">Not Paid</span>
+  </div>
+</td>
+<td>
+  <div class="action-buttons">
+    <button class="action-button view">
+      View Details
+    </button>
+  </div>
+</td>`;
+
 console.log("dashboard:", userData);
 
 loadOverviewTabInfo(userData);
@@ -752,14 +800,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts)
+        getDocs(productDrafts),
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data()
+        ...trade.data(),
       });
     });
 
@@ -767,7 +815,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -775,7 +823,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -851,7 +899,7 @@ const filters = {
   productFilters: [], // only allowed filter at time
   brandFilters: [], // multiple filters
   priceRangeFilters: [], // multiple filters
-  listingTypeFilters: [] // multiple filters
+  listingTypeFilters: [], // multiple filters
 };
 
 const filterSectionsInputs = document.querySelectorAll(
@@ -914,7 +962,7 @@ clearAllFiltersBtn.addEventListener("click", () => {
   console.log("product array", filters);
 });
 
-applyFilters.addEventListener("click", () => {
+applyFilters.addEventListener("click", async function () {
   // Array to contains all item
   const filteredProducts = [];
 
@@ -929,43 +977,64 @@ applyFilters.addEventListener("click", () => {
   // if filter has item, then filter
   if (filters.productFilters.length > 0) {
     filteredProducts.push(
-      where("productType", "==", filters.productFilters[0])
+      where("basicInfo.productType", "==", filters.productFilters[0])
     );
   }
 
   if (filters.brandFilters.length > 0) {
-    filteredProducts.push(where("brand", "in", filters.brandFilters)); // Use "in", keyword because array has mulitple values
+    filteredProducts.push(where("basicInfo.brand", "in", filters.brandFilters)); // Use "in", keyword because array has mulitple values
   }
 
   if (filters.priceRangeFilters.length > 0) {
-    const maxPrice = Number.MAX_SAFE_INTEGER;
-    const minPrice = 0;
+    let maxPrice = 0;
+    let minPrice = Number.MAX_SAFE_INTEGER;
     // check ranges
     if (filters.priceRangeFilters.includes("$25-$50")) {
-      minPrice = 25;
-      maxPrice = 50;
+      minPrice = Math.min(minPrice, 25);
+      maxPrice = Math.max(maxPrice, 50);
     }
 
-    if (filters.priceRangeFilters.includes("$25-$50")) {
-      minPrice = 25;
-      maxPrice = 50;
+    if (filters.priceRangeFilters.includes("$50-$100")) {
+      minPrice = Math.min(minPrice, 50);
+      maxPrice = Math.max(maxPrice, 100);
     }
 
-    if (filters.priceRangeFilters.includes("$25-$50")) {
-      minPrice = 25;
-      maxPrice = 50;
+    if (filters.priceRangeFilters.includes("$100-$150")) {
+      minPrice = Math.min(minPrice, 100);
+      maxPrice = Math.max(maxPrice, 150);
     }
+
+    if (filters.priceRangeFilters.includes("Over $150")) {
+      minPrice = Math.min(minPrice, 150);
+      maxPrice = Number.MAX_SAFE_INTEGER;
+    }
+
+    console.log("min", minPrice);
+    console.log("max", maxPrice);
+
+    filteredProducts.push(where("pricing.sellPrice", "<=", maxPrice));
+    filteredProducts.push(where("pricing.sellPrice", ">=", minPrice));
   }
 
   if (filters.listingTypeFilters.length > 0) {
-    filteredProducts.push(
-      where("listingType", "in", filters.listingTypeFilters)
-    );
+    filteredProducts.push(where("status", "in", filters.listingTypeFilters));
   }
 
   // build query
+  const filterQuery = query(
+    productsCollectionRef,
+    ...filteredProducts,
+    orderBy("analytics.createdAt", "desc")
+  );
 
-  console.log("products: ", productsCollectionRef);
+  const filterSnapshot = await getDocs(filterQuery);
+
+  console.log("filterSnapshot: ", filterSnapshot);
+
+  const products = [];
+  filterSnapshot.forEach((doc) => console.log("each product: ", doc));
+
+  console.log("filter products: ", products);
 });
 
 function clearFilter(filterInputs, filters) {
@@ -978,8 +1047,6 @@ function clearFilter(filterInputs, filters) {
     }
   }
 }
-
-console.log("filter Sections: ", filterSections);
 
 function populateTable(products, tabId, rowTemplate) {
   const table = document.getElementById(tabId);
