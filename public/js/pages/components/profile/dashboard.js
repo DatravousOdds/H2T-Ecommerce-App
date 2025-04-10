@@ -1048,9 +1048,12 @@ applyFilters.addEventListener("click", async function () {
 const search = document.getElementById("product-search");
 
 // Event Listeners
-search.addEventListener("input", (e) =>
-  console.log("searching", e.target.value)
-);
+search.addEventListener("input", (e) => {
+  const input = e.target.value;
+  if (input.toLowerCase().includes(1)) {
+    console.log();
+  }
+});
 
 // Helper functions
 function clearFilter(filterInputs, filters) {
