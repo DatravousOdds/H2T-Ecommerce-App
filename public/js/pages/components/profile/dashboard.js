@@ -8,7 +8,7 @@ import {
   getDocs,
   query,
   where,
-  orderBy
+  orderBy,
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -800,14 +800,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts)
+        getDocs(productDrafts),
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data()
+        ...trade.data(),
       });
     });
 
@@ -815,7 +815,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -823,7 +823,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -899,7 +899,7 @@ const filters = {
   productFilters: [], // only allowed filter at time
   brandFilters: [], // multiple filters
   priceRangeFilters: [], // multiple filters
-  listingTypeFilters: [] // multiple filters
+  listingTypeFilters: [], // multiple filters
 };
 const filterSectionsInputs = document.querySelectorAll(
   ".filter-section .filter-group input"
@@ -1034,7 +1034,7 @@ applyFilters.addEventListener("click", async function () {
   filterSnapshot.forEach((doc) => {
     products.push({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     });
   });
 
@@ -1048,10 +1048,35 @@ applyFilters.addEventListener("click", async function () {
 const search = document.getElementById("product-search");
 
 // Event Listeners
-search.addEventListener("input", (e) => {
-  const input = e.target.value;
-  if (input.toLowerCase().includes(1)) {
-    console.log();
+search.addEventListener("input", async (e) => {
+  const input = e.target.value; // take in user input value
+  const inputString = input.toLowerCase();
+  // Check the first letter of input string
+  try {
+    const productsCollectionRef = collection(
+      db,
+      "userProfiles",
+      userData.email,
+      "products"
+    );
+
+    // returns a promise (Should be awaited)
+    const productsSnapshot = await getDocs(productsCollectionRef);
+
+    // console.log("products: ", productsSnapshot);
+
+    // loop through docs
+    productsSnapshot.forEach((doc) => {
+      const productData = doc.data();
+      const name = productData.basicInfo.name.toLowerCase();
+      if (name.startsWith(inputString)) {
+        console.log("product name: ", name);
+      } else {
+        console.log("cannot find: ", name);
+      }
+    });
+  } catch (error) {
+    console.error("Error occurred when trying to fetch collection " + error);
   }
 });
 
