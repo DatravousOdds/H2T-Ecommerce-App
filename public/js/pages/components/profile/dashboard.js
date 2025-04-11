@@ -1063,20 +1063,28 @@ search.addEventListener("input", async (e) => {
     // returns a promise (Should be awaited)
     const productsSnapshot = await getDocs(productsCollectionRef);
 
-    // console.log("products: ", productsSnapshot);
+    const searchProducts = [];
 
     // loop through docs
     productsSnapshot.forEach((doc) => {
       const productData = doc.data();
       const name = productData.basicInfo.name.toLowerCase();
       if (name.startsWith(inputString)) {
-        console.log("product name: ", name);
-      } else {
-        console.log("cannot find: ", name);
+        searchProducts.push({
+          id: doc.id,
+          ...productData,
+        });
       }
     });
+
+    // populate table
+    populateTable(
+      searchProducts,
+      "all-products-table",
+      allProductsTableTemplate
+    );
   } catch (error) {
-    console.error("Error occurred when trying to fetch collection " + error);
+    console.error(`Error occurred when trying to fetch collection ${error}`);
   }
 });
 
