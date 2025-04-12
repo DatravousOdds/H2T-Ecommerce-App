@@ -1088,6 +1088,10 @@ search.addEventListener("input", async (e) => {
   }
 });
 
+
+// Actions menu functionality
+
+
 // Helper functions
 function clearFilter(filterInputs, filters) {
   // uncheck the boxes
