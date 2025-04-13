@@ -4484,6 +4484,50 @@ h6 {
   transition: all 0.3s ease-in-out;
 }
 
+/* Product Actions Menu */
+.actions-menu {
+  /* border: 1px solid #000; */
+  width: 100%;
+  max-width: 195px;
+  border-radius: 4px;
+  /* padding: 1rem; */
+  box-shadow: 0 0px 1px 0px #000;
+}
+
+.actions-menu ul {
+  padding: 0;
+}
+
+.actions-menu ul li {
+  list-style: none;
+  gap: 2rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.actions-icon {
+  color: #707070;
+  font-size: 6px;
+}
+
+.actions-menu ul li:hover {
+  background-color: #eeeeee;
+}
+
+.actions-menu .action-divider {
+  margin-bottom: 1rem;
+  height: 1px;
+  background: #707070;
+  width: 100%;
+}
+
+.actions-menu ul li > div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 /* Form Styles */
 #add-card {
   gap: 1rem;
