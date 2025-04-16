@@ -8,7 +8,7 @@ import {
   getDocs,
   query,
   where,
-  orderBy,
+  orderBy
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -433,19 +433,94 @@ const allProductsTableTemplate = (product) => `
               <td class="trade-value">$${product.pricing.tradeValue}</td>
               <td class="sell-to-us-price">$${product.pricing.sellToUsValue}</td>
               <td>
-                <button class="action-button">
-                    <svg
-                    class="action-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    >
-                    <circle cx="12" cy="12" r="1" />
-                    <circle cx="12" cy="5" r="1" />
-                    <circle cx="12" cy="19" r="1" />
-                    </svg>
-                </button>
+                <div class="action-wrapper">
+                  <button class="action-button">
+                      <svg
+                      class="action-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      >
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="12" cy="5" r="1" />
+                      <circle cx="12" cy="19" r="1" />
+                      </svg>
+                  </button>
+
+                  <!-- Actions menu -->
+
+
+                  <div class="actions-menu">
+                      <ul class="">
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
+                            <div class="actions-option">Edit Listing</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            </div>
+                            <div class="actions-option">Promote Listing</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-clone"></i>
+                            </div>
+                            <div class="actions-option">Duplicate Listing</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-plus"></i>
+                            </div>
+                            <div class="actions-option">Update Stock</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-dollar-sign"></i>
+                            </div>
+                            <div class="actions-option">Adjust Price</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div class="actions-option">View Analytics</div>
+                          </div>
+                        </li>
+                        <div class="action-divider"></div>
+                        <li>
+                          <div>
+                            <div class="action-icon">
+                              <i class="fa-regular fa-rectangle-xmark"></i>
+                            </div>
+                            <div class="action-option">Mark as Sold Out</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="action-icon">
+                              <i class="fa-regular fa-trash-can"></i>
+                            </div>
+                            <div class="action-option">Delete Listing</div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                </div>
               </td>
       `;
 
@@ -800,14 +875,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts),
+        getDocs(productDrafts)
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data(),
+        ...trade.data()
       });
     });
 
@@ -815,7 +890,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -823,7 +898,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       });
     });
 
@@ -899,7 +974,7 @@ const filters = {
   productFilters: [], // only allowed filter at time
   brandFilters: [], // multiple filters
   priceRangeFilters: [], // multiple filters
-  listingTypeFilters: [], // multiple filters
+  listingTypeFilters: [] // multiple filters
 };
 const filterSectionsInputs = document.querySelectorAll(
   ".filter-section .filter-group input"
@@ -1034,7 +1109,7 @@ applyFilters.addEventListener("click", async function () {
   filterSnapshot.forEach((doc) => {
     products.push({
       id: doc.id,
-      ...doc.data(),
+      ...doc.data()
     });
   });
 
@@ -1072,7 +1147,7 @@ search.addEventListener("input", async (e) => {
       if (name.startsWith(inputString)) {
         searchProducts.push({
           id: doc.id,
-          ...productData,
+          ...productData
         });
       }
     });
@@ -1088,9 +1163,13 @@ search.addEventListener("input", async (e) => {
   }
 });
 
-
 // Actions menu functionality
+const productActionBtn = document.querySelector(".action-button");
 
+// Event Listeners
+productActionBtn.addEventListener("click", () => {
+  document.querySelector(".actions-menu").classList.add("active");
+});
 
 // Helper functions
 function clearFilter(filterInputs, filters) {

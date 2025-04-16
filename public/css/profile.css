@@ -4485,17 +4485,39 @@ h6 {
 }
 
 /* Product Actions Menu */
+
 .actions-menu {
-  /* border: 1px solid #000; */
-  width: 100%;
-  max-width: 195px;
-  border-radius: 4px;
-  /* padding: 1rem; */
-  box-shadow: 0 0px 1px 0px #000;
+  --menu-width: 195px;
+  --text-color: #333;
+  --icon-color: #707070;
+  --divider-color: #707070;
+  --hover-bg: #f5f5f5;
+  --transition-speed: 0.2s;
+
+  position: absolute;
+  z-index: 100;
+  right: 3rem;
+  top: 65%;
+  margin-top: 5px;
+  width: var(--menu-width);
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  display: none;
 }
 
+.actions-menu.active {
+  display: block;
+}
+
+.product-row td:last-child {
+  position: relative;
+}
+
+/* List reset and spacing */
 .actions-menu ul {
-  padding: 0;
+  padding: 5px 0;
+  margin: 0;
 }
 
 .actions-menu ul li {
@@ -4503,23 +4525,29 @@ h6 {
   gap: 2rem;
   margin-bottom: 0.5rem;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  transition: background-color var((var(--transition-speed)));
 }
 
 .actions-icon {
-  color: #707070;
-  font-size: 6px;
+  color: var(--icon-color);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .actions-menu ul li:hover {
-  background-color: #eeeeee;
+  background-color: var(--hover-bg);
 }
 
 .actions-menu .action-divider {
-  margin-bottom: 1rem;
+  margin: 0.5rem 0;
   height: 1px;
-  background: #707070;
+  background: var(--divider-color);
   width: 100%;
+  opacity: 0.3;
 }
 
 .actions-menu ul li > div {
@@ -7489,12 +7517,14 @@ details h3 {
 .product-table-container {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table-responsive {
   overflow-x: auto;
   background-color: var(--bg-white);
   border-radius: 0.5rem;
+  min-height: 0.01%;
   box-shadow: var(--shadow);
 }
 
