@@ -2451,6 +2451,572 @@
                     </table>
                   </div>
                 </div>
+
+                <!-- Modals Container -->
+                <div class="modals-container">
+                  <!-- Edit Modal -->
+                  <div id="editModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="modal-title">Edit Product</h2>
+                        <button class="close-btn">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="product-info-container">
+                          <div class="product-image-container">
+                            <img src="" alt="" class="product-image" />
+                          </div>
+                          <div class="product-info">
+                            <div class="product-size">US 10 Shoes</div>
+                            <div class="product-sku">SKU: SH-10-42</div>
+                            <div class="product-status">Active</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <ul class="tabs">
+                        <li class="tab" data-tab="basic-info">Basic Info</li>
+                        <li class="tab" data-tab="inventory">Inventory</li>
+                        <li class="tab" data-tab="pricing">Pricing</li>
+                        <li class="tab" data-tab="images">Images</li>
+                      </ul>
+
+                      <div id="basic-info" class="tab-content">
+                        <div class="form-group">
+                          <label for="product-name">Product Name</label>
+                          <input type="text" id="product-name" />
+                        </div>
+
+                        <div class="form-group">
+                          <label for="product-condition">Condition</label>
+                          <select
+                            name="product-condition"
+                            id="product-condition"
+                          >
+                            <option value="new-with-tags">New with Tags</option>
+                            <option value="pre-owned">Preowned</option>
+                            <option value="used">Used</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="product-size">Size</label>
+                          <input
+                            type="text"
+                            id="product-size"
+                            name="product-size"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label for="product-category">Category</label>
+                          <input
+                            type="text"
+                            id="product-category"
+                            name="product-category"
+                          />
+                        </div>
+                      </div>
+
+                      <div id="inventory" class="tab-content">
+                        <div class="form-group">
+                          <label for="product-quantity">Quantity</label>
+                          <input
+                            type="number"
+                            id="product-quantity"
+                            name="product-quantity"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="product-category">SKU</label>
+                          <input
+                            type="text"
+                            id="product-sku-input"
+                            name="product-sku-input"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="product-category">In Stock</label>
+                          <input
+                            type="checkbox"
+                            id="product-in-stock"
+                            name="product-in-stock"
+                          />
+                        </div>
+                      </div>
+
+                      <div id="pricing" class="tab-content">
+                        <div class="form-group">
+                          <label for="product-retail-price">Retail Price</label>
+                          <input
+                            type="number"
+                            id="product-retail-price"
+                            name="product-retail-price"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="product-category"
+                            >Selling Price ($)</label
+                          >
+                          <input
+                            type="number"
+                            id="product-sell-price"
+                            name="product-sell-price"
+                          />
+                        </div>
+                      </div>
+
+                      <div id="images" class="tab-content">
+                        <div class="form-group">
+                          <label for="product-image-url">Image URL</label>
+                          <input
+                            type="text"
+                            id="product-image-url"
+                            name="product-image-url"
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="product-image-alt">Image Alt Text</label>
+                          <input
+                            type="text"
+                            id="product-image-alt"
+                            name="product-image-alt"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary close-btn">
+                          Cancel
+                        </button>
+                        <button class="btn button-primary save-edit">
+                          Save Changes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Status Modal -->
+                  <div id="statusModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="modal-title">Change Status</h2>
+                        <button class="close-btn">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="product-info-container">
+                          <div class="product-image-container">
+                            <img src="" alt="" class="staus-product-image" />
+                          </div>
+                          <div class="product-info">
+                            <div class="product-status">
+                              Current Status:
+                              <span class="status-badge status-active"></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="product-name">New Status</label>
+                          <select id="product-status" name="product-status">
+                            <option value="active">Active</option>
+                            <option value="for-trade">For Trade</option>
+                            <option value="paused">Paused</option>
+                            <option value="draft">Draft</option>
+                            <option value="out-of-stock">Out of Stock</option>
+                            <option value="pending">Pending Trade</option>
+                            <option value="sold">Sold</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="stat-notes">Notes (Optional) </label>
+                          <textarea
+                            name="status-notes"
+                            id="status-notes"
+                          ></textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button class="btn btn-secondary close-modal">
+                            Cancel
+                          </button>
+                          <button class="btn button-primary save-status">
+                            Update Status
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Promote/Collections Modal -->
+                  <div id="promoteModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h3 class="modal-title">Add to Collections</h3>
+                        <button class="close-btn">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="product-info-container">
+                          <div class="product-image-container">
+                            <img
+                              src=""
+                              alt=""
+                              class="product-image"
+                              id="promote-product-image"
+                            />
+                          </div>
+                          <div class="product-info">
+                            <div
+                              id="promote-product-name"
+                              class="promote-product-name"
+                            >
+                              US 10 Shoes
+                            </div>
+                            <div
+                              id="promote-product-sku"
+                              class="promote-product-sku"
+                            >
+                              SKU: SH-10-42
+                            </div>
+                          </div>
+
+                          <p class="collection-info">
+                            Add this product to collections for better
+                            organization and featuring on your store
+                          </p>
+
+                          <div class="collection-list">
+                            <div class="collection-item">
+                              <input
+                                type="checkbox"
+                                id="collection-featured"
+                                name="collection-featured"
+                              />
+                              <label for="collection-featured"
+                                >Featured Products</label
+                              >
+                            </div>
+                            <div class="collection-item">
+                              <input
+                                type="checkbox"
+                                id="collection-best-sellers"
+                                name="collection-best-sellers"
+                              />
+                              <label for="collection-best-sellers"
+                                >Best Sellers</label
+                              >
+                            </div>
+                            <div class="collection-item">
+                              <input
+                                type="checkbox"
+                                id="collection-new"
+                                name="collection-new"
+                              />
+                              <label for="collection-new">New Arrivals</label>
+                            </div>
+                          </div>
+
+                          <div class="collection-form">
+                            <div class="form-group">
+                              <label for="new-collection"
+                                >Create New Collection</label
+                              >
+                              <div class="input-group">
+                                <textarea
+                                  name="new-collection"
+                                  id="new-collection"
+                                  placeholder="New collection name"
+                                ></textarea>
+                                <button
+                                  class="btn btn-secondary"
+                                  id="add-collection-btn"
+                                >
+                                  Add
+                                </button>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button class="btn btn-secondary close-modal">
+                                Cancel
+                              </button>
+                              <button class="btn btn-primary save-collection">
+                                Save
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Accept Store Offer -->
+                  <div id="acceptModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="modal-title">Accept Offer</h2>
+                        <button class="close-btn">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="modal-product-info-container">
+                          <div class="product-image-container">
+                            <img src="" alt="" id="accept-product-image" />
+                          </div>
+                          <div class="product-info">
+                            <div class="sell-product-name">Nike Air Max</div>
+                            <div class="sell-product-category">
+                              Athletic Shoes
+                            </div>
+                            <div class="offer-details">
+                              <div class="offer-row">
+                                <span class="offer-label"
+                                  >Your Item Condition:</span
+                                >
+                                <span class="offer-value">9/10</span>
+                              </div>
+                            </div>
+                            <div class="offer-row">
+                              <span class="offer-label">Market Value</span>
+                              <span class="offer-value">$200</span>
+                            </div>
+                            <div class="offer-row highlight">
+                              <span class="offer-label">Their Offer:</span>
+                              <span class="offer-value">$170</span>
+                            </div>
+
+                            <div class="confirmation-message">
+                              <p>
+                                You are about to accept an offer of
+                                <strong>$170 cash</strong> or
+                                <strong>$180 store credit</strong> for your Nike
+                                Air Max.
+                              </p>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="payment-preference"
+                                >How would you like to get paid?</label
+                              >
+                              <select
+                                name="payment-preference"
+                                id="payment-preference"
+                              >
+                                <option value="store-credit">
+                                  Store Credit ($180)
+                                </option>
+                                <option value="cash">
+                                  Cash/Bank Transfer ($170)
+                                </option>
+                              </select>
+                            </div>
+
+                            <div class="modal-footer">
+                              <button class="btn btn-secondary close-modal">
+                                Cancel
+                              </button>
+                              <button class="btn btn-primary confirm-accept">
+                                Accept Offer
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Reject Store Offer -->
+                  <div id="rejectModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="modal-title">Decline Offer</h2>
+                        <button class="close-btn">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="modal-product-info-container">
+                          <div class="product-image-container">
+                            <img src="" alt="" id="accept-product-image" />
+                          </div>
+                          <div class="product-info">
+                            <div class="sell-product-name">Nike Air Max</div>
+                            <div class="sell-product-category">
+                              Athletic Shoes
+                            </div>
+                            <div class="offer-details">
+                              <div class="offer-row">
+                                <span class="offer-label"
+                                  >Your Item Condition:</span
+                                >
+                                <span class="offer-value">9/10</span>
+                              </div>
+                            </div>
+                            <div class="offer-row">
+                              <span class="offer-label">Their Offer:</span>
+                              <span class="offer-value">$200</span>
+                            </div>
+                            <div class="offer-row">
+                              <span class="offer-label">Store Credit:</span>
+                              <span class="offer-value">$170</span>
+                            </div>
+
+                            <div class="confirmation-message warning">
+                              <p>
+                                You are about to decline the offer for your
+                                <strong>Nike Air Max</strong>
+                              </p>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="rejection-reason"
+                                >Reason for Declining</label
+                              >
+                              <select
+                                name="rejection-reason"
+                                id="rejection-reason"
+                              >
+                                <option value="price-too-low">
+                                  Offer price is too low
+                                </option>
+                                <option value="changed-mind">
+                                  Changed my mind
+                                </option>
+                                <option value="sold-elsewhere">
+                                  Sold elsewhere
+                                </option>
+                                <option value="other">Other reason</option>
+                              </select>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="minimum-acceptable"
+                                >Minimum Acceptable Offer (Optional)</label
+                              >
+                              <div class="input-group">
+                                <span class="currency-symbol">$</span>
+                                <input
+                                  type="number"
+                                  id="minimum-acceptable"
+                                  name="minimum-acceptable"
+                                />
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="reject-notes"
+                                >Additional Comments</label
+                              >
+                              <textarea
+                                name="reject-notes"
+                                id="reject-notes"
+                                placeholder="Tell us more about why you're declining..."
+                              ></textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                              <button class="btn btn-secondary close-modal">
+                                Cancel
+                              </button>
+                              <button class="btn btn-primary confirm-accept">
+                                Accept Offer
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Trade Details -->
+                  <div id="tradeModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="modal-title">Trade Details</h2>
+                        <button class="close-button">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="trade-status-message">
+                          <div class="trade-status">
+                            <p><strong>Status:</strong>Pending Review</p>
+                          </div>
+                          <div class="trade-submitted-date">
+                            <p><strong>Submitted:</strong></p>
+                          </div>
+                        </div>
+                        <div class="trade-info">
+                          <div class="trade-balance">
+                            <p>
+                              <strong>Trade Balance:</strong>
+                              <span class="store-credit-positive"
+                                >+$50.00 Store Credit</span
+                              >
+                            </p>
+                          </div>
+                          <div class="trade-id">
+                            <p><strong>Trade ID:</strong>TR-2025-0329</p>
+                          </div>
+                        </div>
+                        <div class="item-group">
+                          <label for="trading-item">You're Trading In:</label>
+                          <div class="trade-item-container">
+                            <div class="your-trade-item">
+                              <div class="your-trade-image">
+                                <img src="" alt="Jordan 1 High" />
+                              </div>
+                              <div class="your-trade-info">
+                                <div class="product-name">
+                                  <strong>Jordan 1 High</strong>
+                                </div>
+                                <div class="product-condition">
+                                  Condition: 9/10
+                                </div>
+                                <div class="product-size">Size: US 11</div>
+                                <div class="product-value">$450</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="item-group">
+                          <label for="request-item">You're Requesting:</label>
+                          <div class="trade-item-container">
+                            <div class="requesting-item">
+                              <div class="requesting-item-image">
+                                <img src="" alt="Yeezy Boost 350" />
+                              </div>
+                              <div class="requesting-item-info">
+                                <div class="product-name">
+                                  <strong>Yeezy Boost 350</strong>
+                                </div>
+                                <div class="product-condition">
+                                  Condition: New
+                                </div>
+                                <div class="product-size">Size: US 10</div>
+                                <div class="product-value">$400</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="modal-footer">
+                          <button class="btn btn-secondary close-modal">
+                            Close
+                          </button>
+                          <button class="btn btn-primary message-trader">
+                            Message
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Message Seller -->
+                  <div id="messageModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="modal-title">Message Trader</h2>
+                        <button class="close-btn">&times;</button>
+                      </div>
+                      <div class="message-info"></div>
+                      <div class="message-txt">
+                        <textarea
+                          name="message-txt"
+                          id="message-txt"
+                          placeholder="Type your message here..."
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Accept Trade -->
+                </div>
               </div>
             </section>
 

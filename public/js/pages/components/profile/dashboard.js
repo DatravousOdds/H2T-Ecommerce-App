@@ -606,6 +606,7 @@ const activeProductsTableTemplate = (product) => `
                   ></path>
                 </svg>
               </button>
+              
               <button
                 class="action-button pause"
                 aria-label="Pause Listing"
@@ -693,6 +694,75 @@ const forTradeProductsTableTemplate = (product) => `
                 <circle cx="12" cy="19" r="1" />
               </svg>
             </button>
+            <div class="actions-menu">
+                      <ul class="">
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
+                            <div class="actions-option">Edit Listing</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                            </div>
+                            <div class="actions-option">Promote Listing</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-clone"></i>
+                            </div>
+                            <div class="actions-option">Duplicate Listing</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-plus"></i>
+                            </div>
+                            <div class="actions-option">Update Stock</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-dollar-sign"></i>
+                            </div>
+                            <div class="actions-option">Adjust Price</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="actions-icon">
+                              <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div class="actions-option">View Analytics</div>
+                          </div>
+                        </li>
+                        <div class="action-divider"></div>
+                        <li>
+                          <div>
+                            <div class="action-icon">
+                              <i class="fa-regular fa-rectangle-xmark"></i>
+                            </div>
+                            <div class="action-option">Mark as Sold Out</div>
+                          </div>
+                        </li>
+                        <li>
+                          <div>
+                            <div class="action-icon">
+                              <i class="fa-regular fa-trash-can"></i>
+                            </div>
+                            <div class="action-option">Delete Listing</div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
           </td>
         
         `;
@@ -1206,4 +1276,35 @@ function populateTable(products, tabId, rowTemplate) {
     tr.innerHTML = rowTemplate(product);
     table.appendChild(tr);
   });
+
+  attachEventListeners(tabId, products);
+}
+
+function attachEventListeners(tableId, products) {
+  if (!tableId) console.log(`${tableId} does not exist`);
+
+  const id = document.getElementById(tableId);
+
+  const editButtons = id.querySelectorAll(".action-button");
+
+  if (!editButtons) {
+    console.log("no edit menu here");
+  } else {
+    editButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const menu = btn.nextElementSibling;
+        if (menu && menu.classList.contains("actions-menu")) {
+          menu.classList.toggle("active");
+          e.stopPropagation();
+        }
+      });
+    });
+
+    document.addEventListener("click", () => {
+      const openMenus = document.querySelectorAll(".actions-menu.active");
+      openMenus.forEach((menu) => {
+        menu.classList.remove("active");
+      });
+    });
+  }
 }
