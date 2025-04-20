@@ -2459,12 +2459,16 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Edit Product</h2>
-                        <button class="close-btn">&times;</button>
+                        <button class="close-button">&times;</button>
                       </div>
                       <div class="modal-body">
                         <div class="product-info-container">
                           <div class="product-image-container">
-                            <img src="" alt="" class="product-image" />
+                            <img
+                              src="./images/HypebeastBG.jpeg"
+                              alt=""
+                              class="product-image"
+                            />
                           </div>
                           <div class="product-info">
                             <div class="product-size">US 10 Shoes</div>
@@ -2472,121 +2476,125 @@
                             <div class="product-status">Active</div>
                           </div>
                         </div>
+                        <ul class="tabs">
+                          <li class="tab" data-tab="basic-info">Basic Info</li>
+                          <li class="tab" data-tab="inventory">Inventory</li>
+                          <li class="tab" data-tab="pricing">Pricing</li>
+                          <li class="tab" data-tab="images">Images</li>
+                        </ul>
+
+                        <div id="basic-info" class="tab-content active">
+                          <div class="form-group">
+                            <label for="product-name">Product Name</label>
+                            <input type="text" id="product-name" />
+                          </div>
+
+                          <div class="form-group">
+                            <label for="product-condition">Condition</label>
+                            <select
+                              name="product-condition"
+                              id="product-condition"
+                            >
+                              <option value="new-with-tags">
+                                New with Tags
+                              </option>
+                              <option value="pre-owned">Preowned</option>
+                              <option value="used">Used</option>
+                            </select>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="product-size">Size</label>
+                            <input
+                              type="text"
+                              id="product-size"
+                              name="product-size"
+                            />
+                          </div>
+
+                          <div class="form-group">
+                            <label for="product-category">Category</label>
+                            <input
+                              type="text"
+                              id="product-category"
+                              name="product-category"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="inventory" class="tab-content">
+                          <div class="form-group">
+                            <label for="product-quantity">Quantity</label>
+                            <input
+                              type="number"
+                              id="product-quantity"
+                              name="product-quantity"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-category">SKU</label>
+                            <input
+                              type="text"
+                              id="product-sku-input"
+                              name="product-sku-input"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-category">In Stock</label>
+                            <input
+                              type="checkbox"
+                              id="product-in-stock"
+                              name="product-in-stock"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="pricing" class="tab-content">
+                          <div class="form-group">
+                            <label for="product-retail-price"
+                              >Retail Price</label
+                            >
+                            <input
+                              type="number"
+                              id="product-retail-price"
+                              name="product-retail-price"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-category"
+                              >Selling Price ($)</label
+                            >
+                            <input
+                              type="number"
+                              id="product-sell-price"
+                              name="product-sell-price"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="images" class="tab-content">
+                          <div class="form-group">
+                            <label for="product-image-url">Image URL</label>
+                            <input
+                              type="text"
+                              id="product-image-url"
+                              name="product-image-url"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-image-alt"
+                              >Image Alt Text</label
+                            >
+                            <input
+                              type="text"
+                              id="product-image-alt"
+                              name="product-image-alt"
+                            />
+                          </div>
+                        </div>
                       </div>
-
-                      <ul class="tabs">
-                        <li class="tab" data-tab="basic-info">Basic Info</li>
-                        <li class="tab" data-tab="inventory">Inventory</li>
-                        <li class="tab" data-tab="pricing">Pricing</li>
-                        <li class="tab" data-tab="images">Images</li>
-                      </ul>
-
-                      <div id="basic-info" class="tab-content">
-                        <div class="form-group">
-                          <label for="product-name">Product Name</label>
-                          <input type="text" id="product-name" />
-                        </div>
-
-                        <div class="form-group">
-                          <label for="product-condition">Condition</label>
-                          <select
-                            name="product-condition"
-                            id="product-condition"
-                          >
-                            <option value="new-with-tags">New with Tags</option>
-                            <option value="pre-owned">Preowned</option>
-                            <option value="used">Used</option>
-                          </select>
-                        </div>
-
-                        <div class="form-group">
-                          <label for="product-size">Size</label>
-                          <input
-                            type="text"
-                            id="product-size"
-                            name="product-size"
-                          />
-                        </div>
-
-                        <div class="form-group">
-                          <label for="product-category">Category</label>
-                          <input
-                            type="text"
-                            id="product-category"
-                            name="product-category"
-                          />
-                        </div>
-                      </div>
-
-                      <div id="inventory" class="tab-content">
-                        <div class="form-group">
-                          <label for="product-quantity">Quantity</label>
-                          <input
-                            type="number"
-                            id="product-quantity"
-                            name="product-quantity"
-                          />
-                        </div>
-                        <div class="form-group">
-                          <label for="product-category">SKU</label>
-                          <input
-                            type="text"
-                            id="product-sku-input"
-                            name="product-sku-input"
-                          />
-                        </div>
-                        <div class="form-group">
-                          <label for="product-category">In Stock</label>
-                          <input
-                            type="checkbox"
-                            id="product-in-stock"
-                            name="product-in-stock"
-                          />
-                        </div>
-                      </div>
-
-                      <div id="pricing" class="tab-content">
-                        <div class="form-group">
-                          <label for="product-retail-price">Retail Price</label>
-                          <input
-                            type="number"
-                            id="product-retail-price"
-                            name="product-retail-price"
-                          />
-                        </div>
-                        <div class="form-group">
-                          <label for="product-category"
-                            >Selling Price ($)</label
-                          >
-                          <input
-                            type="number"
-                            id="product-sell-price"
-                            name="product-sell-price"
-                          />
-                        </div>
-                      </div>
-
-                      <div id="images" class="tab-content">
-                        <div class="form-group">
-                          <label for="product-image-url">Image URL</label>
-                          <input
-                            type="text"
-                            id="product-image-url"
-                            name="product-image-url"
-                          />
-                        </div>
-                        <div class="form-group">
-                          <label for="product-image-alt">Image Alt Text</label>
-                          <input
-                            type="text"
-                            id="product-image-alt"
-                            name="product-image-alt"
-                          />
-                        </div>
-                      </div>
-
                       <div class="modal-footer">
-                        <button class="btn btn-secondary close-btn">
+                        <button class="btn btn-secondary close-button">
                           Cancel
                         </button>
                         <button class="btn button-primary save-edit">
@@ -2600,17 +2608,22 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Change Status</h2>
-                        <button class="close-btn">&times;</button>
+                        <button class="close-button">&times;</button>
                       </div>
                       <div class="modal-body">
                         <div class="product-info-container">
                           <div class="product-image-container">
-                            <img src="" alt="" class="staus-product-image" />
+                            <img
+                              src="./images/HypebeastBG.jpeg"
+                              alt=""
+                              class="product-image"
+                            />
                           </div>
                           <div class="product-info">
-                            <div class="product-status">
+                            <div class="product-name">US 10 Shoes</div>
+                            <div class="product-status-container">
                               Current Status:
-                              <span class="status-badge status-active"></span>
+                              <span class="product-status">Active</span>
                             </div>
                           </div>
                         </div>
@@ -2631,16 +2644,17 @@
                           <textarea
                             name="status-notes"
                             id="status-notes"
+                            placeholder="Add any notes about this status change..."
                           ></textarea>
                         </div>
-                        <div class="modal-footer">
-                          <button class="btn btn-secondary close-modal">
-                            Cancel
-                          </button>
-                          <button class="btn button-primary save-status">
-                            Update Status
-                          </button>
-                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary close-modal">
+                          Cancel
+                        </button>
+                        <button class="btn button-primary save-status">
+                          Update Status
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -2649,13 +2663,13 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h3 class="modal-title">Add to Collections</h3>
-                        <button class="close-btn">&times;</button>
+                        <button class="close-button">&times;</button>
                       </div>
                       <div class="modal-body">
                         <div class="product-info-container">
                           <div class="product-image-container">
                             <img
-                              src=""
+                              src="./images/bapeJacketBG.jpg"
                               alt=""
                               class="product-image"
                               id="promote-product-image"
@@ -2675,86 +2689,89 @@
                               SKU: SH-10-42
                             </div>
                           </div>
+                        </div>
+                        <p class="collection-info">
+                          Add this product to collections for better
+                          organization and featuring on your store
+                        </p>
 
-                          <p class="collection-info">
-                            Add this product to collections for better
-                            organization and featuring on your store
-                          </p>
-
-                          <div class="collection-list">
-                            <div class="collection-item">
-                              <input
-                                type="checkbox"
-                                id="collection-featured"
-                                name="collection-featured"
-                              />
-                              <label for="collection-featured"
-                                >Featured Products</label
-                              >
-                            </div>
-                            <div class="collection-item">
-                              <input
-                                type="checkbox"
-                                id="collection-best-sellers"
-                                name="collection-best-sellers"
-                              />
-                              <label for="collection-best-sellers"
-                                >Best Sellers</label
-                              >
-                            </div>
-                            <div class="collection-item">
-                              <input
-                                type="checkbox"
-                                id="collection-new"
-                                name="collection-new"
-                              />
-                              <label for="collection-new">New Arrivals</label>
-                            </div>
+                        <div class="collection-list">
+                          <div class="collection-item">
+                            <input
+                              type="checkbox"
+                              id="collection-featured"
+                              name="collection-featured"
+                            />
+                            <label for="collection-featured"
+                              >Featured Products</label
+                            >
                           </div>
+                          <div class="collection-item">
+                            <input
+                              type="checkbox"
+                              id="collection-best-sellers"
+                              name="collection-best-sellers"
+                            />
+                            <label for="collection-best-sellers"
+                              >Best Sellers</label
+                            >
+                          </div>
+                          <div class="collection-item">
+                            <input
+                              type="checkbox"
+                              id="collection-new"
+                              name="collection-new"
+                            />
+                            <label for="collection-new">New Arrivals</label>
+                          </div>
+                        </div>
 
-                          <div class="collection-form">
-                            <div class="form-group">
-                              <label for="new-collection"
-                                >Create New Collection</label
+                        <div class="collection-form">
+                          <div class="form-group">
+                            <label for="new-collection"
+                              >Create New Collection</label
+                            >
+                            <div class="input-group">
+                              <input
+                                type="text"
+                                placeholder="Enter new collection name"
+                              />
+                              <button
+                                class="btn btn-secondary"
+                                id="add-collection-btn"
                               >
-                              <div class="input-group">
-                                <textarea
-                                  name="new-collection"
-                                  id="new-collection"
-                                  placeholder="New collection name"
-                                ></textarea>
-                                <button
-                                  class="btn btn-secondary"
-                                  id="add-collection-btn"
-                                >
-                                  Add
-                                </button>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button class="btn btn-secondary close-modal">
-                                Cancel
-                              </button>
-                              <button class="btn btn-primary save-collection">
-                                Save
+                                Add
                               </button>
                             </div>
                           </div>
                         </div>
                       </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary close-modal">
+                          Cancel
+                        </button>
+                        <button class="btn btn-primary save-collection">
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <!-- Accept Store Offer -->
-                  <div id="acceptModal" class="modal">
+                  <div id="acceptModal" class="modal active">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Accept Offer</h2>
-                        <button class="close-btn">&times;</button>
+                        <button class="close-button">&times;</button>
                       </div>
                       <div class="modal-body">
                         <div class="modal-product-info-container">
                           <div class="product-image-container">
-                            <img src="" alt="" id="accept-product-image" />
+                            <img
+                              class="product-image"
+                              src="./images/Jordan 5 Retro Racer(9) 2.jpg"
+                              alt=""
+                              id="accept-product-image"
+                            />
                           </div>
                           <div class="product-info">
                             <div class="sell-product-name">Nike Air Max</div>
@@ -2803,17 +2820,16 @@
                                 </option>
                               </select>
                             </div>
-
-                            <div class="modal-footer">
-                              <button class="btn btn-secondary close-modal">
-                                Cancel
-                              </button>
-                              <button class="btn btn-primary confirm-accept">
-                                Accept Offer
-                              </button>
-                            </div>
                           </div>
                         </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary close-modal">
+                          Cancel
+                        </button>
+                        <button class="btn btn-primary confirm-accept">
+                          Accept Offer
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -2822,12 +2838,12 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Decline Offer</h2>
-                        <button class="close-btn">&times;</button>
+                        <button class="close-button">&times;</button>
                       </div>
                       <div class="modal-body">
                         <div class="modal-product-info-container">
                           <div class="product-image-container">
-                            <img src="" alt="" id="accept-product-image" />
+                            <img src="" alt="" id="reject-product-image" />
                           </div>
                           <div class="product-info">
                             <div class="sell-product-name">Nike Air Max</div>
@@ -3003,19 +3019,60 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Message Trader</h2>
-                        <button class="close-btn">&times;</button>
+                        <button class="close-b">&times;</button>
                       </div>
-                      <div class="message-info"></div>
-                      <div class="message-txt">
-                        <textarea
-                          name="message-txt"
-                          id="message-txt"
-                          placeholder="Type your message here..."
-                        ></textarea>
+                      <div class="modal-body">
+                        <div class="message-info">
+                          <p>
+                            Trade with <strong>User123</strong> . Yeezy Boost
+                            350 | Trade ID: TR-2025
+                          </p>
+                        </div>
+                        <div class="message-txt">
+                          <textarea
+                            name="message-txt"
+                            id="message-txt"
+                            placeholder="Type your message here..."
+                          ></textarea>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary">Cancel</button>
+                        <button class="btn btn-primary send-message">
+                          Send
+                        </button>
                       </div>
                     </div>
                   </div>
                   <!-- Accept Trade -->
+                  <div id="approveModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h2 class="modal-titel">Approve Trade</h2>
+                        <button class="close-button">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="approve-confirmation-message">
+                          <p class="approve-message">
+                            You're about to approve trading your Jordan 1 High
+                            for a Yeezy Boost 350.
+                          </p>
+                          <p>
+                            You will receive
+                            <span class="store-credit-highlight"
+                              >$50.00 store credit as balance</span
+                            >
+                          </p>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-secondary close-modal">
+                          Cancel
+                        </button>
+                        <button class="btn approve-btn">Approve</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
