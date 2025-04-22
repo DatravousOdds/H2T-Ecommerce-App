@@ -6300,6 +6300,8 @@ h6 {
 .confirmation-message {
   background-color: #e7f5e9;
   border-left: 4px solid green;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 /* For collections checkboxs */
