@@ -6494,7 +6494,7 @@ h6 {
 #acceptModal .offer-row.highlight {
   font-weight: 600;
   font-size: 1rem;
-  color: #0056b3;
+  color: red;
 }
 #acceptModal .offer-value,
 .offer-label {
