@@ -6322,6 +6322,42 @@ h6 {
   color: #6c5815;
 }
 
+
+/* Trade Modal Styles */
+
+#tradeModal .trade-content-container {
+  margin-bottom: 1rem;
+  background-color: #F9FAFB;
+  border: none;
+  border-radius: 8px;
+  justify-content: center;
+}
+
+#tradeModal .item-group {
+  display: flex;
+  flex-direction: column;
+}
+
+#tradeModal .trade-item-container {
+  border: 1px solid #dbdbdb;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+#tradeModal .your-trade-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 80px;
+  margin-bottom: 0.5rem;
+  height: 80px;
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+
+
 .modal .product-image {
   object-fit: cover !important;
   width: 100% !important;
