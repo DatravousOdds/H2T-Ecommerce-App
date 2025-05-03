@@ -6304,7 +6304,7 @@ h6 {
   margin-bottom: 1rem;
 }
 
-/* For collections checkboxs */
+/* For collections checkbox */
 .collection-list {
   margin-bottom: 1rem;
 }
@@ -6480,6 +6480,29 @@ h6 {
 .modal-footer .btn-danger:hover {
   background-color: #e53935;
 }
+
+/* Modal Accept Offer */
+#acceptModal .offer-details {
+  margin-bottom: 1rem;
+}
+#acceptModal .offer-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+#acceptModal .offer-row.highlight {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #0056b3;
+}
+#acceptModal .offer-value,
+.offer-label {
+  font-size: 1rem;
+  font-weight: 500;
+}
+#acceptModal .offer-value
+
 
 /* Balance Display */
 
