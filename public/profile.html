@@ -2939,7 +2939,7 @@
                     </div>
                   </div>
                   <!-- Trade Details -->
-                  <div id="tradeModal" class="modal active">
+                  <div id="tradeModal" class="modal">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Trade Details</h2>
@@ -2948,15 +2948,21 @@
                       <div class="modal-body">
                         <div class="trade-content-container">
                           <div class="trade-status-message">
-                            <div class="trade-status">
-                              <p><strong>Status:</strong> Pending Review</p>
+                            <div class="trade-group">
+                              <p><strong>Status:</strong></p>
+                              <p class="trade-status-value pending">
+                                Pending Review
+                              </p>
                             </div>
-                            <div class="trade-submitted-date">
+                            <div class="trade-group">
                               <p><strong>Submitted:</strong></p>
+                              <p class="trade-submitted-date-value">
+                                Jul 1, 2025
+                              </p>
                             </div>
                           </div>
                           <div class="trade-info">
-                            <div class="trade-balance">
+                            <div class="trade-group">
                               <p>
                                 <strong>Trade Balance:</strong>
                                 <span class="store-credit-positive"
@@ -2964,8 +2970,9 @@
                                 >
                               </p>
                             </div>
-                            <div class="trade-id">
-                              <p><strong>Trade ID:</strong> TR-2025-0329</p>
+                            <div class="trade-group">
+                              <p><strong>Trade ID:</strong></p>
+                              <p class="trade-id-value">TR-2025-0329</p>
                             </div>
                           </div>
                         </div>
@@ -2975,7 +2982,10 @@
                           <div class="trade-item-container">
                             <div class="your-trade-item">
                               <div class="your-trade-image">
-                                <img src="" alt="Jordan 1 High" />
+                                <img
+                                  src="/images/Jordan 5 Retro Racer(9) 2.jpg"
+                                  alt="Jordan 1 High"
+                                />
                               </div>
                               <div class="your-trade-info">
                                 <div class="product-name">
@@ -2995,11 +3005,16 @@
                           <div class="trade-item-container">
                             <div class="requesting-item">
                               <div class="requesting-item-image">
-                                <img src="" alt="Yeezy Boost 350" />
+                                <img
+                                  src="/images/Jordan 3 Retro Cardinal Red (11) 2.jpg"
+                                  alt="Yeezy Boost 350"
+                                />
                               </div>
                               <div class="requesting-item-info">
                                 <div class="product-name">
-                                  <strong>Yeezy Boost 350</strong>
+                                  <strong
+                                    >Jordan 3 Retro Cardinal Red (11)</strong
+                                  >
                                 </div>
                                 <div class="product-condition">
                                   Condition: New
@@ -3023,31 +3038,87 @@
                     </div>
                   </div>
                   <!-- Message Seller -->
-                  <div id="messageModal" class="modal">
+                  <div id="messageModal" class="modal active">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Message Trader</h2>
-                        <button class="close-b">&times;</button>
+                        <button class="close-button" type="button">
+                          &times;
+                        </button>
                       </div>
                       <div class="modal-body">
-                        <div class="message-info">
-                          <p>
-                            Trade with <strong>User123</strong> . Yeezy Boost
-                            350 | Trade ID: TR-2025
-                          </p>
+                        <!-- Trade Info Section -->
+                        <div class="trader-info-container">
+                          <div class="trader-profile">
+                            <div class="trader-image-wrapper">
+                              <img
+                                src="/public/images/user-1.png"
+                                alt="User123 profile picture"
+                                class="user-image"
+                              />
+                            </div>
+
+                            <div class="trader-details">
+                              <div class="user-identity">
+                                <h3 class="username">User123</h3>
+                                <div class="user-rating">
+                                  <i class="fa-solid fa-star"></i>
+                                  <span class="rating-rate">4.8</span>
+                                </div>
+                              </div>
+
+                              <div class="response-info">
+                                <p class="response-time">
+                                  Usually responds within 2 hours
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Trade Item Info -->
+                          <div class="trade-item--summary">
+                            <div class="item-details">
+                              <span class="detail-label">Item:</span>
+                              <span class="detail-value">Yeezy Boost 350</span>
+                            </div>
+                            <div class="item-details">
+                              <span class="detail-label">Trade ID:</span>
+                              <span class="detail-value">TR-2025</span>
+                            </div>
+                          </div>
                         </div>
-                        <div class="message-txt">
+
+                        <form class="message-form">
+                          <div class="form-group">
+                            <label
+                              for="message-txt"
+                              class="visually-hidden"
+                            ></label>
+                          </div>
                           <textarea
                             name="message-txt"
                             id="message-txt"
+                            class="message-textarea"
                             placeholder="Type your message here..."
+                            rows="5"
+                            required
                           ></textarea>
-                        </div>
+                        </form>
                       </div>
+
                       <div class="modal-footer">
-                        <button class="btn btn-secondary">Cancel</button>
-                        <button class="btn btn-primary send-message">
-                          Send
+                        <button class="btn btn-secondary" type="button">
+                          Cancel
+                        </button>
+                        <button
+                          class="btn btn-primary send-message"
+                          type="submit"
+                        >
+                          <i
+                            class="fa-solid fa-paper-plane"
+                            aria-hidden="true"
+                          ></i>
+                          Send Message
                         </button>
                       </div>
                     </div>

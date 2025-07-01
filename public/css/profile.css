@@ -3839,6 +3839,20 @@ h6 {
   overflow-y: auto;
 }
 
+.product-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.store-credit-positive {
+  color: #15803d;
+}
+
+.store-credit-negative {
+  color: #b91c1c;
+}
+
 .trade-request-overlay {
   position: fixed;
   inset: 0;
@@ -6259,6 +6273,31 @@ h6 {
   justify-content: center;
 }
 
+/* Message Modal */
+
+#messageModal .close-button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 24px;
+}
+
+#messageModal .close-button:hover {
+  color: #ef4444;
+}
+
+#messageModal .btn-primary {
+  background-color: var(--alert-red-600);
+  color: var(--bg-white);
+}
+
+#messageModal .modal-body {
+  padding: 1rem 1.5rem;
+}
+
+/* Reject Modal */
+
 #rejectModal .product-image-container {
   flex: 0 0 auto;
   width: 100%;
@@ -6322,26 +6361,86 @@ h6 {
   color: #6c5815;
 }
 
-
 /* Trade Modal Styles */
 
 #tradeModal .trade-content-container {
-  margin-bottom: 1rem;
-  background-color: #F9FAFB;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 1rem 1.5rem;
+  background-color: #f9fafb;
   border: none;
   border-radius: 8px;
   justify-content: center;
 }
 
+#tradeModal .trade-group {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.product-condition {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.trade-status-value {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.trade-status-value.pending {
+  background-color: #fdf9c3;
+  color: #9e4e47;
+}
+
+.trade-status-value.approved {
+  color: #4caf50;
+}
+
+.trade-group.approved {
+  color: #4caf50;
+}
+
+.trade-group.approved {
+  color: #4caf50;
+}
+
 #tradeModal .item-group {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+}
+
+.item-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
 }
 
 #tradeModal .trade-item-container {
   border: 1px solid #dbdbdb;
   padding: 1rem;
   border-radius: 8px;
+}
+
+#tradeModal .requesting-item-image {
+  width: 80px;
+  height: 80px;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+}
+
+#tradeModal .requesting-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 #tradeModal .your-trade-image {
@@ -6352,11 +6451,15 @@ h6 {
   width: 80px;
   margin-bottom: 0.5rem;
   height: 80px;
-  border: 1px solid;
+  border: 1px solid #dbdbdb;
   border-radius: 8px;
 }
 
-
+#tradeModal .your-trade-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .modal .product-image {
   object-fit: cover !important;
@@ -6409,8 +6512,8 @@ h6 {
 }
 
 .confirmation-message.warning {
-  background-color: #FEFCE8;
-  border-left: 4px solid #FACC30;
+  background-color: #fefce8;
+  border-left: 4px solid #facc30;
 }
 
 /* For collections checkbox */
@@ -6426,7 +6529,7 @@ h6 {
   margin-right: 10px;
 }
 
-#promoteModal .modal .input-group {
+#promoteModal .modal-body .input-group {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -6523,14 +6626,19 @@ h6 {
 }
 
 /* Modal Footer Styling */
-.modal-footer {
+#tradeModal .modal-footer {
   padding: 15px 20px;
   border-top: 1px solid #e0e0e0;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  margin-top: 3rem;
   background-color: #f9f9f9;
   border-radius: 0 0 8px 8px;
+}
+
+#tradeModal .modal-body {
+  padding: 0;
 }
 
 .modal-footer .btn {
@@ -6559,11 +6667,12 @@ h6 {
   border: 1px solid #ddd;
 }
 
-.modal-footer .btn-secondary:hover {
-  background-color: #e0e0e0;
+#tradeModal .modal-footer .btn-secondary:hover {
+  background-color: #000;
+  color: white;
 }
 
-.modal-footer .btn-primary {
+#tradeModal .modal-footer .btn-primary {
   background-color: var(--primary-red);
   color: white;
 }
