@@ -6296,6 +6296,85 @@ h6 {
   padding: 1rem 1.5rem;
 }
 
+.trader-image-wrapper img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.trader-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-identity .username {
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.user-identity .user-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-identity .user-rating i {
+  font-size: 14px;
+  color: orange;
+}
+
+.trade-item--summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.item-details .detail-label {
+  font-weight: 600;
+}
+
+#messageModal .modal-footer .btn i {
+  font-size: 1rem;
+  padding-right: 0.5rem;
+}
+
+.message-info {
+  display: flex;
+  align-content: center;
+  font-size: 14px;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.message-attachments {
+  position: absolute;
+  left: 34rem;
+  top: 15rem;
+  background-color: transparent;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.message-attachments i {
+  font-size: 1rem;
+  color: #000;
+}
+
+.message-attachments:hover {
+  background-color: #eaeaea;
+  opacity: 0.5;
+}
+
 /* Reject Modal */
 
 #rejectModal .product-image-container {
