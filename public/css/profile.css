@@ -6801,6 +6801,157 @@ h6 {
 #acceptModal .offer-value
 
 
+/* Product Deletion Modal */
+#trashModal .modal-content .modal-header {
+  display: flex !important;
+  justify-content: flex-start !important;
+  gap: 1rem !important;
+}
+
+#trashModal .modal-icon {
+  display: flex;
+  background: #fee2e2;
+  border-radius: 100%;
+  padding: 0.875rem;
+  align-items: center;
+  justify-content: center;
+}
+
+#trashModal .modal-icon i {
+  color: var(--alert-red-600);
+  font-size: 1.5rem;
+}
+
+#trashModal .modal-title {
+  font-size: larger;
+  font-weight: 700;
+}
+
+#trashModal .modal-footer .delete-btn {
+  color: var(--white);
+  background-color: #000;
+}
+
+#trashModal .modal-footer .cancel-btn {
+  border: 1px solid #d9d9d9;
+}
+
+#trashModal .modal-footer i {
+  padding-right: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Publish Draft Product */
+#publishModal .modal-content .modal-header {
+  display: flex;
+  align-items: center;
+}
+
+#publishModal .modal-content .modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#publishModal .modal-content .modal-title .header-icon {
+  justify-content: center;
+  padding: 4px 13px;
+  background-color: #dbeafe;
+  border-radius: 50%;
+}
+
+#publishModal .modal-content .modal-title .header-icon i {
+  font-size: 1rem;
+  color: blue;
+}
+
+#publishModal .modal-content .modal-title .modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0056b3;
+  padding: 4px 0.5rem;
+  border-radius: 100%;
+}
+
+#publishModal .modal-content .modal-title .modal-icon i {
+  font-size: 1rem;
+  color: #0056b3;
+}
+
+#publishModal .modal-body .completion-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.completion-status h3 {
+  font-size: 18px;
+}
+
+#publishModal .modal-body .status {
+  border-radius: 18px;
+  background-color: var(--color-gray-300);
+  padding: 4px 11px;
+}
+
+#publishModal .modal-body .status.half {
+  background-color: yellow;
+  color: yellow;
+}
+
+#publishModal .modal-body .status-percentage {
+  font-weight: 600;
+}
+
+#publishModal .missing-info-container {
+  border: 1px solid #d6d6d6;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+#publishModal .missing-info-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#publishModal .missing-info-header .header-icon {
+  border: 2px solid #000;
+  padding: 3px 14px;
+  border-radius: 50%;
+}
+
+#publishModal .missing-info-header .header-icon i {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+#publishModal .missing-info-header h3 {
+  font-size: 18px;
+}
+
+#publishModal .missing-items {
+  padding: 0 5rem !important;
+}
+
+#publishModal .modal-footer .required-fields {
+  color: var(--white);
+  padding: 0.5rem;
+  background-color: #438ef0;
+}
+
+#publishModal .modal-footer .cancel-btn {
+  border: 1px solid #d6d6d6;
+}
+
+#publishModal .modal-footer .required-fields i {
+  font-size: 1rem;
+  padding-right: 0.5rem;
+}
+
 /* Balance Display */
 
 #act-wallet-balance {

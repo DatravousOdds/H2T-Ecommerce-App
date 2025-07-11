@@ -2454,6 +2454,7 @@
 
                 <!-- Modals Container -->
                 <div class="modals-container">
+                  <!-- Active Modals-->
                   <!-- Edit Modal -->
                   <div id="editModal" class="modal">
                     <div class="modal-content">
@@ -2756,6 +2757,8 @@
                       </div>
                     </div>
                   </div>
+
+                  <!-- Sell to Us Modals-->
                   <!-- Accept Store Offer -->
                   <div id="acceptModal" class="modal">
                     <div class="modal-content">
@@ -2938,6 +2941,8 @@
                       </div>
                     </div>
                   </div>
+
+                  <!-- Pending Trades Modals-->
                   <!-- Trade Details -->
                   <div id="tradeModal" class="modal">
                     <div class="modal-content">
@@ -3038,7 +3043,7 @@
                     </div>
                   </div>
                   <!-- Message Seller -->
-                  <div id="messageModal" class="modal active">
+                  <div id="messageModal" class="modal">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h2 class="modal-title">Message Trader</h2>
@@ -3161,6 +3166,84 @@
                       </div>
                     </div>
                   </div>
+
+                  <!-- Draft Modals -->
+                  <div id="trashModal" class="modal">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <div class="modal-icon">
+                          <i class="fa-solid fa-trash"></i>
+                        </div>
+                        <div class="modal-title">Delete Product</div>
+                      </div>
+                      <div class="modal-body">
+                        <p class="delete-message">
+                          Are you sure you want to delete "Jordan 4 Retro"? This
+                          action cannot be undone and will permanently remove
+                          the product from your inventory.
+                        </p>
+                        <p class="product-id">Product ID:</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn delete-btn">
+                          <i class="fa-solid fa-trash"></i>
+                          Delete Product
+                        </button>
+                        <button type="button" class="btn cancel-btn">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="publishModal" class="modal active">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <div class="modal-title">
+                          <div class="header-icon">
+                            <i class="fa-solid fa-arrow-up"></i>
+                          </div>
+                          Publish Draft Product
+                        </div>
+                        <div class="modal-close">
+                          <i class="fa-solid fa-xmark"></i>
+                        </div>
+                      </div>
+                      <div class="modal-body">
+                        <div class="publish-message">
+                          You're about to publish "Jordan 4 Retro" and make it
+                          available for trade.
+                        </div>
+                        <div class="completion-status">
+                          <h3>Completion Status</h3>
+                          <div class="status">
+                            <span class="status-percentage">65% Complete</span>
+                          </div>
+                        </div>
+                        <div class="missing-info-container">
+                          <div class="missing-info-header">
+                            <div class="header-icon">
+                              <i class="fa-solid fa-exclamation"></i>
+                            </div>
+                            <h3>Missing required information:</h3>
+                          </div>
+                          <ul class="missing-items">
+                            <li>Product Photos</li>
+                            <li>Description</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn required-fields">
+                          <i class="fa-solid fa-arrow-up"></i>
+                          Complete Required Fields
+                        </button>
+                        <button type="button" class="btn cancel-btn">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="editModal" class="modal"></div>
                 </div>
               </div>
             </section>
