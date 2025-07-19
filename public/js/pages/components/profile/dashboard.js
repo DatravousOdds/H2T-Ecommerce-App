@@ -8,7 +8,7 @@ import {
   getDocs,
   query,
   where,
-  orderBy
+  orderBy,
 } from "../../../api/firebase-client.js";
 
 const userData = await checkUserStatus();
@@ -945,14 +945,14 @@ async function loadProducts(userData) {
       await Promise.all([
         getDocs(productsCollectionRef),
         getDocs(tradesQuery),
-        getDocs(productDrafts)
+        getDocs(productDrafts),
       ]);
 
     const tradesArray = [];
     tradesSnapshot.forEach((trade) => {
       tradesArray.push({
         id: trade.id,
-        ...trade.data()
+        ...trade.data(),
       });
     });
 
@@ -960,7 +960,7 @@ async function loadProducts(userData) {
     productsSnapshot.forEach((doc) => {
       productsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -968,7 +968,7 @@ async function loadProducts(userData) {
     productDraftsSnapshot.forEach((doc) => {
       productDraftsArray.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -1044,7 +1044,7 @@ const filters = {
   productFilters: [], // only allowed filter at time
   brandFilters: [], // multiple filters
   priceRangeFilters: [], // multiple filters
-  listingTypeFilters: [] // multiple filters
+  listingTypeFilters: [], // multiple filters
 };
 const filterSectionsInputs = document.querySelectorAll(
   ".filter-section .filter-group input"
@@ -1179,7 +1179,7 @@ applyFilters.addEventListener("click", async function () {
   filterSnapshot.forEach((doc) => {
     products.push({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     });
   });
 
@@ -1217,7 +1217,7 @@ search.addEventListener("input", async (e) => {
       if (name.startsWith(inputString)) {
         searchProducts.push({
           id: doc.id,
-          ...productData
+          ...productData,
         });
       }
     });
@@ -1286,12 +1286,15 @@ function attachEventListeners(tableId, products) {
   const id = document.getElementById(tableId);
 
   const editButtons = id.querySelectorAll(".action-button");
+  console.log("Edit Buttons:", editButtons);
 
   if (!editButtons) {
     console.log("no edit menu here");
   } else {
     editButtons.forEach((btn) => {
       btn.addEventListener("click", (e) => {
+        console.log("clicked Button: ", btn);
+        console.log("Table ID: ", id)
         const menu = btn.nextElementSibling;
         if (menu && menu.classList.contains("actions-menu")) {
           menu.classList.toggle("active");

@@ -6939,12 +6939,36 @@ h6 {
 
 #publishModal .modal-footer .required-fields {
   color: var(--white);
-  padding: 0.5rem;
+  /* padding: 0.5rem; */
   background-color: #438ef0;
+}
+
+#publishModal .modal-footer .required-fields:hover {
+  background-color: #3a81de;
+  transition: background-color 0.3s ease-out;
+}
+
+#publishModal .modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--border-radius-sm);
+  background-color: transparent;
+  transition: background-color 0.3s ease-out;
+}
+
+#publishModal .modal-close:hover {
+  background-color: var(--border-gray);
 }
 
 #publishModal .modal-footer .cancel-btn {
   border: 1px solid #d6d6d6;
+}
+
+#publishModal .modal-footer .cancel-btn:hover {
+  background-color: #f5f5f5;
+  transition: all 0.5s;
 }
 
 #publishModal .modal-footer .required-fields i {
@@ -7444,10 +7468,11 @@ h6 {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
+  /* padding: 0.25rem 0.5rem; */
   border-radius: 0.25rem;
   font-size: 0.75rem;
   font-weight: 500;
+  justify-content: center;
 }
 
 .product-info {
@@ -8156,6 +8181,15 @@ details h3 {
 }
 
 /* Products Section */
+
+#draft-products-table .progress-bar {
+  border-radius: var(--border-radius-md);
+  background-color: var(--border-gray);
+}
+
+#draft-products-table .progress-bar .progress {
+  background: #4caf50;
+}
 
 .products-overview {
   margin-bottom: 1rem;
