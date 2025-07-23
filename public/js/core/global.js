@@ -1,34 +1,34 @@
 // function to generate countries
-const generateCountries = (apiUrl, selectId) => {
-  fetch(apiUrl)
-    .then((res) => res.json())
-    .then((data) => {
-      const select = document.getElementById(selectId);
+// const generateCountries = (apiUrl, selectId) => {
+//   fetch(apiUrl)
+//     .then((res) => res.json())
+//     .then((data) => {
+//       const select = document.getElementById(selectId);
 
-      // sorts countries
-      const sortCountries = data.sort((a, b) => {
-        return a.name.common.localeCompare(b.name.common);
-      });
+//       // sorts countries
+//       const sortCountries = data.sort((a, b) => {
+//         return a.name.common.localeCompare(b.name.common);
+//       });
 
-      // Check if there is an select element
-      if (select) {
-        sortCountries.forEach((country) => {
-          const option = document.createElement("option");
-          option.value = country.cca2;
-          option.textContent = country.name.common;
+//       // Check if there is an select element
+//       if (select) {
+//         sortCountries.forEach((country) => {
+//           const option = document.createElement("option");
+//           option.value = country.cca2;
+//           option.textContent = country.name.common;
 
-          select.appendChild(option);
-        });
+//           select.appendChild(option);
+//         });
 
-        // Call generateRegions to populate regions
-        // generateRegions(data);
-      } else {
-        console.error(`Select element with id "${selectId}" not found.`);
-      }
-    })
+//         // Call generateRegions to populate regions
+//         // generateRegions(data);
+//       } else {
+//         console.error(`Select element with id "${selectId}" not found.`);
+//       }
+//     })
 
-    .catch((err) => console.log(err("Error Message:", err)));
-};
+//     .catch((err) => console.log(("Error Message:", err)));
+// };
 
 const generateRegions = (countriesData) => {
   const selectSelect = document.getElementById("shipping-state");
@@ -50,7 +50,7 @@ function formatFirebaseDate(timestamp) {
   return date.toLocaleDateString("en-US", {
     month: "2-digit",
     day: "2-digit",
-    year: "numeric"
+    year: "numeric",
   });
 }
 
@@ -306,7 +306,7 @@ class PaymentValidation {
       visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
       mastercard: /^5[1-5][0-9]{14}$/,
       amex: /^3[47][0-9]{13}$/,
-      discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/
+      discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
     };
   }
 
@@ -318,7 +318,7 @@ class PaymentValidation {
     if (!cleaned || cleaned.length < 13 || cleaned.length > 19) {
       return {
         isValid: false,
-        error: "Card number must be between 13 and 19 digits"
+        error: "Card number must be between 13 and 19 digits",
       };
     }
 
@@ -353,7 +353,7 @@ class PaymentValidation {
     return {
       isValid: sum % 10 === 0,
       cardType,
-      error: sum % 10 === 0 ? null : "Invalid card number"
+      error: sum % 10 === 0 ? null : "Invalid card number",
     };
   }
 
@@ -369,7 +369,7 @@ class PaymentValidation {
     if (isNaN(expMonth) || isNaN(expYear)) {
       return {
         isValid: false,
-        error: "Invalid expiration date format"
+        error: "Invalid expiration date format",
       };
     }
 
@@ -377,7 +377,7 @@ class PaymentValidation {
     if (expMonth < 1 || expMonth > 12) {
       return {
         isValid: false,
-        error: "Invalid month"
+        error: "Invalid month",
       };
     }
 
@@ -388,7 +388,7 @@ class PaymentValidation {
     ) {
       return {
         isValid: false,
-        error: "Card has expired"
+        error: "Card has expired",
       };
     }
 
@@ -396,13 +396,13 @@ class PaymentValidation {
     if (expYear > currentYear + 10) {
       return {
         isValid: false,
-        error: "Expiration date too far in the future"
+        error: "Expiration date too far in the future",
       };
     }
 
     return {
       isValid: true,
-      error: null
+      error: null,
     };
   }
 
@@ -416,13 +416,13 @@ class PaymentValidation {
     if (cleaned.length !== requiredLength) {
       return {
         isValid: false,
-        error: `CVV must be ${requiredLength} digits`
+        error: `CVV must be ${requiredLength} digits`,
       };
     }
 
     return {
       isValid: true,
-      error: null
+      error: null,
     };
   }
 
@@ -430,14 +430,14 @@ class PaymentValidation {
     const postalRegexes = {
       US: /^\d{5}(-\d{4})?$/,
       CA: /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/,
-      UK: /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i
+      UK: /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i,
     };
 
     const regex = postalRegexes[country] || /^[A-Za-z0-9\s-]{3,10}$/;
 
     return {
       isValid: regex.test(postalCode),
-      error: regex.test(postalCode) ? null : "Invalid postal code format"
+      error: regex.test(postalCode) ? null : "Invalid postal code format",
     };
   }
 
@@ -449,7 +449,7 @@ class PaymentValidation {
     if (cleaned.length < 8 || cleaned.length > 17) {
       return {
         isValid: false,
-        error: "Account number must be between 8 and 17 digits"
+        error: "Account number must be between 8 and 17 digits",
       };
     }
 
@@ -457,13 +457,13 @@ class PaymentValidation {
     if (!/^\d+$/.test(cleaned)) {
       return {
         isValid: false,
-        error: "Account number must contain only digits"
+        error: "Account number must contain only digits",
       };
     }
 
     return {
       isValid: true,
-      error: null
+      error: null,
     };
   }
 
@@ -475,7 +475,7 @@ class PaymentValidation {
     if (cleaned.length !== 9) {
       return {
         isValid: false,
-        error: "Routing number must be 9 digits"
+        error: "Routing number must be 9 digits",
       };
     }
 
@@ -494,7 +494,7 @@ class PaymentValidation {
 
     return {
       isValid: sum !== 0 && sum % 10 === 0,
-      error: sum % 10 === 0 ? null : "Invalid routing number"
+      error: sum % 10 === 0 ? null : "Invalid routing number",
     };
   }
 }
@@ -518,7 +518,7 @@ class PaymentSecurity {
       );
       return {
         allowed: false,
-        error: `Too many attempts. Please try again in ${remainingTime} minutes.`
+        error: `Too many attempts. Please try again in ${remainingTime} minutes.`,
       };
     }
 
@@ -535,13 +535,13 @@ class PaymentSecurity {
     if (this.attemptCount > this.maxAttempts) {
       return {
         allowed: false,
-        error: "Maximum attempts exceeded. Please try again later."
+        error: "Maximum attempts exceeded. Please try again later.",
       };
     }
 
     return {
       allowed: true,
-      error: null
+      error: null,
     };
   }
 
@@ -549,7 +549,7 @@ class PaymentSecurity {
     const checks = {
       amount: this.validateTransactionAmount(amount, userProfile),
       velocity: this.checkTransactionVelocity(userProfile),
-      location: this.validateLocation(userProfile)
+      location: this.validateLocation(userProfile),
     };
 
     const failed = Object.values(checks).filter((check) => !check.isValid);
@@ -557,7 +557,7 @@ class PaymentSecurity {
     return {
       isValid: failed.length === 0,
       errors: failed.map((f) => f.error),
-      requiresVerification: amount > 1000 || failed.length > 0
+      requiresVerification: amount > 1000 || failed.length > 0,
     };
   }
 
@@ -570,13 +570,13 @@ class PaymentSecurity {
     if (dailyTotal + amount > dailyLimit) {
       return {
         isValid: false,
-        error: "Transaction would exceed daily limit"
+        error: "Transaction would exceed daily limit",
       };
     }
 
     return {
       isValid: true,
-      error: null
+      error: null,
     };
   }
 
@@ -594,7 +594,7 @@ class PaymentSecurity {
       error:
         recentTransactions.length >= maxTransactions
           ? "Too many transactions in a short period"
-          : null
+          : null,
     };
   }
 
@@ -611,7 +611,7 @@ class PaymentSecurity {
 
     return {
       isValid: !isSuspiciousLocation,
-      error: isSuspiciousLocation ? "Unusual location detected" : null
+      error: isSuspiciousLocation ? "Unusual location detected" : null,
     };
   }
 }
@@ -630,7 +630,7 @@ const security = new PaymentSecurity();
 export { PaymentValidation, PaymentSecurity };
 
 export {
-  generateCountries,
+  // generateCountries,
   validateForm,
   closeDropdown,
   validatePhone,
@@ -640,5 +640,5 @@ export {
   generateRegions,
   setError,
   clearError,
-  formatFirebaseDate
+  formatFirebaseDate,
 };

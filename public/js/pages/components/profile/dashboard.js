@@ -1280,6 +1280,15 @@ function populateTable(products, tabId, rowTemplate) {
   attachEventListeners(tabId, products);
 }
 
+let productModals = document.querySelectorAll(".modals-container .modal");
+console.log("product modals: ", productModals);
+
+const productModalHolder = {
+  "active": {
+    
+  }
+}
+
 function attachEventListeners(tableId, products) {
   if (!tableId) console.log(`${tableId} does not exist`);
 
@@ -1294,11 +1303,17 @@ function attachEventListeners(tableId, products) {
     editButtons.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         console.log("clicked Button: ", btn);
-        console.log("Table ID: ", id)
+
+        // check if menu exist
         const menu = btn.nextElementSibling;
         if (menu && menu.classList.contains("actions-menu")) {
           menu.classList.toggle("active");
           e.stopPropagation();
+        } else if (btn && btn.classList.contains("edit")) {
+          let editModal = document.getElementById("editModal");
+          editModal.classList.add("active");
+          console.log("edit Modal State: ", editModal);
+
         }
       });
     });

@@ -1,7 +1,7 @@
 "use strict";
 
 import {
-  generateCountries,
+  // generateCountries,
   validateForm,
   closeDropdown
 } from "../core/global.js";
@@ -1331,7 +1331,7 @@ async function loadSettingsData(userData) {
 // generate countries for select element
 document.addEventListener("DOMContentLoaded", () => {
   const apiUrl = "https://restcountries.com/v3.1/all";
-  generateCountries(apiUrl, "shipping-country");
+  // generateCountries(apiUrl, "shipping-country");
   loadProfileData();
 });
 
