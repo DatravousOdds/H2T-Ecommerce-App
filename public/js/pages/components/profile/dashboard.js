@@ -13,172 +13,163 @@ import {
 
 const userData = await checkUserStatus();
 
-const daftProductsTableTemplate = (product) => `<td>
-                            <div class="product-info">
-                              <div class="product-image-container">
-                                <img
-                                  src=${product.images[0].url}
-                                  alt=${product.images[0].alt}
-                                  class="product-image"
-                                />
-                                <span class="draft-badge">Draft</span>
-                              </div>
-                              <div class="product-details">
-                                <p class="product-name">${
-                                  product.basicInfo.name
-                                }</p>
-                                <p class="product-id">ID: #${
-                                  product.draftId
-                                }</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="completion-info">
-                              <div class="progress-bar">
-                                <div class="progress" style="width: ${
-                                  product.completionProgress
-                                }%"></div>
-                              </div>
-                              <span class="completion-text">${
-                                product.completionProgress
-                              }% Complete</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="missing-info">
-                              <ul class="missing-list">
-                                <li class="missing-item">
-                                  <svg
-                                    class="missing-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    width="12"
-                                    height="12"
-                                  >
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line
-                                      x1="12"
-                                      y1="16"
-                                      x2="12"
-                                      y2="16"
-                                    ></line>
-                                  </svg>
-                                  ${product.missingInfo[0]}
-                                </li>
-                                <li class="missing-item">
-                                  <svg
-                                    class="missing-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    width="12"
-                                    height="12"
-                                  >
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line
-                                      x1="12"
-                                      y1="16"
-                                      x2="12"
-                                      y2="16"
-                                    ></line>
-                                  </svg>
-                                  ${product.missingInfo[1]}
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="date-info">
-                              <span class="date">${formatFirebaseDate(
-                                product.createAt
-                              )}</span>
-                              <span class="time">2:30 PM</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="date-info">
-                              <span class="date">${formatFirebaseDate(
-                                product.lastEdited
-                              )}</span>
-                              <span class="time">4:45 PM</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="category-info">
-                              <span class="category-badge">${
-                                product.basicInfo.category
-                              }</span>
-                              <span class="sub-category">${
-                                product.basicInfo.subcategory
-                              }</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="price-info">
-                              <span class="draft-price">$${product.price}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="action-buttons">
-                              <button
-                                class="action-button edit"
-                                aria-label="Edit Draft"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path
-                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                  ></path>
-                                  <path
-                                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                  ></path>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button publish"
-                                aria-label="Publish Draft"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path d="M12 20V10"></path>
-                                  <path d="M18 14l-6-6-6 6"></path>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button delete"
-                                aria-label="Delete Draft"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path d="M3 6h18"></path>
-                                  <path
-                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                                  ></path>
-                                </svg>
-                              </button>
-                            </div>
-                          </td>`;
+const daftProductsTableTemplate = (product) =>
+  ` 
+      <td>
+        <div class="product-info">
+          <div class="product-image-container">
+            <img
+              src=${product.images[0].url}
+              alt=${product.images[0].alt}
+              class="product-image"
+            />
+            <span class="draft-badge">Draft</span>
+          </div>
+          <div class="product-details">
+            <p class="product-name">${product.basicInfo.name}</p>
+            <p class="product-id">ID: #${product.draftId}</p>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="completion-info">
+          <div class="progress-bar">
+            <div class="progress" style="width: ${
+              product.completionProgress
+            }%"></div>
+          </div>
+          <span class="completion-text">${
+            product.completionProgress
+          }% Complete</span>
+        </div>
+      </td>
+      <td>
+        <div class="missing-info">
+          <ul class="missing-list">
+            <li class="missing-item">
+              <svg
+                class="missing-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                width="12"
+                height="12"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line
+                  x1="12"
+                  y1="16"
+                  x2="12"
+                  y2="16"
+                ></line>
+              </svg>
+              ${product.missingInfo[0]}
+            </li>
+            <li class="missing-item">
+              <svg
+                class="missing-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                width="12"
+                height="12"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line
+                  x1="12"
+                  y1="16"
+                  x2="12"
+                  y2="16"
+                ></line>
+              </svg>
+              ${product.missingInfo[1]}
+            </li>
+          </ul>
+        </div>
+      </td>
+      <td>
+        <div class="date-info">
+          <span class="date">${formatFirebaseDate(product.createAt)}</span>
+          <span class="time">2:30 PM</span>
+        </div>
+      </td>
+      <td>
+        <div class="date-info">
+          <span class="date">${formatFirebaseDate(product.lastEdited)}</span>
+          <span class="time">4:45 PM</span>
+        </div>
+      </td>
+      <td>
+        <div class="category-info">
+          <span class="category-badge">${product.basicInfo.category}</span>
+          <span class="sub-category">${product.basicInfo.subcategory}</span>
+        </div>
+      </td>
+      <td>
+        <div class="price-info">
+          <span class="draft-price">$${product.price}</span>
+        </div>
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button
+            class="action-button edit-draft"
+            aria-label="Edit Draft"
+          >
+            <svg
+              class="action-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+              ></path>
+              <path
+                d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+              ></path>
+            </svg>
+          </button>
+          <button
+            class="action-button publish-draft"
+            aria-label="Publish Draft"
+          >
+            <svg
+              class="action-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 20V10"></path>
+              <path d="M18 14l-6-6-6 6"></path>
+            </svg>
+          </button>
+          <button
+            class="action-button delete-draft"
+            aria-label="Delete Draft"
+          >
+            <svg
+              class="action-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M3 6h18"></path>
+              <path
+                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </td>
+    `;
 
 const outOfStockProductsTemplate = (product) => `<td>
                             <div class="product-info">ORD-2024-1234</div>
@@ -235,7 +226,7 @@ const outOfStockProductsTemplate = (product) => `<td>
                           <td>
                             <div class="action-buttons">
                               <button
-                                class="action-button restock"
+                                class="action-button restock-product"
                                 aria-label="Restock Product"
                               >
                                 <svg
@@ -252,7 +243,7 @@ const outOfStockProductsTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button notify"
+                                class="action-button notify-product"
                                 aria-label="Send Notifications"
                               >
                                 <svg
@@ -269,7 +260,7 @@ const outOfStockProductsTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button archive"
+                                class="action-button archive-product"
                                 aria-label="Archive Product"
                               >
                                 <svg
@@ -359,7 +350,7 @@ const pendingTradesProductsTableTemplate = (product) => `<td>
                           <td>
                             <div class="action-buttons">
                               <button
-                                class="action-button view"
+                                class="action-button view-product"
                                 aria-label="View Details"
                               >
                                 <svg
@@ -376,7 +367,7 @@ const pendingTradesProductsTableTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button message"
+                                class="action-button message-trader"
                                 aria-label="Message Customer"
                               >
                                 <svg
@@ -392,7 +383,7 @@ const pendingTradesProductsTableTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button approve"
+                                class="action-button approve-trade"
                                 aria-label="Approve Trade"
                               >
                                 <svg
@@ -588,7 +579,7 @@ const activeProductsTableTemplate = (product) => `
           <td>
             <div class="action-buttons">
               <button
-                class="action-button edit"
+                class="action-button edit-product"
                 aria-label="Edit Listing"
               >
                 <svg
@@ -608,7 +599,7 @@ const activeProductsTableTemplate = (product) => `
               </button>
               
               <button
-                class="action-button pause"
+                class="action-button pause-product"
                 aria-label="Pause Listing"
               >
                 <svg
@@ -633,7 +624,7 @@ const activeProductsTableTemplate = (product) => `
                 </svg>
               </button>
               <button
-                class="action-button promote"
+                class="action-button promote-product"
                 aria-label="Promote Listing"
               >
                 <svg
@@ -679,7 +670,7 @@ const forTradeProductsTableTemplate = (product) => `
           <td>${formatFirebaseDate(product.analytics.lastUpdated)}</td>
           <td>
             <button
-              class="action-button"
+              class="action-button "
               aria-label="More options"
             >
               <svg
@@ -803,7 +794,7 @@ const sellToUsProductsTableTemplate = (product) => `
           <td>
             <div class="action-buttons">
               <button
-                class="action-button primary"
+                class="action-button accept-offer"
                 aria-label="Accept offer"
               >
                 <svg
@@ -817,7 +808,7 @@ const sellToUsProductsTableTemplate = (product) => `
                 </svg>
               </button>
               <button
-                class="action-button danger"
+                class="action-button decline-offer"
                 aria-label="Reject offer"
               >
                 <svg
@@ -963,6 +954,8 @@ async function loadProducts(userData) {
         ...doc.data(),
       });
     });
+
+    console.log("Trade Array: ", productsArray);
 
     const productDraftsArray = [];
     productDraftsSnapshot.forEach((doc) => {
@@ -1271,22 +1264,15 @@ function populateTable(products, tabId, rowTemplate) {
   }
 
   products.forEach((product) => {
+    console.log(product);
     const tr = document.createElement("tr");
     tr.className = "product-row";
+    tr.setAttribute("data-product-id", `${product.id}`);
     tr.innerHTML = rowTemplate(product);
     table.appendChild(tr);
   });
 
   attachEventListeners(tabId, products);
-}
-
-let productModals = document.querySelectorAll(".modals-container .modal");
-console.log("product modals: ", productModals);
-
-const productModalHolder = {
-  "active": {
-    
-  }
 }
 
 function attachEventListeners(tableId, products) {
@@ -1313,7 +1299,6 @@ function attachEventListeners(tableId, products) {
           let editModal = document.getElementById("editModal");
           editModal.classList.add("active");
           console.log("edit Modal State: ", editModal);
-
         }
       });
     });
@@ -1326,3 +1311,54 @@ function attachEventListeners(tableId, products) {
     });
   }
 }
+
+function setUpEventDelegation() {
+  document
+    .querySelector(".products-content")
+    .addEventListener("click", (e) => handleProductAction(e));
+}
+
+setUpEventDelegation();
+
+function handleProductAction(event) {
+  let button = event.target.closest(".action-button");
+
+  // console.log("closest: ", button);
+
+  if (!button) return;
+
+  const actionType = getActionType(button);
+  const productData = getProductData(button);
+
+  // const modalManager = new ProductModalManager()
+  // modalManager.openModal(actionType,)
+}
+
+// Classes
+class ProductModalManager {
+  constructor() {
+    this.modals = new Map();
+    this.currentProduct = null;
+  }
+
+  registerModal(type, modalElement) {}
+
+  openModal(type, modalElement) {}
+
+  closeModal(type) {}
+}
+
+// Helper Functions
+function getProductData(button) {
+  const product = button.closest(".product-row");
+  console.log(product);
+}
+function getActionType(button) {
+  if (!button) return null;
+
+  const typeOfAction = button.className.split(" ")[1];
+
+  return typeOfAction;
+}
+function getModal(modal) {}
+function populateModal(modalType, productData) {}
