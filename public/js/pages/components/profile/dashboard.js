@@ -117,7 +117,7 @@ const daftProductsTableTemplate = (product) =>
       <td>
         <div class="action-buttons">
           <button
-            class="action-button edit-draft"
+            class="action-button draft-edit"
             aria-label="Edit Draft"
           >
             <svg
@@ -136,7 +136,7 @@ const daftProductsTableTemplate = (product) =>
             </svg>
           </button>
           <button
-            class="action-button publish-draft"
+            class="action-button draft-publish"
             aria-label="Publish Draft"
           >
             <svg
@@ -151,7 +151,7 @@ const daftProductsTableTemplate = (product) =>
             </svg>
           </button>
           <button
-            class="action-button delete-draft"
+            class="action-button draft-delete"
             aria-label="Delete Draft"
           >
             <svg
@@ -226,7 +226,7 @@ const outOfStockProductsTemplate = (product) => `<td>
                           <td>
                             <div class="action-buttons">
                               <button
-                                class="action-button restock-product"
+                                class="action-button oos-restock"
                                 aria-label="Restock Product"
                               >
                                 <svg
@@ -243,7 +243,7 @@ const outOfStockProductsTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button notify-product"
+                                class="action-button oos-notify"
                                 aria-label="Send Notifications"
                               >
                                 <svg
@@ -260,7 +260,7 @@ const outOfStockProductsTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button archive-product"
+                                class="action-button oos-archive"
                                 aria-label="Archive Product"
                               >
                                 <svg
@@ -350,7 +350,7 @@ const pendingTradesProductsTableTemplate = (product) => `<td>
                           <td>
                             <div class="action-buttons">
                               <button
-                                class="action-button view-product"
+                                class="action-button pending-view"
                                 aria-label="View Details"
                               >
                                 <svg
@@ -367,7 +367,7 @@ const pendingTradesProductsTableTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button message-trader"
+                                class="action-button pending-message"
                                 aria-label="Message Customer"
                               >
                                 <svg
@@ -383,7 +383,7 @@ const pendingTradesProductsTableTemplate = (product) => `<td>
                                 </svg>
                               </button>
                               <button
-                                class="action-button approve-trade"
+                                class="action-button pending-approve"
                                 aria-label="Approve Trade"
                               >
                                 <svg
@@ -579,7 +579,7 @@ const activeProductsTableTemplate = (product) => `
           <td>
             <div class="action-buttons">
               <button
-                class="action-button edit-product"
+                class="action-button active-edit"
                 aria-label="Edit Listing"
               >
                 <svg
@@ -599,7 +599,7 @@ const activeProductsTableTemplate = (product) => `
               </button>
               
               <button
-                class="action-button pause-product"
+                class="action-button active-pause"
                 aria-label="Pause Listing"
               >
                 <svg
@@ -624,7 +624,7 @@ const activeProductsTableTemplate = (product) => `
                 </svg>
               </button>
               <button
-                class="action-button promote-product"
+                class="action-button active-promote"
                 aria-label="Promote Listing"
               >
                 <svg
@@ -794,7 +794,7 @@ const sellToUsProductsTableTemplate = (product) => `
           <td>
             <div class="action-buttons">
               <button
-                class="action-button accept-offer"
+                class="action-button sell-accept"
                 aria-label="Accept offer"
               >
                 <svg
@@ -808,7 +808,7 @@ const sellToUsProductsTableTemplate = (product) => `
                 </svg>
               </button>
               <button
-                class="action-button decline-offer"
+                class="action-button sell-decline"
                 aria-label="Reject offer"
               >
                 <svg
@@ -1315,24 +1315,10 @@ function attachEventListeners(tableId, products) {
 function setUpEventDelegation() {
   document
     .querySelector(".products-content")
-    .addEventListener("click", (e) => handleProductAction(e));
+    .addEventListener("click", async (e) => handleProductAction(e));
 }
 
 setUpEventDelegation();
-
-function handleProductAction(event) {
-  let button = event.target.closest(".action-button");
-
-  // console.log("closest: ", button);
-
-  if (!button) return;
-
-  const actionType = getActionType(button);
-  const productData = getProductData(button);
-
-  // const modalManager = new ProductModalManager()
-  // modalManager.openModal(actionType,)
-}
 
 // Classes
 class ProductModalManager {
@@ -1349,16 +1335,144 @@ class ProductModalManager {
 }
 
 // Helper Functions
-function getProductData(button) {
+async function handleProductAction(event) {
+  let button = event.target.closest(".action-button");
+
+  // console.log("closest: ", button);
+
+  if (!button) return;
+
+  const actionType = getActionType(button);
+  const productData = await getProductData(button);
+  const modal = getModal(actionType)
+  const populatedModal = populateModal(modal, productData)
+
+  const modalManager = new ProductModalManager()
+  modalManager.openModal(actionType, populateModal)
+}
+async function getProductData(button) {
   const product = button.closest(".product-row");
-  console.log(product);
+  const tableId = button.closest("tbody").id;
+  const id = product.getAttribute("data-product-id");
+  const productData = await fetchProductData(id, tableId);
+  return productData;
+}
+async function fetchProductData(productId, tableId) {
+  let collectionRef;
+
+  // determine which table to fetch from
+  switch (tableId) {
+    case "all-products-table":
+    case "active-products-table":
+    case "sell-to-us-products-table":
+    case "out-of-stock-products-table":
+      collectionRef = "products";
+      break;
+
+    case "for-trade-products-table":
+    case "pending-trades-products-table":
+      collectionRef = "trades";
+      break;
+
+    case "draft-products-table":
+      collectionRef = "productDrafts";
+      break;
+    default:
+      collectionRef = "products";
+      break;
+  }
+
+  if (!productId) return;
+
+  // fetch document
+  try {
+    const docRef = doc(
+      db,
+      "userProfiles",
+      userData.email,
+      collectionRef,
+      productId
+    );
+
+    const productSnap = await getDoc(docRef);
+
+    if (productSnap.exists()) {
+      const productData = productSnap.data();
+
+      // validate document
+      const product = validateProductInformation(productData, tableId);
+
+      return product;
+    } else {
+      console.log("No such document!");
+    }
+  } catch (error) {
+    console.error(`No data found for the product id: ${productId}`);
+  }
+}
+function validateProductInformation(data, id) {
+  if (!id || !data) return null;
+
+  switch (id) {
+    case "active-products-table":
+      if (data.status == "active") {
+        return data;
+      }
+      break;
+    case "sell-to-us-products-table":
+      if (data.sellBack.inProgress == true) {
+        return data;
+      }
+      break;
+    case "out-of-stock-products-table":
+      if (data.inStock == false) {
+        return data;
+      }
+      break;
+    case "for-trade-products-table":
+      if (data.status == "pending") {
+        return data;
+      }
+      break;
+    case "pending-trades-products-table":
+      if (data.status == "pending") {
+        return data;
+      }
+      break;
+
+    default:
+      return data;
+  }
 }
 function getActionType(button) {
   if (!button) return null;
 
   const typeOfAction = button.className.split(" ")[1];
+  console.log("type of action:", typeOfAction);
 
   return typeOfAction;
 }
-function getModal(modal) {}
-function populateModal(modalType, productData) {}
+function getModal(action) {
+  // const productModals = document.querySelectorAll(".modals-container .modal");
+  let modals = {
+    "active-edit": document.getElementById("editModal"),
+    "active-pause": document.getElementById("statusModal"),
+    "active-promote": document.getElementById("promoteModal"),
+
+    "sell-accept": document.getElementById("acceptModal"),
+    "sell-decline": document.getElementById("rejectModal"),
+
+    "pending-view": document.getElementById("tradeModal"),
+    "pending-message": document.getElementById("messageModal"),
+    "pending-approve": document.getElementById("approveModal"),
+
+    "draft-edit": document.getElementById("editModal"),
+    "draft-publish": document.getElementById("publishModal"),
+    "draft-delete": document.getElementById("trashModal"),
+  };
+
+  return modals[action];
+}
+function populateModal(modalType, productData) {
+
+}
