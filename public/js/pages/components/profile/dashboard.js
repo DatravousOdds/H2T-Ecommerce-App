@@ -874,7 +874,7 @@ const ordersTableTemplate = (product) => `
   </div>
 </td>`;
 
-// Modal Template
+// Modal Templates
 const editProductTemplate = (product) => `
   
                         <div class="product-info-container">
@@ -1008,6 +1008,499 @@ const editProductTemplate = (product) => `
                           </div>
                         </div>
                       
+`;
+
+const statusModalTemplate = (product) => `
+<div class="product-info-container">
+                          <div class="product-image-container">
+                            <img
+                              src="${product.images[0].url}"
+                              alt="${product.images[0].alt}"
+                              class="product-image"
+                            />
+                          </div>
+                          <div class="product-info">
+                            <div class="product-name">${product.basicInfo.name}</div>
+                            <div class="product-status-container">
+                              Current Status:
+                              <span class="product-status">${product.status}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="product-name">New Status</label>
+                          <select id="product-status" name="product-status">
+                            <option value="active">Active</option>
+                            <option value="for-trade">For Trade</option>
+                            <option value="paused">Paused</option>
+                            <option value="draft">Draft</option>
+                            <option value="out-of-stock">Out of Stock</option>
+                            <option value="pending">Pending Trade</option>
+                            <option value="sold">Sold</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="stat-notes">Notes (Optional) </label>
+                          <textarea
+                            name="status-notes"
+                            id="status-notes"
+                            placeholder="Add any notes about this status change..."
+                          ></textarea>
+                        </div>
+`;
+
+const promoteModalTemplate = (product) => `
+
+                        <div class="product-info-container">
+                          <div class="product-image-container">
+                            <img
+                              src="${product.images[0].url}"
+                              alt="${product.images[0].alt}"
+                              class="product-image"
+                              id="promote-product-image"
+                            />
+                          </div>
+                          <div class="product-info">
+                            <div
+                              id="promote-product-name"
+                              class="promote-product-name"
+                            >
+                              ${product.basicInfo.name}
+                            </div>
+                            <div
+                              id="promote-product-sku"
+                              class="promote-product-sku"
+                            >
+                              SKU: ${product.inventory.sku}
+                            </div>
+                          </div>
+                        </div>
+                        <p class="collection-info">
+                          Add this product to collections for better
+                          organization and featuring on your store
+                        </p>
+
+                        <div class="collection-list">
+                          <div class="collection-item">
+                            <input
+                              type="checkbox"
+                              id="collection-featured"
+                              name="collection-featured"
+                            />
+                            <label for="collection-featured"
+                              >Featured Products</label
+                            >
+                          </div>
+                          <div class="collection-item">
+                            <input
+                              type="checkbox"
+                              id="collection-best-sellers"
+                              name="collection-best-sellers"
+                            />
+                            <label for="collection-best-sellers"
+                              >Best Sellers</label
+                            >
+                          </div>
+                          <div class="collection-item">
+                            <input
+                              type="checkbox"
+                              id="collection-new"
+                              name="collection-new"
+                            />
+                            <label for="collection-new">New Arrivals</label>
+                          </div>
+                        </div>
+
+                        <div class="collection-form">
+                          <div class="form-group">
+                            <label for="new-collection"
+                              >Create New Collection</label
+                            >
+                            <div class="input-group">
+                              <input
+                                type="text"
+                                placeholder="Enter new collection name"
+                              />
+                              <button
+                                class="btn btn-secondary"
+                                id="add-collection-btn"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      
+`;
+
+const acceptModalTemplate = (product) => `
+<div class="modal-body">
+                        <div class="product-info-container">
+                          <div class="product-image-container">
+                            <img
+                              class="product-image"
+                              src="${product.images[0].url}"
+                              alt=""
+                              id="accept-product-image"
+                            />
+                          </div>
+                          <div class="product-info">
+                            <div class="sell-product-name">${product.basicInfo.name}</div>
+                            <div class="sell-product-category">
+                              ${product.basicInfo.category}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="offer-details">
+                          <div class="offer-row">
+                            <span class="offer-label"
+                              >Your Item Condition:</span
+                            >
+                              <span class="offer-value">9/10</span>
+                          </div>
+                          <div class="offer-row">
+                            <span class="offer-label">Market Value:</span>
+                            <span class="offer-value">$${product.pricing.retailPrice}</span>
+                          </div>
+                          <div class="offer-row highlight">
+                            <span class="offer-label">Their Offer:</span>
+                            <span class="offer-value">$${product.pricing.retailPrice}</span>
+                          </div>
+                        </div>
+
+                        <div class="confirmation-message">
+                          <p>
+                            You are about to accept an offer of
+                            <strong>$${product.pricing.retailPrice} cash</strong> or
+                            <strong>$${product.pricing.retailPrice} store credit</strong> for your ${product.basicInfo.name}.
+                          </p>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="payment-preference"
+                            >How would you like to get paid?</label
+                          >
+                          <select
+                            name="payment-preference"
+                            id="payment-preference"
+                          >
+                            <option value="store-credit">
+                              Store Credit ($${product.pricing.retailPrice})
+                            </option>
+                            <option value="cash">
+                              Cash/Bank Transfer ($${product.pricing.retailPrice})
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+`;
+
+const declineModalTemplate = (product) => `
+<div class="modal-product-info-container">
+                          <div class="product-image-container">
+                            <img
+                              src="${product.images[0].url}"
+                              alt="${product.images[0].alt}"
+                              id="reject-product-image"
+                            />
+                          </div>
+                          <div class="product-info">
+                            <div class="sell-product-name">${product.basicInfo.name}</div>
+                            <div class="sell-product-category">
+                              ${product.basicInfo.category}
+                            </div>
+                            <div class="offer-details">
+                              <div class="offer-row">
+                                <span class="offer-label"
+                                  >Your Item Condition:</span
+                                >
+                                <span class="offer-value">9/10</span>
+                              </div>
+                              <div class="offer-row">
+                                <span class="offer-label">Their Offer:</span>
+                                <span class="offer-value">$${product.pricing.retailPrice}</span>
+                              </div>
+                              <div class="offer-row">
+                                <span class="offer-label">Store Credit:</span>
+                                <span class="offer-value">$${product.pricing.retailPrice}</span>
+                              </div>
+                            </div>
+
+                            <div class="confirmation-message warning">
+                              <p>
+                                You are about to decline the offer for your
+                                <strong>${product.basicInfo.name}</strong>
+                              </p>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="rejection-reason"
+                                >Reason for Declining</label
+                              >
+                              <select
+                                name="rejection-reason"
+                                id="rejection-reason"
+                              >
+                                <option value="price-too-low">
+                                  Offer price is too low
+                                </option>
+                                <option value="changed-mind">
+                                  Changed my mind
+                                </option>
+                                <option value="sold-elsewhere">
+                                  Sold elsewhere
+                                </option>
+                                <option value="other">Other reason</option>
+                              </select>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="minimum-acceptable"
+                                >Minimum Acceptable Offer (Optional)</label
+                              >
+                              <div class="input-group">
+                                <span class="currency-symbol">$</span>
+                                <input
+                                  type="number"
+                                  id="minimum-acceptable"
+                                  name="minimum-acceptable"
+                                />
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label for="reject-notes"
+                                >Additional Comments</label
+                              >
+                              <textarea
+                                name="reject-notes"
+                                id="reject-notes"
+                                placeholder="Tell us more about why you're declining..."
+                              ></textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                              <button class="btn btn-secondary close-modal">
+                                Cancel
+                              </button>
+                              <button class="btn btn-primary confirm-reject">
+                                Decline Offer
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+`;
+
+const tradeModalTemplate = (product) => `
+<div class="modal-body">
+                        <div class="trade-content-container">
+                          <div class="trade-status-message">
+                            <div class="trade-group">
+                              <p><strong>Status:</strong></p>
+                              <p class="trade-status-value pending">
+                                ${product.trading.status}
+                              </p>
+                            </div>
+                            <div class="trade-group">
+                              <p><strong>Submitted:</strong></p>
+                              <p class="trade-submitted-date-value">
+                                ${product.trading.date}
+                              </p>
+                            </div>
+                          </div>
+                          <div class="trade-info">
+                            <div class="trade-group">
+                              <p>
+                                <strong>Trade Balance:</strong>
+                                <span class="store-credit-positive"
+                                  >+$50.00 Store Credit</span
+                                >
+                              </p>
+                            </div>
+                            <div class="trade-group">
+                              <p><strong>Trade ID:</strong></p>
+                              <p class="trade-id-value">${product.trading.id}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="item-group">
+                          <label for="trading-item">You're Trading In:</label>
+                          <div class="trade-item-container">
+                            <div class="your-trade-item">
+                              <div class="your-trade-image">
+                                <img
+                                  src="${product.images[0].url}"
+                                  alt="${product.images[0].alt}"
+                                />
+                              </div>
+                              <div class="your-trade-info">
+                                <div class="product-name">
+                                  <strong>${product.basicInfo.name}</strong>
+                                </div>
+                                <div class="product-condition">
+                                  Condition: 9/10
+                                </div>
+                                <div class="product-size">Size: US 11</div>
+                                <div class="product-value">$${product.pricing.retailPrice}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="item-group">
+                          <label for="request-item">You're Requesting:</label>
+                          <div class="trade-item-container">
+                            <div class="requesting-item">
+                              <div class="requesting-item-image">
+                                <img
+                                  src="${product.images[0].url}"
+                                  alt="${product.images[0].alt}"
+                                />
+                              </div>
+                              <div class="requesting-item-info">
+                                <div class="product-name">
+                                  <strong>${product.basicInfo.name}</strong>
+                                </div>
+                                <div class="product-condition">
+                                  Condition: New
+                                </div>
+                                <div class="product-size">Size: US ${product.basicInfo.size}</div>
+                                <div class="product-value">$${product.pricing.retailPrice}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="modal-footer">
+                          <button class="btn btn-secondary close-modal">
+                            Close
+                          </button>
+                          <button class="btn btn-primary message-trader">
+                            Message
+                          </button>
+                        </div>
+                      </div>
+`;
+
+const messageModalTemplate = (product) => `
+<div class="trader-info-container">
+                          <div class="trader-profile">
+                            <div class="trader-image-wrapper">
+                              <img
+                                src="${product.images[0].url}"
+                                alt="${product.images[0].alt}"
+                                class="user-image"
+                              />
+                            </div>
+
+                            <div class="trader-details">
+                              <div class="user-identity">
+                                <h3 class="username">${product.trading.traderName}</h3>
+                                <div class="user-rating">
+                                  <i class="fa-solid fa-star"></i>
+                                  <span class="rating-rate">${product.trading.traderRating}</span>
+                                </div>
+                              </div>
+
+                              <div class="response-info">
+                                <p class="response-time">
+                                  ${product.trading.traderResponseTime}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Trade Item Info -->
+                          <div class="trade-item--summary">
+                            <div class="item-details">
+                              <span class="detail-label">Item:</span>
+                              <span class="detail-value">${product.basicInfo.name}</span>
+                            </div>
+                            <div class="item-details">
+                              <span class="detail-label">Trade ID:</span>
+                              <span class="detail-value">${product.trading.id}</span>
+                            </div>
+                          </div>
+                        </div>
+`;
+
+const approveModalTemplate = (product) => `
+<div class="approve-confirmation-message">
+                          <p class="approve-message">
+                            You're about to approve trading your ${product.basicInfo.name}
+                            for a ${product.trading.traderItem}.
+                          </p>
+                          <p>
+                            You will receive
+                            <span class="store-credit-highlight"
+                              >$${product.trading.traderOffer} store credit as balance</span
+                            >
+                          </p>
+                        </div>
+`;
+
+const trashModalTemplate = (product) => `
+<div class="modal-body">
+                        <p class="delete-message">
+                          Are you sure you want to delete "${product.basicInfo.name}"? This
+                          action cannot be undone and will permanently remove
+                          the product from your inventory.
+                        </p>
+                        <p class="product-id">Product ID: ${product.id}</p>
+                      </div>
+`;
+
+const publishModalTemplate = (product) => `
+<div class="modal-content">
+                      <div class="modal-header">
+                        <div class="modal-title">
+                          <div class="header-icon">
+                            <i class="fa-solid fa-arrow-up"></i>
+                          </div>
+                          Publish Draft Product
+                        </div>
+                        <div class="modal-close">
+                          <i class="fa-solid fa-xmark"></i>
+                        </div>
+                      </div>
+                      <div class="modal-body">
+                        <div class="publish-message">
+                          You're about to publish "${product.basicInfo.name}" and make it
+                          available for trade.
+                        </div>
+                        <div class="completion-status">
+                          <h3>Completion Status</h3>
+                          <div class="status">
+                            <span class="status-percentage">${product.basicInfo.completionStatus}% Complete</span>
+                          </div>
+                        </div>
+                        <div class="missing-info-container">
+                          <div class="missing-info-header">
+                            <div class="header-icon">
+                              <i class="fa-solid fa-exclamation"></i>
+                            </div>
+                            <h3>Missing required information:</h3>
+                          </div>
+                          <ul class="missing-items">
+                            <li>${product.basicInfo.missingInfo}</li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn required-fields">
+                          <i class="fa-solid fa-arrow-up"></i>
+                          Complete Required Fields
+                        </button>
+                        <button type="button" class="btn cancel-btn">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+`;
+
+const editModalTemplate = (product) => `
+
 `;
 
 loadOverviewTabInfo(userData);
@@ -1446,41 +1939,87 @@ function attachEventListeners(tableId, products) {
   }
 }
 
-function setUpEventDelegation() {
-  document
-    .querySelector(".products-content")
-    .addEventListener("click", async (e) => handleProductAction(e));
-}
-
-setUpEventDelegation();
-
 // Classes
 class ProductModalManager {
   constructor() {
     this.modals = new Map();
-    this.currentProduct = null;
+    this.currentModal = null;
   }
 
-  registerModal(type, modalElement) {}
+  registerModal(type, modalElement) {
+    // check if modal is already registered
+    if (!this.modals.has(type)) {
+      this.modals.set(type, modalElement);
+    }
+    // if registered, don't register again
+    else {
+      console.log(`Modal ${type} is already registered`);
+    }
+  }
 
-  openModal(type, modalElement) {}
+  openModal(type, modalElement) {
+    // if modal is registered, open it
+    if (modalElement) {
+      // register
+      if (!this.modals.has(type)) {
+        this.registerModal(type, modalElement);
+      }
 
-  closeModal(type) {}
+      // current reference
+      this.currentModal = this.modals.get(type);
+      // open modal
+      this.currentModal.classList.add("active");
+    } else {
+      return null;
+    }
+  }
+
+  closeModal(type) {
+    if (this.modals.has(type)) {
+      this.modals.get(type).classList.remove("active");
+      this.currentModal = null;
+    }
+  }
 }
+const p = new ProductModalManager();
+
+function setUpEventDelegation() {
+  document
+    .querySelector(".products-content")
+    .addEventListener("click", async (e) => handleProductAction(e));
+
+  document
+    .querySelector(".modals-container")
+    .addEventListener("click", (e) => handleModalClose(e));
+}
+
+setUpEventDelegation();
+
+const templates = {
+  editModal: editModalTemplate,
+  statusModal: statusModalTemplate,
+  promoteModal: promoteModalTemplate,
+  acceptModal: acceptModalTemplate,
+  rejectModal: declineModalTemplate,
+  tradeModal: tradeModalTemplate,
+  messageModal: messageModalTemplate,
+  approveModal: approveModalTemplate,
+  trashModal: trashModalTemplate,
+  publishModal: publishModalTemplate,
+  editModal: editProductTemplate,
+};
 
 // Helper Functions
 async function handleProductAction(event) {
   let button = event.target.closest(".action-button");
 
-  console.log("closest: ", button);
-
   if (!button) return;
 
   const actionType = getActionType(button);
-  const productData = await getProductData(button);
   const modal = getModal(actionType);
-  const populatedModal = populateModal(modal, productData);
-  console.log(populatedModal);
+  const productData = await getProductData(button);
+  populateModal(modal, productData);
+  p.openModal(actionType, modal);
 }
 async function getProductData(button) {
   const product = button.closest(".product-row");
@@ -1541,6 +2080,15 @@ async function fetchProductData(productId, tableId) {
   } catch (error) {
     console.error(`No data found for the product id: ${productId}`);
   }
+}
+function handleModalClose(event) {
+  let button = event.target.closest(".close-button");
+
+  if (!button) return;
+
+  const actionType = getActionType(button);
+  const modal = getModal(actionType);
+  p.closeModal(modal)
 }
 function validateProductInformation(data, id) {
   if (!id || !data) return null;
@@ -1605,12 +2153,16 @@ function getModal(action) {
 
   return modals[action];
 }
+
 function populateModal(modalType, productData) {
   const id = modalType.id;
   const modalBody = document.getElementById(id).querySelector(".modal-body");
   modalBody.innerHTML = "";
-  if (id == "editModal") {
-    modalBody.innerHTML = editProductTemplate(productData);
+  if (templates[id]) {
+    // console.log("modal template:", templates[id](productData));
+    modalBody.innerHTML = templates[id](productData);
   }
-  console.log("product data:", productData);
+  return null;
 }
+
+// Event Listeners
