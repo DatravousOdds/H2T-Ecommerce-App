@@ -874,7 +874,141 @@ const ordersTableTemplate = (product) => `
   </div>
 </td>`;
 
-// console.log("dashboard:", userData);
+// Modal Template
+const editProductTemplate = (product) => `
+  
+                        <div class="product-info-container">
+                          <div class="product-image-container">
+                            <img
+                              src="${product.images[0].url}"
+                              alt=""
+                              class="${product.images[0].alt}"
+                            />
+                          </div>
+                          <div class="product-info">
+                            <div class="product-size">US ${product.basicInfo.size}</div>
+                            <div class="product-sku">SKU: ${product.inventory.sku}</div>
+                            <div class="product-status">${product.status}</div>
+                          </div>
+                        </div>
+                        <ul class="tabs">
+                          <li class="tab" data-tab="basic-info">Basic Info</li>
+                          <li class="tab" data-tab="inventory">Inventory</li>
+                          <li class="tab" data-tab="pricing">Pricing</li>
+                          <li class="tab" data-tab="images">Images</li>
+                        </ul>
+
+                        <div id="basic-info" class="tab-content active">
+                          <div class="form-group">
+                            <label for="product-name">Product Name</label>
+                            <input type="text" id="product-name" />
+                          </div>
+
+                          <div class="form-group">
+                            <label for="product-condition">Condition</label>
+                            <select
+                              name="product-condition"
+                              id="product-condition"
+                            >
+                              <option value="new-with-tags">
+                                New with Tags
+                              </option>
+                              <option value="pre-owned">Preowned</option>
+                              <option value="used">Used</option>
+                            </select>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="product-size">Size</label>
+                            <input
+                              type="text"
+                              id="product-size"
+                              name="product-size"
+                            />
+                          </div>
+
+                          <div class="form-group">
+                            <label for="product-category">Category</label>
+                            <input
+                              type="text"
+                              id="product-category"
+                              name="product-category"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="inventory" class="tab-content">
+                          <div class="form-group">
+                            <label for="product-quantity">Quantity</label>
+                            <input
+                              type="number"
+                              id="product-quantity"
+                              name="product-quantity"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-category">SKU</label>
+                            <input
+                              type="text"
+                              id="product-sku-input"
+                              name="product-sku-input"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-category">In Stock</label>
+                            <input
+                              type="checkbox"
+                              id="product-in-stock"
+                              name="product-in-stock"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="pricing" class="tab-content">
+                          <div class="form-group">
+                            <label for="product-retail-price"
+                              >Retail Price</label
+                            >
+                            <input
+                              type="number"
+                              id="product-retail-price"
+                              name="product-retail-price"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-category"
+                              >Selling Price ($)</label
+                            >
+                            <input
+                              type="number"
+                              id="product-sell-price"
+                              name="product-sell-price"
+                            />
+                          </div>
+                        </div>
+
+                        <div id="images" class="tab-content">
+                          <div class="form-group">
+                            <label for="product-image-url">Image URL</label>
+                            <input
+                              type="text"
+                              id="product-image-url"
+                              name="product-image-url"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="product-image-alt"
+                              >Image Alt Text</label
+                            >
+                            <input
+                              type="text"
+                              id="product-image-alt"
+                              name="product-image-alt"
+                            />
+                          </div>
+                        </div>
+                      
+`;
 
 loadOverviewTabInfo(userData);
 
@@ -1338,17 +1472,15 @@ class ProductModalManager {
 async function handleProductAction(event) {
   let button = event.target.closest(".action-button");
 
-  // console.log("closest: ", button);
+  console.log("closest: ", button);
 
   if (!button) return;
 
   const actionType = getActionType(button);
   const productData = await getProductData(button);
-  const modal = getModal(actionType)
-  const populatedModal = populateModal(modal, productData)
-
-  const modalManager = new ProductModalManager()
-  modalManager.openModal(actionType, populateModal)
+  const modal = getModal(actionType);
+  const populatedModal = populateModal(modal, productData);
+  console.log(populatedModal);
 }
 async function getProductData(button) {
   const product = button.closest(".product-row");
@@ -1474,5 +1606,11 @@ function getModal(action) {
   return modals[action];
 }
 function populateModal(modalType, productData) {
-
+  const id = modalType.id;
+  const modalBody = document.getElementById(id).querySelector(".modal-body");
+  modalBody.innerHTML = "";
+  if (id == "editModal") {
+    modalBody.innerHTML = editProductTemplate(productData);
+  }
+  console.log("product data:", productData);
 }
