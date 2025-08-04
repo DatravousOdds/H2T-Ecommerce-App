@@ -1969,6 +1969,7 @@ class ProductModalManager {
       this.currentModal = this.modals.get(type);
       // open modal
       this.currentModal.classList.add("active");
+      console.log(this.modals);
     } else {
       return null;
     }
@@ -2082,13 +2083,24 @@ async function fetchProductData(productId, tableId) {
   }
 }
 function handleModalClose(event) {
-  let button = event.target.closest(".close-button");
+  const closeBtn = event.target.closest(".close-button");
+  const currentModal = p.currentModal;
 
-  if (!button) return;
+  if (closeBtn && currentModal) {
+    let targetModal = currentModal;
+    const map = p.modals;
+    if (!targetModal) {
+      console.log("There is no modal!");
+    }
 
-  const actionType = getActionType(button);
-  const modal = getModal(actionType);
-  p.closeModal(modal)
+    for (let [key, value] of map.entries()) {
+      if (targetModal == value) {
+        let actionType = key;
+        p.closeModal(actionType)
+      }
+    }
+  }
+  return null;
 }
 function validateProductInformation(data, id) {
   if (!id || !data) return null;
@@ -2164,5 +2176,3 @@ function populateModal(modalType, productData) {
   }
   return null;
 }
-
-// Event Listeners
