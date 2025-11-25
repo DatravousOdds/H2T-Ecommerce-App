@@ -5,10 +5,27 @@
     <script src="https://kit.fontawesome.com/854f8a6196.js" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/public/css/components/email-sent.css" />
+    <link rel="stylesheet" href="/css/components/email-sent.css" />
     <title>Head-To-Toe : Email Reset</title>
 </head>
 <body>
+    <!-- Loading State ⏳ -->
+     <div class="loader-container">
+        <div class="spinner">
+        </div>
+        <h1>Sending Reset Link...</h1>
+        <p>This may take a few moments</p>
+     </div>
+
+     <!-- Error State ❌ -->
+      <!-- <div class="error-container">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <h1>Oops! Something went wrong.</h1>
+        <p>We encountered an issue while sending the reset link. Please try again later.</p>
+        <a href="/forgot-password" class="back-to-forgot-link">Back to Forgot Password</a>
+        </div> -->
+
+    <!-- Email Sent State ✅ -->
     <div class="email-sent-container">
         <!-- Email Logo-->
          <div class="email-sent-logo">
@@ -23,10 +40,14 @@
         </div>
         <div id="resend" class="email-resend-container">
             <p>Didn't receive the email?</p>
-                <button id="resend-btn" class="resend-btn">
+                <button id="resend-btn" class="resend-btn disabled-btn">
                     <i class="fa-solid fa-arrows-rotate"></i>
                     Resend Email
-                    
+                    <span class="countdown-timer">60s</span>
+                </button> 
+        </div>        
     </div>
+
+
 </body>
 </html>

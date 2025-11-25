@@ -22,9 +22,13 @@ forgotForm.addEventListener("submit", async (e) => {
 
   try {
     await sendPasswordResetEmail(auth, email);
-    alert("Password reset email sent! Please check your inbox.");
-    forgotForm.reset();
+    // alert("Password reset email sent! Please check your inbox.");
+    // Optionally, redirect to a confirmation page
+    window.location.href = "/auth/email-sent.html?email=" + encodeURIComponent(email);
     
+    // Clear the form
+    forgotForm.reset();
+
     
   } catch (error) {
     console.error("Error during password reset:", error);
