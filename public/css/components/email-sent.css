@@ -1,0 +1,103 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.email-sent-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.email-sent-logo i {
+    font-size: 80px;
+    color: #4BB543; /* Green color for success */
+    margin-bottom: 20px;
+}
+
+.email-sent-content h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.email-sent-content p {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 15px;
+}
+.email-sent-content #email {
+    font-weight: bold;
+    color: #000;
+}
+
+.back-to-login-link {
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: underline;
+    color: #ff0800;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.email-resend-container {
+    margin-top: 20px;
+}
+
+.email-resend-container p {
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.resend-btn {
+    background-color: #f50606;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 20px 45px;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.resend-btn i {
+    font-size: 1rem;
+}
+
+.resend-btn:hover {
+    background-color: #cc0000;
+    transition: all 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .email-sent-content h1 {
+        font-size: 2em;
+    }   
+
+    .email-sent-content p {
+        font-size: 1rem;
+    }
+    .resend-btn {
+        padding: 15px 20px;
+        font-size: 0.9rem;
+    }
+
+
+}  
+
+/* Icon Rotation Animation */

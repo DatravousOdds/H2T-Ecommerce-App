@@ -124,7 +124,12 @@ app.get("/contact", (req, res) => {
 
 //login route
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(staticPth, "login.html"));
+  res.sendFile(path.join(staticPth, 'auth/login.html'));
+});
+
+// forgot password route
+app.get("/forgot-password", (req, res) => {
+  res.sendFile(path.join(staticPth, "auth/forgot.html"));
 });
 
 //profile route
@@ -134,7 +139,7 @@ app.get("/profile", (req, res) => {
 
 //signup route
 app.get("/signup", (req, res) => {
-  res.sendFile(path.join(staticPth, "signup.html"));
+  res.sendFile(path.join(staticPth, "auth/signup.html"));
 });
 
 //list product route
@@ -558,7 +563,7 @@ app.use((req, res) => {
   }
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3030;
 
 app.listen(port, () => {
   console.log(`listening on port ${port}.......`);

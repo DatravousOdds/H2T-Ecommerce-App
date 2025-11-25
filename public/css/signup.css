@@ -138,6 +138,11 @@ label a {
   display: block;
 }
 
+.login-link {
+  text-decoration: underline;
+  color: red;
+}
+
 /* alert */
 .alert-box {
   width: 300px;
@@ -253,7 +258,7 @@ label a {
     height: 15px;
     border-radius: 2px;
     background: #fff;
-    border: 1px solid #383838;
+    border: 1px solid #3838381f;
     cursor: pointer;
   }
 

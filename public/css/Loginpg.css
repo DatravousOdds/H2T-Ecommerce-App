@@ -68,7 +68,7 @@ textarea {
 
 .signup-link {
   color: #ff3f3f;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 ::placeholder {
