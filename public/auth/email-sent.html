@@ -36,18 +36,18 @@
             <h1>Check Your Email </h1>
             <p>We've sent password reset instructions to <span id="email">youremail@email.com</span></p>
             <p>If you don't see the email, please check your spam or junk folder.</p>
-            <a href="/" class="back-to-login-link">Back to Login</a>
+            <a href="/login" class="back-to-login-link">Back to Login</a>
         </div>
         <div id="resend" class="email-resend-container">
             <p>Didn't receive the email?</p>
                 <button id="resend-btn" class="resend-btn disabled-btn">
                     <i class="fa-solid fa-arrows-rotate"></i>
                     Resend Email
-                    <span class="countdown-timer">60s</span>
+                    <span class="countdown-timer" id="countdown-timer" data-timer="0">60</span>
                 </button> 
         </div>        
     </div>
 
-
+<script type="module" src="/js/auth/email-sent.js"></script>
 </body>
 </html>

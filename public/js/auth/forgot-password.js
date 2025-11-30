@@ -34,3 +34,6 @@ forgotForm.addEventListener("submit", async (e) => {
     console.error("Error during password reset:", error);
   }
 });
+
+
+export {auth}

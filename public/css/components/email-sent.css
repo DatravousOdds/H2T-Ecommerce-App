@@ -81,11 +81,22 @@ body, html {
 
 .resend-btn i {
     font-size: 1rem;
+    animation:  2s linear infinite;
 }
 
-.resend-btn:hover {
+/* .resend-btn:hover {
     background-color: #cc0000;
     transition: all 0.3s ease;
+} */
+
+/* icon animation */
+@keyframes infinite-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loader-container {
