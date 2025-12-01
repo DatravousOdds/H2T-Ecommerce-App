@@ -17,10 +17,9 @@
 }
 
 #product1 {
-  width: 90% !important;
-  margin: 21px auto !important;
-  overflow: hidden;
-  padding: 0px 0px !important;
+  width: 90% ;
+  margin: 21px auto;
+  padding: 0;
 }
 
 .filter-option .filter-container {
@@ -50,8 +49,9 @@
   border: 0.05em solid black;
 }
 
-.filter-container label:hover::before + label::before {
+.filter-container label:hover::before {
   background-color: #252525;
+  border-color: #252525;
 }
 
 .filter-container input[type="checkbox"]:focus + label::before {
@@ -127,9 +127,7 @@
 /* Pagination */
 
 #pagination {
-  text-align: center;
-  padding-top: 2rem !important;
-  padding-bottom: 2rem !important;
+  padding: 0 20px;
 }
 
 #pagination #pagination-links {
@@ -185,10 +183,24 @@
 }
 
 /* Show class for dropdown */
+
+.filter-container.hidden {
+  display: none;
+}
 .filter-container.show {
-  height: auto;
-  transition: height 0.3s ease-out;
-  display: none !important;
+  animation: slideDown 0.3s ease-out;
+  display: block;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #filter-section {
@@ -360,7 +372,7 @@
 }
 
 .section-p1 {
-  padding: 0px 20px !important;
+  padding: 0 20px;
 }
 
 .product-card {
@@ -370,11 +382,12 @@
 
 .men-wrapper {
   display: flex;
+  gap: 20px;
 }
 
-.show {
+/* .show {
   display: block;
-}
+} */
 
 @media (min-width: 1200px) {
 }

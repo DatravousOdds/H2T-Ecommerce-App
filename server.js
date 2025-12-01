@@ -105,17 +105,17 @@ app.get("/", (req, res) => {
 });
 // mens page route
 app.get("/mens", (req, res) => {
-  res.sendFile(path.join(staticPth, "mens.html"));
+  res.sendFile(path.join(staticPth, "shop/mens.html"));
 });
 
 // women page route
 app.get("/women", (req, res) => {
-  res.sendFile(path.join(staticPth, "women.html"));
+  res.sendFile(path.join(staticPth, "shop/women.html"));
 });
 
 // accessories page route
 app.get("/accessories", (req, res) => {
-  res.sendFile(path.join(staticPth, "accessories.html"));
+  res.sendFile(path.join(staticPth, "shop/accessories.html"));
 });
 // accessories page route
 app.get("/contact", (req, res) => {
@@ -134,7 +134,7 @@ app.get("/forgot-password", (req, res) => {
 
 //profile route
 app.get("/profile", (req, res) => {
-  res.sendFile(path.join(staticPth, "profile.html"));
+  res.sendFile(path.join(staticPth, "account/profile.html"));
 });
 
 //signup route
@@ -164,7 +164,7 @@ app.get("/sell-to-us", (req, res) => {
 
 // releases route
 app.get("/releases", (req, res) => {
-  res.sendFile(path.join(staticPth, "releases.html"));
+  res.sendFile(path.join(staticPth, "shop/releases.html"));
 });
 
 // authentication route
@@ -279,7 +279,7 @@ app.post("/login", (req, res) => {
 
 // seller route
 app.get("/seller", (req, res) => {
-  res.sendFile(path.join(staticPth, "seller.html"));
+  res.sendFile(path.join(staticPth, "seller/seller.html"));
 });
 
 app.post("/seller", (req, res) => {
@@ -440,7 +440,7 @@ app.post("/delete-product", (req, res) => {
 
 // product page
 app.get("/products/:id", (req, res) => {
-  res.sendFile(path.join(staticPth, "product.html"));
+  res.sendFile(path.join(staticPth, "shop/product.html"));
 });
 
 app.get("/search/:key", (req, res) => {
