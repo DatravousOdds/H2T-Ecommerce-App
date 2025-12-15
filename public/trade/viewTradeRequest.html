@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>View Trade Request</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <link rel="stylesheet" href="css/style2.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/854f8a6196.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="icon" type="image/png" href="./images/H2T LogoB Small.png" />
+    <link rel="stylesheet" href="css property/view-trade-requests.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <section id="header">
+      <nav></nav>
+    </section>
+    <!-- End of Navbar -->
+
+    <div class="trade-request-container">
+      <!-- Trade Request Header -->
+      <header class="trade-request-header">
+        <div class="trade-request-header-container">
+          <!-- Back Button -->
+          <a href="/trade-requests">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <!-- Trade Request Title -->
+          <h1>Trade Request</h1>
+        </div>
+
+        <!-- Trade Request Status -->
+        <div class="status-and-order-id-wrapper">
+          <!-- Trade Request Order ID -->
+          <span class="trade-request-order-id">Order ID: 1234567890</span>
+          <div class="status-container pending-response">
+            <svg
+              class="loading-spinner"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <span class="status-text">Pending Response</span>
+          </div>
+        </div>
+      </header>
+      <!-- Trade Request Body -->
+      <div class="trade-request-body">
+        <!-- Your Items -->
+        <div class="trade-request-item your-items">
+          <header class="trade-request-item-header">
+            <h2 class="trade-request-item-title">Your Items</h2>
+            <div class="total-price">Total: $100</div>
+          </header>
+
+          <div class="trade-request-item-card your-items">
+            <div class="trade-request-item-image">
+              <img src="images/H2T LogoB Small.png" alt="Trade Request Item" />
+            </div>
+            <div class="trade-request-item-info">
+              <div class="trade-request-item-name">Item Name</div>
+              <div class="trade-request-item-value">Item Value</div>
+              <div class="trade-request-item-condition">Item Condition</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Their Items -->
+        <div class="trade-request-item their-items">
+          <header class="trade-request-item-header">
+            <h2 class="trade-request-item-title">Their Items</h2>
+            <div class="total-price">Total: $100</div>
+          </header>
+          <div class="trade-request-item-card their-items">
+            <div class="trade-request-item-image">
+              <img
+                src="images/Jordan 5 Retro Racer(9).jpg"
+                alt="Trade Request Item"
+              />
+            </div>
+            <div class="trade-request-item-info">
+              <div class="trade-request-item-name">Jordan 5 Retro Racer</div>
+              <div class="trade-request-item-value">Value: $100</div>
+              <div class="trade-request-item-condition">Condition: New</div>
+            </div>
+          </div>
+        </div>
+        <!-- Trade Summary -->
+        <div class="trade-request-summary">
+          <div class="trade-request-summary-title">Trade Summary</div>
+          <div class="trade-request-summary-content">
+            <div class="trade-request-summary-container">
+              <div class="trade-request-summary-item your-items">
+                <div class="trade-request-summary-your-total">Your Total</div>
+                <div class="trade-request-summary-your-total-value">$100</div>
+              </div>
+              <div class="trade-request-summary-icon">
+                <i class="fa-solid fa-right-left" aria-hidden="true"></i>
+              </div>
+              <div class="trade-request-summary-item their-items">
+                <div class="trade-request-summary-their-total">Their Total</div>
+                <div class="trade-request-summary-their-total-value">$100</div>
+              </div>
+            </div>
+            <div class="trade-request-value-difference">
+              <div class="value-diff-icon">
+                <i class="fa-solid fa-dollar-sign"></i>
+              </div>
+              <div class="trade-request-value-difference-content">
+                <div class="trade-request-value-difference-title">
+                  Value Difference
+                </div>
+                <div class="trade-request-value-difference-text">
+                  There is a $50 value difference in your favor.
+                </div>
+              </div>
+            </div>
+
+            <!-- Fees Breakdown -->
+            <div class="fees-breakdown-container">
+              <h3>Fees Breakdown</h3>
+              <div class="trade-fee space-between">
+                <p class="trade-fee-title">Trading Fee (2%):</p>
+                <p class="trade-fee-value">$0</p>
+              </div>
+              <div class="processing-fee space-between">
+                <p class="processing-fee-title">Processing Fee:</p>
+                <p class="processing-fee-value">$0</p>
+              </div>
+              <div class="platform-fee space-between">
+                <p class="platform-fee-title">Platform Fee:</p>
+                <p class="platform-fee-value">$0</p>
+              </div>
+              <div class="total-fees space-between">
+                <p class="total-fees-title">Total Fees:</p>
+                <p class="total-fees-value">$0</p>
+              </div>
+              <div class="final-total space-between">
+                <p class="final-total-title">Final Total:</p>
+                <p class="final-total-value">$0</p>
+              </div>
+            </div>
+
+            <!-- Trade Status -->
+            <div class="trade-status-container">
+              <div class="trade-status-title">Trade Status</div>
+              <div class="trade-request-latest-update">
+                <div class="status-icon">
+                  <div class="inner-circle trade-request-created"></div>
+                </div>
+                <div class="status-text">
+                  <span class="status-text-title">Trade Request Created</span>
+                  <span class="status-date-time">12/07/2024 12:00 PM</span>
+                </div>
+              </div>
+              <div class="trade-request-latest-update">
+                <div class="status-icon">
+                  <div class="inner-circle awaiting-response"></div>
+                </div>
+                <div class="status-text">
+                  <span class="status-text-title">Awaiting Response</span>
+                  <span class="trade-request-response"
+                    >TraderJoe has 24 hours to respond</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="trade-request-buttons">
+              <button class="trade-request-message">Message TraderJoe</button>
+              <button class="trade-request-cancel">Cancel Trade Request</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script -->
+    <script src="js/view-trade-requests.js"></script>
+    <script type="module" src="js/nav.js"></script>
+  </body>
+</html>

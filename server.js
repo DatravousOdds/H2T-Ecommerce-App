@@ -159,7 +159,7 @@ app.get("/view-trade-request", (req, res) => {
 
 // sell to us route
 app.get("/sell-to-us", (req, res) => {
-  res.sendFile(path.join(staticPth, "sell-to-us.html"));
+  res.sendFile(path.join(staticPth, "sell-to-us/sell-to-us.html"));
 });
 
 // releases route
@@ -169,7 +169,7 @@ app.get("/releases", (req, res) => {
 
 // authentication route
 app.get("/authenticate", (req, res) => {
-  res.sendFile(path.join(staticPth, "authenticate.html"));
+  res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));
 });
 
 app.post("/signup", async (req, res) => {

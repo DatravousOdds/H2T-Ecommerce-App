@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Head-To-Toes : Sell to Us</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/854f8a6196.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="../css/sell-to-us.css" />
+    <link rel="stylesheet" href="../css/style2.css" />
+    <link rel="stylesheet" href="../css/components/newsletter.css">
+  </head>
+  <body>
+    <!-- Header -->
+    <section id="header">
+      <nav aria-label="Main Navigation"></nav>
+    </section>
+
+    <!-- Page Header-->
+    <section id="page-header" class="sell-header">
+      <h1>Sell Your Items to Us</h1>
+      <p>
+        Get top dollar for your quality items with our hassle-free selling
+        process
+      </p>
+    </section>
+
+    <!-- Breadcrumb Navigation -->
+    <section id="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb-separator">></span>
+      <span class="breadcrumb-current">Sell to Us</span>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Quote Confirmation Model-->
+       <div class="modal-overlay">
+          <div class="modal-container">
+            <div class="modal-header">
+              <h2 class="modal-title">Review Your Quote</h2>
+              <button type="button" class="c-button" aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="scrollable-content">
+
+              <div class="image-section">
+                <div class="details-header">
+                  <div class="subheader">
+                    <i class="fa-regular fa-images"></i>
+                    <p>Product Images</p>
+                  </div>
+                  
+                  <div class="images-uploaded">
+                    <p>✓ 4 images uploaded</p>
+                  </div>
+
+                </div>
+                <div class="image-grid">
+                    <div class="image-item">
+                      <img src="" alt="" class="review-image">
+                    </div>
+                    <div class="image-item">
+                      
+                      <img src="" alt="" class="review-image">
+                    </div>
+                    <div class="image-item">
+                      
+                      <img src="" alt="" class="review-image">
+                    </div>
+                    <div class="image-item">
+                      
+                      <img src="" alt="" class="review-image">
+                    </div>
+                </div>
+                
+                
+              </div>
+
+              <div class="details-section">
+                <div class="details-header">
+                  <div class="subheader">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <p>Item Details</p>
+                  </div>
+                  
+                </div>
+                <div class="detail-content">
+                  <div class="detail-item">
+                    <span class="detail-label">Product Name</span>
+                    <span class="detail-value">Nike Air Jordan 1 High</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Condition</span>
+                    <span class="detail-value">9/10 - Excellent</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Size</span>
+                    <span class="detail-value">US 10.5</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Brand</span>
+                    <span class="detail-value">Nike</span>
+                  </div>
+                  <div class="additonal-notes">
+                    <div class="product-notes">
+                    <p class="product-title">Additional Notes</p>
+                    <p class="product-note">Orginal box, included, barely worn, no visible defects</p>
+                    </div>
+                  </div>
+                </div>
+                  
+                </div>
+                
+              </div>
+
+              <div class="price-section">
+                <div class="details-header">
+                  <div class="subheader">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                    <p>your asking price</p>
+                  </div>
+                  
+                </div>
+
+                <div class="asking-content">
+                  <div class="product-asking-container">
+                    <div class="product-asking">
+                      <p class="asking-text">You're asking for</p>
+                      <p class="asking-price">$250.00</p>
+                    </div>
+                    <button class="asking-edit" aria-label="Edit asking price">Edit Price</button>
+                  </div>
+                  <div class="asking-info">
+                    <div class="asking-next">
+                      <i class="fa-solid fa-circle-info"></i>
+                      <p>What happens next?</p>
+                    </div>
+                    <p class="asking-next-note">
+                      Our team will review your item and respond within 24-48 hours with an offer. You'll be notified via email.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="terms-section">
+                <label class="terms-checkbox">
+                    <input type="checkbox" name="product-checkbox" id="product-checkbox" required>
+                    <span class="term-notes">I confirm that all information provided is accurate and the images show the actual condition of item.</span>
+                </label>
+                <p class="terms-info">Misrepresentation may results in quote reject and account fees and restrictions</p>
+                            
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn-secondary">Go Back</button>
+                <button class="btn-primary">Submit →</button>
+              </div>
+          </div>
+          
+        </div>
+       </div>
+      <form
+        id="sell-form"
+        action="/submit-item"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <!-- Upload Images Section -->
+        <section class="upload-image-section">
+          <h2>Upload Images</h2>
+          <p class="image-upload-instructions">
+            High-quality images of your item will help us determine its value.
+          </p>
+          <div class="image-grid">
+            <!-- Main Image -->
+            <div class="image-item">
+              <input
+                type="file"
+                id="main-image"
+                name="main-image"
+                accept="image/*"
+                required
+              />
+              <label class="upload-placeholder">
+                <i class="fas fa-camera"></i>
+                <p>Main Photo</p>
+              </label>
+              <img src="" alt="" class="image-preview" alt="preview" style="display: none">
+            </div>
+            <!-- Additional Images -->
+            <div class="image-item">
+              <input
+                type="file"
+                id="additional-image-1"
+                name="additional-image-1"
+                accept="image/*"
+              />
+              <div class="upload-placeholder">
+                <i class="fas fa-plus"></i>
+                <p>Additional Photo</p>
+              </div>
+              <img src="" alt="" class="image-preview" alt="preview" style="display: none">
+            </div>
+            <div class="image-item">
+              <input
+                type="file"
+                id="additional-image-2"
+                name="additional-image-2"
+                accept="image/*"
+              />
+              <div class="upload-placeholder">
+                <i class="fas fa-plus"></i>
+                <p>Additional Photo</p>
+              </div>
+              <img src="" alt="" class="image-preview" alt="preview" style="display: none">
+            </div>
+            <div class="image-item">
+              <input
+                type="file"
+                id="additional-image-3"
+                name="additional-image-3"
+                accept="image/*"
+              />
+              <div class="upload-placeholder">
+                <i class="fas fa-plus"></i>
+                <p>Additional Photo</p>
+              </div>
+              <img src="" alt="" class="image-preview" alt="preview" style="display: none">
+            </div>
+          </div>
+          <p class="image-upload-instructions">
+            Upload up to 4 images. First image will be used as the main image.
+          </p>
+        </section>
+        <div class="item-details-section">
+          <h2>Item Details</h2>
+          <!-- Category -->
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select name="category" id="category">
+              <option value="electronics">Electronics</option>
+              <option value="furniture">Furniture</option>
+              <option value="clothing">Clothing</option>
+              <option value="women">Women</option>
+              <option value="men">Men</option>
+              <option value="kids">Kids</option>
+              <option value="home-decor">Home Decor</option>
+              <option value="jewelry">Jewelry</option>
+              <option value="art">Art</option>
+              <option value="collectibles">Collectibles</option>
+              <option value="sports">Sports</option>
+              <option value="toys">Toys</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <!-- Condition -->
+          <div class="form-group">
+            <label for="condition">Condition</label>
+            <select name="condition" id="condition">
+              <option value="new">New</option>
+              <option value="like-new">Like New</option>
+              <option value="good">Good</option>
+              <option value="fair">Fair</option>
+              <option value="poor">Poor</option>
+            </select>
+          </div>
+          <!-- Description -->
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              name="description"
+              id="description"
+              rows="4"
+              placeholder="Describe your item in detail."
+            ></textarea>
+          </div>
+          <!-- Asking Price -->
+          <div class="form-group">
+            <label for="asking-price">Asking Price</label>
+            <div class="price-input-container">
+              <span class="dollar-sign">$</span>
+              <input type="number" id="asking-price" name="asking-price" />
+            </div>
+          </div>
+        </div>
+        <div class="features-section">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <h2>Fast Processing</h2>
+            <p>
+              We offer a quick and easy process. You can get cash in hand in as
+              little as 24 hours.
+            </p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-truck"></i>
+            </div>
+            <h2>Free Shipping</h2>
+            <p>
+              We offer free shipping to our customers. You can get your item
+              delivered to us for free.
+            </p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <h2>Best Value</h2>
+            <p>
+              We offer the best value for your item. You can get the best price
+              for your item.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2>Secure Process</h2>
+            <p>Safe and verified transactions.</p>
+          </div>
+        </div>
+        <div class="submit-section">
+          <button class="submit-button" type="button">Get Quote</button>
+        </div>
+      </form>
+    </main>
+
+    <section id="newsletter" class="section-p1">
+      <div class="newstext">
+        <!-- change later, look at planning sheet -->
+        <h4>Sign Up for Newsletter</h4>
+        <!-- change later, look at planning sheet -->
+        <p>
+          Get E-mail updates about latest shop and <span>special offers</span>
+        </p>
+      </div>
+      <div class="form">
+        <input type="text" placeholder="  Your email address" />
+        <button class="normal">Sign Up</button>
+      </div>
+    </section>
+
+    <footer class="section-m1" style="background-color: white"></footer>
+
+    <script src="../js/services/sell-to-us.js"></script>
+    <script type="module" src="../js/components/nav.js"></script>
+    <script src="../js/components/footer.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+  </body>
+</html>

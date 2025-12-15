@@ -128,7 +128,7 @@ const newNav = async () => {
             <div class="dropdown-content">
               <div class="services-grid">
                 <!-- Authentication -->
-                <a href="/authenticate.html" class="service-item">
+                <a href="/authenticate" class="service-item">
                   <div class="service-icon">
                     <i class="fa-solid fa-screwdriver"></i>
                   </div>

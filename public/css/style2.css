@@ -1078,7 +1078,7 @@ nav ul li a {
 
 #feature .fe-box i {
   font-size: 8rem;
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 #feature .fe-box h6 {
@@ -1235,7 +1235,7 @@ nav ul li a {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url(/images/jb-1.png);
+  background-image: url(/images/mens_1.jpg);
   min-width: 103%;
   height: 50vh;
   margin-top: 3rem;
@@ -1249,7 +1249,7 @@ nav ul li a {
 }
 
 #sm-banner .banner-box2 {
-  background-image: url(/images/bg-1.png);
+  background-image: url(/images/womens_1.jpg);
   backdrop-filter: blur(20px);
   border-radius: 4px;
   /* filter: blur(1px); */
@@ -1279,6 +1279,30 @@ nav ul li a {
   padding-bottom: 15px;
 }
 
+.banner-box .card_badge {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  box-shadow: 
+    0 4px 12px rgba(255, 0, 0, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 11px;
+  padding: 8px 1rem;
+  background-color: var(--color-red);
+  color: var(--color-white);
+  border-radius: 20px;
+}
+
+.banner-box .banner-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-white);
+  font-weight: 600;
+}
+
 #sm-banner .banner-box:hover button {
   /* change color if needed */
   background: #eb0909;
@@ -1293,25 +1317,34 @@ nav ul li a {
 }
 
 #banner3 .banner-box {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
-  background-image: url(/images/bg-4.png);
+  /* align-items: flex-start; */
+  background-image: url(/images/just_dropped.jpg);
   min-width: 48%;
-  height: 30vh;
+  height: 400px;
   background-size: cover;
   background-position: center;
   padding: 20px;
+  overflow: hidden;
   margin-bottom: 20px;
   border-radius: 4px;
+  cursor: pointer;
 }
 
+
+
 #banner3 .banner-box2 {
-  background-image: url(/images/bg-3.png);
+  background-image: url(/images/just_dropped_2.jpg);
 }
 
 #banner3 .banner-box3 {
+  background-image: url(/images/banner_3.jpg);
+}
+
+#banner3 .banner-box4 {
   background-image: url(/images/bg-2.png);
 }
 
@@ -1333,68 +1366,6 @@ nav ul li a {
   font-size: 22px;
 }
 
-#newsletter {
-  height: 100px;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  align-items: center;
-  background-image: url(/images/nsl.png);
-  background-repeat: no-repeat;
-  background-position: 20% 30%;
-  background-color: #041e42;
-}
-
-#newsletter h4 {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--color-white);
-}
-
-#newsletter p {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-white);
-}
-
-#newsletter p span {
-  color: #ffbd27;
-}
-
-#newsletter .form {
-  display: flex;
-  width: 40%;
-}
-
-#newsletter input {
-  /* height: 3.125rem; */
-  padding: 0.1.25em;
-  font-size: 16px;
-  width: 100%;
-  border: 1px solid transparent;
-  border-radius: 24px;
-  outline: none;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.form input[type="text"] {
-  padding-left: 10px;
-}
-
-#newsletter button {
-  /* change color */
-  background-color: var(--color-red);
-  color: var(--color-white);
-  white-space: nowrap;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  transition: 0.5s;
-}
-
-#newsletter button:hover {
-  background-color: rgb(255, 136, 136);
-}
 
 .index,
 .row img {
@@ -2301,20 +2272,7 @@ footer .rights {
     border-radius: 15px;
   }
 
-  /* Newsletter */
-
-  #newsletter {
-    margin-bottom: 1rem;
-    height: auto;
-  }
-
-  #newsletter .form {
-    width: 100%;
-  }
-
-  #newsletter input {
-    padding: 0.6rem;
-  }
+  
 
   /* Footer */
 
