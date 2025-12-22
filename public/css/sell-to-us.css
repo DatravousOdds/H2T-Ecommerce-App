@@ -220,6 +220,13 @@ h2 {
   border-radius: 5px;
 }
 
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+
 .form-group textarea {
   width: 100%;
   padding: 10px;
@@ -410,12 +417,20 @@ footer {
 }
 
 .product-asking-container .asking-edit {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
   background: none;
-  border: none;
+  border: 2px solid #f30c1e;
   color: #F30B1E;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
+  transition: ease-in-out 0.3s;
+}
+
+.product-asking-container .asking-edit:hover {
+  background: #f30c1e;
+  color: white;
 }
 
 .asking-text {
@@ -429,6 +444,13 @@ footer {
   color: #111;
   font-weight: 700;
   margin-top: 0.25rem;
+}
+
+.edit-asking-price {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
 }
 
 .asking-info {
@@ -552,12 +574,14 @@ footer {
   font-size: 0.875rem;
   color: #757B88;
   font-weight: 400;
+  text-transform: capitalize;
 }
 
 .detail-item .detail-value {
   font-size: 0.875rem;
   color: #111;
   font-weight: 600;
+  text-transform: capitalize;
 }
 
 .additonal-notes {

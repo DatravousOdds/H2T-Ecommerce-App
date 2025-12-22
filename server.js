@@ -551,7 +551,7 @@ app.post("/order", (req, res) => {
 
 // 404 route
 app.get("/404", (req, res) => {
-  res.sendFile(path.join(staticPth, "404.html"));
+  res.sendFile(path.join(staticPth, "/static/404.html"));
 });
 
 app.use((req, res) => {

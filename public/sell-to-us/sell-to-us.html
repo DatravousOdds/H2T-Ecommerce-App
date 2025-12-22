@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="../css/sell-to-us.css" />
     <link rel="stylesheet" href="../css/style2.css" />
     <link rel="stylesheet" href="../css/components/newsletter.css">
+    <link rel="stylesheet" href="../css/components/button.css">
   </head>
   <body>
     <!-- Header -->
@@ -145,7 +146,9 @@
                       <p class="asking-text">You're asking for</p>
                       <p class="asking-price">$250.00</p>
                     </div>
-                    <button class="asking-edit" aria-label="Edit asking price">Edit Price</button>
+                    <div class="action-buttons">
+                      <button id="edit-asking-price" class="asking-edit" aria-label="Edit asking price">Edit Price</button>
+                    </div>
                   </div>
                   <div class="asking-info">
                     <div class="asking-next">
@@ -256,19 +259,23 @@
             <label for="category">Category</label>
             <select name="category" id="category">
               <option value="electronics">Electronics</option>
-              <option value="furniture">Furniture</option>
+              <option value="sneakers">Sneakers</option>
               <option value="clothing">Clothing</option>
               <option value="women">Women</option>
               <option value="men">Men</option>
               <option value="kids">Kids</option>
-              <option value="home-decor">Home Decor</option>
               <option value="jewelry">Jewelry</option>
               <option value="art">Art</option>
               <option value="collectibles">Collectibles</option>
-              <option value="sports">Sports</option>
+              <option value="trading-cards">Trading Cards</option>
               <option value="toys">Toys</option>
               <option value="other">Other</option>
             </select>
+          </div>
+          <!-- Title -->
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input class="title" type="text" id="title" name="title" />
           </div>
           <!-- Condition -->
           <div class="form-group">

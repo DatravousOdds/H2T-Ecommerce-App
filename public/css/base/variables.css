@@ -1,0 +1,22 @@
+:root {
+  --color-999: #222;
+  --color-red: #f30c1e;
+  --color-white: #ffffff;
+  --color-black: #070707;
+  --mar-1: 1.06rem;
+  --mar-2: auto 1rem;
+  --bRadius-1: 0.75rem;
+  --btnHover: rgba(255, 0, 0, 0.7);
+  --btnPadding: 5px 5px;
+  --textUpperCase: uppercase;
+  --smallScreenFontSz: 0.98rem;
+  --fontSize-1: 1rem;
+  --rightTextAlign: left;
+  --paraFontSize: 1rem;
+  --paraFontSize-1: 0.125rem;
+
+  --color-red: #ff0000;
+  --color-white: #ffffff;
+  --smallScreenFontSize: 14px;
+  --header-height: 60px;
+}
