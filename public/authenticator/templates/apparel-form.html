@@ -1,0 +1,149 @@
+<!-- ============================================ -->
+            <!-- Apparel Form -->
+            <!-- ============================================ -->
+            <div class="form-wrapper" id="apparel-form" style="display: none;">
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="apparel-brand">Brand <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="apparel-brand"
+                    name="brand"
+                    placeholder="e.g., Supreme, Nike, Adidas"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="apparel-type">Item Type <span class="required">*</span></label>
+                  <select name="itemType" id="apparel-type" required aria-required="true">
+                    <option value="">Select type...</option>
+                    <optgroup label="Tops">
+                      <option value="t-shirt">T-Shirt</option>
+                      <option value="long-sleeve">Long Sleeve Shirt</option>
+                      <option value="polo">Polo Shirt</option>
+                      <option value="tank-top">Tank Top</option>
+                      <option value="hoodie">Hoodie</option>
+                      <option value="sweatshirt">Sweatshirt</option>
+                      <option value="sweater">Sweater</option>
+                      <option value="jersey">Jersey</option>
+                    </optgroup>
+                    <optgroup label="Outerwear">
+                      <option value="jacket">Jacket</option>
+                      <option value="coat">Coat</option>
+                      <option value="windbreaker">Windbreaker</option>
+                      <option value="vest">Vest</option>
+                    </optgroup>
+                    <optgroup label="Bottoms">
+                      <option value="pants">Pants</option>
+                      <option value="jeans">Jeans</option>
+                      <option value="shorts">Shorts</option>
+                      <option value="joggers">Joggers</option>
+                      <option value="sweatpants">Sweatpants</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                      <option value="dress">Dress</option>
+                      <option value="skirt">Skirt</option>
+                      <option value="jumpsuit">Jumpsuit</option>
+                      <option value="other">Other</option>
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="apparel-size">Size <span class="required">*</span></label>
+                  <select name="size" id="apparel-size" required aria-required="true">
+                    <option value="">Select size...</option>
+                    <optgroup label="Standard Sizes">
+                      <option value="XXS">XXS</option>
+                      <option value="XS">XS</option>
+                      <option value="S">S (Small)</option>
+                      <option value="M">M (Medium)</option>
+                      <option value="L">L (Large)</option>
+                      <option value="XL">XL</option>
+                      <option value="XXL">XXL</option>
+                      <option value="3XL">3XL</option>
+                      <option value="4XL">4XL</option>
+                    </optgroup>
+                    <optgroup label="Numeric Sizes">
+                      <option value="28">28</option>
+                      <option value="30">30</option>
+                      <option value="32">32</option>
+                      <option value="34">34</option>
+                      <option value="36">36</option>
+                      <option value="38">38</option>
+                      <option value="40">40</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="apparel-condition">Condition <span class="required">*</span></label>
+                  <select
+                    name="condition"
+                    id="apparel-condition"
+                    class="condition-select"
+                    required
+                    aria-required="true"
+                  >
+                    <option value="">Select condition...</option>
+                    <option value="new-with-tags">New with Tags</option>
+                    <option value="new-without-tags">New without Tags</option>
+                    <option value="like-new">Like New</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="worn">Well Worn</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="apparel-color">Color <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="apparel-color"
+                    name="color"
+                    placeholder="e.g., Black, Navy Blue, Multi"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="apparel-material">Material</label>
+                  <input
+                    type="text"
+                    id="apparel-material"
+                    name="material"
+                    placeholder="e.g., Cotton, Polyester, Wool"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input">
+                <label for="apparel-style">Style/Collection</label>
+                <input
+                  type="text"
+                  id="apparel-style"
+                  name="style"
+                  placeholder="e.g., Box Logo, Travis Scott Collab"
+                />
+              </div>
+
+              <div class="form-input">
+                <label for="apparel-additionalDetails">Additional Details</label>
+                <textarea
+                  id="apparel-additionalDetails"
+                  class="additional-details"
+                  name="additionalDetails"
+                  placeholder="Any additional information about the item..."
+                  rows="4"
+                  aria-describedby="apparelDetailsHelp"
+                ></textarea>
+                <small id="apparelDetailsHelp" class="form-text"
+                  >Include details about fit, flaws, alterations, or special features</small
+                >
+              </div>
+            </div>

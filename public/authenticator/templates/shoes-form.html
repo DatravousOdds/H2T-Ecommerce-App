@@ -1,0 +1,150 @@
+<!-- ============================================ -->
+            <!-- Shoes Form (Non-Sneaker Footwear) -->
+            <!-- ============================================ -->
+            <div class="form-wrapper" id="shoes-form" style="display: none;">
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="shoes-brand">Brand <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="shoes-brand"
+                    name="brand"
+                    placeholder="e.g., Timberland, Dr. Martens, Clarks"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="shoes-model">Model/Style <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="shoes-model"
+                    name="model"
+                    placeholder="e.g., 6-Inch Premium Boot"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="shoes-type">Shoe Type <span class="required">*</span></label>
+                  <select name="shoeType" id="shoes-type" required aria-required="true">
+                    <option value="">Select type...</option>
+                    <option value="boots">Boots</option>
+                    <option value="dress-shoes">Dress Shoes</option>
+                    <option value="loafers">Loafers</option>
+                    <option value="oxfords">Oxfords</option>
+                    <option value="sandals">Sandals</option>
+                    <option value="slippers">Slippers</option>
+                    <option value="casual">Casual Shoes</option>
+                    <option value="work-shoes">Work Shoes</option>
+                    <option value="heels">Heels</option>
+                    <option value="flats">Flats</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="shoes-size">Size <span class="required">*</span></label>
+                  <select name="size" id="shoes-size" required aria-required="true">
+                    <option value="">Select size...</option>
+                    <optgroup label="Men's US Sizes">
+                      <option value="US M 6">US M 6</option>
+                      <option value="US M 6.5">US M 6.5</option>
+                      <option value="US M 7">US M 7</option>
+                      <option value="US M 7.5">US M 7.5</option>
+                      <option value="US M 8">US M 8</option>
+                      <option value="US M 8.5">US M 8.5</option>
+                      <option value="US M 9">US M 9</option>
+                      <option value="US M 9.5">US M 9.5</option>
+                      <option value="US M 10">US M 10</option>
+                      <option value="US M 10.5">US M 10.5</option>
+                      <option value="US M 11">US M 11</option>
+                      <option value="US M 11.5">US M 11.5</option>
+                      <option value="US M 12">US M 12</option>
+                      <option value="US M 13">US M 13</option>
+                      <option value="US M 14">US M 14</option>
+                    </optgroup>
+                    <optgroup label="Women's US Sizes">
+                      <option value="US W 5">US W 5</option>
+                      <option value="US W 5.5">US W 5.5</option>
+                      <option value="US W 6">US W 6</option>
+                      <option value="US W 6.5">US W 6.5</option>
+                      <option value="US W 7">US W 7</option>
+                      <option value="US W 7.5">US W 7.5</option>
+                      <option value="US W 8">US W 8</option>
+                      <option value="US W 8.5">US W 8.5</option>
+                      <option value="US W 9">US W 9</option>
+                      <option value="US W 9.5">US W 9.5</option>
+                      <option value="US W 10">US W 10</option>
+                      <option value="US W 10.5">US W 10.5</option>
+                      <option value="US W 11">US W 11</option>
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="shoes-color">Color <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="shoes-color"
+                    name="color"
+                    placeholder="e.g., Brown, Black, Tan"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="shoes-material">Material</label>
+                  <select name="material" id="shoes-material">
+                    <option value="">Select material...</option>
+                    <option value="leather">Leather</option>
+                    <option value="suede">Suede</option>
+                    <option value="canvas">Canvas</option>
+                    <option value="synthetic">Synthetic</option>
+                    <option value="rubber">Rubber</option>
+                    <option value="fabric">Fabric</option>
+                    <option value="patent-leather">Patent Leather</option>
+                    <option value="nubuck">Nubuck</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input">
+                <label for="shoes-condition">Condition <span class="required">*</span></label>
+                <select
+                  name="condition"
+                  id="shoes-condition"
+                  class="condition-select"
+                  required
+                  aria-required="true"
+                >
+                  <option value="">Select condition...</option>
+                  <option value="new-with-box">New with Box</option>
+                  <option value="new-no-box">New without Box</option>
+                  <option value="like-new">Like New</option>
+                  <option value="excellent">Excellent</option>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="worn">Well Worn</option>
+                </select>
+              </div>
+
+              <div class="form-input">
+                <label for="shoes-additionalDetails">Additional Details</label>
+                <textarea
+                  id="shoes-additionalDetails"
+                  class="additional-details"
+                  name="additionalDetails"
+                  placeholder="Any additional information about the shoes..."
+                  rows="4"
+                  aria-describedby="shoesDetailsHelp"
+                ></textarea>
+                <small id="shoesDetailsHelp" class="form-text"
+                  >Include details about sole condition, interior wear, repairs, or special features</small
+                >
+              </div>
+            </div>

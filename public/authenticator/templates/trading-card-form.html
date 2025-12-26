@@ -1,0 +1,150 @@
+<!-- ============================================ -->
+            <!-- Trading Cards Form -->
+            <!-- ============================================ -->
+            <div class="form-wrapper" id="trading-cards-form" style="display: block;">
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="card-brand">Brand/Game <span class="required">*</span></label>
+                  <select name="brand" id="card-brand" required aria-required="true">
+                    <option value="">Select brand...</option>
+                    <option value="Pokemon">Pokémon</option>
+                    <option value="Yu-Gi-Oh">Yu-Gi-Oh!</option>
+                    <option value="Magic">Magic: The Gathering</option>
+                    <option value="Baseball">Baseball (MLB)</option>
+                    <option value="Basketball">Basketball (NBA)</option>
+                    <option value="Football">Football (NFL)</option>
+                    <option value="Soccer">Soccer</option>
+                    <option value="Other Sports">Other Sports</option>
+                    <option value="Other TCG">Other Trading Card Game</option>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="card-name">Card Name/Player <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="card-name"
+                    name="cardName"
+                    placeholder="e.g., Charizard, Michael Jordan"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="card-set">Set/Series <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="card-set"
+                    name="set"
+                    placeholder="e.g., Base Set, Topps Chrome"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="card-year">Year <span class="required">*</span></label>
+                  <input
+                    type="number"
+                    id="card-year"
+                    name="year"
+                    placeholder="e.g., 1999"
+                    min="1900"
+                    max="2025"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="card-number">Card Number</label>
+                  <input
+                    type="text"
+                    id="card-number"
+                    name="cardNumber"
+                    placeholder="e.g., 4/102, #1"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="card-edition">Edition</label>
+                  <select name="edition" id="card-edition">
+                    <option value="">Select edition...</option>
+                    <option value="1st-edition">1st Edition</option>
+                    <option value="unlimited">Unlimited</option>
+                    <option value="limited">Limited Edition</option>
+                    <option value="shadowless">Shadowless</option>
+                    <option value="reverse-holo">Reverse Holo</option>
+                    <option value="holo">Holo</option>
+                    <option value="non-holo">Non-Holo</option>
+                    <option value="promo">Promo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="card-condition">Condition/Grade <span class="required">*</span></label>
+                  <select
+                    name="condition"
+                    id="card-condition"
+                    class="condition-select"
+                    required
+                    aria-required="true"
+                  >
+                    <option value="">Select condition...</option>
+                    <optgroup label="Professional Grading">
+                      <option value="psa-10">PSA 10 (Gem Mint)</option>
+                      <option value="psa-9">PSA 9 (Mint)</option>
+                      <option value="psa-8">PSA 8 (Near Mint-Mint)</option>
+                      <option value="psa-7">PSA 7 (Near Mint)</option>
+                      <option value="psa-6">PSA 6 (Excellent-Mint)</option>
+                      <option value="bgs-10">BGS 10 (Black Label)</option>
+                      <option value="bgs-9.5">BGS 9.5 (Gem Mint)</option>
+                      <option value="bgs-9">BGS 9 (Mint)</option>
+                      <option value="bgs-8.5">BGS 8.5 (Near Mint-Mint+)</option>
+                      <option value="cgc-10">CGC 10 (Pristine)</option>
+                      <option value="cgc-9.5">CGC 9.5 (Gem Mint)</option>
+                      <option value="cgc-9">CGC 9 (Mint)</option>
+                    </optgroup>
+                    <optgroup label="Ungraded">
+                      <option value="mint">Mint</option>
+                      <option value="near-mint">Near Mint</option>
+                      <option value="excellent">Excellent</option>
+                      <option value="good">Good</option>
+                      <option value="played">Played</option>
+                      <option value="heavily-played">Heavily Played</option>
+                      <option value="damaged">Damaged</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="card-grading-company">Grading Company</label>
+                  <select name="gradingCompany" id="card-grading-company">
+                    <option value="">Not Graded</option>
+                    <option value="psa">PSA</option>
+                    <option value="bgs">BGS/Beckett</option>
+                    <option value="cgc">CGC</option>
+                    <option value="sgc">SGC</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input">
+                <label for="card-additionalDetails">Additional Details</label>
+                <textarea
+                  id="card-additionalDetails"
+                  class="additional-details"
+                  name="additionalDetails"
+                  placeholder="Any additional information about the card..."
+                  rows="4"
+                  aria-describedby="cardDetailsHelp"
+                ></textarea>
+                <small id="cardDetailsHelp" class="form-text"
+                  >Include details about centering, surface scratches, autographs, or special characteristics</small
+                >
+              </div>
+            </div>

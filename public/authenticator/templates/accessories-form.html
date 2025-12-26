@@ -1,0 +1,141 @@
+<!-- ============================================ -->
+            <!-- Accessories Form -->
+            <!-- ============================================ -->
+            <div class="form-wrapper" id="accessories-form" style="display: none;">
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="accessories-type">Accessory Type <span class="required">*</span></label>
+                  <select name="accessoryType" id="accessories-type" required aria-required="true">
+                    <option value="">Select type...</option>
+                    <optgroup label="Head & Face">
+                      <option value="hat">Hat/Cap</option>
+                      <option value="beanie">Beanie</option>
+                      <option value="headband">Headband</option>
+                      <option value="sunglasses">Sunglasses</option>
+                      <option value="eyeglasses">Eyeglasses</option>
+                    </optgroup>
+                    <optgroup label="Bags">
+                      <option value="backpack">Backpack</option>
+                      <option value="messenger-bag">Messenger Bag</option>
+                      <option value="tote-bag">Tote Bag</option>
+                      <option value="duffle-bag">Duffle Bag</option>
+                      <option value="fanny-pack">Fanny Pack/Belt Bag</option>
+                      <option value="handbag">Handbag</option>
+                    </optgroup>
+                    <optgroup label="Jewelry & Watches">
+                      <option value="watch">Watch</option>
+                      <option value="necklace">Necklace</option>
+                      <option value="bracelet">Bracelet</option>
+                      <option value="ring">Ring</option>
+                      <option value="earrings">Earrings</option>
+                    </optgroup>
+                    <optgroup label="Small Accessories">
+                      <option value="wallet">Wallet</option>
+                      <option value="belt">Belt</option>
+                      <option value="scarf">Scarf</option>
+                      <option value="gloves">Gloves</option>
+                      <option value="socks">Socks</option>
+                      <option value="tie">Tie</option>
+                      <option value="keychain">Keychain</option>
+                    </optgroup>
+                    <optgroup label="Tech Accessories">
+                      <option value="phone-case">Phone Case</option>
+                      <option value="airpods-case">AirPods Case</option>
+                      <option value="laptop-case">Laptop Case</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                      <option value="collectible">Collectible</option>
+                      <option value="other">Other</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="accessories-brand">Brand <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="accessories-brand"
+                    name="brand"
+                    placeholder="e.g., Supreme, Rolex, Ray-Ban"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="accessories-model">Model/Style</label>
+                  <input
+                    type="text"
+                    id="accessories-model"
+                    name="model"
+                    placeholder="e.g., Box Logo Beanie, Submariner"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="accessories-color">Color/Material</label>
+                  <input
+                    type="text"
+                    id="accessories-color"
+                    name="color"
+                    placeholder="e.g., Black Leather, Silver"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="accessories-size">Size (if applicable)</label>
+                  <input
+                    type="text"
+                    id="accessories-size"
+                    name="size"
+                    placeholder="e.g., One Size, 32 inches, 42mm"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="accessories-condition">Condition <span class="required">*</span></label>
+                  <select
+                    name="condition"
+                    id="accessories-condition"
+                    class="condition-select"
+                    required
+                    aria-required="true"
+                  >
+                    <option value="">Select condition...</option>
+                    <option value="new-with-tags">New with Tags/Box</option>
+                    <option value="new-without-tags">New without Tags/Box</option>
+                    <option value="like-new">Like New</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="worn">Well Worn</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input">
+                <label for="accessories-year">Year/Season (if applicable)</label>
+                <input
+                  type="text"
+                  id="accessories-year"
+                  name="year"
+                  placeholder="e.g., FW 2023, 2020"
+                />
+              </div>
+
+              <div class="form-input">
+                <label for="accessories-additionalDetails">Additional Details</label>
+                <textarea
+                  id="accessories-additionalDetails"
+                  class="additional-details"
+                  name="additionalDetails"
+                  placeholder="Any additional information about the accessory..."
+                  rows="4"
+                  aria-describedby="accessoriesDetailsHelp"
+                ></textarea>
+                <small id="accessoriesDetailsHelp" class="form-text"
+                  >Include details about authenticity, original packaging, flaws, or special features</small
+                >
+              </div>
+            </div>

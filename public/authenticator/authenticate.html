@@ -3,7 +3,7 @@
   <head>
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <link rel="stylesheet" href="css/style2.css" />
-    <link rel="stylesheet" href="css/authenticate.css" />
+    <link rel="stylesheet" href="css/pages/authenticate.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
     <link
       rel="stylesheet"
@@ -43,8 +43,15 @@
         <nav aria-label="Main Navigation"></nav>
       </section>
 
+      <!-- Content Header-->
+      <header class="content-header">
+        <h1>Product Authentication</h1>
+        <p class="subheader">Authenicate in 3 simple steps</p>
+      </header>
+
       <!-- Authentication Progress Indicator -->
       <div class="progress-steps">
+
         <div class="step active">
           <span class="step-number">1</span>
           <span class="step-text">Upload photos</span>
@@ -59,21 +66,19 @@
         </div>
       </div>
 
-      <!-- Content Header-->
-      <header class="content-header">
-        <h1>Item Authentication Request</h1>
-        <p>Upload clear photos of your item for verification</p>
-      </header>
+      
 
       <!-- Image Uploads Section -->
       <form action="" id="authentication-form">
         <!-- Step 1: Image Upload -->
         <div class="form-step" id="step1">
           <section id="image-upload-section">
-            <h2 id="image-upload-title" class="visually-hidden">
-              Product Images
-            </h2>
-
+            <!-- Header -->
+            <div class="form-header">
+              <h1 class="form-title">Upload Images</h1>
+              <p class="subheader">Upload at least 5 accurate images</p>
+            </div>
+            <!-- Content -->
             <div
               class="image-grid"
               role="group"
@@ -111,6 +116,7 @@
                 >
                   <i class="fas fa-trash-alt" aria-hidden="true"></i>
                 </button>
+                
               </div>
               <!-- Image 2 -->
               <div class="image-item" data-upload-type="back">
@@ -122,8 +128,7 @@
                 />
                 <label for="image2" class="file-label">
                   <div class="preview-container">
-                    <i class="fas fa-plus upload-icon"></i>
-                    <span class="upload-text"> Upload Image 2 </span>
+                    <i class="fa-regular fa-image upload-icon"></i>
                     <img
                       src=""
                       alt="Preview"
@@ -147,8 +152,7 @@
                 />
                 <label for="image3" class="file-label">
                   <div class="preview-container">
-                    <i class="fas fa-plus upload-icon"></i>
-                    <span class="upload-text"> Main Image </span>
+                    <i class="fa-regular fa-image upload-icon"></i>
                     <img
                       src=""
                       alt="Preview"
@@ -172,8 +176,7 @@
                 />
                 <label for="image4" class="file-label">
                   <div class="preview-container">
-                    <i class="fas fa-plus upload-icon"></i>
-                    <span class="upload-text"> Main Image </span>
+                    <i class="fa-regular fa-image upload-icon"></i>
                     <img
                       src=""
                       alt="Preview"
@@ -197,8 +200,8 @@
                 />
                 <label for="image5" class="file-label">
                   <div class="preview-container">
-                    <i class="fas fa-plus upload-icon"></i>
-                    <span class="upload-text"> Main Image </span>
+                    <i class="fa-regular fa-image upload-icon"></i>
+                    
                     <img
                       src=""
                       alt="Preview"
@@ -228,25 +231,30 @@
                 <li>Special details or markings</li>
               </ul>
             </div>
-          </section>
-
-          <div class="form-actions">
+            <div class="form-actions">
             <button class="next-btn">
               Next <i class="fas fa-arrow-right"></i>
             </button>
           </div>
+          </section>
+
+          
         </div>
 
         <!-- Step 2: Product Details -->
         <div class="form-step" id="step2" style="display: none">
           <section id="product-search-section">
+            <!-- Header -->
+            <div class="form-header">
+              <h1 class="form-title">Product Details</h1>
+              <p class="subheader">Provide Accurate Information About Product</p>
+            </div>
+            <!-- Content -->
             <div class="content-wrapper">
               <div class="form-input">
                 <label for="productSku">Product SKU</label>
                 <input type="text" placeholder="Enter product SKU" />
               </div>
-
-              <button class="sku-search-button">Search</button>
             </div>
           </section>
 
@@ -261,83 +269,25 @@
 
             <div class="form-input-row">
               <div class="form-input">
-                <label for="brand">Brand</label>
-                <input
-                  type="text"
-                  id="brand"
-                  name="brand"
-                  required
-                  aria-required="true"
-                />
-              </div>
-              <div class="form-input">
-                <label for="model">Model</label>
-                <input
-                  type="text"
-                  id="model"
-                  name="model"
-                  required
-                  aria-required="true"
-                />
-              </div>
-            </div>
-
-            <div class="form-input-row">
-              <div class="form-input">
-                <label for="size">Size</label>
-                <select name="size" id="size" required aria-required="true">
-                  <option value="">Select size...</option>
-                  <option value="US M 7">US M 7</option>
-                  <option value="US M 7.5">US M 7.5</option>
-                  <option value="US M 8">US M 8</option>
-                  <option value="US M 8.5">US M 8.5</option>
-                  <option value="US M 9">US M 9</option>
-                  <option value="US M 9.5">US M 9.5</option>
-                  <option value="US M 10">US M 10</option>
-                  <option value="US M 10.5">US M 10.5</option>
-                  <option value="US M 11">US M 11</option>
-                  <option value="US M 11.5">US M 11.5</option>
-                  <option value="US M 12">US M 12</option>
-                  <option value="US M 12.5">US M 12.5</option>
-                  <option value="US M 13">US M 13</option>
-                </select>
-              </div>
-              <div class="form-input">
-                <label for="condition">Condition</label>
-                <select
-                  name="condition"
-                  id="condition"
-                  class="condition-select"
-                  required
-                  aria-required="true"
-                >
-                  <option value="">Select condition...</option>
-                  <option value="new">New</option>
-                  <option value="like-new">Like New</option>
-                  <option value="good">Good</option>
-                  <option value="fair">Fair</option>
+                <label for="categories">Category</label>
+                <select name="categories" id="categories" class="categories">
+                  <option value="">Select category...</option>
+                  <option value="Trading Cards">Trading Cards</option>
+                  <option value="Apparel">Apparel</option>
+                  <option value="Sneakers">Sneakers</option>
+                  <option value="Shoes">Shoes</option>
+                  <option value="Accessories">Accessories</option>
                 </select>
               </div>
             </div>
 
-            <div class="form-input">
-              <label for="additionalDetails">Additional Details</label>
-              <textarea
-                id="additionalDetails"
-                class="additional-details"
-                name="additionalDetails"
-                placeholder="Any additional information about the item..."
-                rows="4"
-                aria-describedby="detailsHelp"
-              ></textarea>
-              <small id="detailsHelp" class="form-text"
-                >Include any relevant details about the item's condition,
-                history, or special features</small
-              >
+            <!-- Dynamic form container -->
+            <div id="dynamic-form-container">
+              <!-- Forms will be loaded dynamically -->
             </div>
-          </section>
+            
 
-          <div class="form-actions">
+            <div class="form-actions">
             <button type="button" class="back-btn">
               <i class="fas fa-arrow-left"></i> Back
             </button>
@@ -345,32 +295,68 @@
               Next <i class="fas fa-arrow-right"></i>
             </button>
           </div>
+          </section>
+
+          
         </div>
 
         <!-- Step 3: Review -->
         <div class="form-step" id="step3" style="display: none">
+          <!-- Header -->
+            <div class="form-header">
+              <h1 class="form-title">Product Review</h1>
+              <p class="subheader">Review all information is correct before submission</p>
+            </div>
           <!-- Review content will go here -->
           <div class="content-wrapper">
             <div class="image-product-details-wrapper">
               <!-- Image Review -->
               <div class="reivew-images">
-                <h3>Upload Images</h3>
+                <div class="review-header">
+                  <h3>Uploaded Images</h3>
+                  <div class="review-edit">
+                    <i class="fa-solid fa-pen"></i>
+                    <p>Edit</p>
+                  </div>
+                  
+                </div>
                 <!-- Image preview grid-->
-                <img src="" alt="" />
-                <img src="" alt="" />
-                <img src="" alt="" />
-                <img src="" alt="" />
-                <img src="" alt="" />
+                 <div class="image-grid-review">
+                  <img class="review-image" src="" alt="" />
+                  <img class="review-image" src="" alt="" />
+                  <img class="review-image" src="" alt="" />
+                  <img class="review-image" src="" alt="" />
+                  <img class="review-image" src="" alt="" /> 
+                 </div>
+                
               </div>
               <!-- Details Review-->
               <div class="review-details">
-                <h3>Product Details</h3>
+                
+                <div class="review-header">
+                  <h3>Product Details</h3>
+                  <div class="review-edit">
+                    <i class="fa-solid fa-pen"></i>
+                    <p>Edit</p>
+                  </div>
+                  
+                </div>
                 <div class="prod-details">
-                  <p>SKU: <span>SKU123456</span></p>
-                  <p>Brand: <span>SKU123456</span></p>
-                  <p>Model: <span>SKU123456</span></p>
-                  <p>Size: <span>SKU123456</span></p>
-                  <p>Condition: <span>SKU123456</span></p>
+                  <!-- SKU -->
+                  <div class="detail-row">
+                    <div class="detail-label">Sku</div>
+                    <div class="detail-value">12234</div>
+                  </div>
+                  <!-- BRAND -->
+                   <div class="detail-row">
+                    <div class="detail-label">Brand</div>
+                    <div class="detail-value">Jordan</div>
+                  </div>
+                  <!-- MODEL -->
+                   <div class="detail-row">
+                    <div class="detail-label">Model</div>
+                    <div class="detail-value">model 1</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -379,23 +365,22 @@
             <!-- Terms and Conditions -->
             <div class="term-section">
               <div class="checkbox-group">
-                <input type="text" id="terms1" required />
+                <input type="checkbox" id="terms1" name="terms1" required />
                 <label for="terms1"
                   >I confirm all provided information and images are accurate
                   and truthful.</label
                 >
               </div>
               <div class="checkbox-group">
-                <input type="text" id="terms1" required />
-                <label for="terms1"
+                <input type="checkbox" id="terms2" name="terms2" required />
+                <label for="terms2"
                   >I understand that the authentication process may take 24-48
                   hours.</label
                 >
               </div>
             </div>
-          </div>
-
-          <div class="form-actions">
+            <!-- -->
+            <div class="form-actions">
             <button type="button" class="back-btn">
               <i class="fas fa-arrow-left"></i> Back
             </button>
@@ -413,6 +398,9 @@
               aria-live="polite"
             ></div>
           </div>
+          </div>
+
+          
         </div>
       </form>
 

@@ -2,7 +2,6 @@
 const imageInputs = document.querySelectorAll(".file-input");
 const imageItems = document.querySelectorAll(".image-item");
 
-// console.log(imageInputs);
 imageInputs.forEach((input) => {
   const imageItem = input.closest(".image-item");
   const removeImageBtn = imageItem.querySelector(".remove-image-btn");
@@ -37,7 +36,10 @@ imageInputs.forEach((input) => {
 
         // Hide upload elements
         uploadIcon.style.display = "none";
-        uploadText.style.display = "none";
+        if (uploadText) {
+          uploadText.style.display = "none";
+        }
+        
 
         // Show remove button
         removeImageBtn.style.display = "block";
@@ -59,12 +61,18 @@ imageInputs.forEach((input) => {
 
     // Show upload elements again
     uploadIcon.style.display = "block";
-    uploadText.style.display = "block";
+
+    if (uploadText) {
+      uploadText.style.display = "block";
+    }
+    
 
     // Hide remove button
     removeImageBtn.style.display = "none";
   });
 });
+
+
 
 // Keep track of current step
 let currentStep = 1;
@@ -76,7 +84,14 @@ function prevStep() {
   if (currentStep > 1) {
     currentStep--;
     showStep(currentStep);
+    updateProgressBar(currentStep);
   }
+}
+
+function nextStep() {
+  currentStep++; // Added increment
+  showStep(currentStep);
+  updateProgressBar(currentStep);
 }
 
 function showStep(stepNumber) {
@@ -92,9 +107,26 @@ function showStep(stepNumber) {
   updateProgressSteps(stepNumber);
 }
 
+function updateProgressBar(currentStep) {
+
+  const root = document.documentElement;
+
+  let progressPercentage;
+  
+  if (currentStep === 1) {
+     progressPercentage = '30%'
+  } else if (currentStep === 2) {
+    progressPercentage = '65%'
+  } else {
+    progressPercentage = '100%'
+  }
+
+  root.style.setProperty('--progress-percentage', progressPercentage); 
+}
+
+
 function updateProgressSteps(currentStep) {
   const steps = document.querySelectorAll(".progress-steps .step");
-  console.log("Steps", steps);
 
   steps.forEach((step, index) => {
     if (index + 1 < currentStep) {
@@ -112,7 +144,7 @@ function updateProgressSteps(currentStep) {
   });
 }
 
-// Validate current step
+
 function validateStep(stepNumber) {
   if (stepNumber === 1) {
     // Validate image uploads
@@ -145,14 +177,15 @@ function validateStep(stepNumber) {
   return true;
 }
 
-// Handle next button click
-function nextStep() {
-  currentStep++; // Added increment
-  showStep(currentStep);
+// Takes in category and display that form
+function formLocator(catogory) {
+
 }
 
+
+
 // Show initial step
-showStep(1);
+showStep(currentStep);
 
 // Add event listener to navigation buttons
 nextBtn.forEach((btn) => {
@@ -163,4 +196,4 @@ backBtn.forEach((btn) => {
   btn.addEventListener("click", prevStep);
 });
 
-// Validate Form
+

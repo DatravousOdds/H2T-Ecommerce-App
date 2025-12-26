@@ -1,3 +1,4 @@
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -17,11 +18,24 @@ import {
 const auth = getAuth();
 const db = getFirestore();
 
-// Fetch user profile
+// ================================
+// CACHING - The key to speed!
+// ================================
+let cachedUser = null;
+let authCheckPromise = null;
+
+// Fetch user profile with caching
 const fetchUserProfile = async (user) => {
   try {
-    const docRef = doc(db, "userProfiles", user.email);
+    // Check sessionStorage first
+    const cachedProfile = sessionStorage.getItem(`profile_${user.uid}`);
+    if (cachedProfile) {
+      console.log("✅ Using cached profile from sessionStorage");
+      return JSON.parse(cachedProfile);
+    }
+
     console.log("Fetching user profile for email:", user.email);
+    const docRef = doc(db, "userProfiles", user.email);
     const docSnap = await getDoc(docRef);
 
     // Fetching user profile
@@ -31,7 +45,11 @@ const fetchUserProfile = async (user) => {
         email: user.email,
         ...docSnap.data()
       };
-      // console.log("User profile found:", userData);
+
+      // Cache profile
+      sessionStorage.setItem(`profile_${user.uid}`, JSON.stringify(userData));
+      console.log('✅ Profile cached in sessionStorage');
+      
       return userData;
     } else {
       console.log("No profile document exists for user:", user.email);
@@ -43,12 +61,26 @@ const fetchUserProfile = async (user) => {
   }
 };
 
-// Checks user status and gets their profile data
-export function checkUserStatus() {
-  return new Promise((resolve, reject) => {
-    
-    console.log("Starting auth check...");
 
+
+// ============================
+//      AUTH CHECK
+// ============================
+export function checkUserStatus() {
+  
+  if (cachedUser !== null) {
+    console.log('⚡️ Returning cached user (instant)');
+    return Promise.resolve(cachedUser);
+  }
+
+  if (authCheckPromise) {
+    console.log('Auth check in progress, waiting...')
+    return authCheckPromise;
+  }
+
+  console.time("Auth check duration");
+
+   authCheckPromise = new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(
       auth,
       async (user) => {
@@ -56,23 +88,35 @@ export function checkUserStatus() {
 
         if (user) {
           try {
-            // console.log("User is authenticated:", user.email);
             const userData = await fetchUserProfile(user);
+
+            // Cache user data
+            cachedUser = userData;
+
+            console.timeEnd("Auth Check Duration");
+
             resolve(userData);
           } catch (error) {
             reject(error);
           }
         } else {
           console.log("No user authenticated");
+          cachedUser = false;
           resolve(null);
         }
+
+        authCheckPromise = null;
+
       },
       (error) => {
         console.error("Auth state change error:", error);
+        authCheckPromise = null;
         reject(error);
       }
     );
   });
+
+  return authCheckPromise;
 }
 
 // Update your sendData function to handle the response
@@ -182,6 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (submitBtn) {
     submitBtn.addEventListener("click", async () => {
+
       if (name != null) {
         // ====== SIGNUP PAGE ======
 
@@ -324,9 +369,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 email: userData.email,
                 seller: userData.seller
               }));
+
             console.log("Login successful, redirecting to home page");
             location.replace("/");
+
           } catch (error) {
+            
             console.error("Login error:", error);
             let errorMessage = "Something went wrong during login.";
 
@@ -360,8 +408,14 @@ export const logout = () => {
     .then(() => {
       console.log("User was signout successfully");
       // Clear storage and redirect only after successful signout
+
+      // Clear All caches
+      cachedUser = null;
+      authCheckPromise = null;
+
       sessionStorage.clear();
       localStorage.clear();
+
       location.replace("/"); // redirect to home page
     })
     .catch((error) => {
