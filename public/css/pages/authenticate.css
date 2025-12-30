@@ -717,9 +717,11 @@ select {
 }
 
 .image-grid-review .review-image {
-  width: 100;
+  width: 100%;
+  height: 100%;
   aspect-ratio: 1;
   object-fit: cover;
+  overflow: hidden;
   border-radius: var(--radius-md);
   border: 2px solid var(--gray-200);
   transition: all ease-in-out 0.3s;

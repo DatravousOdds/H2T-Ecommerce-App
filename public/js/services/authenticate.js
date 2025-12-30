@@ -1,6 +1,10 @@
+
+
 // Image upload functionality
 const imageInputs = document.querySelectorAll(".file-input");
 const imageItems = document.querySelectorAll(".image-item");
+const reviewImages = document.querySelectorAll('.review-image');
+
 
 imageInputs.forEach((input) => {
   const imageItem = input.closest(".image-item");
@@ -13,6 +17,8 @@ imageInputs.forEach((input) => {
   // Handle file selection
   input.addEventListener("change", (e) => {
     const file = e.target.files[0];
+    const slotIndex = parseInt(e.target.dataset.index);
+    console.log(slotIndex)
 
     if (file) {
       // Validate file type
@@ -39,6 +45,10 @@ imageInputs.forEach((input) => {
         if (uploadText) {
           uploadText.style.display = "none";
         }
+
+        reviewImages[slotIndex].src = e.target.result;
+
+        
         
 
         // Show remove button
@@ -70,7 +80,31 @@ imageInputs.forEach((input) => {
     // Hide remove button
     removeImageBtn.style.display = "none";
   });
+
+  
 });
+
+const categories = document.getElementById('categories');
+const dynamicFormContainer = document.getElementById('dynamic-form-container');
+
+
+categories.addEventListener('change', (e) => {
+  const target = e.target.value;
+  // get form
+  formLocator(target);
+
+
+})
+
+const forms = {
+  "Accessories": "/authenticator/templates/accessories-form.html",
+  "Apparel": "/authenticator/templates/apparel-form.html",
+  "Shoes": "/authenticator/templates/shoes-form.html",
+  "Sneakers": "/authenticator/templates/sneakers-form.html",
+  "Trading Cards": "/authenticator/templates/trading-card-form.html"
+}
+
+
 
 
 
@@ -149,36 +183,48 @@ function validateStep(stepNumber) {
   if (stepNumber === 1) {
     // Validate image uploads
     const uploadedImages = document.querySelectorAll(".image-preview[src]");
-    console.log("Images Uploaded:", uploadedImages);
+    // console.log("Images Uploaded:", uploadedImages);
     if (uploadedImages.length < 5) {
       alert("Please upload all required images"); // turn into alert ui component later
       return false;
     }
   } else if (stepNumber === 2) {
-    // Validate product details
-    const requiredFields = [
-      "productSku",
-      "brand",
-      "model",
-      "size",
-      "condition"
-    ];
-    for (const fieldId of requiredFields) {
-      const field = document.getElementById(fieldId);
-      if (!field.value) {
-        alert(
-          `Please fill in ${fieldId.replace(/([A-Z])/g, " $1").toLowerCase()}`
-        );
-        field.focus();
-        return false;
-      }
-    }
+    // check type of form
+
+    // vaildate form
+
+    
   }
   return true;
 }
 
 // Takes in category and display that form
-function formLocator(catogory) {
+function formLocator(category) {
+  if (dynamicFormContainer) {
+    dynamicFormContainer.innerHTML = `<p>Loading...</p>`;
+
+    const form = forms[category];
+
+    if (!form) {
+      dynamicFormContainer.innerHTML = '';
+    }
+    
+    fetch(form)
+    .then(res => {
+      if (!res.ok) {
+        return null;
+      }
+      return res.text();
+    })
+    .then(html => dynamicFormContainer.innerHTML = html)
+    .catch(err => {
+
+      dynamicFormContainer.innerHTML = "Internal Error";
+      console.error("Error", err);
+
+      }
+    )
+  }
 
 }
 
