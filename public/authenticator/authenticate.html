@@ -2,9 +2,12 @@
 <html lang="en">
   <head>
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <!-- CSS Styles-->
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/pages/authenticate.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
+    <link rel="stylesheet" href="css/utilities/utility.css" />
+    <!-- ICONS -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
@@ -79,6 +82,9 @@
               <p class="subheader">Upload at least 5 accurate images</p>
             </div>
             <!-- Content -->
+             <div class="image-section-errors">
+
+             </div>
             <div
               class="image-grid"
               role="group"
@@ -224,10 +230,10 @@
             <!-- Message -->
             <div class="message-wrapper" role="alert">
               <i class="fa-solid fa-circle-exclamation"></i>
-              <p class="msg-text">
+              <h4 class="msg-text">
                 Please upload at least 5 clear photos for authentication
                 verification. Include:
-              </p>
+              </h4>
               <ul>
                 <li>Front view (required)</li>
                 <li>Back view (required)</li>
@@ -256,6 +262,9 @@
             </div>
             <!-- Content -->
             <div class="content-wrapper">
+              <!-- Vaildation Errors -->
+              <div class="vaildation-errors">
+              </div>
               <div class="form-input">
                 <label for="productSku">Product SKU</label>
                 <input type="text" placeholder="Enter product SKU" />

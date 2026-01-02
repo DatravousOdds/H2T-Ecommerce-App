@@ -1,5 +1,84 @@
+const vaildationRules = {
+
+      'Trading Cards': 
+      [
+        {id: 'card-brand', name: 'Brand', required: true },
+        {id: 'card-name', name: 'Card Name', required: true },
+        {id: 'card-set', name: 'Set', required: true },
+        {id: 'card-year', name: 'Year', required: true, type: 'number' },
+        {id: 'card-condition', name: 'Condition', required: true },
+
+        // Other details
+        {id: 'card-number', name: 'Card Number', required: false },
+        {id: 'card-edition', name: 'Card Edition', required: false },
+        {id: 'card-grading-company', name: 'Card Grading Company', required: false },
+        {id: 'card-additionalDetails', name: 'Additional Details', required: false },
+
+      ],
+      'Apparel': 
+      [
+        {id: 'apparel-brand', name: 'Brand', required: true, type: 'text'},
+        {id: 'apparel-type', name: 'Item Type', required: true },
+        {id: 'apparel-size', name: 'Size', required: true },
+        {id: 'apparel-condition', name: 'Condition', required: true },
+        {id: 'apparel-color', name: 'Color', required: true, type: 'text'},
+
+        // Other details
+        {id: 'apparel-material', name: 'Material', required: false, type: 'text'},
+        {id: 'apparel-style', name: 'Style', required: false, type: 'text'},
+        {id: 'apparel-additionalDetails', name: 'Additional Details', required: false, type: 'text'},
+
+      ],
+      'Sneakers': 
+      [
+        {id: 'sneaker-brand', name: 'Brand', required: true, type: 'text'},
+        {id: 'sneaker-model', name: 'Model', required: true, type: 'text'},
+        {id: 'sneaker-size', name: 'Size', required: true },
+        {id: 'sneaker-condition', name: 'Condition', required: true },
+
+        // Other details
+        {id: 'sneaker-color', name: 'Color', required: false },
+        {id: 'sneaker-year', name: 'Condition', required: false },
+        {id: 'sneaker-additionalDetails', name: 'Additonal Details', required: false },
 
 
+      ],
+      'Shoes':
+      [
+        {id: 'shoes-brand', name: 'Brand', required: true, type: 'text'},
+        {id: 'shoes-model', name: 'Model', required: true, type: 'text'},
+        {id: 'shoes-type', name: 'Shoe Type', required: true },
+        {id: 'shoes-color', name: 'Color', required: true, type: 'text' },
+        {id: 'shoes-condition', name: 'Condition', required: true },
+
+        // Other details
+        {id: 'shoes-material', name: 'Material', required: false },
+        {id: 'shoes-additionalDetails', name: 'Additonal Details', required: false },
+
+      ],
+      'Accessories': 
+      [
+        // Required fields
+        {id: 'accessories-type', name: 'Accessory Type', required: true },
+        {id: 'accessories-brand', name: 'Brand', required: true, type: 'text'},
+        {id: 'accessories-condition', name: 'Condition', required: true },
+
+        // Other details
+        {id: 'accessories-model', name: 'Model', required: false },
+        {id: 'accessories-color', name: 'Color', required: false },
+        {id: 'accessories-size', name: 'Size', required: false },
+        {id: 'accessories-year', name: 'Year', required: false },
+        {id: 'accessories-additionalDetails', name: 'Additional Details', required: false },
+      ]
+}
+
+const forms = {
+  "Accessories": "/authenticator/templates/accessories-form.html",
+  "Apparel": "/authenticator/templates/apparel-form.html",
+  "Shoes": "/authenticator/templates/shoes-form.html",
+  "Sneakers": "/authenticator/templates/sneakers-form.html",
+  "Trading Cards": "/authenticator/templates/trading-card-form.html"
+}
 
 
 // Image upload functionality
@@ -100,17 +179,14 @@ categories.addEventListener('change', (e) => {
 
 })
 
-const forms = {
-  "Accessories": "/authenticator/templates/accessories-form.html",
-  "Apparel": "/authenticator/templates/apparel-form.html",
-  "Shoes": "/authenticator/templates/shoes-form.html",
-  "Sneakers": "/authenticator/templates/sneakers-form.html",
-  "Trading Cards": "/authenticator/templates/trading-card-form.html"
+
+
+let formData = {
+  images: [],
+  productDetails: {},
+  tierSelection: ''
+
 }
-
-
-
-
 
 // Keep track of current step
 let currentStep = 1;
@@ -181,51 +257,48 @@ function updateProgressSteps(currentStep) {
   });
 }
 
+function collectProductData(category) {
+  const rules = vaildationRules[category.trim()];
+  
+  if(!rules) {
+    console.error(`Unknown category: ${category}`)
+  }
+
+  const productData = {
+    proudctCategory: category,
+    details: {}
+  };
+
+  rules.forEach(rule => {
+
+    const element = document.getElementById(rule.id);
+
+      if (!element) {
+        console.log(`${element} not found!`);
+      }
+
+      const value = element.value;
+
+      if(value && rule.type === 'number') {
+        value = Number(element.value);
+      } else if (value && rule.type === 'textarea') {
+        value = element.value.trim();
+      } else {
+        value = element.value.trim() || null;
+      }
+
+      if(value !== '' && value !== null) {
+        productData.details[rule.name] = value;
+      }     
+  });
+  return productData
+}
+
 function vaildateForm(form) {
- 
-    const vaildationRules = {
+    const vaildationErrors = document.querySelector('.vaildation-errors');
+    
 
-      'Trading Cards': 
-      [
-        {id: 'card-brand', name: 'Brand', required: true },
-        {id: 'card-name', name: 'Card Name', required: true },
-        {id: 'card-set', name: 'Set', required: true },
-        {id: 'card-year', name: 'Year', required: true, type: 'number' },
-        {id: 'card-condition', name: 'Condition', required: true },
-      ],
-      'Apparel': 
-      [
-        {id: 'apparel-brand', name: 'Brand', required: true, type: 'text'},
-        {id: 'apparel-type', name: 'Item Type', required: true },
-        {id: 'apparel-size', name: 'Size', required: true },
-        {id: 'apparel-condition', name: 'Condition', required: true },
-        {id: 'apparel-color', name: 'Color', required: true, type: 'text'},
-      ],
-      'Sneakers': 
-      [
-        {id: 'sneaker-brand', name: 'Brand', required: true, type: 'text'},
-        {id: 'sneaker-model', name: 'Model', required: true, type: 'text'},
-        {id: 'sneaker-size', name: 'Size', required: true },
-        {id: 'sneaker-condition', name: 'Condition', required: true },
-      ],
-      'Shoes':
-      [
-        {id: 'shoes-brand', name: 'Brand', required: true, type: 'text'},
-        {id: 'shoes-model', name: 'Model', required: true, type: 'text'},
-        {id: 'shoes-type', name: 'Shoe Type', required: true },
-        {id: 'shoes-color', name: 'Color', required: true, type: 'text' },
-        {id: 'shoes-condition', name: 'Condition', required: true },
-      ],
-      'Accessories': 
-      [
-        {id: 'accessories-type', name: 'Accessory Type', required: true },
-        {id: 'accessories-brand', name: 'Brand', required: true, type: 'text'},
-        {id: 'accessories-condition', name: 'Condition', required: true },
-      ]
-    }
-
-    const rules = vaildationRules[form];
-
+    const rules = vaildationRules[form.trim()];
     const errors = [];
 
     rules.forEach(rule => {
@@ -240,25 +313,54 @@ function vaildateForm(form) {
 
       if(!value && rule.required) {
         errors.push(`${rule.name} is required`);
+        element.classList.add('error');
         return;
       }
 
       if (rule.type === 'number' && value && isNaN(value)) {
         errors.push(`${rule.name} is must a number`);
+        element.classList.add('error');
         return;
       }
 
+      element.classList.remove('error');
+
     })
 
-    console.log(errors)
-    
+    if (errors.length > 0) {
 
-  
+      if (vaildationErrors) {
+        vaildationErrors.innerHTML = `
+      <div class="error-message">
+        <h4>
+          <i class="fa-solid fa-circle-exclamation"></i>
+          Please fix the following errors 
+         </h4>
+        <ul>
+          ${errors.map(error => `<li>${error}</li>`).join('')}
+        </ul>
+      </div>
+      `;
+
+      vaildationErrors.scrollIntoView({behavior: 'smooth', block: 'center'});
+
+      } else {
+        alert(errors.join('\n'));
+      }
+    
+      return false;
+    }
+
+    // if no errors clear any current errors
+    vaildationErrors.innerHTML = '';
+
+    return true;  
 }
 
 function validateStep(stepNumber) {
   
   if (stepNumber === 1) {
+    const imgErrorsContainer = document.querySelector('.image-section-errors');
     const images = document.querySelectorAll('.image-preview');
     const REQUIRED_IMAGES = 5;
 
@@ -275,24 +377,47 @@ function validateStep(stepNumber) {
     });
 
     if (uploadedImages < REQUIRED_IMAGES) {
-      alert(`Please upload ${REQUIRED_IMAGES} images, currently uploaded ${uploadedImages}`);
+      
+      if (imgErrorsContainer) {
+
+        imgErrorsContainer.innerHTML = `
+          <div class="error-message u-d-flex">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <h4>Please upload ${REQUIRED_IMAGES} images, currently uploaded ${uploadedImages}</h4>
+          </div>
+        `
+
+        imgErrorsContainer.scrollIntoView({behavior: 'smooth', block: 'center'})
+      } else {
+
+        alert(`Please upload ${REQUIRED_IMAGES} images, currently uploaded ${uploadedImages}`);
+
+      }
+
       return false;
+
+    } else {
+
+      imgErrorsContainer.innerHTML = '';
+
+      return true;
     }
 
-    return true;
-    
   } else if (stepNumber === 2) {
 
-    vaildateForm(categorySelected);
+    return vaildateForm(categorySelected);
 
-    return;
+  } else if (stepNumber === 3) {
+    
+    formData.productDetails = collectProductData(categorySelected);
+    console.log(formData);
+  
+    
+
   }
-  return true;
+  
 }
 
-
-
-// Takes in category and display that form
 function formLocator(category) {
   if (dynamicFormContainer) {
     dynamicFormContainer.innerHTML = `<p>Loading...</p>`;
@@ -322,20 +447,21 @@ function formLocator(category) {
 
 }
 
-
-
 // Show initial step
 showStep(currentStep);
 
 // Add event listener to navigation buttons
 nextBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
-    console.log("current step:", currentStep);
-    if (validateStep(currentStep)) {
-      nextStep();
+
+    if(!validateStep(currentStep)) {
+      return;
     }
-    return;
+    nextStep();
+
   });
+
+  console.log(currentStep);
 });
 
 backBtn.forEach((btn) => {

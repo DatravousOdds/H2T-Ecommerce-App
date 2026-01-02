@@ -135,7 +135,7 @@ body {
 
 .form-header .form-title {
   font-weight: 600;
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
 }
 
 .form-header .subheader {
@@ -149,7 +149,6 @@ body {
   flex-direction: column;
   align-items: center;
   position: relative;
-  gap: 1rem;
   z-index: 3;
   flex: 1;
 }
@@ -436,8 +435,8 @@ body {
 }
 
 .message-wrapper .msg-text {
-  color: #374151; /* gray-700 */
-  font-size: 0.875rem;
+  color: var(--gray-700); /* gray-700 */
+  font-size: var(--font-size-lg);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
@@ -508,6 +507,42 @@ body {
 
 .form-input label .required {
   color: var(--primary-red);
+}
+
+.error {
+  transition: all 0.3s ease-in-out !important;
+  border: 2px solid #fc3939 !important;
+  
+}
+
+.error-message {
+  border-left: 4px solid var(--primary-red);
+  background-color: #fef2f2;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.error-message h4 {
+  font-size: var(--font-size-lg);
+  color: #374151;
+  margin: 0;
+}
+
+.error-message i {
+  color: var(--primary-red);
+  font-size: var(--font-size-sm);
+}
+
+.error-message ul {
+  list-style: none;
+  padding: 0;
+}
+
+.error-message ul li {
+  font-size: var(--font-size-sm);
+  color: #374151;
+
 }
 
 
@@ -673,6 +708,10 @@ select {
   padding: 0;
 }
 
+.review-header h3 {
+  font-size: var(--font-size-xl);
+}
+
 .review-edit {
   display: flex;
   align-items: center;
@@ -775,15 +814,10 @@ select {
   padding: var(--spacing-lg);
   background: var(--color-bg-base);
   border-radius: 8px;
-  box-shadow: var(--shadow-sm);
+  /* box-shadow: var(--shadow-sm); */
 }
 
-.review-details h3 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: var(--color-text-primary);
-  font-weight: 700;
-}
+
 
 .prod-details {
   display: flex;
