@@ -1,4 +1,6 @@
-const vaildationRules = {
+
+
+const validationRules = {
 
       'Trading Cards': 
       [
@@ -99,7 +101,7 @@ imageInputs.forEach((input) => {
   input.addEventListener("change", (e) => {
     const file = e.target.files[0];
     const slotIndex = parseInt(e.target.dataset.index);
-    console.log(slotIndex)
+    // console.log(slotIndex)
 
     if (file) {
       // Validate file type
@@ -258,7 +260,7 @@ function updateProgressSteps(currentStep) {
 }
 
 function collectProductData(category) {
-  const rules = vaildationRules[category.trim()];
+  const rules = validationRules[category.trim()];
   
   if(!rules) {
     console.error(`Unknown category: ${category}`)
@@ -275,9 +277,10 @@ function collectProductData(category) {
 
       if (!element) {
         console.log(`${element} not found!`);
+        return;
       }
 
-      const value = element.value;
+      let value = element.value.trim();
 
       if(value && rule.type === 'number') {
         value = Number(element.value);
@@ -291,25 +294,42 @@ function collectProductData(category) {
         productData.details[rule.name] = value;
       }     
   });
-  return productData
+
+  return productData;
 }
 
-function vaildateForm(form) {
-    const vaildationErrors = document.querySelector('.vaildation-errors');
-    
+function collectImageData() {
+  const images = document.querySelectorAll('.image-preview');
+  const imageData = [];
 
-    const rules = vaildationRules[form.trim()];
+  images.forEach((img, index) => {
+    const src = img.getAttribute('src');
+    if (src && src.trim() !== '') {
+      imageData.push({
+        index: index,
+        url:src,
+        isPrimary:index === 0
+      });
+    }
+  });
+
+  return imageData;
+}
+
+function validateForm(form) {
+    const validationErrors = document.querySelector('.validation-errors');
+    const rules = validationRules[form.trim()];
+
     const errors = [];
 
     rules.forEach(rule => {
-
       const element = document.getElementById(rule.id);
 
       if (!element) {
         console.log('No element found!');
       }
 
-      const value = element.value;
+      const value = element.value.trim();
 
       if(!value && rule.required) {
         errors.push(`${rule.name} is required`);
@@ -328,9 +348,8 @@ function vaildateForm(form) {
     })
 
     if (errors.length > 0) {
-
-      if (vaildationErrors) {
-        vaildationErrors.innerHTML = `
+      if (validationErrors) {
+        validationErrors.innerHTML = `
       <div class="error-message">
         <h4>
           <i class="fa-solid fa-circle-exclamation"></i>
@@ -342,7 +361,7 @@ function vaildateForm(form) {
       </div>
       `;
 
-      vaildationErrors.scrollIntoView({behavior: 'smooth', block: 'center'});
+      validationErrors.scrollIntoView({behavior: 'smooth', block: 'center'});
 
       } else {
         alert(errors.join('\n'));
@@ -352,8 +371,9 @@ function vaildateForm(form) {
     }
 
     // if no errors clear any current errors
-    vaildationErrors.innerHTML = '';
-
+    if (validationErrors) {
+      validationErrors.innerHTML = '';
+    }
     return true;  
 }
 
@@ -398,24 +418,47 @@ function validateStep(stepNumber) {
 
     } else {
 
+      formData.images = collectImageData();
       imgErrorsContainer.innerHTML = '';
-
       return true;
     }
 
   } else if (stepNumber === 2) {
+    console.log("Form Data:", formData)
+    if (!categorySelected) {
+      alert('Please select a category')
+    }
 
-    return vaildateForm(categorySelected);
+    if (!validateForm(categorySelected)) {
+      return false;
+    }
+
+    formData.productDetails = collectProductData(categorySelected);
+    displayReviewData(formData);
+    return true;
 
   } else if (stepNumber === 3) {
     
-    formData.productDetails = collectProductData(categorySelected);
-    console.log(formData);
-  
     
+    displayReviewData(formData);
+    return true;
 
   }
   
+}
+
+function displayReviewData(data) {
+  console.log("form data:", formData);
+  const reviewDetailsContainer = document.querySelector('.prod-details');
+  reviewDetailsContainer.innerHTML = '';
+  reviewDetailsContainer.innerHTML = `
+    <dl class="review-details">
+      ${Object.entries(data.productDetails.details).map(([key, value]) => `
+          <dt>${key}:</dt>
+          <dd>${value}</dd>
+        `).join('')}
+    </dl>
+  `
 }
 
 function formLocator(category) {
@@ -450,18 +493,44 @@ function formLocator(category) {
 // Show initial step
 showStep(currentStep);
 
+const editButtons = {
+  images: {
+    selector:'.reivew-images .review-edit',
+    step: 1
+  },
+  details: {
+    selector:'.review-details .review-edit',
+    step: 2
+  }
+};
+
+Object.entries(editButtons).forEach(([name, config]) => {
+  console.log(config);
+  console.log(name);
+  const button = document.querySelector(config.selector);
+
+  if (button) {
+    button.addEventListener('click', () => {
+      currentStep =config.step;
+      showStep(currentStep);
+    });
+    console.log(`${name} edit button found`);
+  } else {
+    console.error(`${name} edit button not found: ${config.selector}`);
+  }
+})
+
+
+
 // Add event listener to navigation buttons
 nextBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
-
     if(!validateStep(currentStep)) {
       return;
     }
     nextStep();
 
   });
-
-  console.log(currentStep);
 });
 
 backBtn.forEach((btn) => {
