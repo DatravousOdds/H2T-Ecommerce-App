@@ -3,6 +3,7 @@
   <head>
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <!-- CSS Styles-->
+     <link rel="stylesheet" href="css/components/modals.css">
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/pages/authenticate.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
@@ -444,9 +445,15 @@
       <footer></footer>
     </main>
 
+    
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="js/components/footer.js"></script>
+    <script src="js/services/authenticate.js"></script>
+    <script type="module" src="js/components/nav.js"></script>
+
     <!-- MODAL-->
-     <div class="modal" id="tierModal">
-      <div class="modal-overlay">
+     <div class="modal" id="tierModal" style="display: flex;">
+      <div class="modal-overlay"></div>
         <div class="modal-content">
           <div class="modal-header">
             <h2>Choose Authentication Tier</h2>
@@ -461,17 +468,56 @@
                   <i class="fa-solid fa-user-group"></i>
                 </div>
                 <div class="tier-text">
-                  <span></span>
-                  <p></p>
+                  <span>Expert Review</span>
+                  <p>Reviewed by our team of certified authentication experts</p>
+                </div>
+                <div class="tier-time">
+                  <div class="tier-time-icon">
+                    ⏱️
+                  </div>
+                  <p>24-48 hours</p>
+                </div>
+              </div>
+              <div class="tier-container">
+                <div class="tier-icon">
+                  <i class="fa-solid fa-user-group"></i>
+                </div>
+                <div class="tier-text">
+                  <span>Expert Review</span>
+                  <p>Reviewed by our team of certified authentication experts</p>
+                </div>
+                <div class="tier-time">
+                  <div class="tier-time-icon">
+                    ⏱️
+                  </div>
+                  <p>24-48 hours</p>
+                </div>
+              </div>
+              <div class="tier-container">
+                <div class="tier-icon">
+                  <i class="fa-solid fa-user-group"></i>
+                </div>
+                <div class="tier-text">
+                  <span>Expert Review</span>
+                  <p>Reviewed by our team of certified authentication experts</p>
+                </div>
+                <div class="tier-time">
+                  <div class="tier-time-icon">
+                    ⏱️
+                  </div>
+                  <p>24-48 hours</p>
                 </div>
               </div>
           </div>
+          <div class="modal-footer">
+            <button class="confirm-btn" id="confirmTierSelection">
+              confirm
+            </button>
+            <button class="cancel-btn" id="cancelTierSelection">
+              cancel
+            </button>
+          </div>
         </div>
-      </div>
      </div>
-    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
-    <script src="js/components/footer.js"></script>
-    <script src="js/services/authenticate.js"></script>
-    <script type="module" src="js/components/nav.js"></script>
   </body>
 </html>
