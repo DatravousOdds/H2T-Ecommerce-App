@@ -183,6 +183,12 @@ categories.addEventListener('change', (e) => {
 
 
 
+const tierModal = document.getElementById('tierModal');
+const authForm = document.getElementById('authentication-form');
+
+authForm.addEventListener('submit', handleFormSubmission)
+
+
 let formData = {
   images: [],
   productDetails: {},
@@ -440,11 +446,16 @@ function validateStep(stepNumber) {
   } else if (stepNumber === 3) {
     
     
-    displayReviewData(formData);
+    
     return true;
 
   }
   
+}
+
+function handleFormSubmission(e) {
+  e.preventDefault();
+  console.log("Form sub")
 }
 
 function displayReviewData(data) {

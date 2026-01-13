@@ -452,15 +452,13 @@
     <script type="module" src="js/components/nav.js"></script>
 
     <!-- MODAL-->
-     <div class="modal" id="tierModal" style="display: flex;">
+     <div class="modal" id="tierModal" style="display: none;">
       <div class="modal-overlay"></div>
         <div class="modal-content">
           <div class="modal-header">
             <h2>Choose Authentication Tier</h2>
             <p>Select how you'd like your product to be authenticated</p>
-            <div class="modal-close">
-              <button class="btn close">X</button>
-            </div>
+            
           </div>
           <div class="modal-body">
               <div class="tier-container">
@@ -470,42 +468,54 @@
                 <div class="tier-text">
                   <span>Expert Review</span>
                   <p>Reviewed by our team of certified authentication experts</p>
-                </div>
-                <div class="tier-time">
-                  <div class="tier-time-icon">
-                    ⏱️
+
+                  <div class="tier-time">
+                    <div class="tier-time-icon">
+                      ⏱️
+                    </div>
+                    <p>24-48 hours</p>
                   </div>
-                  <p>24-48 hours</p>
+                </div>
+                <div class="tier-cost">
+                  <span>$48</span>
                 </div>
               </div>
               <div class="tier-container">
                 <div class="tier-icon">
-                  <i class="fa-solid fa-user-group"></i>
+                  <i class="fa-solid fa-robot"></i>
                 </div>
                 <div class="tier-text">
-                  <span>Expert Review</span>
-                  <p>Reviewed by our team of certified authentication experts</p>
-                </div>
-                <div class="tier-time">
-                  <div class="tier-time-icon">
-                    ⏱️
+                  <span>AI Review</span>
+                  <p>Instant verification using advanced AI technology</p>
+
+                  <div class="tier-time">
+                    <div class="tier-time-icon">
+                      ⏱️
+                    </div>
+                    <p>Instant</p>
                   </div>
-                  <p>24-48 hours</p>
+                </div>
+                <div class="tier-cost">
+                  <span>$48</span>
                 </div>
               </div>
               <div class="tier-container">
                 <div class="tier-icon">
-                  <i class="fa-solid fa-user-group"></i>
+                  <i class="fa-solid fa-box-open"></i>
                 </div>
                 <div class="tier-text">
-                  <span>Expert Review</span>
-                  <p>Reviewed by our team of certified authentication experts</p>
-                </div>
-                <div class="tier-time">
-                  <div class="tier-time-icon">
-                    ⏱️
+                  <span>Physical Review</span>
+                  <p>Ship your item for hands-on authentication</p>
+
+                  <div class="tier-time">
+                    <div class="tier-time-icon">
+                      ⏱️
+                    </div>
+                    <p>5 - 7 days</p>
                   </div>
-                  <p>24-48 hours</p>
+                </div>
+                <div class="tier-cost">
+                  <span>$48</span>
                 </div>
               </div>
           </div>
