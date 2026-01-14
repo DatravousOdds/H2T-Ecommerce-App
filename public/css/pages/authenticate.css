@@ -632,7 +632,7 @@ body {
 
 .back-btn,
 .next-btn,
-.submit-btn {
+.submit-auth-btn {
   padding: 0.75rem 2rem;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -645,7 +645,7 @@ body {
 }
 
 .next-btn,
-.submit-btn {
+.submit-auth-btn {
   background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-hover) 100%);
   border: none;
   color: white;
@@ -654,12 +654,12 @@ body {
 
 
 .next-btn:hover,
-.submit-btn:hover {
+.submit-auth-btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
-.submit-btn {
+.submit-auth-btn {
   width: 100%;
 }
 

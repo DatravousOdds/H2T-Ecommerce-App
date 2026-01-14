@@ -399,7 +399,7 @@
             <button type="button" class="back-btn">
               <i class="fas fa-arrow-left"></i> Back
             </button>
-            <button class="submit-btn">
+            <button class="submit-auth-btn" id="submitAuthBtn">
               <i
                 class="fa-solid fa-arrow-up-from-bracket"
                 aria-hidden="true"
@@ -444,15 +444,9 @@
       <!-- Footer Section -->
       <footer></footer>
     </main>
-
     
-    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
-    <script src="js/components/footer.js"></script>
-    <script src="js/services/authenticate.js"></script>
-    <script type="module" src="js/components/nav.js"></script>
-
     <!-- MODAL-->
-     <div class="modal" id="tierModal" style="display: none;">
+     <div class="modal" id="tierModal" style="display: flex;">
       <div class="modal-overlay"></div>
         <div class="modal-content">
           <div class="modal-header">
@@ -466,7 +460,7 @@
                   <i class="fa-solid fa-user-group"></i>
                 </div>
                 <div class="tier-text">
-                  <span>Expert Review</span>
+                  <span data-tierType="Expert Review">Expert Review</span>
                   <p>Reviewed by our team of certified authentication experts</p>
 
                   <div class="tier-time">
@@ -477,7 +471,7 @@
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span>$48</span>
+                  <span data-tierCost="48">$48</span>
                 </div>
               </div>
               <div class="tier-container">
@@ -485,7 +479,7 @@
                   <i class="fa-solid fa-robot"></i>
                 </div>
                 <div class="tier-text">
-                  <span>AI Review</span>
+                  <span data-tierType="AI Review">AI Review</span>
                   <p>Instant verification using advanced AI technology</p>
 
                   <div class="tier-time">
@@ -496,7 +490,7 @@
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span>$48</span>
+                  <span data-tierCost="48">$48</span>
                 </div>
               </div>
               <div class="tier-container">
@@ -504,7 +498,7 @@
                   <i class="fa-solid fa-box-open"></i>
                 </div>
                 <div class="tier-text">
-                  <span>Physical Review</span>
+                  <span data-tierType="Physical Review">Physical Review</span>
                   <p>Ship your item for hands-on authentication</p>
 
                   <div class="tier-time">
@@ -515,7 +509,7 @@
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span>$48</span>
+                  <span data-tierCost="48">$48</span>
                 </div>
               </div>
           </div>
@@ -529,5 +523,12 @@
           </div>
         </div>
      </div>
+    
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="js/components/footer.js"></script>
+    <script src="js/services/authenticate.js"></script>
+    <script type="module" src="js/components/nav.js"></script>
+
+    
   </body>
 </html>

@@ -184,7 +184,41 @@ categories.addEventListener('change', (e) => {
 
 
 const tierModal = document.getElementById('tierModal');
+const tierContainers = document.querySelectorAll('.tier-container');
+const tierConfirmBtn = document.getElementById('confirmTierSelection');
+const tierCancelBtn =  document.getElementById('cancelTierSelection');
+
+// add event listeners
+tierContainers.forEach(tier => {
+  tier.addEventListener('click', () => {
+    tierContainers.forEach(t => {
+      t.classList.remove('selected');
+    })
+
+    tier.classList.add('selected');
+  })
+})
+
+tierConfirmBtn.addEventListener('click', () => {
+  gatherTierInformattion();
+})
+
+tierCancelBtn.addEventListener('click', () => {
+  if (tierModal)
+    tierModal.style.display = 'none';
+})
+
+function gatherTierInformattion() {
+  const selectedTier = document.querySelector('.tier-container.selected');
+  console.log(selectedTier);
+  console.log("tier Name:", selectedTier.dataset.tierType)
+}
+
+
+
 const authForm = document.getElementById('authentication-form');
+const authSubmitBtn = document.getElementById('submitAuthBtn');
+
 
 authForm.addEventListener('submit', handleFormSubmission)
 
@@ -444,7 +478,7 @@ function validateStep(stepNumber) {
     return true;
 
   } else if (stepNumber === 3) {
-    
+    console.log('vaildating data...')
     
     
     return true;
@@ -455,7 +489,19 @@ function validateStep(stepNumber) {
 
 function handleFormSubmission(e) {
   e.preventDefault();
-  console.log("Form sub")
+  console.log("Form submitted");
+  console.log("form data: ", formData);
+
+  if(!validateStep(3)) {
+    return;
+  }
+
+  authSubmitBtn.textContent = "Submitting ...";
+
+  tierModal.style.display = 'flex';
+
+
+
 }
 
 function displayReviewData(data) {
