@@ -210,8 +210,27 @@ tierCancelBtn.addEventListener('click', () => {
 
 function gatherTierInformattion() {
   const selectedTier = document.querySelector('.tier-container.selected');
-  console.log(selectedTier);
-  console.log("tier Name:", selectedTier.dataset.tierType)
+  if (!selectedTier) {
+    alert('Please select a tier');
+    return;
+  }
+
+  const tierType = selectedTier.querySelector('[data-tier-type]');
+  const tierDuration = selectedTier.querySelector('[data-tier-duration]');
+  const tierCost = selectedTier.querySelector('[data-tier-cost]');
+
+  formData.tierSelection = {
+    type: tierType ? tierType.textContent.trim() : 'N/A',
+    duration: tierDuration ? tierDuration.textContent.trim() : 'N/A',
+    cost: tierCost ? tierCost.textContent.trim() : 'N/A'
+  };
+
+  if (tierModal){
+    tierModal.style.display = 'none';
+  }
+
+  return formData.tierSelection;
+  
 }
 
 
@@ -258,6 +277,8 @@ function showStep(stepNumber) {
 
   // gets the id of the of the step number and shows that step
   document.getElementById(`step${stepNumber}`).style.display = "block";
+
+  
 
   // Update progress indicator
   updateProgressSteps(stepNumber);
@@ -420,6 +441,7 @@ function validateForm(form) {
 function validateStep(stepNumber) {
   
   if (stepNumber === 1) {
+    
     const imgErrorsContainer = document.querySelector('.image-section-errors');
     const images = document.querySelectorAll('.image-preview');
     const REQUIRED_IMAGES = 5;

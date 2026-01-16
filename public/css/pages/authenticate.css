@@ -230,9 +230,14 @@ body {
   margin: 0 auto;
 }
 
-/* ================
-    IMAGE UPLOAD
-   ================ */  
+/* ================================
+    TIER SECTION  (STEP 1)
+   ================================ */ 
+
+
+/* ================================
+    IMAGE UPLOAD  (STEP 2)
+   ================================ */ 
 
 
 
@@ -472,7 +477,11 @@ body {
   border: 0;
 }
 
-/* Product Search Section */
+/* ================================
+    Product Search Section  (STEP 3)
+   ================================ */
+
+
 #product-search-section,
 #product-details-section {
   max-width: 800px;
@@ -698,7 +707,7 @@ select {
 
 
 /* ================================
-    REVIEW SECTION (STEP 3)
+    REVIEW SECTION (STEP 4)
    ================================ */
 
 .review-header {

@@ -58,24 +58,106 @@
 
         <div class="step active">
           <span class="step-number">1</span>
-          <span class="step-text">Upload photos</span>
+          <span class="step-text">Tier Selection</span>
         </div>
         <div class="step">
           <span class="step-number">2</span>
-          <span class="step-text">Product Details</span>
+          <span class="step-text">Upload Photos</span>
         </div>
         <div class="step">
           <span class="step-number">3</span>
-          <span class="step-text">Review</span>
+          <span class="step-text">Product Details</span>
         </div>
       </div>
 
       
 
-      <!-- Image Uploads Section -->
+      <!-- Authentication Form -->
       <form action="" id="authentication-form">
-        <!-- Step 1: Image Upload -->
+        <!-- Step 1: Tier Selection Section -->
         <div class="form-step" id="step1">
+          <section id="tier-section">
+            <!-- Header -->
+            <div class="form-header">
+              <h1 class="form-title">Choose Authentication Tier</h1>
+              <p class="subheader">Select how you'd like your product to be authenticated</p>
+            </div>
+            <!-- Content -->
+             <div class="tier-body">
+
+              <div class="tier-container">
+                <div class="tier-icon">
+                  <i class="fa-solid fa-user-group"></i>
+                </div>
+                <div class="tier-text">
+                  <span data-tier-type="Expert Review">Expert Review</span>
+                  <p>Reviewed by our team of certified authentication experts</p>
+
+                  <div class="tier-time">
+                    <div class="tier-time-icon">
+                      ⏱️
+                    </div>
+                    <p data-tier-duration="24-48 hours">24-48 hours</p>
+                  </div>
+                </div>
+                <div class="tier-cost">
+                  <span data-tier-cost="48">$48</span>
+                </div>
+              </div>
+              <div class="tier-container">
+                <div class="tier-icon">
+                  <i class="fa-solid fa-robot"></i>
+                </div>
+                <div class="tier-text">
+                  <span data-tier-type="AI Review">AI Review</span>
+                  <p>Instant verification using advanced AI technology</p>
+
+                  <div class="tier-time">
+                    <div class="tier-time-icon">
+                      ⏱️
+                    </div>
+                    <p data-tier-duration="Instant">Instant</p>
+                  </div>
+                </div>
+                <div class="tier-cost">
+                  <span data-tier-cost="48">$48</span>
+                </div>
+              </div>
+              <div class="tier-container">
+                <div class="tier-icon">
+                  <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div class="tier-text">
+                  <span data-tier-type="Physical Review">Physical Review</span>
+                  <p>Ship your item for hands-on authentication</p>
+
+                  <div class="tier-time">
+                    <div class="tier-time-icon">
+                      ⏱️
+                    </div>
+                    <p data-tier-duration="5 - 7 days">5 - 7 days</p>
+                  </div>
+                </div>
+                <div class="tier-cost">
+                  <span data-tier-cost="48">$48</span>
+                </div>
+              </div>
+
+             </div>
+            
+            
+            <div class="form-actions">
+            <button class="next-btn">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+          </section>
+
+          
+        </div>
+
+        <!-- Step 2: Image Upload -->
+        <div class="form-step" id="step2">
           <section id="image-upload-section">
             <!-- Header -->
             <div class="form-header">
@@ -253,8 +335,8 @@
           
         </div>
 
-        <!-- Step 2: Product Details -->
-        <div class="form-step" id="step2" style="display: none">
+        <!-- Step 3: Product Details -->
+        <div class="form-step" id="step3" style="display: none">
           <section id="product-search-section">
             <!-- Header -->
             <div class="form-header">
@@ -315,8 +397,8 @@
           
         </div>
 
-        <!-- Step 3: Review -->
-        <div class="form-step" id="step3" style="display: none">
+        <!-- Step 4: Review -->
+        <div class="form-step" id="step4" style="display: none">
           <!-- Header -->
             <div class="form-header">
               <h1 class="form-title">Product Review</h1>
@@ -446,7 +528,7 @@
     </main>
     
     <!-- MODAL-->
-     <div class="modal" id="tierModal" style="display: flex;">
+     <div class="modal" id="tierModal" style="display: none;">
       <div class="modal-overlay"></div>
         <div class="modal-content">
           <div class="modal-header">
@@ -460,18 +542,18 @@
                   <i class="fa-solid fa-user-group"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tierType="Expert Review">Expert Review</span>
+                  <span data-tier-type="Expert Review">Expert Review</span>
                   <p>Reviewed by our team of certified authentication experts</p>
 
                   <div class="tier-time">
                     <div class="tier-time-icon">
                       ⏱️
                     </div>
-                    <p>24-48 hours</p>
+                    <p data-tier-duration="24-48 hours">24-48 hours</p>
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span data-tierCost="48">$48</span>
+                  <span data-tier-cost="48">$48</span>
                 </div>
               </div>
               <div class="tier-container">
@@ -479,18 +561,18 @@
                   <i class="fa-solid fa-robot"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tierType="AI Review">AI Review</span>
+                  <span data-tier-type="AI Review">AI Review</span>
                   <p>Instant verification using advanced AI technology</p>
 
                   <div class="tier-time">
                     <div class="tier-time-icon">
                       ⏱️
                     </div>
-                    <p>Instant</p>
+                    <p data-tier-duration="Instant">Instant</p>
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span data-tierCost="48">$48</span>
+                  <span data-tier-cost="48">$48</span>
                 </div>
               </div>
               <div class="tier-container">
@@ -498,18 +580,18 @@
                   <i class="fa-solid fa-box-open"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tierType="Physical Review">Physical Review</span>
+                  <span data-tier-type="Physical Review">Physical Review</span>
                   <p>Ship your item for hands-on authentication</p>
 
                   <div class="tier-time">
                     <div class="tier-time-icon">
                       ⏱️
                     </div>
-                    <p>5 - 7 days</p>
+                    <p data-tier-duration="5 - 7 days">5 - 7 days</p>
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span data-tierCost="48">$48</span>
+                  <span data-tier-cost="48">$48</span>
                 </div>
               </div>
           </div>
