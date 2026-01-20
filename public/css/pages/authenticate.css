@@ -84,7 +84,7 @@ body {
 
 
 .progress-steps {
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
   display: flex;
   align-items: center;
@@ -211,28 +211,48 @@ body {
 /* Content Header */
 .content-header {
   text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
   padding: 0 var(--spacing-md);
 }
 
 .content-header h1 {
   font-weight: bold;
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
   color: var(--color-text-primary);
 }
 
 .content-header p {
-  color: #767575;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
   max-width: 600px;
   margin: 0 auto;
+  line-height: 1.6;
 }
 
 /* ================================
     TIER SECTION  (STEP 1)
    ================================ */ 
+
+#tier-section {
+  padding: var(--spacing-md);
+  max-width: 900px;
+  margin: 0 1rem auto;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+
+}
+
+.tier-body {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: var(--spacing-lg);
+}
+
 
 
 /* ================================
@@ -245,7 +265,9 @@ body {
 #image-upload-section {
   padding: var(--spacing-md);
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0 1rem auto;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
 }
 /* Main container */
 .image-grid {
@@ -490,9 +512,11 @@ body {
 }
 
  .content-wrapper {
-  background: var(--color-bg-base);
+  border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+  margin-bottom: 2rem;
+
 }
 
 
@@ -735,17 +759,57 @@ select {
 .review-edit p:hover {
   text-decoration: underline;
 }
-
-
-
-
 .review-edit i {
   font-size: var(--font-size-sm);
 }
 
-#step3 .content-wrapper {
+/* Review Tier Section */
+.review-tier {
+  padding: var(--spacing-md);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+  grid-column: span 2;
+}
+
+.tier-summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+
+.review-tier-selected {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.review-tier-selected h4 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.review-tier-selected p,
+.review-tier-selected h4 {
+  margin: 0;
+}
+
+.review-tier-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-border-light);
+  border-radius: 30px;
+  height: 50px;
+}
+
+#step4 .content-wrapper {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 0 1rem auto;
   padding: 2rem;
 }
 

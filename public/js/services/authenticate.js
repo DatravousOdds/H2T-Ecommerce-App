@@ -604,9 +604,9 @@ Object.entries(editButtons).forEach(([name, config]) => {
 // Add event listener to navigation buttons
 nextBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
-    if(!validateStep(currentStep)) {
-      return;
-    }
+    // if(!validateStep(currentStep)) {
+    //   return;
+    // }
     nextStep();
 
   });

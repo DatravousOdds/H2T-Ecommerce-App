@@ -50,7 +50,7 @@
       <!-- Content Header-->
       <header class="content-header">
         <h1>Product Authentication</h1>
-        <p class="subheader">Authenicate in 3 simple steps</p>
+        <p class="subheader">Verify the authenticity of your products in 4 simple steps</p>
       </header>
 
       <!-- Authentication Progress Indicator -->
@@ -67,6 +67,10 @@
         <div class="step">
           <span class="step-number">3</span>
           <span class="step-text">Product Details</span>
+        </div>
+        <div class="step">
+          <span class="step-number">4</span>
+          <span class="step-text">Review & Submit</span>
         </div>
       </div>
 
@@ -87,30 +91,11 @@
 
               <div class="tier-container">
                 <div class="tier-icon">
-                  <i class="fa-solid fa-user-group"></i>
+                  <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tier-type="Expert Review">Expert Review</span>
-                  <p>Reviewed by our team of certified authentication experts</p>
-
-                  <div class="tier-time">
-                    <div class="tier-time-icon">
-                      ⏱️
-                    </div>
-                    <p data-tier-duration="24-48 hours">24-48 hours</p>
-                  </div>
-                </div>
-                <div class="tier-cost">
-                  <span data-tier-cost="48">$48</span>
-                </div>
-              </div>
-              <div class="tier-container">
-                <div class="tier-icon">
-                  <i class="fa-solid fa-robot"></i>
-                </div>
-                <div class="tier-text">
-                  <span data-tier-type="AI Review">AI Review</span>
-                  <p>Instant verification using advanced AI technology</p>
+                  <span data-tier-type="Expert Review">QuickCheck</span>
+                  <p>Fast automated verification using advanced AI technology</p>
 
                   <div class="tier-time">
                     <div class="tier-time-icon">
@@ -120,26 +105,45 @@
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span data-tier-cost="48">$48</span>
+                  <span data-tier-cost="48">$3-$5</span>
                 </div>
               </div>
               <div class="tier-container">
                 <div class="tier-icon">
-                  <i class="fa-solid fa-box-open"></i>
+                  <i class="fa-solid fa-shield-heart"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tier-type="Physical Review">Physical Review</span>
-                  <p>Ship your item for hands-on authentication</p>
+                  <span data-tier-type="AI Review">Verified</span>
+                  <p>AI screening followed by expert review</p>
 
                   <div class="tier-time">
                     <div class="tier-time-icon">
                       ⏱️
                     </div>
-                    <p data-tier-duration="5 - 7 days">5 - 7 days</p>
+                    <p data-tier-duration="2-4 hours">2-4 hours</p>
                   </div>
                 </div>
                 <div class="tier-cost">
-                  <span data-tier-cost="48">$48</span>
+                  <span data-tier-cost="48">$10-$15</span>
+                </div>
+              </div>
+              <div class="tier-container">
+                <div class="tier-icon">
+                  <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div class="tier-text">
+                  <span data-tier-type="Physical Review">Priority Human</span>
+                  <p>Dedicated expert authentication with priority processing</p>
+
+                  <div class="tier-time">
+                    <div class="tier-time-icon">
+                      ⏱️
+                    </div>
+                    <p data-tier-duration="24-48 hours">24-48 hours</p>
+                  </div>
+                </div>
+                <div class="tier-cost">
+                  <span data-tier-cost="48">$20-$30</span>
                 </div>
               </div>
 
@@ -326,9 +330,12 @@
               </ul>
             </div>
             <div class="form-actions">
-            <button class="next-btn">
+              <button type="button" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+              </button>
+              <button class="next-btn">
               Next <i class="fas fa-arrow-right"></i>
-            </button>
+              </button>
           </div>
           </section>
 
@@ -407,6 +414,31 @@
           <!-- Review content will go here -->
           <div class="content-wrapper">
             <div class="image-product-details-wrapper">
+              <!-- Tier Selection Review-->
+              <div class="review-tier">
+                <div class="review-header">
+                  <h3>Authentication Tier</h3>
+                  <div class="review-edit">
+                    <i class="fa-solid fa-pen"></i>
+                    <p>Edit</p>
+                  </div>
+                </div>
+                <div class="tier-summary">
+                  <div class="review-tier-selected">
+                    <div class="review-tier-icon">
+                      <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div class="tier-type">
+                      <h4>QuickCheck</h4>
+                      <p>Instant</p>
+                    </div>
+                  </div>
+                  
+                  <div class="tier-cost">
+                    <span>$3-$5</span>
+                  </div>
+                </div>
+              </div>
               <!-- Image Review -->
               <div class="reivew-images">
                 <div class="review-header">
@@ -478,23 +510,23 @@
             </div>
             <!-- -->
             <div class="form-actions">
-            <button type="button" class="back-btn">
-              <i class="fas fa-arrow-left"></i> Back
-            </button>
-            <button class="submit-auth-btn" id="submitAuthBtn">
-              <i
-                class="fa-solid fa-arrow-up-from-bracket"
-                aria-hidden="true"
-              ></i>
-              Submit for Authentication
-            </button>
-            <div
-              id="submissionStatus"
-              class="status-message"
-              role="status"
-              aria-live="polite"
-            ></div>
-          </div>
+              <button type="button" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+              </button>
+              <button class="submit-auth-btn" id="submitAuthBtn">
+                <i
+                  class="fa-solid fa-arrow-up-from-bracket"
+                  aria-hidden="true"
+                ></i>
+                Submit for Authentication
+              </button>
+              <div
+                id="submissionStatus"
+                class="status-message"
+                role="status"
+                aria-live="polite"
+              ></div>
+            </div>
           </div>
 
           
