@@ -293,8 +293,10 @@ function updateProgressBar(currentStep) {
   if (currentStep === 1) {
      progressPercentage = '30%'
   } else if (currentStep === 2) {
-    progressPercentage = '65%'
-  } else {
+    progressPercentage = '50%'
+  } else if (currentStep === 3) {
+    progressPercentage = '75%'
+  } else if (currentStep === 4) {
     progressPercentage = '100%'
   }
 

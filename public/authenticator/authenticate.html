@@ -80,7 +80,7 @@
       <form action="" id="authentication-form">
         <!-- Step 1: Tier Selection Section -->
         <div class="form-step" id="step1">
-          <section id="tier-section">
+          <section id="tier-section" class="tier-section u-mg-b-md">
             <!-- Header -->
             <div class="form-header">
               <h1 class="form-title">Choose Authentication Tier</h1>
@@ -162,7 +162,7 @@
 
         <!-- Step 2: Image Upload -->
         <div class="form-step" id="step2">
-          <section id="image-upload-section">
+          <section id="image-upload-section" class="u-mg-b-md">
             <!-- Header -->
             <div class="form-header">
               <h1 class="form-title">Upload Images</h1>
@@ -351,7 +351,7 @@
               <p class="subheader">Provide Accurate Information About Product</p>
             </div>
             <!-- Content -->
-            <div class="content-wrapper">
+            <div class="content-wrapper u-mg-b-md">
               <!-- Vaildation Errors -->
               <div class="vaildation-errors">
               </div>
@@ -560,79 +560,29 @@
     </main>
     
     <!-- MODAL-->
-     <div class="modal" id="tierModal" style="display: none;">
+     <div class="modal" id="addedToCartModal" style="display: flex;">
       <div class="modal-overlay"></div>
         <div class="modal-content">
           <div class="modal-header">
-            <h2>Choose Authentication Tier</h2>
-            <p>Select how you'd like your product to be authenticated</p>
-            
+            <div class="modal-icon">
+              <i class="fa-solid fa-cart-arrow-down"></i>
+            </div>
+            <h2>Item Added to Cart</h2>
+            <p>Your product has been added for authentication. You now have <span id="cartItemCount">0</span> items in your cart.</p>
           </div>
           <div class="modal-body">
-              <div class="tier-container">
-                <div class="tier-icon">
-                  <i class="fa-solid fa-user-group"></i>
-                </div>
-                <div class="tier-text">
-                  <span data-tier-type="Expert Review">Expert Review</span>
-                  <p>Reviewed by our team of certified authentication experts</p>
-
-                  <div class="tier-time">
-                    <div class="tier-time-icon">
-                      ⏱️
-                    </div>
-                    <p data-tier-duration="24-48 hours">24-48 hours</p>
-                  </div>
-                </div>
-                <div class="tier-cost">
-                  <span data-tier-cost="48">$48</span>
-                </div>
-              </div>
-              <div class="tier-container">
-                <div class="tier-icon">
-                  <i class="fa-solid fa-robot"></i>
-                </div>
-                <div class="tier-text">
-                  <span data-tier-type="AI Review">AI Review</span>
-                  <p>Instant verification using advanced AI technology</p>
-
-                  <div class="tier-time">
-                    <div class="tier-time-icon">
-                      ⏱️
-                    </div>
-                    <p data-tier-duration="Instant">Instant</p>
-                  </div>
-                </div>
-                <div class="tier-cost">
-                  <span data-tier-cost="48">$48</span>
-                </div>
-              </div>
-              <div class="tier-container">
-                <div class="tier-icon">
-                  <i class="fa-solid fa-box-open"></i>
-                </div>
-                <div class="tier-text">
-                  <span data-tier-type="Physical Review">Physical Review</span>
-                  <p>Ship your item for hands-on authentication</p>
-
-                  <div class="tier-time">
-                    <div class="tier-time-icon">
-                      ⏱️
-                    </div>
-                    <p data-tier-duration="5 - 7 days">5 - 7 days</p>
-                  </div>
-                </div>
-                <div class="tier-cost">
-                  <span data-tier-cost="48">$48</span>
-                </div>
+              <div class="additional-add">
+                <p>Would you like to add another item for authentication?</p>
               </div>
           </div>
           <div class="modal-footer">
-            <button class="confirm-btn" id="confirmTierSelection">
-              confirm
+            <button class="add-item-btn" id="addAnotherItemBtn">
+              <i class="fa-solid fa-plus"></i>
+              Add Another Item
             </button>
-            <button class="cancel-btn" id="cancelTierSelection">
-              cancel
+            <button class="view-cart-btn" id="viewCartBtn">
+              <i class="fa-solid fa-cart-shopping"></i>
+              View Cart & Checkout
             </button>
           </div>
         </div>

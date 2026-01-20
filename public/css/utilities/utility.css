@@ -3,3 +3,8 @@
     align-items: center;
     gap: 0.25rem;
 }
+
+
+.u-mg-b-md {
+    margin-bottom: 1.5rem !important;
+} 
