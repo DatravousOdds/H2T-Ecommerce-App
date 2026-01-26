@@ -1,7 +1,27 @@
+/* ============================================
+    CUSTOM PROPERTIES (Variables)
+   ============================================ */
 :root {
+
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+
+  --z-base: 1;
+  --z-progress-line: 10;
+  --z-progress-bar: 20;
+  --z-steps: 30;
+  --z-modal: 100;
+  --z-tooltip: 200;
+
+  /* Primary Colors */
   --primary-red: #dc2626;
   --primary-red-hover: #b91c1c;
   --primary-red-light: #fef2f2;
+
+  /* Sucess Colors */
   --success-green: #16a34a;
   --success-green-light: #dcfce7;
 
@@ -9,12 +29,7 @@
   --gray-border: #d1d5db;
   --gray-text: #6b7280;
 
-
-  --primary-red-light: #fef2f2;
-  --success-green: #16a34a;
-  --success-green-light: #dcfce7;
-  
-  /* Grays */
+  /* Gray Scale */
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-200: #e5e7eb;
@@ -28,6 +43,8 @@
   
   /* Semantic colors */
   --color-border: var(--gray-300);
+  --color-border-light: var(var(--gray-200));
+  --color-bg-hover: var(var(--gray-50));
   --color-text-primary: var(--gray-900);
   --color-text-secondary: var(--gray-500);
   --color-bg-base: #ffffff;
@@ -64,7 +81,10 @@
 
 }
 
-* {
+/* ============================================
+    RESET & BASE STYLES
+   ============================================ */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -78,9 +98,9 @@ body {
 }
 
 
-/* ================
-   PROGRESS STEPS
-   ================ */
+/* ============================================
+    PROGRESS STEPS
+   ============================================ */
 
 
 .progress-steps {
@@ -105,7 +125,7 @@ body {
   right: 0;
   height: 3px;
   background: linear-gradient(to right, #e5e7eb, #e5e7eb);
-  z-index: 1;
+  /* z-index: var(--z-progress-bar); */
 }
 
 .progress-steps::after {
@@ -117,7 +137,7 @@ body {
   height: 3px;
   width: var(--progress-percentage);
   background:var(--success-green);
-  z-index: 2;
+  /* z-index: var(--z-progress-line); */
   transition: width 0.3s ease-in;
 }
 
@@ -177,19 +197,15 @@ body {
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
-
-
-
 .step.active .step-text {
   color: var(--color-text-primary);
   font-weight: 600;
 }
 
-
-
 .step.completed .step-number span { 
   display: none; /* Hide the number when completed */
 }
+
 .step.completed .step-number {
   background-color: var(--success-green);
   border-color: var(--success-green);
@@ -199,13 +215,9 @@ body {
   
 }
 
-
-
-/* ================
-    CONTENT SECTION
-   ================ */
-
-
+/* ============================================
+    CONTENT HEADER
+   ============================================ */
 
 /* Content Header */
 .content-header {
@@ -231,13 +243,13 @@ body {
 }
 
 /* ================================
-    TIER SECTION  (STEP 1)
+    TIER SECTION 
    ================================ */ 
 
 #tier-section {
   padding: var(--spacing-md);
   max-width: 900px;
-  margin: 0 1rem auto;
+  margin: 0 auto;
   border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
 
@@ -252,10 +264,106 @@ body {
     margin-bottom: var(--spacing-lg);
 }
 
+.tier-container {
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1 1 calc(33% - var(--spacing-md));
+  min-width: 250px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--color-bg-base);
+}
+
+.tier-container:focus-visible {
+  outline: 3px solid var(--primary-red);
+  outline-offset: 2px;
+}
+
+.tier-container:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.tier-container:hover {
+  border-color: var(--primary-red);
+  box-shadow: var(--shadow-md);
+}
+
+.tier-container.selected {
+  border-color: var(--primary-red);
+  box-shadow: var(--shadow-md);
+  background-color: var(--primary-red-light);
+}
+
+.tier-container.selected .tier-icon {
+  background-color: var(--primary-red);
+  color: white;
+}
+
+.tier-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-border-light);
+  border-radius: 30px;
+  height: 50px;
+  margin-bottom: var(--spacing-md);
+}
+.tier-text {
+  flex: 1;
+}
+
+.tier-type-badge {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tier-type-description {
+  display: flex;
+  align-items: center;
+  background-color: var(--gray-200);
+  color: var(--gray-600);
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.tier-text span:first-child {
+  display: block;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.tier-text p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.tier-text .tier-time {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--gray-400);
+  font-size: 1.125rem;
+}
+
+.tier-cost {
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    margin-top: var(--spacing-sm);
+}
 
 
 /* ================================
-    IMAGE UPLOAD  (STEP 2)
+    IMAGE UPLOAD
    ================================ */ 
 
 
@@ -264,7 +372,7 @@ body {
 #image-upload-section {
   padding: var(--spacing-md);
   max-width: 900px;
-  margin: 0 1rem auto;
+  margin: 0 auto;
   border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
 }
@@ -391,6 +499,11 @@ body {
   z-index: 10;
 }
 
+.remove-image-btn:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
 .image-item.has-image:hover .remove-image-btn {
   opacity: 1;
   transform: scale(1);
@@ -499,7 +612,7 @@ body {
 }
 
 /* ================================
-    Product Search Section  (STEP 3)
+    Product Search Section  
    ================================ */
 
 
@@ -507,7 +620,7 @@ body {
 #product-details-section {
   max-width: 800px;
   margin: 0 auto;
-  padding: 1rem;
+  /* padding: 1rem; */
 }
 
  .content-wrapper {
@@ -543,10 +656,21 @@ body {
   color: var(--primary-red);
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
 .error {
   transition: all 0.3s ease-in-out !important;
   border: 2px solid #fc3939 !important;
+  animation: shake 0.4 ease-in-out;
   
+}
+
+.error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .error-message {
@@ -594,6 +718,14 @@ body {
   transition: all ease-in-out 0.3s;
 }
 
+.form-input input:focus,
+.form-input select:focus,
+.form-input textarea:focus {
+  border-color: var(--primary-red);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
 .form-input input:hover,
 .form-input select:hover,
 .form-input textarea:hover {
@@ -633,6 +765,8 @@ body {
 
 /* Product Details Section */
 #product-details-section {
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
 }
@@ -678,6 +812,13 @@ body {
   justify-content: center;
 }
 
+.back-btn:focus-visible,
+.next-btn:focus-visible,
+.submit-auth-btn:focus-visible {
+  outline: 3px solid var(--primary-red);
+  outline-offset: 2px;
+}
+
 .next-btn,
 .submit-auth-btn {
   background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-hover) 100%);
@@ -718,6 +859,7 @@ body {
 }
 
 .form-step {
+  padding: var(--spacing-md);
   transition: opacity 0.3s ease-in-out;
   
 }
@@ -746,11 +888,22 @@ select {
   border-radius: var(--radius-md);
 }
 
+.term-section input[type="checkbox"] {
+  accent-color: var(--primary-red);
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: var(--spacing-sm);
   padding: 0;
 }
 
@@ -763,6 +916,11 @@ select {
   align-items: center;
   gap: var(--spacing-sm);
   cursor: pointer;
+}
+
+.review-edit i,
+.review-edit p {
+  color: var(--primary-red);
 }
 
 .review-edit p {
@@ -779,7 +937,7 @@ select {
 /* Review Tier Section */
 .review-tier {
   padding: var(--spacing-md);
-  border: 2px solid var(--gray-200);
+  border: 1px solid var(--gray-200);
   border-radius: var(--radius-lg);
   margin-bottom: var(--spacing-lg);
   grid-column: span 2;
@@ -822,7 +980,7 @@ select {
 
 #step4 .content-wrapper {
   max-width: 1000px;
-  margin: 0 1rem auto;
+  margin: 0 auto;
   padding: 2rem;
 }
 
@@ -869,8 +1027,16 @@ select {
   background: var(--color-bg-base);
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
   
 }
+
+.review-images {
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+} 
+
+
 
 .review-image h3 {
   font-size: 1.25rem;
@@ -900,17 +1066,23 @@ select {
   padding: var(--spacing-lg);
   background: var(--color-bg-base);
   border-radius: 8px;
-  /* box-shadow: var(--shadow-sm); */
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
 }
 
-
-
-.prod-details {
+.item-details {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: var(--spacing-md) 0;
-  border-bottom: 1px solid var(--gray-200);
+  gap: 0.5rem;
+}
+
+.item-details .item-label {
+  color: var(--color-text-secondary);
+}
+
+.item-details .item-value {
+  font-weight: 600;
 }
 
 .detail-row {
@@ -925,7 +1097,9 @@ select {
   font-size: var(--font-size-lg);
 }
 
-/* Add media queries for the image grid */
+/* ============================================
+    MEDIA QUERIES
+   ============================================ */
 @media (max-width: 768px) {
   .image-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -933,7 +1107,41 @@ select {
 }
 
 @media (max-width: 480px) {
+  :root {
+    --spacing-mid: 0.75rem;
+    --spacing-lg: 1rem;
+  }
+
+  .progress-steps {
+    align-items: baseline;
+    padding: 0 0.5rem;
+  }
+
+  .step-text {
+    font-size: 0.75rem;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+  }
+
   .image-product-details-wrapper {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .image-grid-review {
+    display: flex;
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .modal-content {
+    width: 90%;
   }
 }

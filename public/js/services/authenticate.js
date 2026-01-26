@@ -1,5 +1,36 @@
 
 
+import { collection, addDoc, db } from '../api/firebase-client.js';
+import { checkUserStatus } from '../auth/auth.js';
+
+let currentUser = null;
+currentUser = await checkUserStatus();
+
+
+// Image upload functionality
+const imageInputs = document.querySelectorAll(".file-input");
+const imageItems = document.querySelectorAll(".image-item");
+const reviewImages = document.querySelectorAll('.review-image');
+// auth
+const authForm = document.getElementById('authentication-form');
+const authSubmitBtn = document.getElementById('submitAuthBtn');
+// categories selection functionality
+const categories = document.getElementById('categories');
+const dynamicFormContainer = document.getElementById('dynamic-form-container');
+let categorySelected;
+// tier modal actions
+const tierModal = document.getElementById('addedToCartModal');
+const tierContainers = document.querySelectorAll('.tier-container');
+const tierConfirmBtn = document.getElementById('confirmTierSelection');
+const tierCancelBtn =  document.getElementById('cancelTierSelection');
+// review 
+const reviewTier = document.querySelector('.review-tier');
+// Keep track of current step
+let currentStep = 1;
+const nextBtn = document.querySelectorAll(".next-btn");
+const backBtn = document.querySelectorAll(".back-btn");
+const formSteps = document.querySelectorAll(".form-step");
+
 const validationRules = {
 
       'Trading Cards': 
@@ -82,12 +113,12 @@ const forms = {
   "Trading Cards": "/authenticator/templates/trading-card-form.html"
 }
 
+let formData = {
+  images: [],
+  productDetails: {},
+  tierSelection: ''
 
-// Image upload functionality
-const imageInputs = document.querySelectorAll(".file-input");
-const imageItems = document.querySelectorAll(".image-item");
-const reviewImages = document.querySelectorAll('.review-image');
-
+}
 
 imageInputs.forEach((input) => {
   const imageItem = input.closest(".image-item");
@@ -167,9 +198,7 @@ imageInputs.forEach((input) => {
   
 });
 
-const categories = document.getElementById('categories');
-const dynamicFormContainer = document.getElementById('dynamic-form-container');
-let categorySelected;
+
 
 categories.addEventListener('change', (e) => {
   const target = e.target.value;
@@ -181,13 +210,7 @@ categories.addEventListener('change', (e) => {
 
 })
 
-
-
-const tierModal = document.getElementById('tierModal');
-const tierContainers = document.querySelectorAll('.tier-container');
-const tierConfirmBtn = document.getElementById('confirmTierSelection');
-const tierCancelBtn =  document.getElementById('cancelTierSelection');
-
+authForm.addEventListener('submit', handleFormSubmission);
 // add event listeners
 tierContainers.forEach(tier => {
   tier.addEventListener('click', () => {
@@ -199,61 +222,35 @@ tierContainers.forEach(tier => {
   })
 })
 
-tierConfirmBtn.addEventListener('click', () => {
-  gatherTierInformattion();
+
+
+const editButtons = {
+  images: {
+    selector:'.reivew-images .review-edit',
+    step: 1
+  },
+  details: {
+    selector:'.review-details .review-edit',
+    step: 2
+  }
+};
+
+Object.entries(editButtons).forEach(([name, config]) => {
+  console.log(config);
+  console.log(name);
+  const button = document.querySelector(config.selector);
+
+  if (button) {
+    button.addEventListener('click', () => {
+      currentStep =config.step;
+      showStep(currentStep);
+    });
+    console.log(`${name} edit button found`);
+  } else {
+    console.error(`${name} edit button not found: ${config.selector}`);
+  }
 })
 
-tierCancelBtn.addEventListener('click', () => {
-  if (tierModal)
-    tierModal.style.display = 'none';
-})
-
-function gatherTierInformattion() {
-  const selectedTier = document.querySelector('.tier-container.selected');
-  if (!selectedTier) {
-    alert('Please select a tier');
-    return;
-  }
-
-  const tierType = selectedTier.querySelector('[data-tier-type]');
-  const tierDuration = selectedTier.querySelector('[data-tier-duration]');
-  const tierCost = selectedTier.querySelector('[data-tier-cost]');
-
-  formData.tierSelection = {
-    type: tierType ? tierType.textContent.trim() : 'N/A',
-    duration: tierDuration ? tierDuration.textContent.trim() : 'N/A',
-    cost: tierCost ? tierCost.textContent.trim() : 'N/A'
-  };
-
-  if (tierModal){
-    tierModal.style.display = 'none';
-  }
-
-  return formData.tierSelection;
-  
-}
-
-
-
-const authForm = document.getElementById('authentication-form');
-const authSubmitBtn = document.getElementById('submitAuthBtn');
-
-
-authForm.addEventListener('submit', handleFormSubmission)
-
-
-let formData = {
-  images: [],
-  productDetails: {},
-  tierSelection: ''
-
-}
-
-// Keep track of current step
-let currentStep = 1;
-const nextBtn = document.querySelectorAll(".next-btn");
-const backBtn = document.querySelectorAll(".back-btn");
-const formSteps = document.querySelectorAll(".form-step");
 
 function prevStep() {
   if (currentStep > 1) {
@@ -441,9 +438,23 @@ function validateForm(form) {
 }
 
 function validateStep(stepNumber) {
-  
+
   if (stepNumber === 1) {
-    
+    console.log('Validating that a tier was selected...');
+    const selectedTier = document.querySelector('.tier-container.selected');
+    if (!selectedTier) {
+      alert('Please select a tier');
+      return false;
+    }
+
+    formData.tierSelection = gatherTierInformattion();
+    console.log('Tier selection:', formData.tierSelection);
+
+    return true;
+  }
+
+  if (stepNumber === 2) {
+
     const imgErrorsContainer = document.querySelector('.image-section-errors');
     const images = document.querySelectorAll('.image-preview');
     const REQUIRED_IMAGES = 5;
@@ -487,8 +498,8 @@ function validateStep(stepNumber) {
       return true;
     }
 
-  } else if (stepNumber === 2) {
-    console.log("Form Data:", formData)
+  } else if (stepNumber === 3) {
+    // console.log("Form Data:", formData)
     if (!categorySelected) {
       alert('Please select a category')
     }
@@ -499,10 +510,14 @@ function validateStep(stepNumber) {
 
     formData.productDetails = collectProductData(categorySelected);
     displayReviewData(formData);
+    
     return true;
 
-  } else if (stepNumber === 3) {
-    console.log('vaildating data...')
+  } else if (stepNumber === 4) {
+    console.log("Final review step");
+    // Check term and conditions are selected
+    const termsCheckbox = document.querySelectorAll('.chekbox-group input[type="checkbox"]  ');
+    console.log("termsCheckbox:", termsCheckbox);
     
     
     return true;
@@ -511,35 +526,56 @@ function validateStep(stepNumber) {
   
 }
 
-function handleFormSubmission(e) {
+async function handleFormSubmission(e) {
   e.preventDefault();
-  console.log("Form submitted");
-  console.log("form data: ", formData);
-
-  if(!validateStep(3)) {
+  
+  if(!validateStep(4)) {
     return;
   }
 
   authSubmitBtn.textContent = "Submitting ...";
 
-  tierModal.style.display = 'flex';
+  // send request to firebase
+  try {
+    const request = await submitToFirebase();
+
+    console.log("Request:", request)
+  }
+  catch (error) {
+    console.log("❌ Failed, when trying to store in Firebase", error);
+  }
+  
+
+  // adds to cart
+
+
+
+  // tierModal.style.display = "flex";
+
+  
 
 
 
 }
 
 function displayReviewData(data) {
-  console.log("form data:", formData);
+  console.log("form data:", data);
   const reviewDetailsContainer = document.querySelector('.prod-details');
   reviewDetailsContainer.innerHTML = '';
   reviewDetailsContainer.innerHTML = `
-    <dl class="review-details">
-      ${Object.entries(data.productDetails.details).map(([key, value]) => `
-          <dt>${key}:</dt>
-          <dd>${value}</dd>
-        `).join('')}
-    </dl>
+    <div class="item-details">
+      ${Object.entries(data.productDetails.details).map(([key,value]) => `
+        <div class="detail-row">
+          <div class="item-label">${key}</div>
+          <div class="item-value">${value}</div>
+        </div>
+        `
+        ).join('')}
+    </div>
   `
+  reviewTier.innerHTML = createReviewTierHTML(data.tierSelection);
+
+  
 }
 
 function formLocator(category) {
@@ -571,44 +607,114 @@ function formLocator(category) {
 
 }
 
+function createReviewTierHTML(tierData) {
+  return `
+  <div class="review-header">
+    <h3>Authentication Tier</h3>
+    <div class="review-edit">
+      <i class="fa-solid fa-pen"></i>
+      <p>Edit</p>
+    </div>
+  </div>
+  <div class="tier-summary">
+    <div class="review-tier-selected">
+      <div class="review-tier-icon">
+        ${tierData.icon}
+      </div>
+      <div class="tier-type">
+        <h4>${tierData.type}</h4>
+        <p>${tierData.duration}</p>
+      </div>
+    </div>
+    
+    <div class="tier-cost">
+      <span>${tierData.cost}</span>
+    </div>
+  </div>
+              
+`;
+}
+
+function gatherTierInformattion() {
+  // gather info
+  const selectedTier = document.querySelector('.tier-container.selected');
+  const tierType = selectedTier.querySelector('[data-tier-type]');
+  const tierDuration = selectedTier.querySelector('[data-tier-duration]');
+  const tierCost = selectedTier.querySelector('[data-tier-cost]');
+  const tierIcon = selectedTier.querySelector('[data-tier-icon]');
+  
+  // store info
+  formData.tierSelection = {
+    type: tierType ? tierType.textContent.trim() : 'N/A',
+    duration: tierDuration ? tierDuration.textContent.trim() : 'N/A',
+    cost: tierCost ? tierCost.textContent.trim() : 'N/A',
+    icon: tierIcon ? tierIcon.innerHTML.trim() : "N/A"
+  };
+
+  return formData.tierSelection;
+  
+}
+
+async function submitToFirebase() {
+  try {
+    const user = currentUser;
+
+    if (!user) {
+      console.log("❌ User must be login")
+      // redirect to login page
+
+    }
+    
+
+    authRequestData = {
+      images: formData.images,
+      price: formData.tierSelection.tierCost,
+
+      productDetails: {
+        category: formData.productDetails.category,
+        details: formData.productDetails.details
+      },
+
+      tierSelection: {
+        type: formData.tierSelection.type,
+        duration: formData.tierSelection.duration,
+        cost: formData.tierSelection.cost
+      },
+
+      status: "pending",
+      userId: user.uid
+    }
+
+    console.log("auth Data:",authRequestData);
+
+
+    const docRef = await add(collection(db, "authenticationRequests"), {
+      authRequestData
+    })
+
+    return { success: true, ref: docRef.id }
+    
+  } 
+  catch (error) {
+
+    console.log("❌ Error storing auth Request");
+
+    return { success: false, ref: null }
+
+  }
+}
+
+submitToFirebase();
+
 // Show initial step
 showStep(currentStep);
-
-const editButtons = {
-  images: {
-    selector:'.reivew-images .review-edit',
-    step: 1
-  },
-  details: {
-    selector:'.review-details .review-edit',
-    step: 2
-  }
-};
-
-Object.entries(editButtons).forEach(([name, config]) => {
-  console.log(config);
-  console.log(name);
-  const button = document.querySelector(config.selector);
-
-  if (button) {
-    button.addEventListener('click', () => {
-      currentStep =config.step;
-      showStep(currentStep);
-    });
-    console.log(`${name} edit button found`);
-  } else {
-    console.error(`${name} edit button not found: ${config.selector}`);
-  }
-})
-
-
 
 // Add event listener to navigation buttons
 nextBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
-    // if(!validateStep(currentStep)) {
-    //   return;
-    // }
+    if(!validateStep(currentStep)) {
+      return;
+    }
     nextStep();
 
   });

@@ -90,11 +90,15 @@
              <div class="tier-body">
 
               <div class="tier-container">
-                <div class="tier-icon">
+                <div data-tier-icon class="tier-icon">
                   <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tier-type="Expert Review">QuickCheck</span>
+                  <div class="tier-type-badge">
+                    <span data-tier-type="Expert Review">QuickCheck</span>
+                    <span class="tier-type-description">AI Only</span>
+                  </div>
+                  
                   <p>Fast automated verification using advanced AI technology</p>
 
                   <div class="tier-time">
@@ -109,11 +113,14 @@
                 </div>
               </div>
               <div class="tier-container">
-                <div class="tier-icon">
+                <div data-tier-icon class="tier-icon">
                   <i class="fa-solid fa-shield-heart"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tier-type="AI Review">Verified</span>
+                  <div class="tier-type-badge">
+                    <span data-tier-type="AI Review">Standard</span>
+                    <span class="tier-type-description">AI + Expert</span>
+                  </div>
                   <p>AI screening followed by expert review</p>
 
                   <div class="tier-time">
@@ -128,11 +135,14 @@
                 </div>
               </div>
               <div class="tier-container">
-                <div class="tier-icon">
+                <div data-tier-icon class="tier-icon">
                   <i class="fa-solid fa-user-check"></i>
                 </div>
                 <div class="tier-text">
-                  <span data-tier-type="Physical Review">Priority Human</span>
+                  <div class="tier-type-badge">
+                    <span data-tier-type="Human Review">Premium</span>
+                    <span class="tier-type-description">Expert Only</span>
+                  </div>
                   <p>Dedicated expert authentication with priority processing</p>
 
                   <div class="tier-time">
@@ -159,7 +169,6 @@
 
           
         </div>
-
         <!-- Step 2: Image Upload -->
         <div class="form-step" id="step2">
           <section id="image-upload-section" class="u-mg-b-md">
@@ -341,7 +350,6 @@
 
           
         </div>
-
         <!-- Step 3: Product Details -->
         <div class="form-step" id="step3" style="display: none">
           <section id="product-search-section">
@@ -403,16 +411,16 @@
 
           
         </div>
-
         <!-- Step 4: Review -->
         <div class="form-step" id="step4" style="display: none">
-          <!-- Header -->
+          <!-- Review content will go here -->
+          <div class="content-wrapper">
+            <!-- Header -->
             <div class="form-header">
               <h1 class="form-title">Product Review</h1>
               <p class="subheader">Review all information is correct before submission</p>
             </div>
-          <!-- Review content will go here -->
-          <div class="content-wrapper">
+
             <div class="image-product-details-wrapper">
               <!-- Tier Selection Review-->
               <div class="review-tier">
@@ -440,7 +448,7 @@
                 </div>
               </div>
               <!-- Image Review -->
-              <div class="reivew-images">
+              <div class="review-images">
                 <div class="review-header">
                   <h3>Uploaded Images</h3>
                   <div class="review-edit">
@@ -560,15 +568,15 @@
     </main>
     
     <!-- MODAL-->
-     <div class="modal" id="addedToCartModal" style="display: flex;">
+     <div class="modal" id="addedToCartModal" style="display: none;">
       <div class="modal-overlay"></div>
         <div class="modal-content">
           <div class="modal-header">
             <div class="modal-icon">
               <i class="fa-solid fa-cart-arrow-down"></i>
             </div>
-            <h2>Item Added to Cart</h2>
-            <p>Your product has been added for authentication. You now have <span id="cartItemCount">0</span> items in your cart.</p>
+            <h2>Item Added to Cart!</h2>
+            <p>Your product has been added for authentication. You now have <span id="cartItemCount" class="cart-item-count">0</span> items in your cart.</p>
           </div>
           <div class="modal-body">
               <div class="additional-add">
@@ -590,7 +598,7 @@
     
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <script src="js/components/footer.js"></script>
-    <script src="js/services/authenticate.js"></script>
+    <script type="module" src="js/services/authenticate.js"></script>
     <script type="module" src="js/components/nav.js"></script>
 
     

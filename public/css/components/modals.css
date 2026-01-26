@@ -72,11 +72,31 @@
 }
 
 
+.modal-header h2 {
+    font-size: var(--font-size-2xl);
+    margin: 0;
+    color: var(--color-text-primary);
+    text-align: center;
+    font-weight: 700;
+} 
+
+.modal-header p {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-sm);
+}
+
+.cart-item-count {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
 .modal-icon {
     font-size: 2rem;
-    color: var(--color-primary);
+    color: rgb(52, 179, 32);
     margin-bottom: var(--spacing-md);
-    background-color: var(--color-bg-light);
+    background-color: #E6F4EA;
     padding: var(--spacing-md);
     border-radius: 50%;
     display: flex;
@@ -105,8 +125,10 @@
 
 .modal-footer {
     display: flex !important;
+    flex-direction: column;
     align-items: center !important;
     gap: 0.5rem !important;
+    width: 100%;
 }
 
 .modal-footer button {
@@ -139,3 +161,46 @@
 .cancel-btn:hover {
     background-color: #f9fafb;
 }
+
+.additional-add {
+    display: flex;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    text-align: center;
+    background-color: var(--color-bg-light);
+    margin-top: var(--spacing-sm);
+    padding: 0.875rem;
+    border-radius: var(--spacing-sm);
+}
+
+.additional-add p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.modal-footer button {
+    width: 100%;
+
+}
+
+.add-item-btn {
+    border: 2px solid var(--color-border-light);
+    background-color: transparent;
+    color: var(--color-text-primary);
+}   
+
+.add-item-btn:hover {
+    background-color: var(--color-bg-light);
+}
+
+.view-cart-btn {
+    border: none;
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.view-cart-btn:hover {
+    background-color: var(--color-primary-hover);
+}
+
