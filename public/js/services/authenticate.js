@@ -1,7 +1,11 @@
 
 
-import { collection, addDoc, db } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL } from '../api/firebase-client.js';
+import { collection, addDoc, db, serverTimestamp  } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
+import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart } from '../commerce/cart.js';
+
+// const storage = getStorage();
 
 let currentUser = null;
 currentUser = await checkUserStatus();
@@ -116,6 +120,7 @@ const forms = {
 let formData = {
   images: [],
   productDetails: {},
+  productSku: '',
   tierSelection: ''
 
 }
@@ -198,8 +203,6 @@ imageInputs.forEach((input) => {
   
 });
 
-
-
 categories.addEventListener('change', (e) => {
   const target = e.target.value;
   categorySelected = target;
@@ -221,8 +224,6 @@ tierContainers.forEach(tier => {
     tier.classList.add('selected');
   })
 })
-
-
 
 const editButtons = {
   images: {
@@ -250,7 +251,6 @@ Object.entries(editButtons).forEach(([name, config]) => {
     console.error(`${name} edit button not found: ${config.selector}`);
   }
 })
-
 
 function prevStep() {
   if (currentStep > 1) {
@@ -533,20 +533,37 @@ async function handleFormSubmission(e) {
     return;
   }
 
-  authSubmitBtn.textContent = "Submitting ...";
+  authSubmitBtn.disabled = true;
+
 
   // send request to firebase
   try {
-    const request = await submitToFirebase();
+    authSubmitBtn.textContent = "Uploading images...";
 
-    console.log("Request:", request)
+    const result = await submitToFirebase();
+
+    if (result.success) {
+      console.log("✅ Request successful!")
+
+      authSubmitBtn.textContent = "Success!";
+
+      console.log(result.id)
+
+      // addToCart(currentUser)
+
+      setTimeout(() => {
+        authSubmitBtn.innerHTML = `<i class="fa-solid fa-arrow-up-from-bracket"></i> Submit for Authentication`;
+      }, 3000);
+    }
   }
   catch (error) {
     console.log("❌ Failed, when trying to store in Firebase", error);
   }
+
+  authSubmitBtn.disabled = false;
   
 
-  // adds to cart
+  
 
 
 
@@ -655,23 +672,60 @@ function gatherTierInformattion() {
   
 }
 
+async function uploadImagesToFirebase(images, userId, requestId) {
+  const uploadPromises = images.map(async (img, index) => {
+    try {
+      const imagePath = `authenticationRequests/${userId}/${requestId}/image_${index}_${Date.now()}.jpg`;
+      const storageRef = ref(storage, imagePath);
+
+      const uploadResult = await uploadString(storageRef, img.url, 'data_url');
+
+      const downloadURL = await getDownloadURL(uploadResult.ref);
+
+      console.log(`✅ Image ${index} uploaded:`, downloadURL);
+
+      return {
+        url: downloadURL,
+        path: imagePath,
+        isPrimary: img.isPrimary,
+        index: img.index
+      };
+
+    }
+    catch (error) {
+      console.error(`❌ Failed to upload image ${index}:`, error)
+      throw error;
+    }
+  });
+
+  const uploadedImages = await Promise.all(uploadPromises);
+  return uploadedImages;
+  
+}
+
 async function submitToFirebase() {
   try {
     const user = currentUser;
 
     if (!user) {
       console.log("❌ User must be login")
-      // redirect to login page
-
+      
     }
-    
 
-    authRequestData = {
-      images: formData.images,
-      price: formData.tierSelection.tierCost,
+    const tempRequestId = `temp+${Date.now()}`;
+
+    console.log("📤 Uploading images to Storage...");
+    // const uploadedImages = uploadImagesToFirebase(formData.images, user.uid, tempRequestId);
+    console.log("✅ All images uploaded!")
+
+    const formatPrice = formData.tierSelection.cost.replace('$', '');
+    
+    const authRequestData = {
+      images: '',
+      price: parseInt(formatPrice),
 
       productDetails: {
-        category: formData.productDetails.category,
+        category: formData.productDetails.proudctCategory,
         details: formData.productDetails.details
       },
 
@@ -682,30 +736,31 @@ async function submitToFirebase() {
       },
 
       status: "pending",
-      userId: user.uid
+      userId: user.uid,
+
+      createdAt: serverTimestamp(),
+      updateAt: serverTimestamp()
     }
 
     console.log("auth Data:",authRequestData);
 
-
-    const docRef = await add(collection(db, "authenticationRequests"), {
+    const docRef = await addDoc(collection(db, "authenticationRequests"),
       authRequestData
-    })
+    );
 
-    return { success: true, ref: docRef.id }
+    console.log("✅ Document created with id: ", docRef.id);
+
+    return { success: true, requestId: docRef.id }
     
   } 
   catch (error) {
 
-    console.log("❌ Error storing auth Request");
+    console.log("❌ Error storing auth Request", error);
 
-    return { success: false, ref: null }
+    return { success: false, ref: null, errorMsg: error.messag }
 
   }
 }
-
-submitToFirebase();
-
 // Show initial step
 showStep(currentStep);
 

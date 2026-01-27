@@ -1,3 +1,6 @@
+
+import { getDocs, where, query, collection, doc, addDoc, updateDoc } from '../api/firebase-client.js';
+
 // create small product cards
 const createSmCards = (data) => {
     return `
@@ -91,5 +94,137 @@ const setupEvent = (name) => {
 }
 
 
-fixProducts('cart');
-fixProducts('wishlist');
+// fixProducts('cart');
+// fixProducts('wishlist');
+
+export function createAuthCartItem(authRequest) {
+    return {
+        itemType: 'authentication', // ✅ Key differentiator
+        authRequestId: authRequest.requestId, // Link to auth request doc
+        primaryImage: authRequest.images[0]?.url || null,
+        productName: authRequest.productDetails?.details?.Brand || 'Unknown',
+        category: authRequest.productDetails?.category,
+        tier: {
+            name: authRequest.tierSelection?.type,
+            icon: authRequest.tierSelection?.icon,
+            duration: authRequest.tierSelection?.duration
+        },
+        cost: parseFloat(authRequest.tierSelection?.cost?.replace('$', '') || 0),
+        status: 'pending', // Current status
+        quantity: 1,
+        addedAt: new Date().toISOString()
+    };
+}
+
+function createShoppingCartItem(product) {
+    return {
+        itemType: 'product',
+        baseInfo: {
+            title: product.name
+        },
+        inventory: {
+            backorderAllowed: true,
+            quantity: 1,
+        },
+        pricing: { currency: 'USD', price: product.price },
+        productSku: '',
+        sellback: { enable: true, price: 0 },
+        sellerId: user.uid,
+        shipping: { shippingClass: '', weight: ''},
+        status: '',
+        updateAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+
+    }
+}
+
+export function handleGuestCart(product) {
+  // check if there a cart already in localStorage
+ let cart = localStorage.get('cart')
+ cart = cart ? JSON.parse(cart) : [];
+ // check if item already in cart
+ const existingItemIndex = cart.findIndex(item => item.productSku === product.productDetail.productSku);
+ console.log("existing item:", existingItem);
+ // if item add to quantity
+ if (existingItemIndex > -1) {
+  cart[existingItem].quantity += 1;
+ } else {
+  // if item does not exist add to cart array
+  cart.append(createCartItem(product));
+ }
+ // store in localStorage
+ localStorage.set("cart", JSON.stringify(cart))
+}
+
+export async function handleAuthenticatedCart(user, cartItem) {
+  try {
+    const cartRef = collection(db, 'userProfiles', user.email, 'cart');
+
+    let q;
+    if (cartItem.itemType === 'authentication') {
+        q = query(cartRef,
+            where("itemType", "==", "authentication"),
+            where("authRequestId", "==", product.requestId)
+        )
+    } else if (cartItem.itemType === 'product') {
+        q = query(cartRef,
+            where("itemType", "==", "product"),
+            where("productSku", "==", product.productSku)
+            
+        )
+    }
+
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+    
+        if (cartItem.itemType === 'product') {
+            const existingDoc = snapshot.docs[0];
+            const docRef = collection(db, 'userProfiles', user.email, 'cart', existingDoc.id);
+            // update quantity
+            await updateDoc(docRef, {
+                quantity: existingDoc.data().quantity += 1,
+                updateAt: new Date().toISOString()
+            })
+
+            return { success: true, action: 'updated' };
+        } else {
+            return { success: false, message: 'Authentication Request already in cart!'}
+        }
+    } else {
+        await addDoc(cartRef, cartItem)
+    }
+
+  } catch {
+    console.error("Error occur when handling authenticated cart: ", error.message);
+  }
+  
+}
+
+export async function addToCart(user, item, itemType) {
+  try {
+    let cartItem;
+
+    if (itemType === 'authentication') {
+        cartItem = createAuthCartItem(item);
+    } else if (itemType === 'product') {
+        cartItem = createShoppingCartItem(item);
+    } else {
+        console.error("❗️Invaild ItemType!");
+    }
+
+    // check if user is logged in or not
+    if (!user) {
+        console.log("🛒 Adding to guest cart")
+        return handleGuestCart(cartItem);
+    } else {
+        console.log("🛒 Adding to guest user cart")
+       return await handleAuthenticatedCart(user, cartItem);
+    }
+
+  } catch (error) {
+    console.error("❌ Error occured when adding to cart! ", error);
+    return { success: false, error: error.message };
+  }
+
+}
