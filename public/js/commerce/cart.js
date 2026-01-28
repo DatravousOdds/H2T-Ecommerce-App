@@ -1,5 +1,8 @@
 
 import { getDocs, where, query, collection, doc, addDoc, updateDoc } from '../api/firebase-client.js';
+import { db } from '../api/firebase-client.js';
+
+
 
 // create small product cards
 const createSmCards = (data) => {
@@ -98,12 +101,16 @@ const setupEvent = (name) => {
 // fixProducts('wishlist');
 
 export function createAuthCartItem(authRequest) {
+    console.log(`Item recieved: ${authRequest.productDetails} 👈🏾`)
+
+
+
     return {
         itemType: 'authentication', // ✅ Key differentiator
         authRequestId: authRequest.requestId, // Link to auth request doc
         primaryImage: authRequest.images[0]?.url || null,
         productName: authRequest.productDetails?.details?.Brand || 'Unknown',
-        category: authRequest.productDetails?.category,
+        category: authRequest.productDetails?.productCategory,
         tier: {
             name: authRequest.tierSelection?.type,
             icon: authRequest.tierSelection?.icon,
@@ -157,6 +164,7 @@ export function handleGuestCart(product) {
 }
 
 export async function handleAuthenticatedCart(user, cartItem) {
+    console.log("🛒 Cart item received: ", cartItem)
   try {
     const cartRef = collection(db, 'userProfiles', user.email, 'cart');
 
@@ -164,12 +172,12 @@ export async function handleAuthenticatedCart(user, cartItem) {
     if (cartItem.itemType === 'authentication') {
         q = query(cartRef,
             where("itemType", "==", "authentication"),
-            where("authRequestId", "==", product.requestId)
+            where("authRequestId", "==", cartItem.authRequestId)
         )
     } else if (cartItem.itemType === 'product') {
         q = query(cartRef,
             where("itemType", "==", "product"),
-            where("productSku", "==", product.productSku)
+            where("productSku", "==", cartItem.productSku)
             
         )
     }
@@ -193,20 +201,24 @@ export async function handleAuthenticatedCart(user, cartItem) {
         }
     } else {
         await addDoc(cartRef, cartItem)
+
+        return {success: true, action: '✅ Item added to cart'};
     }
 
-  } catch {
+  } catch (error) {
     console.error("Error occur when handling authenticated cart: ", error.message);
   }
   
 }
 
 export async function addToCart(user, item, itemType) {
+    // console.log(`Item addToCart recieved: ${item} 👈🏾`)
   try {
     let cartItem;
 
     if (itemType === 'authentication') {
         cartItem = createAuthCartItem(item);
+        console.log("Create authenticated cart item: ", cartItem)
     } else if (itemType === 'product') {
         cartItem = createShoppingCartItem(item);
     } else {
@@ -218,7 +230,7 @@ export async function addToCart(user, item, itemType) {
         console.log("🛒 Adding to guest cart")
         return handleGuestCart(cartItem);
     } else {
-        console.log("🛒 Adding to guest user cart")
+        console.log("🛒 Adding to authenticated user cart")
        return await handleAuthenticatedCart(user, cartItem);
     }
 
@@ -227,4 +239,52 @@ export async function addToCart(user, item, itemType) {
     return { success: false, error: error.message };
   }
 
+}
+
+export async function getUserCartCount(user) {
+    try {
+
+        if (!user) {
+            const cart = JSON.parse(localStorage.get('cart') || [] );
+            const totalQuantity = cart.reduce((total, item) => {
+                total += (item.quantity || 1);
+            }, 0);
+            
+            return totalQuantity;
+
+        } else {
+            // get user current cart count
+            let totalQuantity = 0;
+            const cartSnapshot = await getDocs(collection(db, "userProfiles", user.email, "cart"));
+            cartSnapshot.forEach(doc => {
+                totalQuantity += doc.data().quantity || 1
+            });
+
+            console.log("🛒 Total items in cart: ", totalQuantity);
+            return totalQuantity;
+        }
+
+    }
+    catch (error) {
+        console.log("😭 Error occured when fetching count: ", error.message);
+        return 0;
+    }
+   
+}
+
+export function updateCartCount(count) {
+    const cartAmount = document.getElementById('cart-amount');
+    // update cart count
+    if (count > 0) {
+        cartAmount.textContent = count;
+        cartAmount.style.display = 'flex';
+        console.log("🔄 More than 0 in cart showing counter!");
+    } else {
+        cartAmount.textContent = '';
+        cartAmount.style.display = 'none';
+        console.log(" 👌 Zero items in cart, removed cart amount!");
+    }
+
+    
+    
 }

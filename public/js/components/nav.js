@@ -130,7 +130,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
         <li>
           <a href="/cart" class="nav-link cart-link" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
-            <span class="cart-amount" aria-label="Cart items">0</span>
+            <span class="cart-amount" id="cart-amount" aria-label="Cart items">0</span>
           </a>
         </li>
         
@@ -223,7 +223,7 @@ const LoggedOutNav = () => ({
         <li>
           <a href="/cart" class="nav-link cart-link" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
-            <span class="cart-amount" aria-label="Cart items">0</span>
+            <span class="cart-amount" id="cart-amout" aria-label="Cart items">0</span>
           </a>
         </li>
       </ul>
@@ -275,7 +275,7 @@ const LoggedInNav = (user) => ({
         <li>
           <a href="/cart" class="nav-link cart-link" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
-            <span class="cart-amount" aria-label="Cart items">0</span>
+            <span class="cart-amount" id="cart-amount" aria-label="Cart items">0</span>
           </a>
         </li>
       </ul>

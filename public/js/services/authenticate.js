@@ -1,9 +1,8 @@
 
-
-import { getStorage, ref, uploadString, getDownloadURL } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api/firebase-client.js';
 import { collection, addDoc, db, serverTimestamp  } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
-import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart } from '../commerce/cart.js';
+import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart, getUserCartCount, updateCartCount } from '../commerce/cart.js';
 
 // const storage = getStorage();
 
@@ -15,18 +14,20 @@ currentUser = await checkUserStatus();
 const imageInputs = document.querySelectorAll(".file-input");
 const imageItems = document.querySelectorAll(".image-item");
 const reviewImages = document.querySelectorAll('.review-image');
-// auth
+// auth form
 const authForm = document.getElementById('authentication-form');
 const authSubmitBtn = document.getElementById('submitAuthBtn');
 // categories selection functionality
 const categories = document.getElementById('categories');
 const dynamicFormContainer = document.getElementById('dynamic-form-container');
 let categorySelected;
-// tier modal actions
-const tierModal = document.getElementById('addedToCartModal');
+// cart modal actions
+const cartModal = document.getElementById('addedToCartModal');
+const cartItemCount = document.getElementById('cartItemCount');
+const addAnotherItemBtn = document.getElementById('addAnotherItemBtn');
+const viewCartBtn =  document.getElementById('viewCartBtn');
+// tier containers
 const tierContainers = document.querySelectorAll('.tier-container');
-const tierConfirmBtn = document.getElementById('confirmTierSelection');
-const tierCancelBtn =  document.getElementById('cancelTierSelection');
 // review 
 const reviewTier = document.querySelector('.review-tier');
 // Keep track of current step
@@ -214,7 +215,62 @@ categories.addEventListener('change', (e) => {
 })
 
 authForm.addEventListener('submit', handleFormSubmission);
-// add event listeners
+
+addAnotherItemBtn.addEventListener('click', () => {
+  // reset step
+  currentStep = 1;
+  showStep(currentStep);
+
+  formData = {
+    images: [],
+    productDetails: {},
+    productSku: null,
+    tierSelection: null
+  };
+
+
+
+  cartModal.style.display = "none";
+
+  root.style.setProperty('--progress-percentage', '20%');
+
+});
+
+viewCartBtn.addEventListener('click', () => {
+  // go to cart
+  window.location.href = '/cart';
+})
+
+cartModal.addEventListener((event) => {
+  if (event && event !== cartModal) {
+    cartModal.style.display = "none";
+  }
+})
+
+function nextStep() {
+  currentStep++; // Added increment
+  showStep(currentStep);
+  updateProgressBar(currentStep);
+}
+
+function showStep(stepNumber) {
+  // hide all steps
+  formSteps.forEach((step) => {
+    step.style.display = "none";
+  });
+
+  // gets the id of the of the step number and shows that step
+  document.getElementById(`step${stepNumber}`).style.display = "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+
+  // Update progress indicator
+  updateProgressSteps(stepNumber);
+}
+
 tierContainers.forEach(tier => {
   tier.addEventListener('click', () => {
     tierContainers.forEach(t => {
@@ -237,13 +293,11 @@ const editButtons = {
 };
 
 Object.entries(editButtons).forEach(([name, config]) => {
-  console.log(config);
-  console.log(name);
   const button = document.querySelector(config.selector);
 
   if (button) {
     button.addEventListener('click', () => {
-      currentStep =config.step;
+      currentStep = config.step;
       showStep(currentStep);
     });
     console.log(`${name} edit button found`);
@@ -275,7 +329,10 @@ function showStep(stepNumber) {
   // gets the id of the of the step number and shows that step
   document.getElementById(`step${stepNumber}`).style.display = "block";
 
-  
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
 
   // Update progress indicator
   updateProgressSteps(stepNumber);
@@ -327,7 +384,7 @@ function collectProductData(category) {
   }
 
   const productData = {
-    proudctCategory: category,
+    productCategory: category,
     details: {}
   };
 
@@ -440,15 +497,12 @@ function validateForm(form) {
 function validateStep(stepNumber) {
 
   if (stepNumber === 1) {
-    console.log('Validating that a tier was selected...');
     const selectedTier = document.querySelector('.tier-container.selected');
     if (!selectedTier) {
       alert('Please select a tier');
       return false;
     }
-
     formData.tierSelection = gatherTierInformattion();
-    console.log('Tier selection:', formData.tierSelection);
 
     return true;
   }
@@ -514,10 +568,10 @@ function validateStep(stepNumber) {
     return true;
 
   } else if (stepNumber === 4) {
-    console.log("Final review step");
+    // console.log("Final review step");
     // Check term and conditions are selected
     const termsCheckbox = document.querySelectorAll('.chekbox-group input[type="checkbox"]  ');
-    console.log("termsCheckbox:", termsCheckbox);
+    // console.log("termsCheckbox:", termsCheckbox);
     
     
     return true;
@@ -535,48 +589,71 @@ async function handleFormSubmission(e) {
 
   authSubmitBtn.disabled = true;
 
-
-  // send request to firebase
   try {
+    // Step 1: Upload images to Firebase
     authSubmitBtn.textContent = "Uploading images...";
-
     const result = await submitToFirebase();
 
-    if (result.success) {
-      console.log("✅ Request successful!")
+    if (!result.success) {
+      throw Error("Failed to upload images");
+      
+    } else {
+      let uploadRequestId = result.requestId;
+      console.log("✅ Images uploaded successfully!");
 
-      authSubmitBtn.textContent = "Success!";
 
-      console.log(result.id)
+      // Step 2: Add item to cart
+      authSubmitBtn.textContent = "Adding to cart...";
 
-      // addToCart(currentUser)
+      const authRequestData = {
+        images: formData.images || null,
+        requestId: result.requestId || null,
+        productDetails: formData.productDetails || null,
+        tierSelection: formData.tierSelection || null,
+      }
 
-      setTimeout(() => {
-        authSubmitBtn.innerHTML = `<i class="fa-solid fa-arrow-up-from-bracket"></i> Submit for Authentication`;
-      }, 3000);
+      const cartResult = await addToCart(currentUser, authRequestData, 'authentication');
+
+      if (!cartResult.success) {
+        // Clean up Firebase request if cart fails
+        await deleteFirebaseRequest(currentUser.email, uploadRequestId);
+        throw new Error("Failed to add item to cart");
+      } else {
+
+        console.log("✅ Added item to cart!");
+        // Step 3: Update UI on sucess
+        authSubmitBtn.textContent = "Success!";
+
+        // get current user cart count
+        const cartCount = await getUserCartCount(currentUser);
+        updateCartCount(cartCount);
+
+        cartModal.style.display = "flex";
+        cartItemCount.textContent = cartCount;
+
+        showNotification("Item successfully added!", "success")
+        
+        
+      }
     }
   }
   catch (error) {
-    console.log("❌ Failed, when trying to store in Firebase", error);
+    console.error("❌ Submission failed!", error);
+
+    showNotification(error.message || "Something went wrong. Please try again.", "error");
+    
+    cartModal.style.display = 'none';
   }
 
-  authSubmitBtn.disabled = false;
-  
-
-  
-
-
-
-  // tierModal.style.display = "flex";
-
-  
-
-
-
+  setTimeout(() => {
+    authSubmitBtn.innerHTML = `<i class="fa-solid fa-arrow-up-from-bracket"></i> Submit for Authentication`;
+    authSubmitBtn.disabled = false;
+    }, 
+  3000);
 }
 
 function displayReviewData(data) {
-  console.log("form data:", data);
+  // console.log("form data:", data);
   const reviewDetailsContainer = document.querySelector('.prod-details');
   reviewDetailsContainer.innerHTML = '';
   reviewDetailsContainer.innerHTML = `
@@ -672,6 +749,20 @@ function gatherTierInformattion() {
   
 }
 
+function showNotification(message, type) {
+  const div = document.createElement('div');
+  div.className = `notification notification--${type}`;
+  div.textContent = message;
+
+  document.body.appendChild(div);
+
+  setTimeout(() => div.classList.add('show'), 10)
+
+  setTimeout(() => div.classList.remove('show'), 3000)
+
+
+}
+
 async function uploadImagesToFirebase(images, userId, requestId) {
   const uploadPromises = images.map(async (img, index) => {
     try {
@@ -703,6 +794,22 @@ async function uploadImagesToFirebase(images, userId, requestId) {
   
 }
 
+async function deleteFirebaseRequest(userId, requestId) {
+  // get request ref
+  try {
+    const docRef = doc(db, "userProfiles", user.email, "cart", requestId);
+
+    await deleteDoc(docRef);
+    
+    console.log("✅ Document successfully deleted!");
+    return true;
+    
+  } catch (error) {
+    console.error("❌ Error removing document: ", error);
+    throw error;
+  }
+}
+
 async function submitToFirebase() {
   try {
     const user = currentUser;
@@ -725,7 +832,7 @@ async function submitToFirebase() {
       price: parseInt(formatPrice),
 
       productDetails: {
-        category: formData.productDetails.proudctCategory,
+        category: formData.productDetails.productCategory,
         details: formData.productDetails.details
       },
 

@@ -204,3 +204,34 @@
     background-color: var(--color-primary-hover);
 }
 
+.notification {
+    position: fixed;
+    background: white;
+    padding: 1rem 24px;
+    top: 20px;
+    right: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(400px);
+
+
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification--success {
+    border-left: 4px solid #10b981;
+}
+
+.notification--error {
+    border-left: 4px solid #ef4444;
+}
+
+.notification--warning {
+    border-left: 4px solid #f59e0b;
+}
+

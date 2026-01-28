@@ -299,6 +299,7 @@ button.white {
 }
 
 .cart-amount {
+  display: none; /* default */
   position: absolute;
   top: -8px;
   right: -8px;
