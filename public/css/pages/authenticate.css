@@ -136,7 +136,7 @@ body {
   right: 0;
   height: 3px;
   width: var(--progress-percentage);
-  background:var(--success-green);
+  background:var(--primary-red);
   /* z-index: var(--z-progress-line); */
   transition: width 0.3s ease-in;
 }
@@ -207,11 +207,11 @@ body {
 }
 
 .step.completed .step-number {
-  background-color: var(--success-green);
-  border-color: var(--success-green);
-  border: 3px solid var(--success-green);
+  background-color: var(--primary-red);
+  border-color: var(--primary-red);
+  border: 3px solid var(--primary-red);
   color: white;
-  box-shadow:  0 0 0 4px var(--success-green);
+  box-shadow:  0 0 0 4px var(--primary-red);
   
 }
 

@@ -33,17 +33,32 @@
 
 
 
-.modal {
+.mod {
     position: fixed;
-    display: flex;
     top: 0;
     left: 0;
+    height: 100%;
+    width: 100%;
     z-index: 9999;
+    display: flex;
     justify-content: center;
     align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out,
+                visibility 0.3s ease-in-out;
+    
+    background-color: rgba(0, 0, 0, 0.5);
+
 }
 
-.modal-overlay {
+.mod.show {
+    visibility: visible ;
+    opacity: 1 ;
+}
+
+/* .modal-overlay {
+    display: flex;
     position: absolute;
     top: 0;
     left: 0;
@@ -51,9 +66,9 @@
     height: 100%;
     background: var(--color-overlay);
     backdrop-filter: blur(var(--blur-sm));
-}
+} */
 
-.modal-content {
+.mod-content {
     max-width: 500px;
     background: white;
     border-radius: 12px;

@@ -37,7 +37,6 @@ const backBtn = document.querySelectorAll(".back-btn");
 const formSteps = document.querySelectorAll(".form-step");
 
 const validationRules = {
-
       'Trading Cards': 
       [
         {id: 'card-brand', name: 'Brand', required: true },
@@ -123,7 +122,6 @@ let formData = {
   productDetails: {},
   productSku: '',
   tierSelection: ''
-
 }
 
 imageInputs.forEach((input) => {
@@ -138,7 +136,6 @@ imageInputs.forEach((input) => {
   input.addEventListener("change", (e) => {
     const file = e.target.files[0];
     const slotIndex = parseInt(e.target.dataset.index);
-    // console.log(slotIndex)
 
     if (file) {
       // Validate file type
@@ -167,9 +164,6 @@ imageInputs.forEach((input) => {
         }
 
         reviewImages[slotIndex].src = e.target.result;
-
-        
-        
 
         // Show remove button
         removeImageBtn.style.display = "block";
@@ -228,10 +222,26 @@ addAnotherItemBtn.addEventListener('click', () => {
     tierSelection: null
   };
 
+  resetImages();
 
+  categories.value = "";
+  categorySelected = null;
+
+  if (dynamicFormContainer) {
+    dynamicFormContainer.innerHTML = "";
+  }
+
+  tierContainers.forEach(tier => {
+    tier.classList.remove('selected');
+  });
+
+  clearValidationErrors();
+
+  updateProgressBar(1);
 
   cartModal.style.display = "none";
 
+  const root = document.documentElement;
   root.style.setProperty('--progress-percentage', '20%');
 
 });
@@ -241,35 +251,12 @@ viewCartBtn.addEventListener('click', () => {
   window.location.href = '/cart';
 })
 
-cartModal.addEventListener((event) => {
-  if (event && event !== cartModal) {
+cartModal.addEventListener('click', (event) => {
+  console.log("clicked:",event.target)
+  if (event.target !== cartModal) {
     cartModal.style.display = "none";
   }
 })
-
-function nextStep() {
-  currentStep++; // Added increment
-  showStep(currentStep);
-  updateProgressBar(currentStep);
-}
-
-function showStep(stepNumber) {
-  // hide all steps
-  formSteps.forEach((step) => {
-    step.style.display = "none";
-  });
-
-  // gets the id of the of the step number and shows that step
-  document.getElementById(`step${stepNumber}`).style.display = "block";
-
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
-
-  // Update progress indicator
-  updateProgressSteps(stepNumber);
-}
 
 tierContainers.forEach(tier => {
   tier.addEventListener('click', () => {
@@ -306,6 +293,57 @@ Object.entries(editButtons).forEach(([name, config]) => {
   }
 })
 
+function clearValidationErrors() {
+  const imageErrorsContainer = document.querySelector(".image-section-errors");
+  if  (imageErrorsContainer) {
+    imageErrorsContainer.innerHTML = "";
+  }
+
+  const validationErrors = document.querySelector(".validation-errors");
+  if (validationErrors) {
+    validationErrors.innerHTML = "";
+  }
+
+  document.querySelectorAll(".error").forEach(el => {
+    el.classList.remove("error");
+  });
+}
+
+function resetImages() {
+  imageInputs.forEach((input, index) => {
+    input.value = "";
+
+    const imageItem = input.closest(".image-item");
+    const imagePreview = imageItem.querySelector(".image-preview");
+    const uploadIcon = imageItem.querySelector(".upload-icon");
+    const uploadText = imageItem.querySelector(".upload-text");
+    const removeImageBtn = imageItem.querySelector(".remove-image-btn");
+
+    if (imagePreview) {
+      imagePreview.src = "";
+      imagePreview.style.display = "none";
+    }
+
+    if (uploadIcon) {
+      uploadIcon.style.display = "block";
+    }
+
+    if (uploadText) {
+      uploadText.style.display = "block";
+    }
+
+    if (removeImageBtn) {
+      removeImageBtn.style.display = "none";
+    }
+
+    if (reviewImages[index]) {
+      reviewImages[index].src = "";
+    }
+  })
+
+  console.log("✅ All image reset");
+}
+
 function prevStep() {
   if (currentStep > 1) {
     currentStep--;
@@ -315,7 +353,7 @@ function prevStep() {
 }
 
 function nextStep() {
-  currentStep++; // Added increment
+  currentStep++; 
   showStep(currentStep);
   updateProgressBar(currentStep);
 }
@@ -334,7 +372,6 @@ function showStep(stepNumber) {
     behavior: 'smooth'
   });
 
-  // Update progress indicator
   updateProgressSteps(stepNumber);
 }
 
@@ -495,19 +532,17 @@ function validateForm(form) {
 }
 
 function validateStep(stepNumber) {
-
   if (stepNumber === 1) {
     const selectedTier = document.querySelector('.tier-container.selected');
     if (!selectedTier) {
-      alert('Please select a tier');
+      showNotification('Please select a tier','error');
       return false;
     }
     formData.tierSelection = gatherTierInformattion();
 
     return true;
-  }
 
-  if (stepNumber === 2) {
+  } else if (stepNumber === 2) {
 
     const imgErrorsContainer = document.querySelector('.image-section-errors');
     const images = document.querySelectorAll('.image-preview');
@@ -553,9 +588,8 @@ function validateStep(stepNumber) {
     }
 
   } else if (stepNumber === 3) {
-    // console.log("Form Data:", formData)
     if (!categorySelected) {
-      alert('Please select a category')
+      showNotification('Please select a category', 'error')
     }
 
     if (!validateForm(categorySelected)) {
@@ -566,18 +600,7 @@ function validateStep(stepNumber) {
     displayReviewData(formData);
     
     return true;
-
-  } else if (stepNumber === 4) {
-    // console.log("Final review step");
-    // Check term and conditions are selected
-    const termsCheckbox = document.querySelectorAll('.chekbox-group input[type="checkbox"]  ');
-    // console.log("termsCheckbox:", termsCheckbox);
-    
-    
-    return true;
-
   }
-  
 }
 
 async function handleFormSubmission(e) {
@@ -613,9 +636,9 @@ async function handleFormSubmission(e) {
       }
 
       const cartResult = await addToCart(currentUser, authRequestData, 'authentication');
+      console.log("cart results: ", cartResult.success);
 
       if (!cartResult.success) {
-        // Clean up Firebase request if cart fails
         await deleteFirebaseRequest(currentUser.email, uploadRequestId);
         throw new Error("Failed to add item to cart");
       } else {
@@ -624,16 +647,13 @@ async function handleFormSubmission(e) {
         // Step 3: Update UI on sucess
         authSubmitBtn.textContent = "Success!";
 
-        // get current user cart count
         const cartCount = await getUserCartCount(currentUser);
         updateCartCount(cartCount);
 
-        cartModal.style.display = "flex";
+        cartModal.classList.add("show");
         cartItemCount.textContent = cartCount;
 
         showNotification("Item successfully added!", "success")
-        
-        
       }
     }
   }
@@ -642,7 +662,7 @@ async function handleFormSubmission(e) {
 
     showNotification(error.message || "Something went wrong. Please try again.", "error");
     
-    cartModal.style.display = 'none';
+    cartModal.classList.remove("show");
   }
 
   setTimeout(() => {
@@ -653,7 +673,6 @@ async function handleFormSubmission(e) {
 }
 
 function displayReviewData(data) {
-  // console.log("form data:", data);
   const reviewDetailsContainer = document.querySelector('.prod-details');
   reviewDetailsContainer.innerHTML = '';
   reviewDetailsContainer.innerHTML = `
@@ -694,7 +713,6 @@ function formLocator(category) {
 
       dynamicFormContainer.innerHTML = "Internal Error";
       console.error("Error", err);
-
       }
     )
   }
@@ -724,8 +742,7 @@ function createReviewTierHTML(tierData) {
     <div class="tier-cost">
       <span>${tierData.cost}</span>
     </div>
-  </div>
-              
+  </div>         
 `;
 }
 
@@ -757,10 +774,7 @@ function showNotification(message, type) {
   document.body.appendChild(div);
 
   setTimeout(() => div.classList.add('show'), 10)
-
   setTimeout(() => div.classList.remove('show'), 3000)
-
-
 }
 
 async function uploadImagesToFirebase(images, userId, requestId) {
@@ -868,10 +882,9 @@ async function submitToFirebase() {
 
   }
 }
-// Show initial step
+
 showStep(currentStep);
 
-// Add event listener to navigation buttons
 nextBtn.forEach((btn) => {
   btn.addEventListener("click", () => {
     if(!validateStep(currentStep)) {

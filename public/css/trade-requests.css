@@ -115,12 +115,10 @@ body {
 
 /* Search Container */
 .search-container {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 1rem;
-  border-top: 1px solid var(--border-color);
-  padding-top: 1rem;
 }
 
 .selected-item-remove {
@@ -136,23 +134,26 @@ body {
 }
 
 .search-container i {
-  font-size: var(--font-size-medium);
+  font-size: 0.875rem;
   color: var(--secondary-color);
-  position: relative;
-  left: 2.7rem;
+  position: absolute;
+  left: 1px;
   padding: var(--padding-small);
   z-index: 2;
   background-color: transparent;
 }
 
 .search-container input {
-  position: relative;
   width: 100%;
-  padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+  padding: 12px 2rem;
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-radius: 0.25rem;
   outline: none;
   z-index: 1;
+}
+
+.search-container input::placeholder {
+  font-size: var(--font-size-small);
 }
 
 .search-container input:focus {
@@ -221,8 +222,12 @@ body {
 
 /* Available Item Card */
 .available-items-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  white-space: nowrap;
+  height: 200px;
   gap: 1rem;
   margin-top: 1rem;
 }

@@ -149,7 +149,7 @@ app.get("/list-product", (req, res) => {
 
 // trade request route
 app.get("/trade-request", (req, res) => {
-  res.sendFile(path.join(staticPth, "trade-request.html"));
+  res.sendFile(path.join(staticPth, "trade/trade-request.html"));
 });
 
 // view trade request route
