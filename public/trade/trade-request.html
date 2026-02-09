@@ -59,7 +59,7 @@
           <div class="trade-card">
             <header class="trade-card-header">
               <h2>Your Items</h2>
-              <span class="item-counter">0/4 Selected</span>
+              <span class="item-counter"></span>
             </header>
 
             <!-- Items Grid -->
@@ -173,7 +173,7 @@
           <div class="trade-card">
             <header class="trade-card-header">
               <h2>Their Items</h2>
-              <span class="item-counter">0/4 Selected</span>
+              <span class="item-counter"></span>
             </header>
 
             <!-- Items Grid -->
@@ -266,28 +266,28 @@
           <h3>Fees Breakdown:</h3>
           <div class="trading-fee space-between">
             <p>Trading Fee (2%):</p>
-            <p>$0</p>
+            <p class="fee-value" id="trade-fee-value" data-fee-type="">$0</p>
           </div>
           <div class="platform-fee space-between">
             <p>Platform Fee:</p>
-            <p>$0</p>
+            <p class="fee-value" id="platform-fee-value" data-fee-type="">$0</p>
           </div>
           <div class="processing-fee space-between">
             <p>Processing Fee:</p>
-            <p>$0</p>
+            <p class="fee-value" id="process-fee-value" data-fee-type="">$0</p>
           </div>
         </div>
 
         <!-- Total Fees -->
         <div class="total-fees space-between">
           <p>Total Fees:</p>
-          <p>$0</p>
+          <p id="total-fees-value">$0</p>
         </div>
 
         <!-- Final Total -->
         <div class="final-total space-between">
           <p>Final Total:</p>
-          <p>$0</p>
+          <p id="final-total-value">$0</p>
         </div>
 
         <!-- Trade Button Actions -->
@@ -307,14 +307,13 @@
       <div class="trade-confirmation-modal-content">
         <!-- Trade confirmation icon -->
         <div class="trade-confirmation-icon">
-          <i class="fa-solid fa-circle-check"></i>
+          <i class="fa-solid fa-right-left"></i>
         </div>
         <!-- Header -->
         <header class="trade-confirmation-header">
-          <h2>Trade Request Sent!</h2>
+          <h2>Confirm Trade Request</h2>
           <p class="trade-recipient-info">
-            Your trade request has been sent to
-            <span id="trade-recipient">Trade Recipient</span>
+            You're about to submit a trade request please review details below
           </p>
         </header>
         <!-- Items traded -->
@@ -332,21 +331,26 @@
           </div>
         </div>
 
+        <div class="trading-fee">
+          <p class="fee-label">Trading Fee (2%)</p>
+          <p class="fee-value"></p>
+        </div>
+
         <!-- Trade Button Actions -->
         <div class="confirmation-button-actions">
           <button
             type="button"
-            class="view-trade-request"
-            id="view-trade-request"
+            class="cancel-trade-request"
+            id="cancel-trade-request"
           >
-            View Trade Request
+            Cancel
           </button>
           <button
             type="button"
-            class="back-to-trading-page"
-            id="close-trade-confirmation"
+            class="confirm-trade"
+            id="confirm-trade"
           >
-            Back to Trading Page
+            Confirm
           </button>
         </div>
       </div>
