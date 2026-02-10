@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Font Awesome -->
+    <script
+      src="https://kit.fontawesome.com/854f8a6196.js"
+      crossorigin="anonymous"
+    ></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade</title>
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main class="trade-page">
+        <header class="page-header">
+            <h1>Trade</h1>
+            <p>Find a user to start a trade request</p>
+        </header>
+        <section class="search-section">
+            <div class="search-container">
+                <input type="search" name="search-user" id="search-user" placeholder="Search users by name or username..." aria-label="Search users by name or username...">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </div>   
+        </section>
+
+        <section class="users-section">
+
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading users...</p>
+            </div>
+
+            <div class="empty-state hidden" id="emptyState">
+                <i class="fa-solid fa-users-slash"></i>
+                <h3>No users found</h3>
+                <p>Try adjusting your search or filters</p>
+            </div>
+
+            <div class="users-grid" id="usersGrid">
+                <div class="user-card" data-user-id="">
+                    <div class="user-card-header">
+                        <div class="user-pic">
+                            <img 
+                                src="https://via.placeholder.com/80" 
+                                alt="Marcus Johnson profile picture"
+                                onerror="this.src='/images/default-avatar.svg'"
+                            >
+                            <span class="verified-badge" title="Verified user">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="user-details">
+                        <div class="user-id">
+                            <h3 class="user-name">Marcus Johnson</h3>
+                            <span class="user-at">@marcusj</span>
+                        </div>
+                        <div class="user-info">
+                            <div class="rating" title="Average rating">
+                                <i class="fa-solid fa-star" aria-hidden="true"></i>
+                                <span>4.8</span>
+                            </div>
+                            <div class="user-trades">
+                                <i class="fa-solid fa-handshake" aria-hidden="true"></i>
+                                <p>47 trades</p>
+                            </div>
+                            <div class="user-start-date">
+                                <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+                                <p>Since 2024</p>
+                            </div>
+                        </div>
+                        <div class="user-items">
+                            <p class="items-count">
+                                <i class="fa-solid fa-box" aria-hidden="true"></i>
+                                24 active items
+                            </p>
+                            <div class="user-recent-item-1">
+                                <span>Yeezy Boost 350</span>
+                            </div>
+                            <div class="user-recent-item-2">
+                                <span>Air Max 97</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>  
+        </section>
+    </main>
+
+    <footer id="footer"></footer>
+    <script type="module" src="../js/components/nav.js"></script>
+    <script src="../js/components/footer.js"></script>
+    <script type="module" src="../js/pages/trade.js"></script>
+</body>
+</html>

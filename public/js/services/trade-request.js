@@ -1,3 +1,4 @@
+
 // available items
 const availableItemsGrids = document.querySelectorAll(".available-items-grid");
 const selectedItemsGrids = document.querySelectorAll(".selected-items-grid");
@@ -12,6 +13,8 @@ let yourSelectedItemsCount = document.querySelector(".your-item .item-counter");
 let theirSelectedItemsCount = document.querySelector(".their-item .item-counter");
 
 const tradeConfirmationModal = document.querySelector(".trade-confirmation-modal");
+const cancelConfirmBtn = tradeConfirmationModal.querySelector('.cancel-trade-request');
+const confirmBtn = tradeConfirmationModal.querySelector('.confirm-trade');
 
 // modal buttons
 const backToTradingPageBtn = document.querySelector(".trade-confirmation-modal-content .back-to-trading-page");
@@ -112,8 +115,6 @@ function updateValueDifference(yourTotal, theirTotal) {
 }
 
 function updateModalValues(yourTotal, theirTotal, fee) {
-
-  console.log(yourTotal)
   const modal = document.querySelector('.trade-confirmation-modal');
 
   if (modal && modal.classList.contains('active')) {
@@ -127,24 +128,94 @@ function updateModalValues(yourTotal, theirTotal, fee) {
   }
 }
 
+function showErrorModal(title, message, type) {
+  let errorModal = document.querySelector('.errorModal');
+
+  if (!errorModal) {
+    errorModal = document.createElement('div');
+    errorModal.className = 'errorModal';
+    document.body.append(errorModal);
+  }
+
+  if (type === "info") {
+    errorModal.classList.add('info');
+  }
+
+  errorModal.innerHTML = `
+      <div>
+        <p><strong>${title}</strong></p>
+        <p>${message}</p>
+      </div>
+  `;
+
+  errorModal.classList.remove('hiding');
+
+  if (errorModal.hideTimeout) {
+    clearTimeout(errorModal.hideTimeout)
+  }
+
+  errorModal.hideTimeout = setTimeout(() => {
+    errorModal.classList.add('hiding')
+  }, 3000);
+
+}
+
+function createTradeRequest(tradingItems, requestingItems, requestedUserId) {
+
+}
+
+
+
 
 createTradeRequestBtn.addEventListener("click", () => {
+
   const yourTotalValue = parseInt(document.querySelector('.your-value .amount').textContent.replace('$', ''));
   const theirTotalValue = parseInt(document.querySelector('.their-value .amount').textContent.replace('$', ''));
   const tradingFee = parseInt(document.querySelector('.trading-fee .fee-value').textContent.replace('$', ''));
-
-  tradeConfirmationModal.classList.add('active');
-  document.body.style.overflow = "hidden";
-
-  updateModalValues(yourTotalValue, theirTotalValue, tradingFee);
-
   
-  
+
+  if (yourTotalValue === 0 && theirTotalValue === 0) {
+    showErrorModal("No items selected!", "Please select at least one item");
+  } else {
+    tradeConfirmationModal.classList.add('active');
+    document.body.style.overflow = "hidden";
+
+    updateModalValues(yourTotalValue, theirTotalValue, tradingFee);
+
+    if (cancelConfirmBtn) {
+      cancelConfirmBtn.addEventListener('click', () => {
+        tradeConfirmationModal.classList.remove('active');
+        document.body.style.overflow = "auto";
+      })
+    }
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', async () => {
+        confirmBtn.textContent = "Creating trade request...";
+
+        // create a request in firebase
+        createTradeRequest();
+
+        // show confirmation modal
+        showErrorModal("Trade Request Created!", "Your trade request has been successfully created!", "info" );
+
+        tradeConfirmationModal.classList.remove("active");
+        document.body.style.overflow = "auto";
+
+      })
+    }
+  }
+
+  tradeConfirmationModal.addEventListener('click', (e) => {
+    if (e.target === tradeConfirmationModal) {
+      tradeConfirmationModal.classList.remove('active');
+      document.body.style.overflow = "auto";
+    }
+  })
 });
 
 // Add event listener to the cancel trade request button
 cancelTradeRequestBtn.addEventListener("click", () => {
-  // console.log("cancel trade request button clicked");
 
   // clear the selected items
   const selectedItems = document.querySelectorAll(".selected-item-card");
@@ -153,7 +224,7 @@ cancelTradeRequestBtn.addEventListener("click", () => {
   });
 
   // redirect to the profile page
-  window.location.href = "/profile";
+  window.location.href = "/";
 });
 
 
