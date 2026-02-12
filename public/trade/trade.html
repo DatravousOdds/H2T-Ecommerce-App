@@ -6,18 +6,27 @@
       src="https://kit.fontawesome.com/854f8a6196.js"
       crossorigin="anonymous"
     ></script>
+    <!--- CSS-->
+    <link rel="stylesheet" href="../css/pages/trade.css" />
+    <link rel="stylesheet" href="../css/style2.css" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trade</title>
 </head>
 <body>
-    <nav id="navbar"></nav>
+    <section id="header">
+      <nav></nav>  
+    </section>
+    
+    
     <main class="trade-page">
+
         <header class="page-header">
             <h1>Trade</h1>
             <p>Find a user to start a trade request</p>
         </header>
-        <section class="search-section">
+
+        <section class="user-search-section">
             <div class="search-container">
                 <input type="search" name="search-user" id="search-user" placeholder="Search users by name or username..." aria-label="Search users by name or username...">
                 <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
@@ -26,25 +35,27 @@
 
         <section class="users-section">
 
-            <div class="loading-state" id="loadingState">
+            <div class="loading-state" style="display: none;" id="loadingState">
                 <div class="spinner"></div>
                 <p>Loading users...</p>
             </div>
 
-            <div class="empty-state hidden" id="emptyState">
+            <div class="empty-state hidden" style="display: none;" id="emptyState">
                 <i class="fa-solid fa-users-slash"></i>
                 <h3>No users found</h3>
                 <p>Try adjusting your search or filters</p>
             </div>
 
             <div class="users-grid" id="usersGrid">
-                <div class="user-card" data-user-id="">
+                <article class="user-card" data-user-id="">
                     <div class="user-card-header">
                         <div class="user-pic">
-                            <img 
-                                src="https://via.placeholder.com/80" 
+                            <img
+                                src="https://newprofilepic.photo-cdn.net//assets/images/article/profile.jpg?90af0c8" 
                                 alt="Marcus Johnson profile picture"
-                                onerror="this.src='/images/default-avatar.svg'"
+                                width="100"
+                                height="200"
+                                
                             >
                             <span class="verified-badge" title="Verified user">
                                 <i class="fa-solid fa-circle-check"></i>
@@ -76,21 +87,21 @@
                                 <i class="fa-solid fa-box" aria-hidden="true"></i>
                                 24 active items
                             </p>
-                            <div class="user-recent-item-1">
-                                <span>Yeezy Boost 350</span>
-                            </div>
-                            <div class="user-recent-item-2">
-                                <span>Air Max 97</span>
+                            <div class="popular-items">
+                                <span class="item-tag">Yeezy Boost 350</span>
+                                <span class="item-tag">Air Max 97</span>
+                                <span class="item-tag">+22 more</span>
                             </div>
                         </div>
                     </div>
 
-                </div>
+                </article>
             </div>  
         </section>
     </main>
 
-    <footer id="footer"></footer>
+    <footer></footer>
+
     <script type="module" src="../js/components/nav.js"></script>
     <script src="../js/components/footer.js"></script>
     <script type="module" src="../js/pages/trade.js"></script>
