@@ -203,7 +203,6 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: var(--spacing-lg);
-    margin-top: 0.4rem;
     gap: var(--spacing-sm);
 }
 
@@ -311,5 +310,23 @@ body {
 
 .hidden {
     display: none !important;
+}
+
+@media (max-width: 768px) {
+    
+    .search-container {
+        max-width: 500px;
+    }
+
+    .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+    
+}
+
+@media (min-width: 1200px) {
+    .users-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 

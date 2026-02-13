@@ -193,6 +193,6 @@ newsletterSubmitBtn.addEventListener('click', () => {
     <p class="signup-text">You've been successfully signed up!</p>
   </div>
 
-  `
+  `;
   
 })

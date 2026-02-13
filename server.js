@@ -157,6 +157,10 @@ app.get("/view-trade-request", (req, res) => {
   res.sendFile(path.join(staticPth, "viewTradeRequest.html"));
 });
 
+app.get("/trade", (req, res) => {
+  res.sendFile(path.join(staticPth, "trade/trade.html"))
+})
+
 // sell to us route
 app.get("/sell-to-us", (req, res) => {
   res.sendFile(path.join(staticPth, "sell-to-us/sell-to-us.html"));
@@ -553,6 +557,8 @@ app.post("/order", (req, res) => {
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPth, "/static/404.html"));
 });
+
+
 
 app.use((req, res) => {
   if (req.path.endsWith(".js")) {
