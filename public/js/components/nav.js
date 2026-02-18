@@ -93,7 +93,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
                     <span class="service-price">$30/item</span>
                   </div>
                 </a>
-                <a href="/trade-request" class="service-item">
+                <a href="/trade" class="service-item">
                   <div class="service-icon">
                     <i class="fa-solid fa-handshake"></i>
                   </div>
@@ -180,7 +180,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
             <ul class="submenu">
               <li><a href="/sell-to-us">Sell to Us</a></li>
               <li><a href="/authenticate">Authentication</a></li>
-              <li><a href="/trade-request">Trade-in</a></li>
+              <li><a href="/trade">Trade-in</a></li>
             </ul>
           </li>
           <li>

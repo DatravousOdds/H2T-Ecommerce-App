@@ -1,3 +1,4 @@
+import { db, doc, getDoc } from '../api/firebase-client.js';
 
 // available items
 const availableItemsGrids = document.querySelectorAll(".available-items-grid");
@@ -25,6 +26,109 @@ const viewTradeRequestPage = document.getElementById("view-trade-request");
 const totalFeesValue = document.getElementById('total-fees-value');
 const finalTotalValue = document.getElementById('final-total-value');
 
+const urlParams = new URLSearchParams(window.location.search);
+const selectedUserId = urlParams.get('with');
+
+if (!selectedUserId) {
+  alert('No user selected. Redirecting...')
+  window.location.href = '/trade'
+}
+
+const selectedUser = await loadSelectedUser();
+
+displaySelectedUser(selectedUser);
+
+function displaySelectedUser(user) {
+  const userInfoSection = document.getElementById('selectedUserInfo');
+
+  if (!userInfoSection) return;
+
+  console.log(user)
+
+  const username = user.username || 'Unknown';
+  const rating = user.sellerOverview?.sellerRating;
+  const totalTrades = user.sellerOverview?.productsSold || 0;
+  const isVerified = user.accountInfo?.isVerified || false;
+  const joinYear = user.accountInfo?.joinedDate
+    ? new Date(user.accountInfo.joinedDate.toDate()).getFullYear()
+    : '2026';
+
+  userInfoSection.innerHTML = `
+    <div class="user-header">
+      <div class="user-content">
+        <div class="user-avatar">
+              <img
+                src="/images/default-avatar.svg" 
+                alt=${username}
+                width="60"
+                height="60"
+              >
+        </div>
+        <div class="user-stats">
+            <div class="user-id">
+              <h3 class="user-name">${username}</h3>
+              <span class="verified-badge" title="Verified user">
+                ${isVerified ? '<i class="fa-solid fa-circle-check"></i>' : ""} 
+              </span>
+              <span class="user-at">@${username}</span>
+            </div>
+            <div class="user-info">
+              <div class="rating" title="Average rating">
+                <i class="fa-solid fa-star" aria-hidden="true"></i>
+                <span>${rating}</span>
+              </div>
+              <div class="user-trades">
+                <p>${totalTrades} trades</p>
+              </div>
+              <div class="user-start-date">
+                <p>Since ${joinYear}</p>
+              </div>
+            </div>
+          </div>
+      </div>
+        
+      <div>
+        <button type="button" class="msg-user-button">
+          <i class="fa-regular fa-message"></i>
+          Message
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+async function loadSelectedUser() {
+  if (typeof selectedUserId !== 'string') {
+    console.error("selected user is not string!");
+    return null;
+  } else {
+    try {
+      const userRef = doc(db, "userProfiles", selectedUserId);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        console.error("user does not exist!");
+        window.location.href = '/trade';
+        return null;
+      }
+
+      const userData = {
+        id: userSnap.id,
+        ...userSnap.data()
+      }
+
+      return userData;
+
+    } catch (error) {
+      console.error("Failed to load selected user!", error);
+      alert('Error loading user. Please try again.')
+      return null;
+    }
+    
+
+  }
+}
+ 
 // Add event listener to the available items grid
 availableItemsGrids.forEach((grid) => {
   grid.addEventListener("click", (e) => {
@@ -70,6 +174,8 @@ availableItemsGrids.forEach((grid) => {
 
   });
 });
+
+
 
 
 function calculateTotalFees() {
@@ -163,9 +269,6 @@ function showErrorModal(title, message, type) {
 function createTradeRequest(tradingItems, requestingItems, requestedUserId) {
 
 }
-
-
-
 
 createTradeRequestBtn.addEventListener("click", () => {
 

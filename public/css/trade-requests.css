@@ -760,6 +760,112 @@ body {
   font-weight: var(--font-weight-medium);
 }
 
+/* select user card */
+.selected-user-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  
+}
+
+.msg-user-button {
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: white;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.msg-user-button:hover {
+  background-color: var(--border-color);
+}
+
+
+
+.user-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.rating i {
+  color: var(--color-primary);
+}
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: var(--font-size-lg);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  
+}
+
+.user-info .rating span,
+.user-info .user-trades p,
+.user-info .user-start-date p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+
+.verified-badge {
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+.user-username {
+  color: #666;
+  margin: 0.25rem 0 0 0;
+}
+
+.user-id {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.user-at {
+  color: var(--color-text-secondary);
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat i {
+  color: #666;
+}
+
+
 /* Responsive */
 @media (max-width: 1200px) {
   .trade-grid {
