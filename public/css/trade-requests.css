@@ -286,44 +286,77 @@ body {
   border-radius: 8px;
   padding: var(--spacing-md);
   background-color: #fff;
-  transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in-out;  /* Added -out */
   cursor: pointer;
+  position: relative;
 }
 
 .available-item-card.selected {
   border: 2px solid var(--color-primary);
-  background-color: rgba(208, 36, 36, 0.1);
-
+  background-color: rgba(246, 59, 59, 0.05);  /* Changed to blue */
+  box-shadow: 0 0 0 3px rgba(246, 59, 59, 0.1);
 }
+
 .available-item-card:hover {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY();
+  transform: translateY(-2px);  /* Added value */
 }
 
-.available-item-card img {
-  width: 100px;
-  height: 100px;
+.item-image-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.available-item-card .item-image {
+  width: 100%;  /* Now safe - container has fixed size */
+  height: 100%;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .available-item-info {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  flex: 1;
 }
 
 .available-item-info h3 {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-spacing-wide);
-  
+  margin: 0;
+  line-height: 1.4;
 }
 
 .available-item-info p {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
+  margin: 0;
+}
 
+.item-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.item-auth p {
+  font-weight: bold;
+  color: #000;
+}
+
+.item-auth i {
+  color: #3665F3;
+}
+
+.item-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-top: 4px;
 }
 
 /* Trade Summary */

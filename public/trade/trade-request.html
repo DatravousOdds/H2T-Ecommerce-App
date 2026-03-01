@@ -75,27 +75,37 @@
             <div class="search-container">
               <i class="fa-solid fa-magnifying-glass"></i>
               <input
-                type="text"
+                type="search"
                 placeholder="Search your inventory"
                 aria-label="Search your inventory"
+                id="yourSearchInput"
               />
             </div>
 
             <!-- Available Items Grid -->
             <div class="available-items-grid">
               <!-- Available Item Card -->
-              <div class="available-item-card">
-                <img
+              <div class="available-item-card" data-id="">
+                <div class="item-image-container">
+                  <img
                   src="./images/Jordan 3 Retro Cardinal Red (11).jpg"
                   alt="Item Image"
                   width="100px"
                   height="100px"
                   class="item-image"
                 />
+                </div>
                 <div class="available-item-info">
                   <h3 class="item-name">Jordan 3 Retro Cardinal Red</h3>
+                  <p class="item-sku">DN3707-600</p>
+                  <p class="item-size">Size: 10.5</p>
                   <p class="item-value">Value: $161</p>
                   <p class="item-condition">Condition: New</p>
+                  <p class="item-box"><i class="fa-solid fa-check"></i> Original Box Included</p>
+                  <div class="item-auth">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <p>Authenticity Guaranteed</p>
+                  </div>
                 </div>
               </div>
               <div class="available-item-card">
@@ -189,9 +199,10 @@
             <div class="search-container">
               <i class="fa-solid fa-magnifying-glass"></i>
               <input
-                type="text"
+                type="search"
                 placeholder="Search their inventory"
                 aria-label="Search their inventory"
+                id="theirSearchInput"
               />
             </div>
 

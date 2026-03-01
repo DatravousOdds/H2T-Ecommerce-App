@@ -146,11 +146,11 @@ function displayUsers(users) {
         element.className = 'user-card';
         element.dataset.userId =  user.id;
 
-        const totalTrades = user.sellerOverview.productsSold || 0;
-        const activeItems = user.sellerOverview.activeListing || 0;
-        const rating = user.sellerOverview.sellerRating || 5;
+        const totalTrades = user.sellerOverview?.productsSold || 0;
+        const activeItems = user.sellerOverview?.activeListing || 0;
+        const rating = user.sellerOverview?.sellerRating || 5;
         const joinYear = user.accountInfo?.joinedDate 
-            ? new Date(user.accountInfo.joinedDate.toDate()).getFullYear()
+            ? new Date(user.accountInfo?.joinedDate.toDate()).getFullYear()
             : 'N/A' || '2026'
 
 
@@ -158,7 +158,7 @@ function displayUsers(users) {
             "/images/default-avatar.svg",
             user.username,
             user.username,
-            user.accountInfo.isVerified,
+            user.accountInfo?.isVerified,
             user.username,
             rating,
             joinYear,
