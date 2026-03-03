@@ -60,16 +60,17 @@ displayTheirInventory(theirProducts);
 yourSearchInput.addEventListener("input", (e) => {
   console.log("searching your inventory:", e.target.value);
   let searchProduct = e.target.value.trim(); // product your are looking for
-  const yourEmail = currentUser.email; // access token (email)
-  // searchInventoryForProduct(searchProduct, yourEmail, yourProducts);
+  const filteredProducts = searchInventoryForProduct(searchProduct,yourProducts);
+  displayYourInventory(filteredProducts);
 
 })
 
 theirSearchInput.addEventListener("input", (e) => {
   console.log("searching their inventory:", e.target.value);
-  let searchProduct = e.target.value.trim();
-  const theirEmail = selectedUserId;
-  // searchInventoryForProduct(searchProduct, theirEmail, theirProducts);
+  let searchProduct = e.target.value.trim(); // product you want to receive
+  const filteredProducts = searchInventoryForProduct(searchProduct, theirProducts);
+  displayTheirInventory(filteredProducts);
+  
 
 })
 
@@ -303,12 +304,18 @@ async function loadTheirInventory() {
   } 
 }
 
- 
-// Add event listener to the available items grid
+function searchInventoryForProduct(productName, products) {
+  const searchTerm = productName.toLowerCase();
 
-// function searchInventoryForProduct(productName, accessTerm, products) {
+  const filteredProducts = products.filter(product => 
+    product.productName.toLowerCase().includes(searchTerm) ||
+    product.productSku.toLowerCase().includes(searchTerm)
+  );
 
-// }
+  console.log("Filtered products: ", filteredProducts);
+
+  return filteredProducts; 
+}
 
 function displaySelectedUser(user) {
   const userInfoSection = document.getElementById('selectedUserInfo');
@@ -483,9 +490,21 @@ function calculateTotalFees() {
 }
 
 function calculateFinalTotal(yourTotal, theirTotal) {
+  if (yourTotal === 0 || theirTotal === 0) {
+    return 0;
+  }
   const fees = calculateTotalFees();
-  const difference =  Math.abs(yourTotal - theirTotal)
-  return difference + fees;
+  const difference =  Math.abs(yourTotal - theirTotal);
+  // user A value is greater than user B value, user A pays fees and user B difference + fees
+  if (yourTotal > theirTotal) {
+    return fees;
+  // user B value is greater than user A value, user B pays fees and user A pays difference + fees
+  } else if (theirTotal > yourTotal) {
+    return fees + difference;
+  // values are equal, both users pay fees
+  } else {
+    return fees;
+  }
 }
 
 function calculateTotal(selectedItems) {
@@ -506,10 +525,11 @@ function updateValueDifference(yourTotal, theirTotal) {
   const valueDifference = document.querySelector(".value-difference .alert-message");
   const favorDifference = Math.abs(theirTotal - yourTotal);
 
+
   if (favorDifference === 0) {
     valueDifference.textContent = "✅ Values are equal!";
   } else {
-    const favorText = yourTotal > theirTotal ? "in your favor" : "in their favor";
+    const favorText = yourTotal > theirTotal ? "in their favor" : "in your favor";
     valueDifference.textContent = `There is a $${favorDifference} value difference ${favorText}.`;
   }
 }
@@ -521,10 +541,12 @@ function updateModalValues(yourTotal, theirTotal, fee) {
     const yourTotalValue = modal.querySelector('.your-items');
     const theirTotalValue = modal.querySelector('.their-items');
     const tradingFee = modal.querySelector('.fee-value');
+    const finalTotalValue = modal.querySelector('.final-total-value');
   
     if (yourTotalValue) yourTotalValue.textContent = `$${yourTotal}`;
     if (theirTotalValue) theirTotalValue.textContent = `$${theirTotal}`;
     if (tradingFee) tradingFee.textContent = `$${fee}`;
+    if (finalTotalValue) finalTotalValue.textContent = `$${calculateFinalTotal(yourTotal, theirTotal)}`;
   }
 }
 

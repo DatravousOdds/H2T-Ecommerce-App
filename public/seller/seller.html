@@ -5,15 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reseller Dashboard</title>
+    <title>List an item</title>
     <link rel="stylesheet" href="css/signup.css">
     <link rel="stylesheet" href="css/seller.css">
     <link rel="stylesheet" href="css/style2.css">
     <link rel="stylesheet" href="css/search.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap" rel="stylesheet">
-    <title>Head-To-Toes Best Apparel At Calculated Prices</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
 
@@ -21,89 +18,139 @@
 </head>
 
 <body>
-
-    <img src="images/loader.gif" class="loader" alt="">
-
-    <div class="alert-box">
-        <img src="images/error.png" class="alert-img" alt="">
-        <p class="alert-msg">Error message</p>
-    </div>
-
-    <a href="/public/index.html"><img src="images/H2T Logo copy Small.jpeg" class="logo" alt=""></a>
-
-    <!-- seller element -->
-    <div class="bcome-seller hide">
-        <p class="heading">want to become a seller?</p>
-        <p class="description">Lorem Ipsum Dolor Sit Amet, Consectetuer
-            Adipiscing Elit. Aenean Commodo Ligula Eget Dolor. Aenean
-            Massa. Cum Sociis Natoque Penatibus Et Magnis Dis Parturient
-            Montes, Nascetur Ridiculus Mus. Donec Quam Felis, Ultricies
-        </p>
-        <button class="btn" id="apply-btn">apply for reseller account</button>
-    </div>
-
-
-    <!-- apply form -->
-    <div class="apply hide">
-        <input type="text" id="b-name" placeholder="business name / company
-        name / shop name">
-        <textarea id="b-add" placeholder="address"></textarea>
-        <textarea id="about" placeholder="about"></textarea>
-        <input type="text" id="number" placeholder="number">
-        <input type="checkbox" checked class="checkbox" id="terms-and-cond">
-        <label for="terms-and-cond">agree to our <a href="">terms and
-                conditions</a></label>
-        <br>
-        <input type="checkbox" checked class="checkbox" id="realinfo">
-        <label for="realinfo">all information is real</a>
-        </label>
-        <button class="submit-btn" id="form-btn">apply</button>
-    </div>
-
-    <!-- product list -->
-    <div class="product-listing hide">
-        <div class="add-product">
-            <p class="add-product-title">add product</p>
-            <button class="btn" onclick="location.href = '/add-product'">add product</button>
-        </div>
-        <img src="images/no-products.png" class="no-product-image hide" alt="">
-        
-        <!-- delete alert -->
-        <div class="delete-alert">
-            <div class="alert">
-                <button class="close-btn"><img src="images/close.png" alt=""></button>
-                <img src="images/delete-warning.png" class="delete-svg" alt="">
-                <p class="text">are you sure you want to delete this product?</p>
-                <button class="delete-btn">delete</button>
+    <section id="header">
+        <nav>
+            <div class="logo">
+                <a href="index.html"><img src="../images/H2T Log Small.jpeg" alt="H2T Logo"></a>
             </div>
-        </div>
-
-
-        <!--cards-->
-        <div class="product-container">
-            <!-- <div class="pro product-card">
-                <img src="images/Supreme Model .jpeg" alt="">
-                <button class="card-action-btn edit-btn"><img src="images/edit.png" alt=""></button>
-                <button class="card-action-btn open-btn"><img src="images/open.png" alt=""></button>
-                <button class="card-action-btn delete-popup-btn"><img src="images/delete.png" alt=""></button>
-                <div class="des">
-                    <span>Supreme</span>
-                    
-                    <h5>Supreme "Model Tee"</h5>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    
-                    <h4 class="price">$100</h4><span class="actual-price">$40</span>
+            <h3 class="header-title">List an item</h3>
+        </nav>
+    </section>
+    <main>
+        <section class="photos" id="photos">
+            <div class="section-header">
+              <h4>Photos</h4>
+              <p>Submit up to 8 photos and 1 video</p>  
+            </div>
+            
+            <div class="images-grid-container">
+                <article class="image-container">
+                    <input type="file" name="image-1" id="image-1">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+                <article class="image-container">
+                    <input type="file" name="image-2" id="image-2">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+                <article class="image-container">
+                    <input type="file" name="image-3" id="image-3">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+                <article class="image-container">
+                    <input type="file" name="image-4" id="image-4">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+                <article class="image-container">
+                    <input type="file" name="image-5" id="image-5">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+                <article class="image-container">
+                    <input type="file" name="image-6" id="image-6">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+                <article class="image-container">
+                    <input type="file" name="image-7" id="image-7">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+                <article class="image-container">
+                    <input type="file" name="image-8" id="image-8">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Add up to 8 photos</span>
+                </article>
+            </div>
+        </section>
+        <section class="product-info" id="product-info">
+            <div class="section-header">
+              <h4>Product Info</h4>
+              <p>Describe your product to buyer get a clear picture</p> 
+            </div>
+            <div class="input-container">
+                <div class="input-header">
+                    <label for="title">Title</label>
+                    <div class="char-counter">0/80</div> 
                 </div>
-                <a href="#"><i class="fas fa-shopping-cart cart"></i></a>
-            </div> -->
-        </div>
-    </div>
+                <input type="text" id="title" placeholder="What are you selling?">
+            </div>
+            <div class="input-container">
+                <div class="input-header">
+                    <label for="categories">Category</label>
+                    <select name="categories" id="categories">
+                        <option value=""></option>
+                    </select>
+                </div>
+                
+            </div>
+            <div class="input-container">
+                <div class="input-header">
+                    <label for="description">Description</label>
+                    <div class="char-counter">0/1000</div>
+                </div>
+                <textarea name="descriptionInput" id="description"></textarea>
+            </div>
+            <div class="input-container">
+                <label for="condition">condition</label>
+            </div>
+            con
+        </section>
+        <section class="pricing-info" id="pricing-info">
+            <div class="section-header">
+              <h4>Pricing</h4>
+              <p>Set your price</p>  
+            </div>
+            <div class="input-container">
+                <div class="input-header">
+                    <label for="item-price">Item price</label>
+                </div>
+                <input type="number" name="item-price" id="itemPrice">
+            </div>
+        </section>
+        <section class="shipping-info" id="shipping-info">
+            <div class="section-header">
+              <h4>Shipping</h4>  
+              <p>Choose your choice of shipping save you the hassle</p>
+            </div>
+            <div class="input-container">
+                <div class="shipping-btn-container">
+                    <div class="container-header">
+                        <label for="prepaid">Hexxo's prepaid label</label>
+                        <input type="radio" name="shipping-method" id="prepaid" value="prepaid">
+                    </div>
+                    <p class="shipping-note">We'll email you a label and you ship</p>
+                    <p class="shipping-cost">No cost to you!</p>
+                </div>
+                <div class="shipping-btn-container">
+                    <div class="container-header">
+                        <label for="yourShip">Your own shipping</label>
+                        <input type="radio" name="shipping-method" id="yourShip" value="own-shipping">
+                    </div>
+                    <p class="shipping-note">You ship at your own cost</p>
+                    <p class="shipping-cost">Depends on shipping provider</p>
+                </div>
+            </div>
+        </section>
+        <section class="cta-buttons" id="cta-buttons">
+            <button class="btn draft-btn" id="draftBtn">Save as draft</button>
+            <button class="btn post-btn" id="postBtn">List it</button>
+        </section>
+    </main>
+   
 
     <script src="js/token.js"></script>
     <script src="js/createproductPG.js"></script>
