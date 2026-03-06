@@ -6,11 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List an item</title>
-    <link rel="stylesheet" href="css/signup.css">
-    <link rel="stylesheet" href="css/seller.css">
-    <link rel="stylesheet" href="css/style2.css">
-    <link rel="stylesheet" href="css/search.css">
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/seller.css">
+    
+    <script src="https://kit.fontawesome.com/854f8a6196.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
 
@@ -18,7 +16,7 @@
 </head>
 
 <body>
-    <section id="header">
+    <section id="header" class="header">
         <nav>
             <div class="logo">
                 <a href="index.html"><img src="../images/H2T Log Small.jpeg" alt="H2T Logo"></a>
@@ -89,25 +87,28 @@
                 <input type="text" id="title" placeholder="What are you selling?">
             </div>
             <div class="input-container">
-                <div class="input-header">
-                    <label for="categories">Category</label>
-                    <select name="categories" id="categories">
-                        <option value=""></option>
-                    </select>
-                </div>
-                
+                <label for="category">Category</label>
+                <select name="category" id="category">
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="sneakers">Sneakers</option>
+                    <option value="t-shirts">T-Shirts</option>
+                    <option value="hoodies">Hoodies</option>
+                    <option value="pants">Pants</option>
+                    <option value="jackets">Jackets</option>
+                    <option value="hats">Hats</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="other">Other</option>
+                </select>
             </div>
             <div class="input-container">
                 <div class="input-header">
                     <label for="description">Description</label>
                     <div class="char-counter">0/1000</div>
                 </div>
-                <textarea name="descriptionInput" id="description"></textarea>
+                <textarea name="descriptionInput" id="description" placeholder="Description your product..."></textarea>
             </div>
-            <div class="input-container">
-                <label for="condition">condition</label>
-            </div>
-            con
+            
+            
         </section>
         <section class="pricing-info" id="pricing-info">
             <div class="section-header">
@@ -117,8 +118,9 @@
             <div class="input-container">
                 <div class="input-header">
                     <label for="item-price">Item price</label>
+                    <i class="fa-solid fa-dollar-sign"></i>
                 </div>
-                <input type="number" name="item-price" id="itemPrice">
+                <input type="number" name="item-price" id="itemPrice" class="item-price">
             </div>
         </section>
         <section class="shipping-info" id="shipping-info">
@@ -126,7 +128,7 @@
               <h4>Shipping</h4>  
               <p>Choose your choice of shipping save you the hassle</p>
             </div>
-            <div class="input-container">
+            <div class="input-grid-wrapper">
                 <div class="shipping-btn-container">
                     <div class="container-header">
                         <label for="prepaid">Hexxo's prepaid label</label>
@@ -146,15 +148,14 @@
             </div>
         </section>
         <section class="cta-buttons" id="cta-buttons">
-            <button class="btn draft-btn" id="draftBtn">Save as draft</button>
-            <button class="btn post-btn" id="postBtn">List it</button>
+            <div class="cta-wrapper">
+                <button class="btn draft-btn" id="draftBtn">Save as draft</button>
+                <button class="btn post-btn" id="postBtn">List it</button>
+            </div>
         </section>
     </main>
    
 
-    <script src="js/token.js"></script>
-    <script src="js/createproductPG.js"></script>
-    <script src="js/seller.js"></script>
+    <script src="../js/pages/seller.js"></script>
 </body>
-
 </html>
