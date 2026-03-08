@@ -87,15 +87,46 @@ section p {
 }
 
 .images-grid-container .image-container {
+    position: relative;
     width: 100%;
     height: 200px;
     background-color: #fff;
     border: 2px dashed rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
+    cursor: pointer;
+}
+
+.image-container .remove-image-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #dc2626;
+    border-radius: 50%;
+    padding: 4px;
+    width: 32px;
+    height: 32px;
+    transition: transform ease-in-out 0.3s;
+}
+
+.image-container .remove-image-btn i {
+    font-size: 1rem;
+    color: #fff;
+    
+}
+
+.image-container .remove-image-btn:hover  {
+    transform: scale(1.15);
+}
+
+
+
+.image-container:hover .fa-images {
+    transform: translateY(-10px);
 }
 
 .image-container input[type="file"] {
@@ -105,12 +136,60 @@ section p {
 .image-container i {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: rgba(249, 2, 2, 0.9);
+    color: #ff6464;
+    transition: transform ease-out 0.3s;
 }
 
 .image-container span {
     font-size: 0.9rem;
     color: #666;
+}
+
+.input-selection {
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.input-selection p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border: none;
+    background-color: #cbd5e1;
+    border-radius: 36px;
+    width: 56px;
+    height: 30px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+.button-container.active {
+    background-color: #dc2626;
+}
+
+.inner-circle {
+    width: 22px;
+    height: 22px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.25s ease;
+    transform: translateX(0);
+}
+
+.button-container.active .inner-circle {
+    transform: translateX(26px);
 }
 
 .input-header {
