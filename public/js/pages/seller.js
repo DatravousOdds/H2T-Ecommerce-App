@@ -1,5 +1,6 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, 
+    deleteDoc, collection, db, doc } from '../api/firebase-client.js';
 
 const imageGridContainer = document.querySelector('.images-grid-container');
 const productTitle = document.getElementById('title');
@@ -32,7 +33,7 @@ let listing = {
 postBtn.addEventListener('click', () => {
     collectListingInfo();
     const images = collectImageData('.image-preview');
-    uploadImagesToFirebase(images, currentUser.email,'listing_001');
+    uploadImagesToFirebase(images, currentUser.email);
 })
 
 tradeStatus.addEventListener('click', () => {
@@ -158,31 +159,33 @@ function handleImageRemove(input, preview, removeBtn) {
 
 
 
-async function uploadImagesToFirebase(images, userId, listingId) {
-  const uploadPromises = images.map(async (img, index) => {
-    try {
-      const imagePath = `listings/${userId}/${listingId}/image_${index}_${Date.now()}.jpg`;
-      const storageRef = ref(storage, imagePath);
+async function uploadImagesToFirebase(images, userId) {
+    const newListingRef = doc(collection(db, 'listings'));
+    const listingId = newListingRef.id;
+    const uploadPromises = images.map(async (img, index) => {
+        try {
+        const imagePath = `listings/${userId}/${listingId}/image_${index}_${Date.now()}.jpg`;
+        const storageRef = ref(storage, imagePath);
 
-      const uploadResult = await uploadString(storageRef, img.url, 'data_url');
+        const uploadResult = await uploadString(storageRef, img.url, 'data_url');
 
-      const downloadURL = await getDownloadURL(uploadResult.ref);
+        const downloadURL = await getDownloadURL(uploadResult.ref);
 
-      console.log(`✅ Image ${index} uploaded:`, downloadURL);
+        console.log(`✅ Image ${index} uploaded:`, downloadURL);
 
-      return {
-        url: downloadURL,
-        path: imagePath,
-        isPrimary: img.isPrimary,
-        index: img.index
-      };
+        return {
+            url: downloadURL,
+            path: imagePath,
+            isPrimary: img.isPrimary,
+            index: img.index
+        };
 
-    }
-    catch (error) {
-      console.error(`❌ Failed to upload image ${index}:`, error)
-      throw error;
-    }
-  });
+        }
+        catch (error) {
+        console.error(`❌ Failed to upload image ${index}:`, error)
+        throw error;
+        }
+    });
 
   const uploadedImages = await Promise.all(uploadPromises);
   return uploadedImages;
