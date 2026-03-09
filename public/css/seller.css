@@ -260,36 +260,62 @@ textarea {
 }
 
 .shipping-btn-container {
-    border: 1px solid rgba(136, 0, 0, 0.1);
-    background-color: rgba(251, 142, 142, 0.1);
-    border-radius: 4px;
-    padding: 1rem;
+    border: 1px solid rgba(136, 0, 0, 0.15);
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .shipping-btn-container:hover {
-    border-color: rgba(136, 0, 0, 0.3);
-    background-color: rgba(251, 142, 142, 0.2);
+    border-color: rgba(136, 0, 0, 0.4);
+    box-shadow: 0 0 0 3px rgba(136, 0, 0, 0.08);
 }
 .shipping-btn-container .container-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .container-header label {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: bold;
-    color: #333;
-    text-wrap: nowrap;
-
+    color: #1a1a1a;
+    cursor: pointer;
 }
 
 .container-header input {
     padding: 0;
     width: auto;
+}
+
+.shipping-note {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+}
+
+.shipping-cost {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #444;
+    margin: 4px 0 0;
+}
+
+.shipping-btn-container.selected {
+    border: 2px solid #dc2626;
+    box-shadow: 0 0 0 4px rgba(136, 0, 0, 0.12), 
+                0 2px 12px rgba(136, 0, 0, 0.15);
+}
+
+.shipping-btn-container.selected .container-header label {
+    color: #dc2626; /* label turns red when selected */
+}
+
+.shipping-btn-container.selected .shipping-cost {
+    color: #dc2626;
 }
 
 .cta-wrapper {
