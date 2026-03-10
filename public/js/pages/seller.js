@@ -7,7 +7,7 @@ const productTitle = document.getElementById('title');
 const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('itemPrice');
-const productShipping = document.querySelector('input[type="radio"]:checked');
+
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
 const tradeStatus = document.querySelector('.button-container');
@@ -30,10 +30,14 @@ let listing = {
 
 // console.log("current user: ",currentUser.email)
 
-postBtn.addEventListener('click', () => {
+postBtn.addEventListener('click', async () => {
+    // vaildateInformation();
     collectListingInfo();
     const images = collectImageData('.image-preview');
-    uploadImagesToFirebase(images, currentUser.email);
+    const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
+    listing.images = imagesURL;
+    console.log(listing);
+    
 })
 
 tradeStatus.addEventListener('click', () => {
@@ -56,7 +60,7 @@ shippingGroupContainer.addEventListener('click', (e) => {
 imageGridContainer.addEventListener('click', (e) => {
     const imageContainer = e.target.closest('.image-container');
     if (!imageContainer) { return null;}
-        console.log(e.target)
+        // console.log(e.target)
         const imageInput = imageContainer.querySelector('input');
         const imagePreview = imageContainer.querySelector('.image-preview');
         const removeImageBtn = imageContainer.querySelector('.remove-image-btn');
@@ -73,14 +77,48 @@ imageGridContainer.addEventListener('click', (e) => {
 
 
 
+
+// vaildateImages();
+vaildProductInfo();
+
+function vaildProductInfo() {
+    const productShipping = document.querySelector('input[type="radio"]:checked').value.trim();
+    const title = productTitle.value.trim() !== '';
+    const category = productCategory.value.trim() !== '';
+    const description = productDescription.value.trim() !== '';
+    const price = productPrice.value.trim() !== '';
+    const shipping = productShipping.value != '';
+    
+
+}
+
+function vaildateImages() {
+    const images = document.querySelectorAll('.image-preview');
+
+    if (images.length === 0) return false;
+
+    const hasAtLeastOneImage = [...images].some(image => {
+        const imageSrc = image.getAttribute('src');
+        return imageSrc !== '' && imageSrc !== null;
+    })
+
+    if (!hasAtLeastOneImage) {
+        alert('Please upload at least one photo!');
+        return false;
+    }
+
+    return true;
+}
+
 function collectListingInfo() {
+
     listing.originalPrice = parseFloat(productPrice.value);
     listing.productName = productTitle.value.trim();
     listing.availableForTrade = tradeStatus.classList.contains('active');
     listing.ownerId = currentUser.email;
     listing.status = 'active';
     listing.description = productDescription.value.trim();
-    listing.shipping = productShipping?.value.trim();
+    listing.shipping = document.querySelector('input[type="radio"]:checked').value;
 
 }
 
@@ -162,6 +200,7 @@ function handleImageRemove(input, preview, removeBtn) {
 async function uploadImagesToFirebase(images, userId) {
     const newListingRef = doc(collection(db, 'listings'));
     const listingId = newListingRef.id;
+    listing.listingId = listingId;
     const uploadPromises = images.map(async (img, index) => {
         try {
         const imagePath = `listings/${userId}/${listingId}/image_${index}_${Date.now()}.jpg`;
