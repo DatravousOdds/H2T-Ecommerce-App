@@ -1,6 +1,6 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, 
-    deleteDoc, collection, db, doc } from '../api/firebase-client.js';
+    deleteDoc, collection, db, doc, app } from '../api/firebase-client.js';
 
 const imageGridContainer = document.querySelector('.images-grid-container');
 const productTitle = document.getElementById('title');
@@ -13,7 +13,7 @@ const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
 const tradeStatus = document.querySelector('.button-container');
 const postBtn = document.getElementById('postBtn');
 const currentUser =  await checkUserStatus();
-const storage = getStorage();
+const storage = getStorage(app, 'gs://ecom-website-94d87');
 let listing = {
     availableForTrade: true,
     originalPrice: 0,
@@ -142,7 +142,7 @@ function handleImageUpload(input,preview,removeBtn) {
                 handleImageRemove(input,preview,removeBtn);
             }
 
-        }, { once : true }) 
+        }) 
     } else {
         console.log("File element not found!");
     }
