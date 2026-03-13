@@ -358,6 +358,16 @@ button {
     background-color: #d10a17 !important;
 }
 
+.errorText {
+    font-size: 0.825rem;
+    color: #dc2626;
+
+}
+
+.error {
+    border: 1px solid #dc2626 !important;
+}
+
 
 /* Responsive */
 

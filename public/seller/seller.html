@@ -105,6 +105,7 @@
                     </button>
                 </article>
             </div>
+            <p class="errorText" id="errorText"></p>
         </section>
         <section class="product-info" id="product-info">
             <div class="section-header">
@@ -117,6 +118,7 @@
                     <div class="char-counter">0/80</div> 
                 </div>
                 <input type="text" id="title" placeholder="What are you selling?">
+                <p class="errorText" id="error-title"></p>
             </div>
             <div class="input-container">
                 <label for="category">Category</label>
@@ -131,6 +133,7 @@
                     <option value="accessories">Accessories</option>
                     <option value="other">Other</option>
                 </select>
+                <p class="errorText" id="error-category"></p>
             </div>
             <div class="input-container">
                 <div class="input-header">
@@ -138,6 +141,7 @@
                     <div class="char-counter">0/1000</div>
                 </div>
                 <textarea name="descriptionInput" id="description" placeholder="Description your product..."></textarea>
+                <p class="errorText" id="error-description"></p>
             </div>
             
             
@@ -149,10 +153,11 @@
             </div>
             <div class="input-container">
                 <div class="input-header">
-                    <label for="item-price">Item price</label>
+                    <label for="price">Item price</label>
                     <i class="fa-solid fa-dollar-sign"></i>
                 </div>
-                <input type="number" name="item-price" id="itemPrice" class="item-price">
+                <input type="number" name="price" id="price" class="item-price">
+                <p class="errorText" id="error-price"></p>
             </div>
         </section>
         <section class="trading-info" id="trading-info">
@@ -178,7 +183,7 @@
                 <div class="shipping-btn-container">
                     <div class="container-header">
                         <label for="prepaid">Hexxo's prepaid label</label>
-                        <input type="radio" name="shipping-method" id="prepaid" value="prepaid">
+                        <input type="radio" name="shipping-method" id="prepaid" value="prepaid" checked>
                     </div>
                     <p class="shipping-note">We'll email you a label and you ship</p>
                     <p class="shipping-cost">No cost to you!</p>
@@ -192,6 +197,7 @@
                     <p class="shipping-cost">Depends on shipping provider</p>
                 </div>
             </div>
+            <p class="errorText" id="error-shipping"></p>
         </section>
         <section class="cta-buttons" id="cta-buttons">
             <div class="cta-wrapper">

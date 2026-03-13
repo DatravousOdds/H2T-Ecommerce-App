@@ -6,7 +6,7 @@ const imageGridContainer = document.querySelector('.images-grid-container');
 const productTitle = document.getElementById('title');
 const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
-const productPrice = document.getElementById('itemPrice');
+const productPrice = document.getElementById('price');
 
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
@@ -31,7 +31,7 @@ let listing = {
 // console.log("current user: ",currentUser.email)
 
 postBtn.addEventListener('click', async () => {
-    // vaildateInformation();
+    validationInformation();
     collectListingInfo();
     const images = collectImageData('.image-preview');
     const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
@@ -78,17 +78,69 @@ imageGridContainer.addEventListener('click', (e) => {
 
 
 
-// vaildateImages();
-vaildProductInfo();
+function validationInformation() {
+    if(!vaildateImages()) return false;
+    if(!vaildProductInfo()) return false;
+    return true;
+}
+
+
+function showError(elementId, errorMessage) {
+    const id = document.getElementById(elementId);
+    const errorId = document.getElementById(`error-${elementId}`);
+    errorId.textContent = `${errorMessage}`;
+    id.scrollIntoView({ behavior: 'smooth'});
+    id.classList.add('error');
+}
+
+function removeError(elementId, errorMessage) {
+    const id = document.getElementById(elementId);
+    const errorId = document.getElementById(`error-${elementId}`);
+    errorId.textContent = '';
+    id.classList.remove('error');
+}
 
 function vaildProductInfo() {
-    const productShipping = document.querySelector('input[type="radio"]:checked').value.trim();
+    const productShipping = document.querySelector('input[type="radio"]:checked')?.value.trim();
     const title = productTitle.value.trim() !== '';
     const category = productCategory.value.trim() !== '';
     const description = productDescription.value.trim() !== '';
     const price = productPrice.value.trim() !== '';
-    const shipping = productShipping.value != '';
+    const shipping = !!productShipping;
+
+    let isValid = true;
+
+    if (!title) { 
+        // alert("Add a title to continue");
+        showError('title', "Please enter a title to continue");
+        isValid = false;
+        return;
+    };
+    if (!category) { 
+        showError('category', "Please enter a category to continue");
+        isValid = false; 
+        return;
+    };
+    if (!description) { 
+        showError('description', "Please enter at least five word to describe product");
+        isValid = false;
+        return;
+    };
+    if (!price) { 
+        showError('price', "Please enter a price to continue");
+        isValid = false;
+        return;
+    };
+    if (!shipping) { 
+        showError('shipping', "Please select your choice of shipping");
+        isValid = false;
+        return;
+    }
+    return isValid;
     
+
+    
+
 
 }
 
