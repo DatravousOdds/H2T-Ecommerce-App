@@ -1,13 +1,14 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, 
-    deleteDoc, collection, db, doc, app } from '../api/firebase-client.js';
+    deleteDoc, db, doc, app } from '../api/firebase-client.js';
+import { collection, addDoc } from '../api/firebase-client.js';
 
 const imageGridContainer = document.querySelector('.images-grid-container');
 const productTitle = document.getElementById('title');
 const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('price');
-
+const modalOverlay = document.querySelector('.modal-overlay');
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
 const tradeStatus = document.querySelector('.button-container');
@@ -28,15 +29,33 @@ let listing = {
 }
 
 
-// console.log("current user: ",currentUser.email)
+initFormListeners();
 
 postBtn.addEventListener('click', async () => {
-    validationInformation();
+    
+
+    if (!validationInformation()) return;
+
+    modalOverlay.classList.add('show')
+
     collectListingInfo();
     const images = collectImageData('.image-preview');
-    const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
-    listing.images = imagesURL;
-    console.log(listing);
+
+    try {
+       const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
+        listing.images = imagesURL;
+        await uploadListingToFirebase(listing); 
+
+        modalOverlay.classList.remove('show');
+
+    } catch (e) {
+        modalOverlay.classList.remove('show');
+        console.log("Error occur when uploading data: ", e)
+    }
+    
+
+
+
     
 })
 
@@ -78,11 +97,7 @@ imageGridContainer.addEventListener('click', (e) => {
 
 
 
-function validationInformation() {
-    if(!vaildateImages()) return false;
-    if(!vaildProductInfo()) return false;
-    return true;
-}
+
 
 
 function showError(elementId, errorMessage) {
@@ -93,14 +108,20 @@ function showError(elementId, errorMessage) {
     id.classList.add('error');
 }
 
-function removeError(elementId, errorMessage) {
+function removeError(elementId) {
     const id = document.getElementById(elementId);
     const errorId = document.getElementById(`error-${elementId}`);
     errorId.textContent = '';
     id.classList.remove('error');
 }
 
-function vaildProductInfo() {
+function validationInformation() {
+    if(!validateImages()) return false;
+    if(!validateProductInfo()) return false;
+    return true;
+}
+
+function validateProductInfo() {
     const productShipping = document.querySelector('input[type="radio"]:checked')?.value.trim();
     const title = productTitle.value.trim() !== '';
     const category = productCategory.value.trim() !== '';
@@ -144,7 +165,7 @@ function vaildProductInfo() {
 
 }
 
-function vaildateImages() {
+function validateImages() {
     const images = document.querySelectorAll('.image-preview');
 
     if (images.length === 0) return false;
@@ -162,6 +183,12 @@ function vaildateImages() {
     return true;
 }
 
+function checkShippingBox(selector, event) {
+    const shippingContainer = event.target.closest(selector);
+    const input = shippingContainer.querySelector('input[type="radio"]');
+    input.checked = true;
+}
+
 function collectListingInfo() {
 
     listing.originalPrice = parseFloat(productPrice.value);
@@ -172,12 +199,6 @@ function collectListingInfo() {
     listing.description = productDescription.value.trim();
     listing.shipping = document.querySelector('input[type="radio"]:checked').value;
 
-}
-
-function checkShippingBox(selector, event) {
-    const shippingContainer = event.target.closest(selector);
-    const input = shippingContainer.querySelector('input[type="radio"]');
-    input.checked = true;
 }
 
 function collectImageData(selector) {
@@ -247,6 +268,23 @@ function handleImageRemove(input, preview, removeBtn) {
     return;
 }
 
+// TODO: Logic to listen to errors corrections and remove errors
+function initFormListeners() {
+    productTitle.addEventListener('input', () => {
+        removeError('title');
+    });
+    productCategory.addEventListener('input', () => {
+        removeError('category');
+    })
+    productDescription.addEventListener('input', () => {
+        removeError('description');
+    })
+    productPrice.addEventListener('input', () => {
+        removeError('price');
+    })
+
+}
+
 
 
 async function uploadImagesToFirebase(images, userId) {
@@ -283,6 +321,16 @@ async function uploadImagesToFirebase(images, userId) {
   
 }
 
-async function uploadToFirebase() { 
 
+// TODO: Create logic to upload listing to firebase collection 
+async function uploadListingToFirebase(data) { 
+    try {
+        const docRef = await addDoc(collection(db, 'listings'), data);
+        console.log("Document written with the ID: ", docRef.id);
+        return docRef.id;
+    } catch(e) {
+        console.error("Error adding document:", e);
+    }
+    
 }
+
