@@ -9,41 +9,24 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const nodemailer = require("nodemailer");
+const easyship = require('@api/easyship');
+
+easyship.auth('prod_aYTcBC7VD6gMPL9uP6blT9GDh1GVfCkykvQ4INaMhjs=');
+
+
+
+
+
 
 // Import Firebase configuration
 const { initializeFirebase, getDb, getAdmin } = require("./firebase");
 
 // Initialize Firebase
 const { admin, db } = initializeFirebase();
-// firebase admin setup
-// try {
-//   if (!process.env.FIREBASE_CONFIG) {
-//     console.error("❌ Missing FIREBASE_CONFIG environment variable");
-//     process.exit(1);
-//   }
-
-//   console.log("Using environment variable configuration...");
-//   const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
-
-//   // Test Firebase connection
-//   admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount)
-//   });
-
-//   console.log("✅ Firebase connection successful!");
-// } catch (error) {
-//   console.error("❌ Error with Firebase configuration:", error);
-//   console.error("Error details:", error.message);
-//   process.exit(1);
-// }
-
-// let db = admin.firestore();
 
 // aws config
 const aws = require("aws-sdk");
 const dotenv = require("dotenv");
-const { data } = require("jquery");
-
 dotenv.config();
 
 // aws parameters
@@ -98,7 +81,15 @@ app.use(
 
 app.use(express.json());
 
-// route
+
+app.post('/seller/api/shipping-rates',  async (req, res) => {
+  console.log(req.body);
+
+  
+})
+
+
+// routes
 // home route
 app.get("/", (req, res) => {
   res.sendFile(path.join(staticPth, "index.html"));
@@ -315,6 +306,8 @@ app.post("/seller", (req, res) => {
       });
   }
 });
+
+
 
 // add product
 app.get("/add-product", (req, res) => {

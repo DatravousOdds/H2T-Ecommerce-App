@@ -197,6 +197,33 @@
                     <p class="shipping-cost">Depends on shipping provider</p>
                 </div>
             </div>
+            <div class="carrier-panel" id="carrierPanel">
+                <h5>Select a carrier</h5>
+                <div class="carrier-rows-wrapper">
+                    <div class="carrier-row">
+                        <div class="carrier-info">
+                            <div class="carrier-image-wrapper">
+                                <img src="https://www.savethepostoffice.com/wp-content/uploads/2024/08/USPS-logo.jpg" alt="" class="carrier-image">
+                            </div>
+                            <div class="carrier-title">
+                                <span>USPS Priority Mail</span>
+                                <p>2-3 business days</p>
+                            </div>
+                        </div>
+                        <div class="carrier-pricing">
+                            <div class="carrier-price">
+                                <span>$8.40</span>
+                                <p>est. rate</p>   
+                            </div>
+                            
+                            <div class="form-input">
+                                <label for="carrier-price"></label>
+                                <input type="radio" name="carrier-price" id="carrier-price">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <p class="errorText" id="error-shipping"></p>
         </section>
         <section class="cta-buttons" id="cta-buttons">
@@ -221,7 +248,39 @@
                     <span class="dot"></span>
                 </div>
             </div>
-        </div>  
+        </div>
+        <div class="package-dimension" id="packageDimensions">
+            <div class="m-content">
+                <div class="m-header">
+                  <h5>Package dimensions</h5>
+                  <p>Help us get the most accurate shipping rate.</p>  
+                </div>
+                <div class="package-inputs">
+                    <div class="dimesions-input">
+                        <label for="length">
+                            Length (in)
+                            <input type="number" name="length" id="length">
+                        </label>
+                        <label for="width">
+                            Width (in)
+                            <input type="number" name="width" id="width">
+                        </label>
+                        <label for="height">
+                            Height (in)
+                            <input type="number" name="height" id="height">
+                        </label>
+                    </div>
+                    <div class="weight-input">
+                        <label for="weight">Weight (lbs)</label>
+                        <input type="number" name="weight" id="weight">
+                    </div>
+                </div>
+                <div class="m-footer">
+                    <button class="btn defaults-btn" id="defaultsBtn">Use defaults</button>
+                    <button class="btn confirm-btn" id="confirmBtn">Confirm & post</button>
+                </div>
+            </div>
+        </div> 
      </div>
      
 </body>

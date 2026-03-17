@@ -391,13 +391,15 @@ button {
     display: flex;
 }
 
+/* saving modal */
+
 .savingModal {
     width: 200px;
     height: 200px;
     background-color: #f0f0f0;
     /* border: 1px solid red; */
     border-radius: 8px;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
@@ -423,6 +425,77 @@ button {
     border-radius: 50%;
     animation: scaling 2.5s ease-in-out infinite;
 }
+
+/* dimensions modal */
+
+.package-dimension {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 370px;
+    height: auto;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.package-dimension .m-header {
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+}
+
+.m-header h5 {
+    font-weight: 600;
+}
+
+.m-header p {
+    color: #333;
+    font-weight: 500;
+}
+
+.package-inputs {
+    margin-bottom: 1rem;
+}
+
+.dimesions-input {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.dimesions-input label, .weight-input label {
+    font-weight: 500;
+}
+
+.m-footer {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.m-footer .btn {
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.m-footer .confirm-btn {
+    background-color: #dc2626;
+    color: #fff;
+    transition: ease-in-out 0.3s;
+    
+}
+
+.m-footer .defaults-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.m-footer .confirm-btn:hover {
+    background-color: rgba(220, 38, 38, 0.2);
+}
+
+
 
 @keyframes scaling {
     0%, 100% {
@@ -456,6 +529,96 @@ button {
 .savingModal .m-content h4 {
     font-size: 1rem;
 
+}
+
+/* Carrier */
+
+.carrier-panel {
+    margin-top: 1rem;
+    display: none;
+}
+
+.carrier-panel.show {
+    display: flex;
+}
+
+.carrier-panel h5 {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.carrier-rows-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 0.5rem;
+}
+
+.carrier-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #f0f0f0;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: border-color 0.3s ease-in-out ;
+    cursor: pointer;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);
+}
+
+.carrier-row:hover {
+    border: 1px solid #dc2626;
+
+}
+
+.carrier-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.carrier-title p {
+    font-size: 14px;
+}
+
+
+.carrier-image-wrapper img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.carrier-title span {
+    font-weight: 600;
+}
+
+.carrier-pricing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.carrier-price {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    line-height: 1rem;
+}
+
+.carrier-pricing .form-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrier-price span {
+    font-weight: 600;
+}
+
+.carrier-price p {
+    font-size: 0.875rem;
 }
 
 

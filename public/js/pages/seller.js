@@ -3,18 +3,38 @@ import { getStorage, ref, uploadString, getDownloadURL,
     deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc } from '../api/firebase-client.js';
 
+
 const imageGridContainer = document.querySelector('.images-grid-container');
 const productTitle = document.getElementById('title');
 const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('price');
 const modalOverlay = document.querySelector('.modal-overlay');
+const packageDimensions = document.getElementById('packageDimensions');
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
 const tradeStatus = document.querySelector('.button-container');
 const postBtn = document.getElementById('postBtn');
 const currentUser =  await checkUserStatus();
 const storage = getStorage(app, 'gs://ecom-website-94d87');
+const PLACEHOLDER_DESTINATION = {
+    street1: "1 Main St",
+    city:    "Kansas City",    // geographically central US
+    state:   "MO",
+    zip:     "64101",
+    country: "US"
+};
+const CATEGORY_DEFAULTS = {
+    'sneakers':    { length: 14, width: 10, height: 6,  weight: 2.5 },
+    't-shirts':    { length: 12, width: 9,  height: 2,  weight: 0.5 },
+    'hoodies':     { length: 14, width: 12, height: 4,  weight: 1.5 },
+    'pants':       { length: 14, width: 10, height: 3,  weight: 1.0 },
+    'jackets':     { length: 16, width: 14, height: 5,  weight: 2.0 },
+    'hats':        { length: 12, width: 10, height: 6,  weight: 0.5 },
+    'accessories': { length: 8,  width: 6,  height: 2,  weight: 0.25 },
+    'other':       { length: 12, width: 9,  height: 4,  weight: 1.0 },
+  };
+
 let listing = {
     availableForTrade: true,
     originalPrice: 0,
@@ -32,24 +52,29 @@ let listing = {
 initFormListeners();
 
 postBtn.addEventListener('click', async () => {
-    
-
     if (!validationInformation()) return;
 
-    modalOverlay.classList.add('show')
+    const shippingType = document.querySelector('input[type="radio"]:checked').value;
+
+    if (shippingType === "prepaid") {
+        showDimensionsModal();
+        setDimensionsListeners();
+    } else {
+        
+    }
 
     collectListingInfo();
     const images = collectImageData('.image-preview');
 
     try {
-       const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
-        listing.images = imagesURL;
-        await uploadListingToFirebase(listing); 
+    //    const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
+    //     listing.images = imagesURL;
+    //     await uploadListingToFirebase(listing); 
 
-        modalOverlay.classList.remove('show');
+        // modalOverlay.classList.remove('show');
 
     } catch (e) {
-        modalOverlay.classList.remove('show');
+        // modalOverlay.classList.remove('show');
         console.log("Error occur when uploading data: ", e)
     }
     
@@ -96,9 +121,50 @@ imageGridContainer.addEventListener('click', (e) => {
 
 
 
+function showDimensionsModal() {
+    const category = productCategory.value;
 
+    setDefaultDimensions(category);
 
+    packageDimensions.classList.add('show');
+    modalOverlay.classList.add('show');
+}
 
+function setDimensionsListeners() {
+    const defaultsBtn = document.getElementById('defaultsBtn');
+    const confirmPostBtn = document.getElementById('confirmBtn');
+
+    defaultsBtn.addEventListener('click', () => {
+      const parcel = CATEGORY_DEFAULTS[category] ?? CATEGORY_DEFAULTS['other'];
+
+      proceedWithShipping(parcel);
+    })
+
+    confirmPostBtn.addEventListener('click', () => {
+        const parcel = {
+            "length": document.getElementById('length').value,
+            "width": document.getElementById('width').value,
+            "height": document.getElementById('height').value,
+            "weight": document.getElementById('weight').value
+        }
+        
+        proceedWithShipping(parcel);
+    });
+}
+
+function proceedWithShipping(parcel) {
+    fetchShippingRates(parcel);
+}
+
+function setDefaultDimensions(category) {
+        const defaults = CATEGORY_DEFAULTS[category] ?? CATEGORY_DEFAULTS['other'];
+
+        document.getElementById('length').value = defaults.length;
+        document.getElementById('width').value = defaults.width;
+        document.getElementById('height').value = defaults.height;
+        document.getElementById('weight').value = defaults.weight;
+
+}
 
 function showError(elementId, errorMessage) {
     const id = document.getElementById(elementId);
@@ -268,7 +334,6 @@ function handleImageRemove(input, preview, removeBtn) {
     return;
 }
 
-// TODO: Logic to listen to errors corrections and remove errors
 function initFormListeners() {
     productTitle.addEventListener('input', () => {
         removeError('title');
@@ -285,7 +350,29 @@ function initFormListeners() {
 
 }
 
+function fetchShippingRates(parcel) {
+    const payload = {
+        from_address: {
+            state: currentUser.state,
+            line_1: currentUser.address1,
+            city: currentUser.city,
+            postal_code: currentUser.postalCode,
+            country: 'US',
+        },
+        to_address: PLACEHOLDER_DESTINATION,
+        parcel: parcel
+    }
 
+    fetch('/seller/api/shipping-rates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error(err))
+}
 
 async function uploadImagesToFirebase(images, userId) {
     const newListingRef = doc(collection(db, 'listings'));
@@ -320,9 +407,7 @@ async function uploadImagesToFirebase(images, userId) {
   return uploadedImages;
   
 }
-
-
-// TODO: Create logic to upload listing to firebase collection 
+ 
 async function uploadListingToFirebase(data) { 
     try {
         const docRef = await addDoc(collection(db, 'listings'), data);
