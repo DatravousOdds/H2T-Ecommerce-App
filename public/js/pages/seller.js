@@ -18,11 +18,11 @@ const postBtn = document.getElementById('postBtn');
 const currentUser =  await checkUserStatus();
 const storage = getStorage(app, 'gs://ecom-website-94d87');
 const PLACEHOLDER_DESTINATION = {
-    street1: "1 Main St",
+    line_1: "1 Main St",
     city:    "Kansas City",    // geographically central US
     state:   "MO",
-    zip:     "64101",
-    country: "US"
+    postal_code:     "64101",
+    country_alpha2: "US"
 };
 const CATEGORY_DEFAULTS = {
     'sneakers':    { length: 14, width: 10, height: 6,  weight: 2.5 },
@@ -135,9 +135,11 @@ function setDimensionsListeners() {
     const confirmPostBtn = document.getElementById('confirmBtn');
 
     defaultsBtn.addEventListener('click', () => {
-      const parcel = CATEGORY_DEFAULTS[category] ?? CATEGORY_DEFAULTS['other'];
+        const category = productCategory.value;
+        const parcel = CATEGORY_DEFAULTS[category] ?? CATEGORY_DEFAULTS['other'];
+        console.log(parcel);
 
-      proceedWithShipping(parcel);
+        proceedWithShipping(parcel);
     })
 
     confirmPostBtn.addEventListener('click', () => {
@@ -350,17 +352,35 @@ function initFormListeners() {
 
 }
 
+
+
+function displayShippingCouriers(couriersArray) {
+    couriersArray.forEach(courier => {
+        const logo = courier.courier_service.logo;
+        const name = courier.courier_service.name;
+
+        console.log("Courier logo:", logo);
+        console.log("Courier name: ", name)
+        
+    })
+}
+
 function fetchShippingRates(parcel) {
+    console.log("current user: ",currentUser)
     const payload = {
-        from_address: {
-            state: currentUser.state,
+        fromAddress: {
             line_1: currentUser.address1,
             city: currentUser.city,
+            state: 'TX',
             postal_code: currentUser.postalCode,
-            country: 'US',
+            country_alpha2: 'US',
         },
-        to_address: PLACEHOLDER_DESTINATION,
-        parcel: parcel
+        toAddress: PLACEHOLDER_DESTINATION,
+        parcel: {
+            ...parcel,
+            category: productCategory.value,
+            price: parseFloat(productPrice.value)
+        }
     }
 
     fetch('/seller/api/shipping-rates', {
@@ -370,7 +390,10 @@ function fetchShippingRates(parcel) {
 
     })
     .then(res => res.json())
-    .then(data => console.log(data))
+    .then(data => {
+        const bestCostShippingCouriers = data.rates ? data.rates.filter(rates => rates.cost_rank <= 5) : [];
+        displayShippingCouriers(bestCostShippingCouriers);
+    })
     .catch(err => console.error(err))
 }
 

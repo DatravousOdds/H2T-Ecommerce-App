@@ -83,7 +83,61 @@ app.use(express.json());
 
 
 app.post('/seller/api/shipping-rates',  async (req, res) => {
-  console.log(req.body);
+  const { fromAddress , toAddress, parcel } = req.body;
+
+  // console.log("from address", fromAddress);
+  // console.log("to address", toAddress);
+  // console.log("Parcels", parcel)
+
+  try {
+    const { data } = await easyship.rates_request({
+      origin_address: fromAddress,
+      destination_address: toAddress,
+      incoterms: 'DDU',
+      insurance: { is_insured: false },
+      courier_settings: {
+        apply_shipping_rules: true,
+        show_courier_logo_url: true
+      },
+      shipping_settings: {
+        units: {
+          weight: 'lb',
+          dimensions: 'in'
+        }
+      },
+      parcels: [
+        {
+          total_actual_weight: parcel.weight,
+          box: 
+            {
+              slug: 'custom',
+              length: parcel.length,
+              width: parcel.width,
+              height: parcel.height
+            },
+            items: 
+            [
+              {
+              quantity: 1,
+              category: 'Clothes & Accessories',
+              declared_currency: 'USD',
+              declared_customs_value: parcel.price ?? 1,
+              hs_code: '6211'
+
+              }
+            ]
+        }
+    ],
+      calculate_tax_and_duties: false
+    });
+
+    console.log("Returned shipping data:", data);
+
+    res.json(data)
+
+  } catch (err) {
+    console.error("Failed to fetch shipping rates", JSON.stringify(err.data?.error?.details, null, 2))
+  }
 
   
 })
