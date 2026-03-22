@@ -1,22 +1,27 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { getStorage, ref, uploadString, getDownloadURL, 
-    deleteDoc, db, doc, app } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc } from '../api/firebase-client.js';
 
 
 const imageGridContainer = document.querySelector('.images-grid-container');
+
 const productTitle = document.getElementById('title');
 const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('price');
+
 const modalOverlay = document.querySelector('.modal-overlay');
 const packageDimensions = document.getElementById('packageDimensions');
+
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
+
 const tradeStatus = document.querySelector('.button-container');
 const postBtn = document.getElementById('postBtn');
+
 const currentUser =  await checkUserStatus();
 const storage = getStorage(app, 'gs://ecom-website-94d87');
+
 const PLACEHOLDER_DESTINATION = {
     line_1: "1 Main St",
     city:    "Kansas City",    // geographically central US
@@ -130,6 +135,11 @@ function showDimensionsModal() {
     modalOverlay.classList.add('show');
 }
 
+function closeDimensionsModal() {
+    packageDimensions.classList.remove('show');
+    modalOverlay.classList.remove('show');
+}
+
 function setDimensionsListeners() {
     const defaultsBtn = document.getElementById('defaultsBtn');
     const confirmPostBtn = document.getElementById('confirmBtn');
@@ -138,7 +148,7 @@ function setDimensionsListeners() {
         const category = productCategory.value;
         const parcel = CATEGORY_DEFAULTS[category] ?? CATEGORY_DEFAULTS['other'];
         console.log(parcel);
-
+        closeDimensionsModal();
         proceedWithShipping(parcel);
     })
 
@@ -355,17 +365,59 @@ function initFormListeners() {
 
 
 function displayShippingCouriers(couriersArray) {
-    couriersArray.forEach(courier => {
-        const logo = courier.courier_service.logo;
-        const name = courier.courier_service.name;
+    const panel = document.getElementById('carrierPanel');
+    panel.style.display = 'block';
 
-        console.log("Courier logo:", logo);
-        console.log("Courier name: ", name)
+    const carrierRows = document.querySelector('.carrier-rows-wrapper');
+    carrierRows.innerHTML = '';
+
+    
+
+    couriersArray.forEach(courier => {
+        // extract needed data
+        console.log(courier);
+
+        const courierInfo = {
+            id: courier.courier_service.courier_id,
+            logo: courier.courier_service.logo,
+            name: courier.courier_service.name,
+            total_charge: courier.total_charge,
+            time: `${courier.min_delivery_time} - ${courier.max_delivery_time}`
+        }
+        
+        // create row element
+        const carrierRow = document.createElement('div');
+        carrierRow.classList.add('carrier-row');
+        carrierRow.dataset.id = `${courierInfo.id}`;
+        carrierRow.innerHTML = `
+            <div class="carrier-info">
+                <div class="carrier-image-wrapper">
+                    <img src=${courierInfo.logo} alt="" class="carrier-image">
+                </div>
+                <div class="carrier-title">
+                    <span>${courierInfo.name}</span>
+                    <p>${courierInfo.time} business days</p>
+                </div>
+            </div>
+            <div class="carrier-pricing">
+                <div class="carrier-price">
+                    <span>$${courierInfo.total_charge}</span>
+                    <p>est. rate</p>   
+                </div>
+                
+                <div class="form-input">
+                    <label for="carrier-price"></label>
+                    <input type="radio" name="carrier-price" id="carrier-price">
+                </div>
+            </div>
+        `;
+
+        carrierRows.append(carrierRow);    
         
     })
 }
 
-function fetchShippingRates(parcel) {
+async function fetchShippingRates(parcel) {
     console.log("current user: ",currentUser)
     const payload = {
         fromAddress: {
@@ -383,18 +435,21 @@ function fetchShippingRates(parcel) {
         }
     }
 
-    fetch('/seller/api/shipping-rates', {
+    const response = await fetch('/seller/api/shipping-rates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify(payload)
 
     })
-    .then(res => res.json())
-    .then(data => {
-        const bestCostShippingCouriers = data.rates ? data.rates.filter(rates => rates.cost_rank <= 5) : [];
-        displayShippingCouriers(bestCostShippingCouriers);
-    })
-    .catch(err => console.error(err))
+
+    if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`)
+    }
+
+    const result =  await response.json();
+    const bestShippingCourier = result.rates ? result.rates.filter(rates => rates.cost_rank <= 5) : [];
+    displayShippingCouriers(bestShippingCourier);
+
 }
 
 async function uploadImagesToFirebase(images, userId) {

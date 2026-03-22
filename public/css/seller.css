@@ -568,6 +568,7 @@ button {
 
 .carrier-row:hover {
     border: 1px solid #dc2626;
+    background-color: rgba(150, 0, 0, 0.1);
 
 }
 
@@ -584,9 +585,9 @@ button {
 
 
 .carrier-image-wrapper img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
 }
 
 .carrier-title span {
