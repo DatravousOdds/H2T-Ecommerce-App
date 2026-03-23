@@ -197,33 +197,7 @@
                     <p class="shipping-cost">Depends on shipping provider</p>
                 </div>
             </div>
-            <div class="carrier-panel" id="carrierPanel">
-                <h5>Select a carrier</h5>
-                <div class="carrier-rows-wrapper">
-                    <div class="carrier-row">
-                        <div class="carrier-info">
-                            <div class="carrier-image-wrapper">
-                                <img src="https://www.savethepostoffice.com/wp-content/uploads/2024/08/USPS-logo.jpg" alt="" class="carrier-image">
-                            </div>
-                            <div class="carrier-title">
-                                <span>USPS Priority Mail</span>
-                                <p>2-3 business days</p>
-                            </div>
-                        </div>
-                        <div class="carrier-pricing">
-                            <div class="carrier-price">
-                                <span>$8.40</span>
-                                <p>est. rate</p>   
-                            </div>
-                            
-                            <div class="form-input">
-                                <label for="carrier-price"></label>
-                                <input type="radio" name="carrier-price" id="carrier-price">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             <p class="errorText" id="error-shipping"></p>
         </section>
         <section class="cta-buttons" id="cta-buttons">
@@ -276,11 +250,35 @@
                     </div>
                 </div>
                 <div class="m-footer">
-                    <button class="btn defaults-btn" id="defaultsBtn">Use defaults</button>
-                    <button class="btn confirm-btn" id="confirmBtn">Confirm & post</button>
+                    <button class="btn defaults-btn" id="defaultsBtn">Load Rates</button>
                 </div>
             </div>
         </div> 
+        <div class="courier-rates-modal" id="courierRatesModal">
+                <div class="m-header">
+                    <h5>Select a carrier</h5>
+                </div>
+
+                <div class="carrier-panel" id="carrierPanel">
+                    <div class="carrier-rows-wrapper">
+                        <div class="loader" id="loader" style="display: none;">
+                            <div class="dots">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                        </div>
+                        <!-- Dynamically -->
+                    </div>
+                </div>
+
+                <div class="m-footer">
+                    <button type="button" class="btn" id="courierBackBtn">Back</button>
+                    <button type="button" class="btn confirm-btn" id="courierConfirmBtn">Confirm & Post</button>
+                </div>
+            
+        </div>
      </div>
      
 </body>

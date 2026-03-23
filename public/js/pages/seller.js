@@ -12,12 +12,19 @@ const productPrice = document.getElementById('price');
 
 const modalOverlay = document.querySelector('.modal-overlay');
 const packageDimensions = document.getElementById('packageDimensions');
+const courierRatesModal = document.getElementById('courierRatesModal');
+const savingModal = document.getElementById('savingModal');
 
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
 
 const tradeStatus = document.querySelector('.button-container');
 const postBtn = document.getElementById('postBtn');
+
+const courierPanel = document.getElementById('carrierPanel');
+const carrierWrapper = document.querySelector('.carrier-rows-wrapper');
+
+const loader = document.getElementById('loader');
 
 const currentUser =  await checkUserStatus();
 const storage = getStorage(app, 'gs://ecom-website-94d87');
@@ -57,36 +64,36 @@ let listing = {
 initFormListeners();
 
 postBtn.addEventListener('click', async () => {
+    // Step 1: Validate basic information
     if (!validationInformation()) return;
 
-    const shippingType = document.querySelector('input[type="radio"]:checked').value;
+    // Step 2: Get shipping type
+    const shippingTypeRadio = document.querySelector('input[name="shipping-method"]:checked');
 
+    if (!shippingTypeRadio) {
+        alert("Shipping must be selected");
+        return;
+    };
+
+    const shippingType = shippingTypeRadio.value;
+
+    // Step 3: Handle prepaid shipping
     if (shippingType === "prepaid") {
         showDimensionsModal();
-        setDimensionsListeners();
+        return;
     } else {
-        
-    }
+        collectListingInfo();
+        await uploadListing();
 
-    collectListingInfo();
-    const images = collectImageData('.image-preview');
-
-    try {
-    //    const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
-    //     listing.images = imagesURL;
-    //     await uploadListingToFirebase(listing); 
-
-        // modalOverlay.classList.remove('show');
-
-    } catch (e) {
-        // modalOverlay.classList.remove('show');
-        console.log("Error occur when uploading data: ", e)
-    }
-    
+    }           
+ });
 
 
-
-    
+carrierWrapper.addEventListener('click', (e) => {
+    const row = e.target.closest('.carrier-row');
+    const carrierInput = row.querySelector('.form-input input[type="radio"]');
+    // console.log(carrierInput);
+    carrierInput.checked = true;
 })
 
 tradeStatus.addEventListener('click', () => {
@@ -124,35 +131,58 @@ imageGridContainer.addEventListener('click', (e) => {
 
 })
 
+function initFormListeners() {
+    productTitle.addEventListener('input', () => {
+        removeError('title');
+    });
+    productCategory.addEventListener('input', () => {
+        removeError('category');
+    })
+    productDescription.addEventListener('input', () => {
+        removeError('description');
+    })
+    productPrice.addEventListener('input', () => {
+        removeError('price');
+    })
 
-
-function showDimensionsModal() {
-    const category = productCategory.value;
-
-    setDefaultDimensions(category);
-
-    packageDimensions.classList.add('show');
-    modalOverlay.classList.add('show');
 }
 
-function closeDimensionsModal() {
-    packageDimensions.classList.remove('show');
-    modalOverlay.classList.remove('show');
+
+
+
+// Setters
+function setCourierListeners() {
+    const courierConfirmBtn = document.getElementById('courierConfirmBtn');
+
+    courierConfirmBtn.addEventListener('click', async () => {
+        const selectedRate = document.querySelector('input[name="carrier-price"]:checked');
+
+        if (!selectedRate) {
+            alert("shipping rate must be selected!");
+            return;
+        }
+
+        removeCourierRatesModal();
+
+
+        listing.shipping = {
+            courier: selectedRate.dataset.courier,
+            service_name : selectedRate.dataset.serviceName,
+            min_delivery_time: selectedRate.dataset.minDeliveryTime,
+            max_delivery_time: selectedRate.dataset.maxDeliveryTime,
+            estimateRate: parseFloat(selectedRate.value)
+        };
+
+        collectListingInfo();
+        await uploadListing();
+
+    })
 }
 
 function setDimensionsListeners() {
     const defaultsBtn = document.getElementById('defaultsBtn');
-    const confirmPostBtn = document.getElementById('confirmBtn');
 
     defaultsBtn.addEventListener('click', () => {
-        const category = productCategory.value;
-        const parcel = CATEGORY_DEFAULTS[category] ?? CATEGORY_DEFAULTS['other'];
-        console.log(parcel);
-        closeDimensionsModal();
-        proceedWithShipping(parcel);
-    })
-
-    confirmPostBtn.addEventListener('click', () => {
         const parcel = {
             "length": document.getElementById('length').value,
             "width": document.getElementById('width').value,
@@ -160,12 +190,12 @@ function setDimensionsListeners() {
             "weight": document.getElementById('weight').value
         }
         
+        closeDimensionsModal();
         proceedWithShipping(parcel);
-    });
-}
+        showCourierRatesModal();
 
-function proceedWithShipping(parcel) {
-    fetchShippingRates(parcel);
+    })
+
 }
 
 function setDefaultDimensions(category) {
@@ -178,6 +208,8 @@ function setDefaultDimensions(category) {
 
 }
 
+
+// Help functions
 function showError(elementId, errorMessage) {
     const id = document.getElementById(elementId);
     const errorId = document.getElementById(`error-${elementId}`);
@@ -192,6 +224,114 @@ function removeError(elementId) {
     errorId.textContent = '';
     id.classList.remove('error');
 }
+
+function displayShippingCouriers(couriersArray) {
+    const panel = document.getElementById('carrierPanel');
+    panel.style.display = 'block';
+
+    const carrierRows = document.querySelector('.carrier-rows-wrapper');
+    carrierRows.innerHTML = '';
+
+    couriersArray.forEach(courier => {
+        console.log(courier)
+        const courierInfo = {
+            id: courier.courier_service.courier_id,
+            logo: courier.courier_service.logo,
+            name: courier.courier_service.name,
+            total_charge: parseFloat(courier.total_charge),
+            time: `${courier.min_delivery_time} - ${courier.max_delivery_time}`
+        }
+        
+        // create row element
+        const carrierRow = document.createElement('div');
+        carrierRow.classList.add('carrier-row');
+        carrierRow.dataset.id = `${courierInfo.id}`;
+        carrierRow.innerHTML = `
+            <div class="carrier-info">
+                <div class="carrier-image-wrapper">
+                    <img src=${courierInfo.logo} alt="" class="carrier-image">
+                </div>
+                <div class="carrier-title">
+                    <span>${courierInfo.name}</span>
+                    <p>${courierInfo.time} business days</p>
+                </div>
+            </div>
+            <div class="carrier-pricing">
+                <div class="carrier-price">
+                    <span>$${courierInfo.total_charge}</span>
+                    <p>est. rate</p>   
+                </div>
+                
+                <div class="form-input">
+                    <label for="carrier-price"></label>
+                    <input
+                        type="radio"
+                        name="carrier-price"
+                        id="carrier-price"
+                        value="${courierInfo.total_charge}"
+                        data-courier="${courier.courier_service.umbrella_name}"
+                        data-service-name="${courierInfo.name}"
+                        data-min-delivery-time="${courier.min_delivery_time}"
+                        data-max-delivery-time="${courier.max_delivery_time}"
+                    >
+                </div>
+            </div>
+        `;
+
+        carrierRows.append(carrierRow);    
+        
+    })
+}
+
+function showCourierRatesModal() {
+    courierRatesModal.classList.add('show');
+    modalOverlay.classList.add('show');
+
+    setCourierListeners();
+}
+
+function removeCourierRatesModal() {
+    courierRatesModal.classList.remove('show');
+    modalOverlay.classList.remove('show');
+}
+
+function showDimensionsModal() {
+    const category = productCategory.value;
+
+    setDefaultDimensions(category);
+
+    packageDimensions.classList.add('show');
+    modalOverlay.classList.add('show');
+
+    setDimensionsListeners();
+}
+
+function closeDimensionsModal() {
+    packageDimensions.classList.remove('show');
+    modalOverlay.classList.remove('show');
+}
+
+function showSavingModal() {
+    modalOverlay.classList.add('show');
+    savingModal.classList.add('show');
+}
+
+function removeSavingModal() {
+    modalOverlay.classList.remove('show');
+    savingModal.classList.remove('show');
+}
+
+function showLoading() {
+    loader.style.display = 'flex';
+}
+
+function removeLoading() {
+    loader.style.display = 'none';
+}
+
+
+
+
 
 function validationInformation() {
     if(!validateImages()) return false;
@@ -261,6 +401,8 @@ function validateImages() {
     return true;
 }
 
+
+
 function checkShippingBox(selector, event) {
     const shippingContainer = event.target.closest(selector);
     const input = shippingContainer.querySelector('input[type="radio"]');
@@ -275,7 +417,6 @@ function collectListingInfo() {
     listing.ownerId = currentUser.email;
     listing.status = 'active';
     listing.description = productDescription.value.trim();
-    listing.shipping = document.querySelector('input[type="radio"]:checked').value;
 
 }
 
@@ -296,6 +437,12 @@ function collectImageData(selector) {
 
   return imageData;
 }
+
+function proceedWithShipping(parcel) {
+    fetchShippingRates(parcel);
+}
+
+
 
 function handleImageUpload(input,preview,removeBtn) {
     if (typeof input !== "object") {
@@ -346,76 +493,11 @@ function handleImageRemove(input, preview, removeBtn) {
     return;
 }
 
-function initFormListeners() {
-    productTitle.addEventListener('input', () => {
-        removeError('title');
-    });
-    productCategory.addEventListener('input', () => {
-        removeError('category');
-    })
-    productDescription.addEventListener('input', () => {
-        removeError('description');
-    })
-    productPrice.addEventListener('input', () => {
-        removeError('price');
-    })
-
-}
 
 
 
-function displayShippingCouriers(couriersArray) {
-    const panel = document.getElementById('carrierPanel');
-    panel.style.display = 'block';
 
-    const carrierRows = document.querySelector('.carrier-rows-wrapper');
-    carrierRows.innerHTML = '';
 
-    
-
-    couriersArray.forEach(courier => {
-        // extract needed data
-        console.log(courier);
-
-        const courierInfo = {
-            id: courier.courier_service.courier_id,
-            logo: courier.courier_service.logo,
-            name: courier.courier_service.name,
-            total_charge: courier.total_charge,
-            time: `${courier.min_delivery_time} - ${courier.max_delivery_time}`
-        }
-        
-        // create row element
-        const carrierRow = document.createElement('div');
-        carrierRow.classList.add('carrier-row');
-        carrierRow.dataset.id = `${courierInfo.id}`;
-        carrierRow.innerHTML = `
-            <div class="carrier-info">
-                <div class="carrier-image-wrapper">
-                    <img src=${courierInfo.logo} alt="" class="carrier-image">
-                </div>
-                <div class="carrier-title">
-                    <span>${courierInfo.name}</span>
-                    <p>${courierInfo.time} business days</p>
-                </div>
-            </div>
-            <div class="carrier-pricing">
-                <div class="carrier-price">
-                    <span>$${courierInfo.total_charge}</span>
-                    <p>est. rate</p>   
-                </div>
-                
-                <div class="form-input">
-                    <label for="carrier-price"></label>
-                    <input type="radio" name="carrier-price" id="carrier-price">
-                </div>
-            </div>
-        `;
-
-        carrierRows.append(carrierRow);    
-        
-    })
-}
 
 async function fetchShippingRates(parcel) {
     console.log("current user: ",currentUser)
@@ -433,22 +515,30 @@ async function fetchShippingRates(parcel) {
             category: productCategory.value,
             price: parseFloat(productPrice.value)
         }
+    };
+    showLoading();
+    try {
+        const response = await fetch('/seller/api/shipping-rates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`)
+        }
+        const result =  await response.json();
+        const bestShippingCourier = result.rates ? result.rates.filter(rates => rates.cost_rank <= 5) : [];
+        displayShippingCouriers(bestShippingCourier);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Error loading data")
+    } finally {
+        removeLoading();
     }
+    
 
-    const response = await fetch('/seller/api/shipping-rates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-
-    })
-
-    if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`)
-    }
-
-    const result =  await response.json();
-    const bestShippingCourier = result.rates ? result.rates.filter(rates => rates.cost_rank <= 5) : [];
-    displayShippingCouriers(bestShippingCourier);
+    
 
 }
 
@@ -495,5 +585,19 @@ async function uploadListingToFirebase(data) {
         console.error("Error adding document:", e);
     }
     
+}
+
+async function uploadListing() {
+    showSavingModal();
+    try {
+        const images = collectImageData('.image-preview');
+        const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
+        listing.images = imagesURL;
+        await uploadListingToFirebase(listing); 
+        removeSavingModal();
+    } catch (e) {
+        removeSavingModal();
+        console.log("Error occur when uploading data: ", e);
+    }
 }
 
