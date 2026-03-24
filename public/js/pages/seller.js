@@ -10,6 +10,9 @@ const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('price');
 
+const titleCharCounter = document.getElementById('titleCharCounter');
+const descriptionWordCounter = document.getElementById('descriptionWordCounter');
+
 const modalOverlay = document.querySelector('.modal-overlay');
 const packageDimensions = document.getElementById('packageDimensions');
 const courierRatesModal = document.getElementById('courierRatesModal');
@@ -23,6 +26,9 @@ const postBtn = document.getElementById('postBtn');
 
 const courierPanel = document.getElementById('carrierPanel');
 const carrierWrapper = document.querySelector('.carrier-rows-wrapper');
+
+const courierExitBtn = document.getElementById('courierExitBtn');
+const dimensionExitBtn = document.getElementById('dimensionExitBtn');
 
 const loader = document.getElementById('loader');
 
@@ -147,13 +153,38 @@ function initFormListeners() {
 
 }
 
+charCounter()
+
+function charCounter() {
+    const charLimit = 80;
+    let current = 0;
+
+    productTitle.addEventListener('input', (e) => {
+        const currentLetterCount = e.target.value.length;
+        current = currentLetterCount;
+        if (current >= charLimit) {
+            // Show error
+
+        }
+        
+    })
+
+}
 
 
+function exitModalListener(selector, modal) {
+    selector.addEventListener('click', () => {
+        modal.classList.remove('show');
+        modalOverlay.classList.remove('show');
+    })
+}
 
 // Setters
 function setCourierListeners() {
     const courierConfirmBtn = document.getElementById('courierConfirmBtn');
     const courierBackBtn = document.getElementById('courierBackBtn');
+
+    exitModalListener(courierExitBtn, courierRatesModal);
 
     courierConfirmBtn.addEventListener('click', async () => {
         const selectedRate = document.querySelector('input[name="carrier-price"]:checked');
@@ -202,6 +233,8 @@ function setDimensionsListeners() {
         showCourierRatesModal();
 
     })
+
+    
 
 }
 
@@ -306,11 +339,12 @@ function showDimensionsModal() {
     const category = productCategory.value;
 
     setDefaultDimensions(category);
+    exitModalListener(dimensionExitBtn, packageDimensions);
+    setDimensionsListeners();
 
     packageDimensions.classList.add('show');
     modalOverlay.classList.add('show');
 
-    setDimensionsListeners();
 }
 
 function closeDimensionsModal() {

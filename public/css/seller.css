@@ -456,6 +456,17 @@ button {
 .package-dimension .m-header {
     margin-bottom: 1.5rem;
     line-height: 1.3;
+    display: flex;
+}
+
+.package-dimension .title {
+    display: block;
+    flex-direction: column;
+
+}
+
+.package-dimension i {
+    font-size: 1.5rem;
 }
 
 .m-header h5 {
@@ -525,6 +536,24 @@ button {
     left: 50%;
     transform: translate(-50%,-50%);
 }
+
+.courier-rates-modal .m-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.courier-rates-modal .modal-exit i {
+    font-size: 1.5rem;
+    
+}
+
+.modal-exit {
+    cursor: pointer;
+    transition: ease-in-out 0.3s;
+}
+
+
+
 
 .courier-rates-modal.show {
     display: flex;

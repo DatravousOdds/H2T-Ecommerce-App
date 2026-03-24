@@ -115,9 +115,9 @@
             <div class="input-container">
                 <div class="input-header">
                     <label for="title">Title</label>
-                    <div class="char-counter">0/80</div> 
+                    <div class="char-counter" id="titleCharCounter">0/80</div> 
                 </div>
-                <input type="text" id="title" placeholder="What are you selling?">
+                <input type="text" id="title" placeholder="What are you selling?" maxlength="80">
                 <p class="errorText" id="error-title"></p>
             </div>
             <div class="input-container">
@@ -226,8 +226,13 @@
         <div class="package-dimension" id="packageDimensions">
             <div class="m-content">
                 <div class="m-header">
-                  <h5>Package dimensions</h5>
-                  <p>We've pre-filled estimated dimensions. Update them for more accurate rates.</p>  
+                    <div class="title">
+                      <h5>Package dimensions</h5>
+                      <p>We've pre-filled estimated dimensions. Update them for more accurate rates.</p>  
+                    </div>
+                  <div class="modal-exit" id="dimensionExitBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                  </div>  
                 </div>
                 <div class="package-inputs">
                     <div class="dimesions-input">
@@ -257,6 +262,9 @@
         <div class="courier-rates-modal" id="courierRatesModal">
                 <div class="m-header">
                     <h5>Select a carrier</h5>
+                    <div class="modal-exit" id="courierExitBtn">
+                        <i class="fa-solid fa-xmark"></i>
+                    </div>  
                 </div>
 
                 <div class="carrier-panel" id="carrierPanel">
