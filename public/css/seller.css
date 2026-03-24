@@ -411,7 +411,6 @@ button {
 
 .m-content {
     display: flex;
-    align-items: center;
     flex-direction: column;
 }
 
@@ -420,6 +419,12 @@ button {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.m-footer .defaults-btn {
+    background-color: #dc2626;
+    color: white;
+    font-weight: 600;
 }
 
 .dots span {

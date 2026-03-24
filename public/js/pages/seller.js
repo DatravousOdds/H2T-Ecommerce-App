@@ -153,6 +153,7 @@ function initFormListeners() {
 // Setters
 function setCourierListeners() {
     const courierConfirmBtn = document.getElementById('courierConfirmBtn');
+    const courierBackBtn = document.getElementById('courierBackBtn');
 
     courierConfirmBtn.addEventListener('click', async () => {
         const selectedRate = document.querySelector('input[name="carrier-price"]:checked');
@@ -176,6 +177,12 @@ function setCourierListeners() {
         collectListingInfo();
         await uploadListing();
 
+    })
+
+    courierBackBtn.addEventListener('click', () => {
+        removeCourierRatesModal();
+        showDimensionsModal();
+        return;
     })
 }
 
@@ -500,7 +507,7 @@ function handleImageRemove(input, preview, removeBtn) {
 
 
 async function fetchShippingRates(parcel) {
-    console.log("current user: ",currentUser)
+    showLoading();
     const payload = {
         fromAddress: {
             line_1: currentUser.address1,
@@ -516,7 +523,7 @@ async function fetchShippingRates(parcel) {
             price: parseFloat(productPrice.value)
         }
     };
-    showLoading();
+    
     try {
         const response = await fetch('/seller/api/shipping-rates', {
                 method: 'POST',
