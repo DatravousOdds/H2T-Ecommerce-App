@@ -92,8 +92,7 @@ postBtn.addEventListener('click', async () => {
         await uploadListing();
 
     }           
- });
-
+});
 
 carrierWrapper.addEventListener('click', (e) => {
     const row = e.target.closest('.carrier-row');
@@ -143,17 +142,19 @@ function initFormListeners() {
     });
     productCategory.addEventListener('input', () => {
         removeError('category');
-    })
+    });
     productDescription.addEventListener('input', () => {
         removeError('description');
-    })
+    });
     productPrice.addEventListener('input', () => {
         removeError('price');
-    })
+    });
+
+    charCounter();
 
 }
 
-charCounter()
+
 
 function charCounter() {
     const charLimit = 80;
@@ -482,8 +483,6 @@ function collectImageData(selector) {
 function proceedWithShipping(parcel) {
     fetchShippingRates(parcel);
 }
-
-
 
 function handleImageUpload(input,preview,removeBtn) {
     if (typeof input !== "object") {
