@@ -138,9 +138,9 @@
             <div class="input-container">
                 <div class="input-header">
                     <label for="description">Description</label>
-                    <div class="char-counter">0/1000</div>
+                    <div class="char-counter" id="descriptionWordCounter">0/100</div>
                 </div>
-                <textarea name="descriptionInput" id="description" placeholder="Description your product..."></textarea>
+                <textarea class="description" name="descriptionInput" id="description" placeholder="Description your product..." maxlength="1000" ></textarea>
                 <p class="errorText" id="error-description"></p>
             </div>
             

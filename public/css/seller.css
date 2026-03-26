@@ -233,7 +233,13 @@ textarea {
     padding: 0.5rem;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 4px;
-    resize: vertical;
+    resize: none;
+}
+
+.description {
+    height: 14.63rem;
+    resize: none;
+    
 }
 
 .input-header {
@@ -423,8 +429,10 @@ button {
 
 .m-footer .defaults-btn {
     background-color: #dc2626;
-    color: white;
-    font-weight: 600;
+    color: #fff ;
+    font-weight: bold;
+    border: none;
+    transition: ease-in-out 0.3s;
 }
 
 .dots span {
@@ -512,11 +520,15 @@ button {
 }
 
 .m-footer .defaults-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: #d10a17;
+    color: white;
+    transform: translateY(1px);
 }
 
 .m-footer .confirm-btn:hover {
-    background-color: rgba(220, 38, 38, 0.2);
+    color: white;
+    background-color: #d10a17;
+    transform: translateY(1px);
 }
 
 /* Courier Modal */

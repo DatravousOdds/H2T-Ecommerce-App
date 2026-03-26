@@ -154,7 +154,7 @@ function initFormListeners() {
 
 }
 
-
+wordCounter();
 
 function charCounter() {
     const charLimit = 80;
@@ -163,14 +163,39 @@ function charCounter() {
     productTitle.addEventListener('input', (e) => {
         const currentLetterCount = e.target.value.length;
         current = currentLetterCount;
+        titleCharCounter.textContent = `${current}/80`;
         if (current >= charLimit) {
             // Show error
-
+            showError('title', 'Title must be less then 80 characters')
+            return;
         }
         
     })
 
 }
+
+function wordCounter() {
+    const limit = 100;
+    let current = 0;
+
+    productDescription.addEventListener('input', (e) => {
+        const currentWordCount = e.target.value.trim();
+        const words = currentWordCount.split(' ');
+
+        if (words[0] === '') {
+            words.length = 0;
+        }
+
+        current = words.length;
+
+        descriptionWordCounter.textContent = `${current}/100`;
+
+        if (current >= limit) {
+            showError('description', 'Description must be 1000 words or less!');
+            return;
+        }
+    })
+};
 
 
 function exitModalListener(selector, modal) {
