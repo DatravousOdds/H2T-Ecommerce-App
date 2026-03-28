@@ -387,7 +387,7 @@ button {
     right: 0;
     left: 0;
     z-index: 99999;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
 
@@ -723,6 +723,38 @@ button {
 
 .carrier-price p {
     font-size: 0.875rem;
+}
+
+/* successful modal */
+
+.successful-listing-modal {
+    width: 500px;
+    height: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #fff;
+    padding: 1.5rem;
+
+}
+
+.successful-listing-modal .m-header {
+    display: block;
+    align-items: center;
+    justify-content: center;
+}
+
+.m-icon-wrapper {
+    width: 52px;
+    height: 52px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
 }
 
 
