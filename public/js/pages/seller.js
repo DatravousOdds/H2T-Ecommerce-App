@@ -51,8 +51,7 @@ const CATEGORY_DEFAULTS = {
     'hats':        { length: 12, width: 10, height: 6,  weight: 0.5 },
     'accessories': { length: 8,  width: 6,  height: 2,  weight: 0.25 },
     'other':       { length: 12, width: 9,  height: 4,  weight: 1.0 },
-  };
-
+};
 let listing = {
     availableForTrade: true,
     originalPrice: 0,
@@ -64,10 +63,10 @@ let listing = {
     shipping: '',
     description: ''
 
-}
-
+};
 
 initFormListeners();
+wordCounter();
 
 postBtn.addEventListener('click', async () => {
     // Step 1: Validate basic information
@@ -114,10 +113,6 @@ shippingContainers.forEach(container => {
     });
 });
 
-shippingGroupContainer.addEventListener('click', (e) => {
-    checkShippingBox('.shipping-btn-container', e);
-})
-
 imageGridContainer.addEventListener('click', (e) => {
     const imageContainer = e.target.closest('.image-container');
     if (!imageContainer) { return null;}
@@ -153,8 +148,6 @@ function initFormListeners() {
     charCounter();
 
 }
-
-wordCounter();
 
 function charCounter() {
     const charLimit = 80;
@@ -209,7 +202,7 @@ function exitModalListener(selector, modal) {
 function setCourierListeners() {
     const courierConfirmBtn = document.getElementById('courierConfirmBtn');
     const courierBackBtn = document.getElementById('courierBackBtn');
-
+    
     exitModalListener(courierExitBtn, courierRatesModal);
 
     courierConfirmBtn.addEventListener('click', async () => {
@@ -221,7 +214,6 @@ function setCourierListeners() {
         }
 
         removeCourierRatesModal();
-
 
         listing.shipping = {
             courier: selectedRate.dataset.courier,
@@ -282,7 +274,7 @@ function showError(elementId, errorMessage) {
     errorId.textContent = `${errorMessage}`;
     id.scrollIntoView({ behavior: 'smooth'});
     id.classList.add('error');
-}
+};
 
 function removeError(elementId) {
     const id = document.getElementById(elementId);
@@ -347,6 +339,23 @@ function displayShippingCouriers(couriersArray) {
         carrierRows.append(carrierRow);    
         
     })
+
+    // add listeners to new elements
+    const courierOptions = document.querySelectorAll('.carrier-rows-wrapper .carrier-row');
+    console.log("All courier options: ", courierOptions);
+    courierOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // console.log("clicked option: ", option);
+            const radioInput = option.querySelector('.carrier-pricing .form-input input[type="radio"]');
+            console.log("Selected radio input: ", radioInput);
+            radioInput.checked = true;
+             // remove selected from all first
+             courierOptions.forEach(c => c.classList.remove('selected'));
+             // add to clicked one
+             option.classList.add('selected');
+        });
+    })
+
 }
 
 function showCourierRatesModal() {
@@ -383,6 +392,38 @@ function showSavingModal() {
     savingModal.classList.add('show');
 }
 
+function showSuccessMessage() {
+    modalOverlay.classList.add('show');
+
+    const successModal = document.getElementById('successModal');
+    const itemName = successModal.querySelector('.item-title');
+    const itemImage = successModal.querySelector('.product-image');
+    const modalProductName = successModal.querySelector('.modal-product-name');
+    const modalProductMeta = successModal.querySelector('.modal-product-meta');
+    itemName.textContent = listing.productName;
+    itemImage.src = listing.images[0].url; // Assuming the first image is the primary one
+    modalProductName.textContent = listing.productName;
+    modalProductMeta.textContent = `$${listing.originalPrice} - ${listing.shipping.courier} ${listing.shipping.service_name}`;
+    // console.log(listing);
+
+    successModal.classList.add('show');
+
+    // Add event listener to view listing button
+    const viewListingBtn = successModal.querySelector('.view-listing-btn');
+    viewListingBtn.addEventListener('click', () => {
+        window.location.href = `/listing/${listing.listingId}`;
+    });
+    // Add event listener to list another item button
+    const listAnotherBtn = successModal.querySelector('.listing-another-item');
+    listAnotherBtn.addEventListener('click', () => {
+        successModal.classList.remove('show');
+        modalOverlay.classList.remove('show');
+        // Reset form for new listing
+        resetForm();
+    });
+
+}
+
 function removeSavingModal() {
     modalOverlay.classList.remove('show');
     savingModal.classList.remove('show');
@@ -396,8 +437,26 @@ function removeLoading() {
     loader.style.display = 'none';
 }
 
+function resetForm() {
+    productTitle.value = '';
+    productCategory.value = '';
+    productDescription.value = '';
+    productPrice.value = '';
 
+    const images = document.querySelectorAll('.image-preview');
+    images.forEach(image => {
+        image.src = '';
+        image.style.display = 'none';
+    });
 
+    const removeButtons = document.querySelectorAll('.remove-image-btn');
+    removeButtons.forEach(button => {
+        button.style.display = 'none';
+    });
+
+    tradeStatus.classList.remove('active');
+
+};
 
 
 function validationInformation() {
@@ -468,13 +527,6 @@ function validateImages() {
     return true;
 }
 
-
-
-function checkShippingBox(selector, event) {
-    const shippingContainer = event.target.closest(selector);
-    const input = shippingContainer.querySelector('input[type="radio"]');
-    input.checked = true;
-}
 
 function collectListingInfo() {
 
@@ -557,11 +609,6 @@ function handleImageRemove(input, preview, removeBtn) {
     removeBtn.style.display = 'none';
     return;
 }
-
-
-
-
-
 
 
 async function fetchShippingRates(parcel) {
@@ -660,6 +707,7 @@ async function uploadListing() {
         listing.images = imagesURL;
         await uploadListingToFirebase(listing); 
         removeSavingModal();
+        showSuccessMessage();
     } catch (e) {
         removeSavingModal();
         console.log("Error occur when uploading data: ", e);
