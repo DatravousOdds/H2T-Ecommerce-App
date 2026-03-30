@@ -400,18 +400,18 @@ function showSuccessMessage() {
     const itemImage = successModal.querySelector('.product-image');
     const modalProductName = successModal.querySelector('.modal-product-name');
     const modalProductMeta = successModal.querySelector('.modal-product-meta');
+
     itemName.textContent = listing.productName;
     itemImage.src = listing.images[0].url; // Assuming the first image is the primary one
     modalProductName.textContent = listing.productName;
     modalProductMeta.textContent = `$${listing.originalPrice} - ${listing.shipping.courier} ${listing.shipping.service_name}`;
-    // console.log(listing);
 
     successModal.classList.add('show');
 
     // Add event listener to view listing button
     const viewListingBtn = successModal.querySelector('.view-listing-btn');
     viewListingBtn.addEventListener('click', () => {
-        window.location.href = `/listing/${listing.listingId}`;
+        window.location.href = `/shop/product/${listing.listingId}`;
     });
     // Add event listener to list another item button
     const listAnotherBtn = successModal.querySelector('.listing-another-item');

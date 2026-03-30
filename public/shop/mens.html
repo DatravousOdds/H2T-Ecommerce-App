@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/mens.css" />
+    <link rel="stylesheet" href="css/components/newsletter.css" />
+    
     <link rel="icon" type="image/png" href="./images/H2T LogoB Small.png" />
     <link
       rel="stylesheet"
@@ -57,19 +59,22 @@
       </p>
     </section>
 
-    <!-- begin of Products-->
-    <section id="product1" class="section-p1 men-sec">
+    <!-- Breadcrumbs -->
       <div class="breadcrumbs">
         <ol class="breadcrumbs-routes">
           <li><a href="/">Home</a></li>
-          <li><span>/</span></li>
+          <li><span>></span></li>
           <li id="curr-page" class="curr-pg">Men</li>
         </ol>
       </div>
-      <div class="men-wrapper">
-        <div id="filter-section" class="section-p1">
+
+    <!-- begin of Products-->
+    <section id="product1" class="section-p1 product-page">
+      
+      <!-- Filter -->
+      <div id="filter-section" class="filter-section">
           <h1>Filter by</h1>
-          <hr style="width: 100%; text-align: left; margin-left: 0" />
+          
           <div class="filter-option" style="border: 2px solid transparent">
             <div class="expand-details filter">
               <button type="button" class="filter-btn">Product Type</button>
@@ -131,7 +136,7 @@
             <div class="filter-container">
               <div
                 class="shoe-filter-container"
-                style="height: 200px; width: 200px; overflow-y: auto"
+                style="overflow-y: auto"
               >
                 <div class="shoe-filter">
                   <input type="checkbox" class="check" id="sneakers" />
@@ -235,631 +240,638 @@
             </div>
             <hr style="width: 100%; text-align: left; margin-left: 0" />
           </div>
-        </div>
-        <div id="product-container" class="section-p1">
-          <!-- Filter Component -->
-          <div class="filter-container">
-            <div class="pg-results">50 Results</div>
-            <!-- Filter Options -->
-            <div class="filter-opt">
-              <div class="sort-data" id="sort-container">
-                <button type="button" class="btn dropdown-btn" id="sort-btn">
-                  Sort By: <span id="sort-select" class="sort-text"></span>
-                  <i id="sort-icon" class="fa-solid fa-caret-up"></i>
-                </button>
-                <div class="sort-content">
-                  <a onclick="selectedItem(this)" href="#">Featured</a>
-                  <a onclick="selectedItem(this)" href="#">Newest</a>
-                  <a onclick="selectedItem(this)" href="#">Price: High-Low</a>
-                  <a onclick="selectedItem(this)" href="#">Price: Low-High</a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr style="width: 100%; text-align: left; margin-left: 0" />
-          <div class="test-product-conatiner" id="prod-card-container">
-            <div id="prod-cards" class="product-cards">
-              <!-- Contains all product cards -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>2 Colors</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350 USD</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
-
-              <!--- Product Container -->
-              <div class="pro" onclick="window.location.href='product.html';">
-                <!--- Image container-->
-                <div class="product-image">
-                  <div class="liked">
-                    <i class="fa-regular fa-heart"></i>
-                  </div>
-
-                  <img
-                    src="./images/Supreme Al Green .png"
-                    class="image-custom"
-                    alt=""
-                  />
-                </div>
-                <!--- Image container-->
-
-                <!-- product details -->
-                <div class="des">
-                  <div class="pro-brand">
-                    <p class="pro-brand-txt">
-                      Nike SB Dunk High Supreme Rammellzee
-                    </p>
-                  </div>
-
-                  <div class="discount">
-                    <p>20% OFF</p>
-                  </div>
-
-                  <div class="pro-price">
-                    <span class="p_rice">$350</span>
-                  </div>
-                </div>
-                <!-- product details -->
-              </div>
-              <!---  End Of Product Container -->
+      </div>
+
+      <!-- Filter Results -->
+      <div class="results-sort">
+        <div class="pg-results">50 Results</div>
+        <!-- Sort By Dropdown -->
+        <div class="filter-opt">
+          <div class="sort-data" id="sort-container">
+            <button type="button" class="btn dropdown-btn" id="sort-btn">
+              Sort By: <span id="sort-select" class="sort-text"></span>
+              <i class="fa-solid fa-chevron-up"></i>
+            </button>
+            <div class="sort-content">
+              <a onclick="selectedItem(this)" href="#">Featured</a>
+              <a onclick="selectedItem(this)" href="#">Newest</a>
+              <a onclick="selectedItem(this)" href="#">Price: High-Low</a>
+              <a onclick="selectedItem(this)" href="#">Price: Low-High</a>
             </div>
           </div>
         </div>
       </div>
-    </section>
-    <!-- end of Products-->
+      
+      <!-- Product Grid -->
+      <div class="products-section">
+        <div class="product-grid">
+        <!-- Product Container -->
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
 
-    <!-- Pagination section-->
-    <section id="pagination" class="section-p1">
+              <img
+                src="../images/Jordan 5 Retro Racer(9).jpg"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <p class="product-name">
+                Nike SB Dunk High Supreme Rammellzee
+              </p>
+              
+              <div class="product-discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span>$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="../images/Jordan 5 Retro Racer(9).jpg"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <p class="product-name">
+                Nike SB Dunk High Supreme Rammellzee
+              </p>
+              
+              <div class="product-discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span>$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="../images/Jordan 5 Retro Racer(9).jpg"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <p class="product-name">
+                Nike SB Dunk High Supreme Rammellzee
+              </p>
+              
+              <div class="product-discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span>$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="../images/Jordan 5 Retro Racer(9).jpg"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <p class="product-name">
+                Nike SB Dunk High Supreme Rammellzee
+              </p>
+              
+              <div class="product-discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span>$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="../images/Jordan 5 Retro Racer(9).jpg"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <p class="product-name">
+                Nike SB Dunk High Supreme Rammellzee
+              </p>
+              
+              <div class="product-discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span>$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container -->
+
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          
+          <!--- Product Container -->
+          <div class="pro" onclick="window.location.href='product.html';">
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="./images/Supreme Al Green .png"
+                class="image-custom"
+                alt=""
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="pro-brand">
+                <p class="pro-brand-txt">
+                  Nike SB Dunk High Supreme Rammellzee
+                </p>
+              </div>
+
+              <div class="discount">
+                <p>20% OFF</p>
+              </div>
+
+              <div class="pro-price">
+                <span class="p_rice">$350</span>
+              </div>
+            </div>
+            <!-- product details -->
+          </div>
+          <!---  End Of Product Container --> 
+        </div>
+      </div>
+      <!-- Pagination -->
+      <section id="pagination" class="pagination-section">
       <div id="pagination-links" class="pagination-link-container">
         <!-- The symbol # needs to be replace with the pages of destination -->
+        <a href="#"><i class="fa-solid fa-angle-left"></i></a>
+        <a href="#">Previous</a>
         <a href="#">1</a>
         <a href="#">2</a>
         <a href="#">3</a>
         <a href="#">4</a>
         <div>...</div>
         <a href="#">25</a>
-
-        <a href="#"><i class="fal fa-long-arrow-alt-right"></i></a>
+        <a href="#">Next</a>
+        <a href="#"><i class="fa-solid fa-angle-right"></i></a>
       </div>
+      </section>
+
     </section>
+    <!-- end of Products-->
+    <!-- newsletter -->
+      <section id="newsletter" class="section-p1 section-m1">
+        <div class="newstext">
+          <!-- change later, look at planning sheet -->
+          <h4>Sign Up for Newsletter</h4>
+          <!-- change later, look at planning sheet -->
+          <p>
+            Get E-mail updates about latest shop and <span>special offers</span>
+          </p>
+        </div>
+        <div class="form">
+          <input type="text" placeholder="  Your email address" />
+          <button class="normal">Sign Up</button>
+        </div>
+      </section>
+    <!-- Pagination section-->
+    
 
     <footer class="section-p1"></footer>
     <script src="js/pages/men.js"></script>
+    <script src="js/components/newsletter.js"></script>
     <script src="js/components/footer.js"></script>
     <script type="module" src="js/components/nav.js"></script>
     <script src="js/pages/home.js"></script>
