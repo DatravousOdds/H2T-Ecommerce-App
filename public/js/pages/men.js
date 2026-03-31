@@ -14,10 +14,26 @@ const sortOption = document.querySelectorAll("#sort-container .sort-content a");
 const pgOption = document.querySelectorAll("#pg-container .sort-content a");
 const sortContainer = document.getElementById("sort-container");
 const pageResults = document.getElementById("pageResults");
+const filterSection = document.getElementById("filter-section");
 
 
 
 console.log("current user:", currentUser);
+
+// allow only one category filter to be selected at a time
+const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
+categoryFilter.forEach((checkbox) => {
+  // add event listener to each checkbox
+  checkbox.addEventListener("change", (event) => {
+    // uncheck all other checkboxes
+    categoryFilter.forEach((cb) => {
+      if (cb !== event.target) {
+        cb.checked = false;
+      }
+    });
+
+  });
+});
 
 // toggles dropdown menu params: container, icon
 const toggleDropdown = (container, icon) => {
@@ -43,6 +59,12 @@ window.onclick = (event) => {
 sortContainer.addEventListener("click", (event) => {
   event.stopPropagation();
   toggleDropdown(sortContainer, sortIcon);
+});
+
+// listen for change on filters
+filterSection.addEventListener("change", (event) => {
+  console.log("filter changed:", event.target.value);
+
 });
 
 
@@ -74,7 +96,17 @@ const updateResultsCount = (count) => {
 
 // product filtering functions
 const filterByPrice = (products, minPrice, maxPrice) => { 
-  
+
+}
+
+const filterByCategory = (products, category) => {
+  // 1. Get the category from the filter option that was selected
+  const selectedCategory = document.querySelector(".filter-option .filter-container input[type='checkbox']:checked").value;
+  console.log("selected category:", selectedCategory);
+  // 2. Filter the products based on the category
+  // const filteredProducts = products.filter(product => product.data().category === category);
+  // 3. Display the filtered products on the page
+  // displayProducts(filteredProducts);
 }
 
 /* Selected sort filter */
@@ -88,43 +120,12 @@ const selectedItem = (element) => {
   element.classList.add('selected');
 }
 
-
-
-
-/** Filter by functions **/
-
-document
-  .querySelectorAll(".filter-option .expand-details")
-  .forEach(function (expandDetails) {
-    expandDetails.addEventListener("click", function () {
-      let dropDownFilterOptions = this.nextElementSibling;
-      if (dropDownFilterOptions) {
-        dropDownFilterOptions.classList.toggle("show");
-        let icon = this.querySelector("i");
-        if (icon.classList.contains("fa-plus")) {
-          icon.classList.remove("fa-plus");
-          icon.classList.add("fa-minus"); // change to a minus icon
-        } else {
-          icon.classList.remove("fa-minus");
-          icon.classList.add("fa-plus"); // change back to plus icon
-        }
-      }
-    });
-  });
-
-
-  /* Load men's products from firebase and display on page */
-const loadProducts = async () => {
+const displayProducts = (products) => {
   const productsContainer = document.getElementById("productsContainer");
-  const productsCollection = collection(db, "listings");
-  const q = query(productsCollection, where("status", "==", "active"));
-  const querySnapshot = await getDocs(q);
-  // filter products for men products
-  const menProducts = querySnapshot.docs.filter(doc => doc.data().categoryMeta === "men");
   // clear existing products
   productsContainer.innerHTML = "";
   // display
-  menProducts.forEach((doc) => {
+  products.forEach((doc) => {
     const productData = doc.data();
     const productElement = document.createElement("div");
     productElement.classList.add("pro");
@@ -175,10 +176,53 @@ const loadProducts = async () => {
     `;
     productsContainer.appendChild(productElement);
   });
-  // update results count
-  updateResultsCount(menProducts.length);
 
+  // update results count
+  updateResultsCount(products.length);
+}
+
+
+/** Filter by functions **/
+
+document
+  .querySelectorAll(".filter-option .expand-details")
+  .forEach(function (expandDetails) {
+    expandDetails.addEventListener("click", function () {
+      let dropDownFilterOptions = this.nextElementSibling;
+      if (dropDownFilterOptions) {
+        dropDownFilterOptions.classList.toggle("show");
+        let icon = this.querySelector("i");
+        if (icon.classList.contains("fa-plus")) {
+          icon.classList.remove("fa-plus");
+          icon.classList.add("fa-minus"); // change to a minus icon
+        } else {
+          icon.classList.remove("fa-minus");
+          icon.classList.add("fa-plus"); // change back to plus icon
+        }
+      }
+    });
+  });
+
+
+  /* Load men's products from firebase and display on page */
+const loadProducts = async () => {
+  // const productsContainer = document.getElementById("productsContainer");
+  const productsCollection = collection(db, "listings");
+  const q = query(productsCollection, where("status", "==", "active"));
+  const querySnapshot = await getDocs(q);
+  // filter products for men products
+  const menProducts = querySnapshot.docs.filter(doc => doc.data().categoryMeta === "men");
+
+  return menProducts;
   
 };
 
-loadProducts();
+
+
+const products =  await loadProducts();
+// console.log("products:", products);
+
+displayProducts(products);
+
+// filterByCategory(products, "sneakers");
+
