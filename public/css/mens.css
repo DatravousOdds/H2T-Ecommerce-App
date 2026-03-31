@@ -54,7 +54,7 @@ p {
 }
 
 .filter-option .filter-container {
-  display: flex;
+  display: none; /* hidden by default, shown when filter button is clicked */
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
@@ -88,8 +88,8 @@ p {
 }
 
 .filter-container label:hover::before {
-  background-color: #252525;
-  border-color: #252525;
+  background-color: #fe2828;
+  border-color: #fe2828;
 }
 
 .filter-container input[type="checkbox"]:checked + label::before {
@@ -183,6 +183,7 @@ p {
 .filter-section h1 {
   font-size: 1.5rem;
   font-weight: 700;
+  margin-bottom: 2rem;
 }
 
 .results-sort {
@@ -226,7 +227,8 @@ p {
 .product-image img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 8px;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -274,6 +276,51 @@ p {
 .des .pro-price {
   font-weight: 700;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pro-price .price-change {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.pro-price .product-discount {
+  padding: 3px;
+  border: 1px solid #dc2626;
+  border-radius: 0.5rem;
+  
+
+}
+
+.pro-price .product-discount  p {
+  margin: 0;
+  color: #dc2626;
+}
+
+.pro-price .price-trend {
+  padding: 0.25rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+/* Price trend colors */
+.price-trend.uptrend {
+  color: #2e7d2e;
+  background: #e8f5e9;
+}
+
+.price-trend.downtrend {
+  color: #c62828;
+  background: #ffebee;
+}
+
+.price-trend.sideways-trend {
+  color: #666;
+  background: #f4f3f1;
 }
 
 /* ── Sort / Filter Controls ─────────────────────── */
@@ -292,7 +339,8 @@ p {
 }
 
 #product-container .filter-container {
-  display: flex;
+  display: none; /* hidden by default, shown when filter button is clicked */
+  align-items: center;
   overflow: hidden;
   padding: 0px 21px;
   height: auto;
@@ -424,7 +472,7 @@ p {
 }
 
 .pro {
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   align-items: flex-start;
   cursor: pointer;

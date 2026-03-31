@@ -124,14 +124,27 @@
                 <label for="category">Category</label>
                 <select name="category" id="category">
                     <option value="" disabled selected>Select a category</option>
-                    <option value="sneakers">Sneakers</option>
-                    <option value="t-shirts">T-Shirts</option>
-                    <option value="hoodies">Hoodies</option>
-                    <option value="pants">Pants</option>
-                    <option value="jackets">Jackets</option>
-                    <option value="hats">Hats</option>
-                    <option value="accessories">Accessories</option>
+
+                    <optgroup label="Men">
+                    <option value="men-sneakers">Sneakers</option>
+                    <option value="men-apparel">Apparel (Tops, Hoodies, Pants, Jackets)</option>
+                    <option value="men-shoes">Shoes</option>
+                    <option value="men-hats">Hats & Caps</option>
+                    <option value="men-accessories">Accessories</option>
+                    </optgroup>
+
+                    <optgroup label="Women">
+                    <option value="women-sneakers">Sneakers</option>
+                    <option value="women-apparel">Apparel (Tops, Dresses, Pants)</option>
+                    <option value="women-shoes">Shoes & Boots</option>
+                    <option value="women-bags">Bags & Purses</option>
+                    <option value="women-accessories">Accessories</option>
+                    </optgroup>
+
+                    <optgroup label="Unisex / Other">
+                    <option value="unisex-accessories">Accessories</option>
                     <option value="other">Other</option>
+                    </optgroup>
                 </select>
                 <p class="errorText" id="error-category"></p>
             </div>

@@ -1,15 +1,28 @@
+import { checkUserStatus } from '../auth/auth.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
+import { collection, addDoc, getDocs, where, query } from '../api/firebase-client.js';
+
+const currentUser = checkUserStatus();
+
+
 const sortSelect = document.getElementById("sort-select");
 const pgSelect = document.getElementById("pg-amount-select");
-const sortIcon = document.getElementById("sort-icon");
+const sortIcon = document.querySelector("#sort-btn i");
 const pgIcon = document.getElementById("pg-icon");
 const pgContainer = document.getElementById("pg-container");
 const sortOption = document.querySelectorAll("#sort-container .sort-content a");
 const pgOption = document.querySelectorAll("#pg-container .sort-content a");
 const sortContainer = document.getElementById("sort-container");
+const pageResults = document.getElementById("pageResults");
+
+
+
+console.log("current user:", currentUser);
 
 // toggles dropdown menu params: container, icon
 const toggleDropdown = (container, icon) => {
   container.querySelector(".sort-content").classList.toggle("show");
+  console.log(icon);
   icon.classList.toggle("rotate-down");
 };
 
@@ -32,10 +45,7 @@ sortContainer.addEventListener("click", (event) => {
   toggleDropdown(sortContainer, sortIcon);
 });
 
-// pgContainer.addEventListener("click", (event) => {
-//   event.stopPropagation();
-//   toggleDropdown(pgContainer, pgIcon);
-// });
+
 
 sortOption.forEach((link) => {
   link.addEventListener("click", function (e) {
@@ -51,8 +61,23 @@ pgOption.forEach((link) => {
   });
 });
 
+// update results count
+const updateResultsCount = (count) => {
+  if (count === 1) {
+    pageResults.textContent = `${count} result`;
+    return;
+  }
+  pageResults.textContent = `${count} results`;
 
-/* selected item function */
+};
+
+
+// product filtering functions
+const filterByPrice = (products, minPrice, maxPrice) => { 
+  
+}
+
+/* Selected sort filter */
 const selectedItem = (element) => {
   const items = document.querySelectorAll('.sort-content a');
   console.log(items);
@@ -62,6 +87,8 @@ const selectedItem = (element) => {
 
   element.classList.add('selected');
 }
+
+
 
 
 /** Filter by functions **/
@@ -84,3 +111,74 @@ document
       }
     });
   });
+
+
+  /* Load men's products from firebase and display on page */
+const loadProducts = async () => {
+  const productsContainer = document.getElementById("productsContainer");
+  const productsCollection = collection(db, "listings");
+  const q = query(productsCollection, where("status", "==", "active"));
+  const querySnapshot = await getDocs(q);
+  // filter products for men products
+  const menProducts = querySnapshot.docs.filter(doc => doc.data().categoryMeta === "men");
+  // clear existing products
+  productsContainer.innerHTML = "";
+  // display
+  menProducts.forEach((doc) => {
+    const productData = doc.data();
+    const productElement = document.createElement("div");
+    productElement.classList.add("pro");
+    productElement.onclick = () => {
+      window.location.href = `product.html?id=${doc.id}`;
+    };
+    productElement.innerHTML = `
+      
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="${productData.images[0].url}"
+                class="image-custom"
+                alt="${productData.productName}"
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="price-description">
+                <p class="product-name">
+                  ${productData.productName}
+                </p>
+                
+                <div class="pro-price">
+                  <span>$${productData.originalPrice}</span>
+                  <div class="price-change">
+                    <div class="product-discount">
+                      <p>20% OFF</p>
+                    </div>
+                    <div class="price-trend">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span>+5%</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              
+            </div>
+            <!-- product details -->
+          
+    `;
+    productsContainer.appendChild(productElement);
+  });
+  // update results count
+  updateResultsCount(menProducts.length);
+
+  
+};
+
+loadProducts();

@@ -30,6 +30,8 @@ const carrierWrapper = document.querySelector('.carrier-rows-wrapper');
 const courierExitBtn = document.getElementById('courierExitBtn');
 const dimensionExitBtn = document.getElementById('dimensionExitBtn');
 
+
+
 const loader = document.getElementById('loader');
 
 const currentUser =  await checkUserStatus();
@@ -529,7 +531,11 @@ function validateImages() {
 
 
 function collectListingInfo() {
+    const category = productCategory.value.trim().split('-')[1] || 'other'; 
+    const categoryMeta = productCategory.value.trim().split('-')[0] || 'other';
 
+    listing.category = category;
+    listing.categoryMeta = categoryMeta;
     listing.originalPrice = parseFloat(productPrice.value);
     listing.productName = productTitle.value.trim();
     listing.availableForTrade = tradeStatus.classList.contains('active');
