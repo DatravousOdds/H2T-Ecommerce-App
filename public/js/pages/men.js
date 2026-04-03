@@ -16,6 +16,8 @@ const sortContainer = document.getElementById("sort-container");
 const pageResults = document.getElementById("pageResults");
 const filterSection = document.getElementById("filter-section");
 
+let activeFilters = [];
+
 
 
 console.log("current user:", currentUser);
@@ -63,7 +65,22 @@ sortContainer.addEventListener("click", (event) => {
 
 // listen for change on filters
 filterSection.addEventListener("change", (event) => {
-  console.log("filter changed:", event.target.value);
+  // append selected filters to active filters array
+  if (event.target.type === "checkbox") {
+    if (event.target.checked) {
+      // remove existing category filters if a new category filter is selected
+      activeFilters = activeFilters.filter(f => f.type !== 'category');
+
+      activeFilters.push({ type: 'category', value: event.target.value });
+      
+    } else {
+      activeFilters = activeFilters.filter(f => f.value !== event.target.value);
+    }
+  }
+
+  console.log("active filters:", activeFilters);
+  
+  
 
 });
 
@@ -99,15 +116,11 @@ const filterByPrice = (products, minPrice, maxPrice) => {
 
 }
 
-const filterByCategory = (products, category) => {
-  // 1. Get the category from the filter option that was selected
-  const selectedCategory = document.querySelector(".filter-option .filter-container input[type='checkbox']:checked").value;
-  console.log("selected category:", selectedCategory);
-  // 2. Filter the products based on the category
-  // const filteredProducts = products.filter(product => product.data().category === category);
-  // 3. Display the filtered products on the page
-  // displayProducts(filteredProducts);
+const filterProducts = (products, filters) => {
+  
 }
+
+
 
 /* Selected sort filter */
 const selectedItem = (element) => {
