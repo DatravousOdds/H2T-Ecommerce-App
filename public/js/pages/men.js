@@ -68,11 +68,15 @@ filterSection.addEventListener("change", (event) => {
   // append selected filters to active filters array
   if (event.target.type === "checkbox") {
     if (event.target.checked) {
-      // remove existing category filters if a new category filter is selected
-      activeFilters = activeFilters.filter(f => f.type !== 'category');
-
-      activeFilters.push({ type: 'category', value: event.target.value });
-      
+      // check data-filter-type attribute of parent element to determine filter type
+      const filterType = event.target.closest(".filter-container").dataset.filterType;
+      // if filter type is category, remove any existing category filters from active filters array
+      if (filterType === "category") {
+        activeFilters = activeFilters.filter(f => f.type !== "category");
+        activeFilters.push({ type: filterType, value: event.target.value });
+      } else {
+        activeFilters.push({ type: filterType, value: event.target.value });
+      }
     } else {
       activeFilters = activeFilters.filter(f => f.value !== event.target.value);
     }
