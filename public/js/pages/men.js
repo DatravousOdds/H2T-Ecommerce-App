@@ -82,7 +82,7 @@ filterSection.addEventListener("change", (event) => {
     }
   }
 
-  console.log("active filters:", activeFilters);
+  filterProducts(products, activeFilters);
   
   
 
@@ -121,7 +121,9 @@ const filterByPrice = (products, minPrice, maxPrice) => {
 }
 
 const filterProducts = (products, filters) => {
-  
+    console.log("filter these products:", products);
+    console.log("filters: ", filters);
+    products.filter(product => product.type === product.data().category && product.type === product.data().brand);
 }
 
 

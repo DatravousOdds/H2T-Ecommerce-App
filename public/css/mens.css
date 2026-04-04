@@ -569,6 +569,97 @@ p {
   font-size: 16px;
 }
 
+
+
+/* color picker */
+
+.color-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.color-picker .color-wrapper  {
+  list-style: none;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.color-wrapper .color {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.color-wrapper .color:hover {
+  border: 1px solid #dc2626;
+}
+
+.color.black {
+  background-color: #000;
+}
+
+.color.white {
+  background-color: #fff;
+  border: 1px solid #000;
+}
+
+.color.multi {
+  background-color: #46FE8C;
+}
+
+.color.blue {
+  background-color: #657EEA;
+}
+
+.color.grey {
+  background-color: #A1A5A4;
+}
+
+.color.red {
+  background-color: #C92E1A;
+}
+
+.color.yellow {
+  background-color: #F5BA19;
+}
+
+.color.brown {
+  background-color: #593230;
+}
+
+.color.pink {
+  background-color: #E8BFBA;
+}
+
+.color.purple {
+  background-color: #504A9E;
+}
+
+.color.green {
+  background-color: #156340;
+}
+
+.color.orange {
+  background-color: #F06142;
+}
+
+
+
+
+
+
+
+
+.hidden {
+ opacity: 0;
+}
+
+
 /* ── Responsive ─────────────────────────────────── */
 
 @media (max-width: 991.98px) {
