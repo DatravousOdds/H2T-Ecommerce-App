@@ -53,6 +53,32 @@ p {
   color: #666;
 }
 
+.filter-button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  background-color: #dc2626;
+  color: #fff;
+  font-weight: 500;
+}
+
+.filters-display {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filters-display.active {
+  display: flex;
+}
+
+.applied-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .filter-option .filter-container {
   display: none; /* hidden by default, shown when filter button is clicked */
   flex-direction: column;
@@ -188,7 +214,8 @@ p {
 
 .results-sort {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  /* align-items: flex-start; */
   justify-content: space-between;
   grid-area: results-sort;
 }
@@ -198,6 +225,8 @@ p {
   font-weight: 500;
   color: #666;
 }
+
+
 
 .products-section {
   grid-area: products-section;
@@ -577,87 +606,42 @@ p {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
+  padding: 0;
 }
 
-.color-picker .color-wrapper  {
+.color-wrapper  {
   list-style: none;
-  text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 1rem;
 }
 
 .color-wrapper .color {
   width: 30px;
   height: 30px;
   border-radius: 50%;
+  border: 2px solid transparent;
+  background-color: var(--swatch);
   cursor: pointer;
-  transition: 0.3s ease-in-out;
+  transition: border-color 0.2s ease;
+  outline-offset: 3px;
 }
 
-.color-wrapper .color:hover {
-  border: 1px solid #dc2626;
+.color[data-light="true"] {
+  border-color: #ccc;
 }
 
-.color.black {
-  background-color: #000;
+.color:hover,
+.color .active {
+  border-color: #dc2626;
 }
 
-.color.white {
-  background-color: #fff;
-  border: 1px solid #000;
+.page-results {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
 }
 
-.color.multi {
-  background-color: #46FE8C;
-}
-
-.color.blue {
-  background-color: #657EEA;
-}
-
-.color.grey {
-  background-color: #A1A5A4;
-}
-
-.color.red {
-  background-color: #C92E1A;
-}
-
-.color.yellow {
-  background-color: #F5BA19;
-}
-
-.color.brown {
-  background-color: #593230;
-}
-
-.color.pink {
-  background-color: #E8BFBA;
-}
-
-.color.purple {
-  background-color: #504A9E;
-}
-
-.color.green {
-  background-color: #156340;
-}
-
-.color.orange {
-  background-color: #F06142;
-}
-
-
-
-
-
-
-
-
-.hidden {
- opacity: 0;
-}
 
 
 /* ── Responsive ─────────────────────────────────── */

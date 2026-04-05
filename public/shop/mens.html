@@ -121,8 +121,8 @@
                 <label for="supreme">Supreme</label>
               </div>
               <div>
-                <input name="brand" type="checkbox" class="check" id="shoes" value="shoes" />
-                <label for="shoes">Shoes</label>
+                <input name="brand" type="checkbox" class="check" id="shoes" value="new-balance" />
+                <label for="shoes">New Balance</label>
               </div>
             </div>
             <hr style="width: 100%; text-align: left; margin-left: 0" />
@@ -138,80 +138,8 @@
                 class="shoe-filter-container"
                 
               >
-                <ul class="color-picker">
-                  <li class="color-wrapper">
-                    <div class="color black" data-color="black">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="white">
-                    <div class="color white">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper">
-                    <div class="color multi" data-color="multi">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                    <li class="color-wrapper">
-                    <div class="color blue" data-color="blue">
-                      <a href="#" class="hidden"></a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper">
-                    <div class="color grey" data-color="grey">
-                      <a href="#" class="hidden"></a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="red">
-                    <div class="color red">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="yellow">
-                    <div class="color yellow">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="brown">
-                    <div class="color brown">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="pink">
-                    <div class="color pink">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="purple">
-                    <div class="color purple">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="green">
-                    <div class="color green">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                   <li class="color-wrapper" data-color="orange">
-                    <div class="color orange">
-                      <a href="#" class="hidden">Black</a>
-                    </div>
-                    
-                  </li>
-                  
+                <ul class="color-picker" id="colorPicker">
+                 <!-- loaded from javascript --> 
                 </ul>
               </div>
             </div>
@@ -247,22 +175,33 @@
 
       <!-- Filter Results -->
       <div class="results-sort">
-        <div class="pg-results" id="pageResults">50 Results</div>
-        <!-- Sort By Dropdown -->
-        <div class="filter-opt">
-          <div class="sort-data" id="sort-container">
-            <button type="button" class="btn dropdown-btn" id="sort-btn">
-              Sort By: <span id="sort-select" class="sort-text"></span>
-              <i class="fa-solid fa-chevron-up"></i>
-            </button>
-            <div class="sort-content">
-              <a onclick="selectedItem(this)" href="#">Featured</a>
-              <a onclick="selectedItem(this)" href="#">Newest</a>
-              <a onclick="selectedItem(this)" href="#">Price: High-Low</a>
-              <a onclick="selectedItem(this)" href="#">Price: Low-High</a>
+        <div class="page-results">
+            <div class="pg-results" id="pageResults">50 Results</div>
+            <!-- Sort By Dropdown -->
+            <div class="filter-opt">
+              <div class="sort-data" id="sort-container">
+                <button type="button" class="btn dropdown-btn" id="sort-btn">
+                  Sort By: <span id="sort-select" class="sort-text"></span>
+                  <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <div class="sort-content">
+                  <a onclick="selectedItem(this)" href="#">Featured</a>
+                  <a onclick="selectedItem(this)" href="#">Newest</a>
+                  <a onclick="selectedItem(this)" href="#">Price: High-Low</a>
+                  <a onclick="selectedItem(this)" href="#">Price: Low-High</a>
+                </div>
+              </div>
             </div>
-          </div>
         </div>
+        <!-- Filters display -->
+         <div class="filters-display" id="filterDisplay">
+            <button type="button" class="filter-button">
+              Clear All
+            </button>
+            <div class="applied-filters" id="appliedFilters">
+
+            </div>
+         </div>
       </div>
       
       <!-- Product Grid -->
