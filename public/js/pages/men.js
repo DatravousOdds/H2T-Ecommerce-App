@@ -19,6 +19,9 @@ const filterSection = document.getElementById("filter-section");
 const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
 
+
+
+
 let activeFilters = [];
 
 const colors = [
@@ -37,26 +40,77 @@ const colors = [
 ];
 
 
+filterDisplay.addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-button');
+
+  if (!btn) return;
+  
+  const datasetFilterTag = btn.dataset.filterTag;
+
+  if(!datasetFilterTag) return;
+
+  if (datasetFilterTag !== "clear-all") {
+    btn.remove();
+  } else {
+    console.log("Clearing all filter tags...");
+    // const filterInputs = document.querySelectorAll(".filter-container input[type='checkbox']:checked");
+    const filterContainers = document.querySelectorAll(".filter-container");
+    
+    // filterInputs.forEach(input => input.checked = false);
+
+    filterContainers.forEach(container => {
+      const input = container.querySelector("input[type='checkbox']:checked");
+
+      if (input) {
+        input.checked = false;
+      } 
+
+      if (container.classList.contains('.show')) {
+        console.log("Removing show class from container...");
+        container.classList.remove('show');
+        
+      }
+    })
+    appliedFilters.innerHTML = "";
+    filterDisplay.classList.remove("active");
+    activeFilters = [];
+    displayProducts(products)
+    
+  }
+
+});
 
 
 const renderFilterTags = (filterTagsArray) => {
-  filterDisplay.classList.add("active");
-  appliedFilters.innerHTML = "";
+  // if there is not active filters remove filterTags
+  if (filterTagsArray.length === 0) {
+    filterDisplay.classList.remove('active');
+  } else {
+    // show filterTags 
+    filterDisplay.classList.add("active");
+    appliedFilters.innerHTML = "";
 
-  filterTagsArray.forEach(tag => {
-    Object.values(tag).forEach(v => {
-      console.log("Value:", v)
-      const btn = document.createElement('button');
-      btn.className = "filter-button";
-      btn.innerText = `${v} `;
-      const icon = document.createElement('i');
-      icon.className = `fa-solid fa-circle-xmark`;
-      btn.appendChild(icon);
+    filterTagsArray.forEach(tag => {
+      Object.values(tag).forEach(v => {
+        const btn = document.createElement('button');
+        btn.className = "filter-button";
+        btn.innerText = `${v} `;
+        btn.dataset.filterTag = v;
 
-      appliedFilters.appendChild(btn)
+        const icon = document.createElement('i');
+        icon.className = `fa-solid fa-circle-xmark`;
+
+        btn.appendChild(icon);
+        appliedFilters.appendChild(btn)
+      })
+
+    
+
     })
-  })
-  
+
+    console.log(activeFilters)
+
+  }
 }
 
 const picker = document.getElementById("colorPicker");
@@ -83,6 +137,16 @@ picker.addEventListener("click", e => {
   if (!btn) return;
   btn.classList.toggle("active");
   console.log("Filter by:", btn.dataset.color);
+
+  const colorValue = btn.dataset.color;
+  
+  // check if this color value already exists in the array
+  const alreadyActive = activeFilters.some(filter => filter.color === btn.dataset.color )
+  
+  if (alreadyActive) {
+    console.log("value found!")
+    return;
+  }
   activeFilters.push({ "color" : btn.dataset.color })
   filterProducts(products, activeFilters)
   renderFilterTags(activeFilters)
@@ -231,7 +295,7 @@ const displayProducts = (products) => {
   // display
   console.log(products.length)
   if (products.length === 0) {
-    productsContainer.innerHTML = "No results!"
+    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
   }
   products.forEach((doc) => {
     const productData = doc.data();

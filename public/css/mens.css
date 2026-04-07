@@ -69,6 +69,11 @@ p {
   gap: 0.5rem;
 }
 
+.no-results {
+  height: 60vh;
+  width: 60vw;
+}
+
 .filters-display.active {
   display: flex;
 }
@@ -216,7 +221,7 @@ p {
   display: flex;
   flex-direction: column;
   /* align-items: flex-start; */
-  justify-content: space-between;
+  /* justify-content: space-between; */
   grid-area: results-sort;
 }
 
@@ -631,7 +636,7 @@ p {
 }
 
 .color:hover,
-.color .active {
+.color.active {
   border-color: #dc2626;
 }
 
