@@ -3,6 +3,7 @@ import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app 
 import { collection, addDoc, getDocs, where, query } from '../api/firebase-client.js';
 
 
+
 const currentUser = checkUserStatus();
 
 
@@ -18,11 +19,10 @@ const pageResults = document.getElementById("pageResults");
 const filterSection = document.getElementById("filter-section");
 const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
+const picker = document.getElementById("colorPicker");
+const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
 
-
-
-
-let activeFilters = [];
+let activeFilters = new Map();
 
 const colors = [
   { name: "Black",  value: "black",  hex: "#000000" },
@@ -39,6 +39,24 @@ const colors = [
   { name: "Orange", value: "orange", hex: "#F06142" },
 ];
 
+const loadProducts = async () => {
+  // const productsContainer = document.getElementById("productsContainer");
+  const productsCollection = collection(db, "listings");
+  const q = query(productsCollection, where("status", "==", "active"));
+  const querySnapshot = await getDocs(q);
+  // filter products for men products
+  const menProducts = querySnapshot.docs.filter(doc => doc.data().categoryMeta === "men");
+
+  return menProducts;
+  
+};
+
+const products =  await loadProducts();
+
+let filteredProducts = [...products];
+
+
+
 
 filterDisplay.addEventListener('click', (e) => {
   const btn = e.target.closest('.filter-button');
@@ -50,14 +68,19 @@ filterDisplay.addEventListener('click', (e) => {
   if(!datasetFilterTag) return;
 
   if (datasetFilterTag !== "clear-all") {
+    deleteMapEntry(datasetFilterTag);
+    resetFilterUI(datasetFilterTag);
     btn.remove();
-  } else {
-    console.log("Clearing all filter tags...");
-    // const filterInputs = document.querySelectorAll(".filter-container input[type='checkbox']:checked");
-    const filterContainers = document.querySelectorAll(".filter-container");
     
-    // filterInputs.forEach(input => input.checked = false);
+    filterProducts(products,activeFilters);
+    if (activeFilters.size === 0) filterDisplay.classList.remove("active");
 
+  } else {
+    const filterContainers = document.querySelectorAll(".filter-container");
+    const colors = document.querySelectorAll('.color.active');
+    
+    colors.forEach(color => color.classList.remove('active'));
+    
     filterContainers.forEach(container => {
       const input = container.querySelector("input[type='checkbox']:checked");
 
@@ -65,70 +88,19 @@ filterDisplay.addEventListener('click', (e) => {
         input.checked = false;
       } 
 
-      if (container.classList.contains('.show')) {
-        console.log("Removing show class from container...");
+      if (container.classList.contains('show')) {
+    
         container.classList.remove('show');
         
       }
     })
     appliedFilters.innerHTML = "";
     filterDisplay.classList.remove("active");
-    activeFilters = [];
+    activeFilters = new Map();
     displayProducts(products)
     
   }
 
-});
-
-
-const renderFilterTags = (filterTagsArray) => {
-  // if there is not active filters remove filterTags
-  if (filterTagsArray.length === 0) {
-    filterDisplay.classList.remove('active');
-  } else {
-    // show filterTags 
-    filterDisplay.classList.add("active");
-    appliedFilters.innerHTML = "";
-
-    filterTagsArray.forEach(tag => {
-      Object.values(tag).forEach(v => {
-        const btn = document.createElement('button');
-        btn.className = "filter-button";
-        btn.innerText = `${v} `;
-        btn.dataset.filterTag = v;
-
-        const icon = document.createElement('i');
-        icon.className = `fa-solid fa-circle-xmark`;
-
-        btn.appendChild(icon);
-        appliedFilters.appendChild(btn)
-      })
-
-    
-
-    })
-
-    console.log(activeFilters)
-
-  }
-}
-
-const picker = document.getElementById("colorPicker");
-
-colors.forEach(({ name, value, hex }) => {
-  const li = document.createElement("li");
-  li.className = "color-wrapper";
-
-  const btn = document.createElement("button");
-  btn.className = "color";
-  btn.dataset.color = value;
-  btn.style.setProperty("--swatch", hex);
-  btn.setAttribute("aria-label", name);
-  // Special case: white needs a border so it's visible
-  if (value === "white") btn.dataset.light = "true";
-
-  li.appendChild(btn);
-  picker.appendChild(li);
 });
 
 // Click handling (toggle active state, fire filter logic, etc.)
@@ -136,49 +108,26 @@ picker.addEventListener("click", e => {
   const btn = e.target.closest(".color");
   if (!btn) return;
   btn.classList.toggle("active");
-  console.log("Filter by:", btn.dataset.color);
+  // // console.log("Filter by:", btn.dataset.color);
 
+  const colors = activeFilters.get("color") || [];
   const colorValue = btn.dataset.color;
-  
-  // check if this color value already exists in the array
-  const alreadyActive = activeFilters.some(filter => filter.color === btn.dataset.color )
-  
-  if (alreadyActive) {
-    console.log("value found!")
-    return;
+
+  if(btn.classList.contains("active")) {
+    activeFilters.set("color", [...colors, colorValue])
+  } else {
+    const updated = colors.filter(f => f !== colorValue);
+    updated.length ? activeFilters.set("color", updated) : activeFilters.delete("color");
   }
-  activeFilters.push({ "color" : btn.dataset.color })
-  filterProducts(products, activeFilters)
-  renderFilterTags(activeFilters)
+  
+  
+
+ 
+  filterProducts(products, activeFilters);
+  renderFilterTags(activeFilters); 
 
 
 });
-
-
-
-console.log("current user:", currentUser);
-
-// allow only one category filter to be selected at a time
-const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
-categoryFilter.forEach((checkbox) => {
-  // add event listener to each checkbox
-  checkbox.addEventListener("change", (event) => {
-    // uncheck all other checkboxes
-    categoryFilter.forEach((cb) => {
-      if (cb !== event.target) {
-        cb.checked = false;
-      }
-    });
-
-  });
-});
-
-// toggles dropdown menu params: container, icon
-const toggleDropdown = (container, icon) => {
-  container.querySelector(".sort-content").classList.toggle("show");
-  console.log(icon);
-  icon.classList.toggle("rotate-down");
-};
 
 // Close the dropdown menu if the user clicks outside of it
 window.onclick = (event) => {
@@ -197,43 +146,116 @@ window.onclick = (event) => {
 sortContainer.addEventListener("click", (event) => {
   event.stopPropagation();
   toggleDropdown(sortContainer, sortIcon);
+  // console.log(event.target.value);
 });
 
 // listen for change on filters
 filterSection.addEventListener("change", (event) => {
-  let filterType = event.target.closest(".filter-container").dataset.filterType;
+  const filterType = event.target.closest(".filter-container").dataset.filterType;
+
+  if (!event.target.type === "checkbox") return;
   // append selected filters to active filters array
-  if (event.target.type === "checkbox") {
-    if (event.target.checked) {
-      // 
-      if (filterType === "category") {
-        activeFilters = activeFilters.filter(f => !f.hasOwnProperty("category"));
-        activeFilters.push({ "category" : event.target.value });
-      } else {
-        activeFilters.push({ [filterType]: event.target.value });
-      }
+  if (event.target.checked) {
+    if (filterType === "category") {
+      activeFilters.set("category", [event.target.value]);
     } else {
-      activeFilters = activeFilters.filter(f => f[filterType]!== event.target.value);
+      // check if filter not already there 
+      if(!activeFilters.has(filterType)) activeFilters.set(filterType, []);
+      activeFilters.get(filterType).push(event.target.value);
     }
+  } else {
+    const updated = (activeFilters.get(filterType) || []).filter(f => f !== event.target.value);
+    updated.length ? activeFilters.set(filterType, updated) : activeFilters.delete(filterType)
   }
+  
   
   filterProducts(products, activeFilters);
   renderFilterTags(activeFilters)
   
-  console.log("active filters:",activeFilters)
+  // console.log("active filters:",activeFilters)
 
 });
 
+categoryFilter.forEach((checkbox) => {
+  // add event listener to each checkbox
+  checkbox.addEventListener("change", (event) => {
+    // active categories to only show currently selected category
+    
+    
+    // uncheck all other checkboxes
+    categoryFilter.forEach((cb) => {
+      if (cb !== event.target) {
+        cb.checked = false;
+      }
+    });
+
+
+  });
+});
+
+
+function resetFilterUI(targetValue) {
+  const activeColor = document.querySelector(`#colorPicker .color[data-color="${targetValue}"]`);
+
+  if (activeColor) {
+    activeColor.classList.remove('active');
+  }
+
+  const checkedFilters = document.querySelectorAll('.filter-container input[type="checkbox"]:checked');
+
+  if (!checkedFilters.length) return;
+
+  const match = [...checkedFilters].find(f => f.value === targetValue);
+
+  if (match) {
+    match.checked = false;
+  } else {
+    return;
+  }
+
+};
 
 
 
 
+colors.forEach(({ name, value, hex }) => {
+  const li = document.createElement("li");
+  li.className = "color-wrapper";
 
+  const btn = document.createElement("button");
+  btn.className = "color";
+  btn.dataset.color = value;
+  btn.style.setProperty("--swatch", hex);
+  btn.setAttribute("aria-label", name);
+  // Special case: white needs a border so it's visible
+  if (value === "white") btn.dataset.light = "true";
+
+  li.appendChild(btn);
+  picker.appendChild(li);
+});
+
+// toggles dropdown menu params: container, icon
+const toggleDropdown = (container, icon) => {
+  container.querySelector(".sort-content").classList.toggle("show");
+  // console.log(icon);
+  icon.classList.toggle("rotate-down");
+};
 
 sortOption.forEach((link) => {
   link.addEventListener("click", function (e) {
     e.preventDefault();
+
     sortSelect.textContent = this.textContent;
+    const sortSelection = sortSelect.textContent;
+
+    activeFilters.set("sort", [sortSelection]);
+
+    sortProducts(sortSelection);
+    
+    renderFilterTags(activeFilters); 
+
+
+
   });
 });
 
@@ -244,6 +266,52 @@ pgOption.forEach((link) => {
   });
 });
 
+const renderFilterTags = (filterTagsArray) => {
+  // if there is not active filters remove filterTags
+  if (filterTagsArray.size === 0) {
+    filterDisplay.classList.remove('active');
+  } else {
+    // show filterTags 
+    filterDisplay.classList.add("active");
+    appliedFilters.innerHTML = "";
+
+    for (const [key, values] of filterTagsArray) {
+      values.forEach(v => {
+        const btn = document.createElement('button');
+        btn.className = "filter-button";
+        btn.innerText = `${v.charAt(0).toUpperCase() + v.slice(1)} `;
+        btn.dataset.filterTag = v;
+
+        const icon = document.createElement('i');
+        icon.className = `fa-solid fa-circle-xmark`;
+
+        btn.appendChild(icon);
+        appliedFilters.appendChild(btn)
+      })
+
+    
+
+    }
+
+    // // console.log(activeFilters)
+
+  }
+};
+
+function deleteMapEntry(entry) {
+  for (let [key, value] of activeFilters.entries()) {
+      const index = value.indexOf(entry);
+
+      if (index !== -1) {
+        value.splice(index, 1)
+        if (value.length === 0) {
+          activeFilters.delete(key);
+        }
+        break;
+      }
+      
+    }
+}
 // update results count
 const updateResultsCount = (count) => {
   if (count === 1) {
@@ -254,46 +322,54 @@ const updateResultsCount = (count) => {
 
 };
 
-
-// product filtering functions
-const filterByPrice = (products, minPrice, maxPrice) => { 
-
-}
-
 const filterProducts = (products, filters) => {
-  const filterProducts = products.filter(product => {
+  if (!filters.size) return displayProducts(products)
+  const filtered = products.filter(product => {
     const data = product.data();
+    for (const [key, values] of filters) {
+      if (key === "sort") continue;
+      if(!values.includes(data[key])) {
+        return false;
+      }
+    }
+    return true;
+  });
+  filteredProducts = filtered;
 
-    return filters.every(filter => {
-      return Object.entries(filter).every(([key,val]) => {
-        return data[key] === val;
-      })
-    })
+  console.log(filters)
+  if (filters.get())
+  displayProducts(filtered)
+};
 
-  })
 
-  displayProducts(filterProducts)
+const sortProducts = (sortType) => {
+  if (!sortType) return;
+
+  let sortedProducts = [...filteredProducts];
+
+  console.log("Sorted Products:",sortedProducts)
+
+  if (sortType === "Price: Low-High") {
+    sortedProducts = sortedProducts.sort((a, b) => a.data().originalPrice - b.data().originalPrice);
+  } else if (sortType === "Price: High-Low") {
+    sortedProducts = sortedProducts.sort((a, b) => b.data().originalPrice - a.data().originalPrice);
+  } else if (sortType === "Newest") {
+    sortedProducts = sortedProducts.sort((a, b) => b.data().createdAt - a.data().createdAt);
+  } else if (sortType === "Featured") {
+    // TODO: Implement logic for featured
+  }
+  
+  displayProducts(sortedProducts)
+
+  
 }
 
-
-
-/* Selected sort filter */
-const selectedItem = (element) => {
-  const items = document.querySelectorAll('.sort-content a');
-  console.log(items);
-  items.forEach(item => {
-    item.classList.remove('selected');
-});
-
-  element.classList.add('selected');
-}
 
 const displayProducts = (products) => {
   const productsContainer = document.getElementById("productsContainer");
   // clear existing products
   productsContainer.innerHTML = "";
   // display
-  console.log(products.length)
   if (products.length === 0) {
     productsContainer.innerHTML = `<div class="no-results">No results!</div>`
   }
@@ -376,25 +452,5 @@ document
   });
 
 
-  /* Load men's products from firebase and display on page */
-const loadProducts = async () => {
-  // const productsContainer = document.getElementById("productsContainer");
-  const productsCollection = collection(db, "listings");
-  const q = query(productsCollection, where("status", "==", "active"));
-  const querySnapshot = await getDocs(q);
-  // filter products for men products
-  const menProducts = querySnapshot.docs.filter(doc => doc.data().categoryMeta === "men");
-
-  return menProducts;
-  
-};
-
-
-
-const products =  await loadProducts();
-// console.log("products:", products);
 
 displayProducts(products);
-
-// filterByCategory(products, "sneakers");
-
