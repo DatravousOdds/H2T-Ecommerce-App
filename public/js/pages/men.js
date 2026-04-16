@@ -1,6 +1,6 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
-import { collection, addDoc, getDocs, where, query } from '../api/firebase-client.js';
+import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
 
 
 
@@ -21,8 +21,21 @@ const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
 const picker = document.getElementById("colorPicker");
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
+const paginationLinks = document.querySelectorAll(".pagination-link-container a");
+
+console.log("Pagination Links:", paginationLinks)
+
+let currentPage = 1;
+paginationLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    paginationLinks.forEach(l => l.classList.remove("active"));
+    link.classList.add("active");
+  });
+})
 
 let activeFilters = new Map();
+let lastVisible = null;
 
 const colors = [
   { name: "Black",  value: "black",  hex: "#000000" },
@@ -40,16 +53,33 @@ const colors = [
 ];
 
 const loadProducts = async () => {
-  // const productsContainer = document.getElementById("productsContainer");
+  
   const productsCollection = collection(db, "listings");
-  const q = query(productsCollection, where("status", "==", "active"));
+  const q = lastVisible ? query(productsCollection, where("status", "==", "active"), startAfter(lastVisible), limit(48)) : query(productsCollection, where("status", "==", "active"), limit(48));
+  // loop through active filters
+  let whereConstraints = [];
+  for (const [key, values] of activeFilters) {
+    whereConstraints.push(where(key, "in", values));
+  }
+
+  // where("category", "==", "sneakers"),
+  // whereCon
+
+
   const querySnapshot = await getDocs(q);
+  if (querySnapshot.empty) {
+    return [];
+  }
   // filter products for men products
   const menProducts = querySnapshot.docs.filter(doc => doc.data().categoryMeta === "men");
-
+  lastVisible = menProducts[menProducts.length - 1];
   return menProducts;
   
 };
+
+
+
+
 
 const products =  await loadProducts();
 
@@ -195,6 +225,15 @@ categoryFilter.forEach((checkbox) => {
 
 
 function resetFilterUI(targetValue) {
+  const sortOptions = document.querySelectorAll("#sort-container .sort-content a");
+  
+  sortOptions.forEach(option => {
+    if (option.textContent === targetValue) {
+      sortSelect.textContent = "Featured";
+    }
+  })
+
+
   const activeColor = document.querySelector(`#colorPicker .color[data-color="${targetValue}"]`);
 
   if (activeColor) {
@@ -213,6 +252,7 @@ function resetFilterUI(targetValue) {
     return;
   }
 
+  
 };
 
 
@@ -337,9 +377,14 @@ const filterProducts = (products, filters) => {
   filteredProducts = filtered;
 
   console.log(filters)
-  if (filters.get())
+  if (filters.has("sort")) {
+    sortProducts(filters.get("sort")[0]);
+    return;
+  }
   displayProducts(filtered)
 };
+
+
 
 
 const sortProducts = (sortType) => {
@@ -428,10 +473,7 @@ const displayProducts = (products) => {
   // update results count
   updateResultsCount(products.length);
 }
-
-
 /** Filter by functions **/
-
 document
   .querySelectorAll(".filter-option .expand-details")
   .forEach(function (expandDetails) {
@@ -449,7 +491,7 @@ document
         }
       }
     });
-  });
+});
 
 
 
