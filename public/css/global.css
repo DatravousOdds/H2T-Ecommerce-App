@@ -647,6 +647,23 @@ p {
 
 }
 
+.load-more-btn {
+  border: none;
+  background-color: #dc2626;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: 0.3s ease-in-out;
+}
+
+.load-more-btn:hover {
+  background-color: #b91c1c;
+  transform: scale(1.05);
+}
+
 
 
 /* ── Responsive ─────────────────────────────────── */

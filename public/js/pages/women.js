@@ -1,29 +1,32 @@
+
 import { checkUserStatus } from '../auth/auth.js';
-import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
-import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
 import { loadProducts } from '../core/global.js';
 
 const currentUser = checkUserStatus();
+const products =  await loadProducts("women", state);
+const state = {
+  lastVisible: null,
+  filters: new Map(),
+};
 
 
 const sortSelect = document.getElementById("sort-select");
-const pgSelect = document.getElementById("pg-amount-select");
 const sortIcon = document.querySelector("#sort-btn i");
-const pgIcon = document.getElementById("pg-icon");
-const pgContainer = document.getElementById("pg-container");
 const sortOption = document.querySelectorAll("#sort-container .sort-content a");
-const pgOption = document.querySelectorAll("#pg-container .sort-content a");
 const sortContainer = document.getElementById("sort-container");
+
 const pageResults = document.getElementById("pageResults");
+
 const filterSection = document.getElementById("filter-section");
+
 const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
+
 const picker = document.getElementById("colorPicker");
+
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
-const paginationLinks = document.querySelectorAll(".pagination-link-container a");
 
-console.log("Pagination Links:", paginationLinks)
-
+let filteredProducts = [...products];
 
 // reusable moving to global later
 const colors = [
@@ -40,49 +43,6 @@ const colors = [
   { name: "Green",  value: "green",  hex: "#156340" },
   { name: "Orange", value: "orange", hex: "#F06142" },
 ];
-
-// const loadProducts = async (categoryMeta, state) => {
-//   let q;
-//   const productsCollection = collection(db, "listings");
-//   const baseConstraints = [where("status", "==", "active"), where("categoryMeta", "==", `${categoryMeta}`)];
-//   state.lastVisible ? baseConstraints.push(startAfter(state.lastVisible)) : null;
-//   q = query(productsCollection, ...baseConstraints, limit(48));
-  
-//   // loop through active filters
-//   let whereConstraints = [];
-//   for (const [key, values] of state.filters) {
-//     whereConstraints.push(where(key, "in", values));
-//   }
-
-//   const finalQuery = whereConstraints.length ? query(q, ...whereConstraints) : q;
-
-//   const querySnapshot = await getDocs(finalQuery);
-
-//   if (querySnapshot.empty) {
-//     return [];
-//   }
-//   // filter products for men products
-//   const menProducts = querySnapshot.docs;
-//   state.lastVisible = menProducts[menProducts.length - 1];
-//   console.log("Last Visible:", state.lastVisible);
-//   return menProducts;
-  
-// };
-
-
-// loadProducts("men", state.lastVisible);
-
-const state = {
-  lastVisible: null,
-  filters: new Map(),
-}
-
-
-const products =  await loadProducts("men", state);
-
-let filteredProducts = [...products];
-
-
 
 
 filterDisplay.addEventListener('click', (e) => {
@@ -174,7 +134,6 @@ sortContainer.addEventListener("click", (event) => {
   event.stopPropagation();
   toggleDropdown(sortContainer, sortIcon);
 });
-
 // listen for change on filters
 filterSection.addEventListener("change", (event) => {
   const filterType = event.target.closest(".filter-container").dataset.filterType;
@@ -202,22 +161,7 @@ filterSection.addEventListener("change", (event) => {
 
 });
 
-categoryFilter.forEach((checkbox) => {
-  // add event listener to each checkbox
-  checkbox.addEventListener("change", (event) => {
-    // active categories to only show currently selected category
-    
-    
-    // uncheck all other checkboxes
-    categoryFilter.forEach((cb) => {
-      if (cb !== event.target) {
-        cb.checked = false;
-      }
-    });
 
-
-  });
-});
 
 
 function resetFilterUI(targetValue) {
@@ -252,7 +196,22 @@ function resetFilterUI(targetValue) {
 };
 
 
+categoryFilter.forEach((checkbox) => {
+  // add event listener to each checkbox
+  checkbox.addEventListener("change", (event) => {
+    // active categories to only show currently selected category
+    
+    
+    // uncheck all other checkboxes
+    categoryFilter.forEach((cb) => {
+      if (cb !== event.target) {
+        cb.checked = false;
+      }
+    });
 
+
+  });
+});
 
 colors.forEach(({ name, value, hex }) => {
   const li = document.createElement("li");
@@ -273,7 +232,6 @@ colors.forEach(({ name, value, hex }) => {
 // toggles dropdown menu params: container, icon
 const toggleDropdown = (container, icon) => {
   container.querySelector(".sort-content").classList.toggle("show");
-  // console.log(icon);
   icon.classList.toggle("rotate-down");
 };
 

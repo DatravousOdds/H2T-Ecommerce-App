@@ -1,3 +1,6 @@
+import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
+
 // function to generate countries
 // const generateCountries = (apiUrl, selectId) => {
 //   fetch(apiUrl)
@@ -298,6 +301,34 @@ function closeDropdown(event, dropdownId, headerId = null, iconId = null) {
     }
   }
 }
+
+const loadProducts = async (categoryMeta, state) => {
+  let q;
+  const productsCollection = collection(db, "listings");
+  const baseConstraints = [where("status", "==", "active"), where("categoryMeta", "==", `${categoryMeta}`)];
+  state.lastVisible ? baseConstraints.push(startAfter(state.lastVisible)) : null;
+  q = query(productsCollection, ...baseConstraints, limit(48));
+  
+  // loop through active filters
+  let whereConstraints = [];
+  for (const [key, values] of state.filters) {
+    whereConstraints.push(where(key, "in", values));
+  }
+
+  const finalQuery = whereConstraints.length ? query(q, ...whereConstraints) : q;
+
+  const querySnapshot = await getDocs(finalQuery);
+
+  if (querySnapshot.empty) {
+    return [];
+  }
+  // filter products for men products
+  const menProducts = querySnapshot.docs;
+  state.lastVisible = menProducts[menProducts.length - 1];
+  console.log("Last Visible:", state.lastVisible);
+  return menProducts;
+  
+};
 
 // Payment Method Validation Utilities
 class PaymentValidation {
@@ -641,4 +672,5 @@ export {
   setError,
   clearError,
   formatFirebaseDate,
+  loadProducts,
 };
