@@ -120,6 +120,7 @@
                 <input type="text" id="title" placeholder="What are you selling?" maxlength="80">
                 <p class="errorText" id="error-title"></p>
             </div>
+
             <div class="input-container">
                 <label for="category">Category</label>
                 <select name="category" id="category">
@@ -148,6 +149,15 @@
                 </select>
                 <p class="errorText" id="error-category"></p>
             </div>
+
+            <div class="input-container" id="sizeInfo">
+                <label for="category">Size</label>
+                <select name="size" id="size">
+                    
+                </select>
+                <p class="errorText" id="error-category"></p>
+            </div>
+
             <div class="input-container">
                 <div class="input-header">
                     <label for="description">Description</label>
@@ -156,9 +166,23 @@
                 <textarea class="description" name="descriptionInput" id="description" placeholder="Description your product..." maxlength="1000" ></textarea>
                 <p class="errorText" id="error-description"></p>
             </div>
-            
+
+            <div class="input-container">
+                <div class="input-header">
+                    <label for="condition">Condition</label>
+                </div>
+                <select class="condition" name="conditionInput" id="condition">
+                    <option value="new">New</option>
+                    <option value="like new">Like New</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="poor">poor</option>
+                </select>
+                <p class="errorText" id="error-description"></p>
+            </div>
             
         </section>
+
         <section class="pricing-info" id="pricing-info">
             <div class="section-header">
               <h4>Pricing</h4>
@@ -173,6 +197,7 @@
                 <p class="errorText" id="error-price"></p>
             </div>
         </section>
+
         <section class="trading-info" id="trading-info">
             <div class="section-header">
                 <h4>Trading</h4>
@@ -187,6 +212,7 @@
                 </div>
             </div>
         </section>
+
         <section class="shipping-info" id="shipping-info">
             <div class="section-header">
               <h4>Shipping</h4>  
@@ -213,6 +239,7 @@
             
             <p class="errorText" id="error-shipping"></p>
         </section>
+
         <section class="cta-buttons" id="cta-buttons">
             <div class="cta-wrapper">
                 <button class="btn draft-btn" id="draftBtn">Save as draft</button>
@@ -236,6 +263,7 @@
                 </div>
             </div>
         </div>
+
         <div class="package-dimension" id="packageDimensions">
             <div class="m-content">
                 <div class="m-header">
@@ -272,6 +300,7 @@
                 </div>
             </div>
         </div> 
+
         <div class="courier-rates-modal" id="courierRatesModal">
                 <div class="m-header">
                     <h5>Select a carrier</h5>
@@ -300,6 +329,7 @@
                 </div>
             
         </div>
+
         <div class="success-modal" id="successModal">
             <div class="m-header">
                 <div class="m-icon-wrapper">

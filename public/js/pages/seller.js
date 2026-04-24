@@ -9,9 +9,12 @@ const productTitle = document.getElementById('title');
 const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('price');
+const productSize = document.getElementById("size");
+const sizeInfo = document.getElementById("sizeInfo");
 
 const titleCharCounter = document.getElementById('titleCharCounter');
 const descriptionWordCounter = document.getElementById('descriptionWordCounter');
+
 
 const modalOverlay = document.querySelector('.modal-overlay');
 const packageDimensions = document.getElementById('packageDimensions');
@@ -66,6 +69,66 @@ let listing = {
     description: ''
 
 };
+
+const kidsRange = Array.from({ length: 12 }, (_, i) => {
+    if (i < 7) {
+      return 10.5 + i * 0.5;
+    } 
+    return 1 + (i - 7) * 0.5;
+    
+});
+   
+const mensRange = Array.from({length:17 }, (_,i) => {
+    if (i > 12) {
+      return i;
+  }
+    return 6 + i * 0.5;
+})
+  
+const womenRange = Array.from({length: 17}, (_,i) => {
+    return 4 + i * 0.5;
+});
+
+const sneakersSizes = [...kidsRange, ...womenRange, ...mensRange]
+
+const CATEGORY_FIELDS = {
+    "women-sneakers": 
+    {
+        fields:
+        [
+            createSneakerFields(womenRange)
+        ]
+    },
+    "men-sneakers": 
+    {
+        fields:
+        [
+            createSneakerFields(mensRange)
+        ]
+    },
+    "kids-sneakers": 
+    {
+        fields:
+        [
+            createSneakerFields(kidsRange)
+        ]
+    },
+    "apparel": {
+        fields: [{ type: "dropdown", name:"size", options: ["XXS","XS", "S","M","L","XL","XXL"] }]
+    },
+     
+    "hats": {
+        fields: [{ type: "dropdown", name:"size", options: ['XS','S','M','L','XL','XXL'] }]
+    },
+    "accessories": {
+        fields: [{ type: "dropdown", name:"size", options: ['OS','S/M','L/XL'] }]
+    }
+        
+    
+    
+}
+
+
 
 initFormListeners();
 wordCounter();
@@ -133,6 +196,25 @@ imageGridContainer.addEventListener('click', (e) => {
 
 })
 
+productCategory.addEventListener("change", () => {
+    if (!category) return;
+    
+    getCategoryFields(category.value.trim());
+})
+
+
+
+
+
+
+
+function createSneakerFields(sizeRange) {
+    return [
+        { type: "dropdown", name: "size", options: [...sizeRange]},
+        { type: "text", name: "sku", options: []}
+    ]
+}
+  
 function initFormListeners() {
     productTitle.addEventListener('input', () => {
         removeError('title');
@@ -266,6 +348,40 @@ function setDefaultDimensions(category) {
         document.getElementById('height').value = defaults.height;
         document.getElementById('weight').value = defaults.weight;
 
+}
+
+function getCategoryFields(category) {
+    console.log(category)
+    let fields;
+    if (category !== "men-sneakers" && category !== "women-sneakers") {
+       category = category.split("-")[1];
+       renderSizeOptions(category)
+    } else {
+       renderSizeOptions(category)
+       console.log(fields);
+    }
+    
+
+  
+}
+
+function renderSizeOptions(category) {
+    const fields = CATEGORY_FIELDS[category].fields;
+    sizeInfo.style.display = 'block';
+    productSize.innerHTML = "";
+    fields.forEach(field => {
+        if (field.type === "dropdown") {
+            const options = field.options;
+            options.forEach(option => {
+                const opt = document.createElement("option");
+                opt.value = option;
+                opt.textContent = option;
+
+                productSize.appendChild(opt)
+
+            })
+        }
+    })
 }
 
 

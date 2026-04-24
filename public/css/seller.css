@@ -205,6 +205,10 @@ section p {
     
 }
 
+#sizeInfo {
+    display: none; 
+}
+
 .input-container select {
     width: 100%;
     padding: 0.5rem;
@@ -315,6 +319,9 @@ textarea {
     color: #444;
     margin: 4px 0 0;
 }
+
+
+
 
 .shipping-btn-container.selected {
     border: 2px solid #dc2626;

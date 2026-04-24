@@ -1,6 +1,6 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, renderFilterTags } from '../core/global.js';
+import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags } from '../core/global.js';
 
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");
@@ -17,34 +17,6 @@ const filterDisplay = document.getElementById("filterDisplay");
 const picker = document.getElementById("colorPicker");
 
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
-
-const releasesProductTemplate = (data) => `
-  <!--- Image container-->
-    <div class="product-image">
-      <div class="release-date-wrapper">
-        <i class="fa-regular fa-calendar"></i>
-        <div class="release-month">${data.releaseMonth}</div>
-        <div class="release-day">${data.releaseDay}</div>
-      </div>
-
-      <img
-        src="${data.images[0].url}"
-        class="image-custom"
-        alt=""
-      />
-    </div>
-    <!--- Image container-->
-
-    <!-- product details -->
-    <div class="des">
-      <p class="product-name">
-        ${data.productName}
-      </p>
-    </div>
-    <!-- product details -->         
-`;
-
-
 
 document
   .querySelectorAll(".filter-option .expand-details")
@@ -72,31 +44,8 @@ const state = {
   filters: new Map(),
 };
 
-const displayProducts = (products, template) => {
-  const productsContainer = document.getElementById("productsContainer");
-  // clear existing products
-  productsContainer.innerHTML = "";
-  // display
-  if (products.length === 0) {
-    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
-  }
-  products.forEach((doc) => {
-    const productData = doc.data();
-    const productElement = document.createElement("div");
-    productElement.classList.add("pro");
-    productElement.onclick = () => {
-      window.location.href = `shop/product.html?id=${doc.id}`;
-    };
-    productElement.innerHTML = template(productData);
-    productsContainer.appendChild(productElement);
-  });
-
-  // update results count
-  updateResultsCount(products.length);
-}
-
-const products =  await loadProducts("men", state);
-displayProducts(products, releasesProductTemplate);
+const products =  await loadProducts("accessories", state);
+displayProducts(products);
 
 let filteredProducts = [...products];
 
@@ -152,7 +101,7 @@ filterDisplay.addEventListener('click', (e) => {
     appliedFilters.innerHTML = "";
     filterDisplay.classList.remove("active");
     state.filters = new Map();
-    displayProducts(products, releasesProductTemplate)
+    displayProducts(products)
     
   }
 
@@ -271,7 +220,7 @@ sortOption.forEach((link) => {
 
 
 const filterProducts = (products, filters) => {
-  if (!filters.size) return displayProducts(products, releasesProductTemplate)
+  if (!filters.size) return displayProducts(products)
   const filtered = products.filter(product => {
     const data = product.data();
     for (const [key, values] of filters) {
@@ -289,7 +238,7 @@ const filterProducts = (products, filters) => {
     sortProducts(filters.get("sort")[0]);
     return;
   }
-  displayProducts(filtered, releasesProductTemplate)
+  displayProducts(filtered)
 };
 
 const sortProducts = (sortType) => {
@@ -309,8 +258,10 @@ const sortProducts = (sortType) => {
     // TODO: Implement logic for featured
   }
   
-  displayProducts(sortedProducts, releasesProductTemplate)
+  displayProducts(sortedProducts)
 
   
 };
+
+
 

@@ -33,6 +33,21 @@ import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app 
 //     .catch((err) => console.log(("Error Message:", err)));
 // };
 
+const colors = [
+  { name: "Black",  value: "black",  hex: "#000000" },
+  { name: "White",  value: "white",  hex: "#ffffff" },
+  { name: "Multi",  value: "multi",  hex: "#46FE8C" },
+  { name: "Blue",   value: "blue",   hex: "#657EEA" },
+  { name: "Grey",   value: "grey",   hex: "#A1A5A4" },
+  { name: "Red",    value: "red",    hex: "#C92E1A" },
+  { name: "Yellow", value: "yellow", hex: "#F5BA19" },
+  { name: "Brown",  value: "brown",  hex: "#593230" },
+  { name: "Pink",   value: "pink",   hex: "#E8BFBA" },
+  { name: "Purple", value: "purple", hex: "#504A9E" },
+  { name: "Green",  value: "green",  hex: "#156340" },
+  { name: "Orange", value: "orange", hex: "#F06142" },
+];
+
 const generateRegions = (countriesData) => {
   const selectSelect = document.getElementById("shipping-state");
 
@@ -329,6 +344,159 @@ const loadProducts = async (categoryMeta, state) => {
   return menProducts;
   
 };
+
+const renderFilterTags = (filterTagsArray) => {
+  // if there is not active filters remove filterTags
+  if (filterTagsArray.size === 0) {
+    filterDisplay.classList.remove('active');
+  } else {
+    // show filterTags 
+    filterDisplay.classList.add("active");
+    appliedFilters.innerHTML = "";
+
+    for (const [key, values] of filterTagsArray) {
+      values.forEach(v => {
+        const btn = document.createElement('button');
+        btn.className = "filter-button";
+        btn.innerText = `${v.charAt(0).toUpperCase() + v.slice(1)} `;
+        btn.dataset.filterTag = v;
+
+        const icon = document.createElement('i');
+        icon.className = `fa-solid fa-circle-xmark`;
+
+        btn.appendChild(icon);
+        appliedFilters.appendChild(btn)
+      })
+
+    
+
+    }
+
+
+  }
+};
+
+function resetFilterUI(targetValue) {
+  const sortOptions = document.querySelectorAll("#sort-container .sort-content a");
+  
+  sortOptions.forEach(option => {
+    if (option.textContent === targetValue) {
+      sortSelect.textContent = "Featured";
+    }
+  })
+
+
+  const activeColor = document.querySelector(`#colorPicker .color[data-color="${targetValue}"]`);
+
+  if (activeColor) {
+    activeColor.classList.remove('active');
+  }
+
+  const checkedFilters = document.querySelectorAll('.filter-container input[type="checkbox"]:checked');
+
+  if (!checkedFilters.length) return;
+
+  const match = [...checkedFilters].find(f => f.value === targetValue);
+
+  if (match) {
+    match.checked = false;
+  } else {
+    return;
+  }
+
+  
+};
+
+function deleteMapEntry(entry) {
+  for (let [key, value] of state.filters.entries()) {
+      const index = value.indexOf(entry);
+
+      if (index !== -1) {
+        value.splice(index, 1)
+        if (value.length === 0) {
+          state.filters.delete(key);
+        }
+        break;
+      }
+      
+    }
+};
+
+const updateResultsCount = (count) => {
+  if (count === 1) {
+    pageResults.textContent = `${count} result`;
+    return;
+  }
+  pageResults.textContent = `${count} results`;
+
+};
+
+
+
+const displayProducts = (products) => {
+  const productsContainer = document.getElementById("productsContainer");
+  // clear existing products
+  productsContainer.innerHTML = "";
+  // display
+  if (products.length === 0) {
+    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
+  }
+  products.forEach((doc) => {
+    const productData = doc.data();
+    const productElement = document.createElement("div");
+    productElement.classList.add("pro");
+    productElement.onclick = () => {
+      window.location.href = `shop/product.html?id=${doc.id}`;
+    };
+    productElement.innerHTML = `
+      
+            <!--- Image container-->
+            <div class="product-image">
+              <div class="liked">
+                <i class="fa-regular fa-heart"></i>
+              </div>
+
+              <img
+                src="${productData.images[0].url}"
+                class="image-custom"
+                alt="${productData.productName}"
+              />
+            </div>
+            <!--- Image container-->
+
+            <!-- product details -->
+            <div class="des">
+              <div class="price-description">
+                <p class="product-name">
+                  ${productData.productName}
+                </p>
+                
+                <div class="pro-price">
+                  <span>$${productData.originalPrice}</span>
+                  <div class="price-change">
+                    <div class="product-discount">
+                      <p>20% OFF</p>
+                    </div>
+                    <div class="price-trend">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span>+5%</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              
+            </div>
+            <!-- product details -->
+          
+    `;
+    productsContainer.appendChild(productElement);
+  });
+
+  // update results count
+  updateResultsCount(products.length);
+}
+
 
 // Payment Method Validation Utilities
 class PaymentValidation {
@@ -647,6 +815,7 @@ class PaymentSecurity {
   }
 }
 
+
 class AdminUser {}
 
 class User extends AdminUser {}
@@ -673,4 +842,11 @@ export {
   clearError,
   formatFirebaseDate,
   loadProducts,
+  renderFilterTags,
+  deleteMapEntry,
+  updateResultsCount,
+  displayProducts,
+  resetFilterUI,
+  colors
+
 };

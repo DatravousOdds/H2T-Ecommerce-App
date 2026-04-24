@@ -1,0 +1,55 @@
+/* Base Styles */
+:root {
+  --primary-color: #333;
+  --secondary-color: #666;
+  --background-color: #f5f5f5;
+  --white: #fff;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 6px 8px rgba(0, 0, 0, 0.15);
+  --border-radius: 12px;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --font-size-base: 16px;
+  --font-size-lg: 1.2rem;
+  --font-size-xl: 2.5rem;
+  --transition-base: 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--primary-color);
+}
+
+/* Releases */
+
+.release-date-wrapper {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: #e5383b;
+  border-radius: 999px; /* true pill shape */
+  box-shadow: 0 2px 6px rgba(229, 56, 59, 0.4); /* colored glow */
+}
+
+.release-date-wrapper > div {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.release-date-wrapper i {
+  color: #fff;
+}

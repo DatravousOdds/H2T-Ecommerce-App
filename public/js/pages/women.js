@@ -1,14 +1,6 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts } from '../core/global.js';
-
-const currentUser = checkUserStatus();
-const products =  await loadProducts("women", state);
-const state = {
-  lastVisible: null,
-  filters: new Map(),
-};
-
+import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags } from '../core/global.js';
 
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");
@@ -26,24 +18,49 @@ const picker = document.getElementById("colorPicker");
 
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
 
+document
+  .querySelectorAll(".filter-option .expand-details")
+  .forEach(function (expandDetails) {
+    expandDetails.addEventListener("click", function () {
+      let dropDownFilterOptions = this.nextElementSibling;
+      if (dropDownFilterOptions) {
+        dropDownFilterOptions.classList.toggle("show");
+        let icon = this.querySelector("i");
+        if (icon.classList.contains("fa-plus")) {
+          icon.classList.remove("fa-plus");
+          icon.classList.add("fa-minus"); // change to a minus icon
+        } else {
+          icon.classList.remove("fa-minus");
+          icon.classList.add("fa-plus"); // change back to plus icon
+        }
+      }
+    });
+});
+
+const currentUser = checkUserStatus();
+
+const state = {
+  lastVisible: null,
+  filters: new Map(),
+};
+
+const products =  await loadProducts("women", state);
+displayProducts(products);
+
 let filteredProducts = [...products];
 
-// reusable moving to global later
-const colors = [
-  { name: "Black",  value: "black",  hex: "#000000" },
-  { name: "White",  value: "white",  hex: "#ffffff" },
-  { name: "Multi",  value: "multi",  hex: "#46FE8C" },
-  { name: "Blue",   value: "blue",   hex: "#657EEA" },
-  { name: "Grey",   value: "grey",   hex: "#A1A5A4" },
-  { name: "Red",    value: "red",    hex: "#C92E1A" },
-  { name: "Yellow", value: "yellow", hex: "#F5BA19" },
-  { name: "Brown",  value: "brown",  hex: "#593230" },
-  { name: "Pink",   value: "pink",   hex: "#E8BFBA" },
-  { name: "Purple", value: "purple", hex: "#504A9E" },
-  { name: "Green",  value: "green",  hex: "#156340" },
-  { name: "Orange", value: "orange", hex: "#F06142" },
-];
+window.onclick = (event) => {
+  if (!event.target.matches(".dropdown-btn")) {
+    let dropdowns = document.getElementsByClassName("sort-content");
+    for (let i = 0; i < dropdowns.length; i++) {
+      let openDropdown = dropdowns[i];
 
+      if (openDropdown.classList.contains("show")) {
+        openDropdown.classList.remove("show");
+      }
+    }
+  }
+};
 
 filterDisplay.addEventListener('click', (e) => {
   const btn = e.target.closest('.filter-button');
@@ -90,12 +107,10 @@ filterDisplay.addEventListener('click', (e) => {
 
 });
 
-// Click handling (toggle active state, fire filter logic, etc.)
 picker.addEventListener("click", e => {
   const btn = e.target.closest(".color");
   if (!btn) return;
   btn.classList.toggle("active");
-  // // console.log("Filter by:", btn.dataset.color);
 
   const colors = state.filters.get("color") || [];
   const colorValue = btn.dataset.color;
@@ -116,25 +131,11 @@ picker.addEventListener("click", e => {
 
 });
 
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = (event) => {
-  if (!event.target.matches(".dropdown-btn")) {
-    let dropdowns = document.getElementsByClassName("sort-content");
-    for (let i = 0; i < dropdowns.length; i++) {
-      let openDropdown = dropdowns[i];
-
-      if (openDropdown.classList.contains("show")) {
-        openDropdown.classList.remove("show");
-      }
-    }
-  }
-};
-
 sortContainer.addEventListener("click", (event) => {
   event.stopPropagation();
   toggleDropdown(sortContainer, sortIcon);
 });
-// listen for change on filters
+
 filterSection.addEventListener("change", (event) => {
   const filterType = event.target.closest(".filter-container").dataset.filterType;
 
@@ -160,41 +161,6 @@ filterSection.addEventListener("change", (event) => {
   // console.log("active filters:",activeFilters)
 
 });
-
-
-
-
-function resetFilterUI(targetValue) {
-  const sortOptions = document.querySelectorAll("#sort-container .sort-content a");
-  
-  sortOptions.forEach(option => {
-    if (option.textContent === targetValue) {
-      sortSelect.textContent = "Featured";
-    }
-  })
-
-
-  const activeColor = document.querySelector(`#colorPicker .color[data-color="${targetValue}"]`);
-
-  if (activeColor) {
-    activeColor.classList.remove('active');
-  }
-
-  const checkedFilters = document.querySelectorAll('.filter-container input[type="checkbox"]:checked');
-
-  if (!checkedFilters.length) return;
-
-  const match = [...checkedFilters].find(f => f.value === targetValue);
-
-  if (match) {
-    match.checked = false;
-  } else {
-    return;
-  }
-
-  
-};
-
 
 categoryFilter.forEach((checkbox) => {
   // add event listener to each checkbox
@@ -229,7 +195,6 @@ colors.forEach(({ name, value, hex }) => {
   picker.appendChild(li);
 });
 
-// toggles dropdown menu params: container, icon
 const toggleDropdown = (container, icon) => {
   container.querySelector(".sort-content").classList.toggle("show");
   icon.classList.toggle("rotate-down");
@@ -254,64 +219,6 @@ sortOption.forEach((link) => {
 });
 
 
-// reusable function to render filter tags based on active filters, moves to global later
-const renderFilterTags = (filterTagsArray) => {
-  // if there is not active filters remove filterTags
-  if (filterTagsArray.size === 0) {
-    filterDisplay.classList.remove('active');
-  } else {
-    // show filterTags 
-    filterDisplay.classList.add("active");
-    appliedFilters.innerHTML = "";
-
-    for (const [key, values] of filterTagsArray) {
-      values.forEach(v => {
-        const btn = document.createElement('button');
-        btn.className = "filter-button";
-        btn.innerText = `${v.charAt(0).toUpperCase() + v.slice(1)} `;
-        btn.dataset.filterTag = v;
-
-        const icon = document.createElement('i');
-        icon.className = `fa-solid fa-circle-xmark`;
-
-        btn.appendChild(icon);
-        appliedFilters.appendChild(btn)
-      })
-
-    
-
-    }
-
-
-  }
-};
-// reusable function to delete map entry based on value, moves to global later
-function deleteMapEntry(entry) {
-  for (let [key, value] of state.filters.entries()) {
-      const index = value.indexOf(entry);
-
-      if (index !== -1) {
-        value.splice(index, 1)
-        if (value.length === 0) {
-          state.filters.delete(key);
-        }
-        break;
-      }
-      
-    }
-}
-// reusable function to update results count, moves to global later
-const updateResultsCount = (count) => {
-  if (count === 1) {
-    pageResults.textContent = `${count} result`;
-    return;
-  }
-  pageResults.textContent = `${count} results`;
-
-};
-
-
-// reusable function to filter products based on active filters, moves to global later
 const filterProducts = (products, filters) => {
   if (!filters.size) return displayProducts(products)
   const filtered = products.filter(product => {
@@ -334,9 +241,6 @@ const filterProducts = (products, filters) => {
   displayProducts(filtered)
 };
 
-
-
-// reusable function to sort products based on selection, moves to global later
 const sortProducts = (sortType) => {
   if (!sortType) return;
 
@@ -357,92 +261,7 @@ const sortProducts = (sortType) => {
   displayProducts(sortedProducts)
 
   
-}
-
-// reusable function to display products, moves to global later
-const displayProducts = (products) => {
-  const productsContainer = document.getElementById("productsContainer");
-  // clear existing products
-  productsContainer.innerHTML = "";
-  // display
-  if (products.length === 0) {
-    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
-  }
-  products.forEach((doc) => {
-    const productData = doc.data();
-    const productElement = document.createElement("div");
-    productElement.classList.add("pro");
-    productElement.onclick = () => {
-      window.location.href = `shop/product.html?id=${doc.id}`;
-    };
-    productElement.innerHTML = `
-      
-            <!--- Image container-->
-            <div class="product-image">
-              <div class="liked">
-                <i class="fa-regular fa-heart"></i>
-              </div>
-
-              <img
-                src="${productData.images[0].url}"
-                class="image-custom"
-                alt="${productData.productName}"
-              />
-            </div>
-            <!--- Image container-->
-
-            <!-- product details -->
-            <div class="des">
-              <div class="price-description">
-                <p class="product-name">
-                  ${productData.productName}
-                </p>
-                
-                <div class="pro-price">
-                  <span>$${productData.originalPrice}</span>
-                  <div class="price-change">
-                    <div class="product-discount">
-                      <p>20% OFF</p>
-                    </div>
-                    <div class="price-trend">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span>+5%</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-              
-            </div>
-            <!-- product details -->
-          
-    `;
-    productsContainer.appendChild(productElement);
-  });
-
-  // update results count
-  updateResultsCount(products.length);
-}
-/** Filter by functions **/
-document
-  .querySelectorAll(".filter-option .expand-details")
-  .forEach(function (expandDetails) {
-    expandDetails.addEventListener("click", function () {
-      let dropDownFilterOptions = this.nextElementSibling;
-      if (dropDownFilterOptions) {
-        dropDownFilterOptions.classList.toggle("show");
-        let icon = this.querySelector("i");
-        if (icon.classList.contains("fa-plus")) {
-          icon.classList.remove("fa-plus");
-          icon.classList.add("fa-minus"); // change to a minus icon
-        } else {
-          icon.classList.remove("fa-minus");
-          icon.classList.add("fa-plus"); // change back to plus icon
-        }
-      }
-    });
-});
+};
 
 
 
-displayProducts(products);
