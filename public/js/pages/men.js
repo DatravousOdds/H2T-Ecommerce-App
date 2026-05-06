@@ -1,7 +1,7 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
-import { loadProducts } from '../core/global.js';
+import { loadProducts, handleFavoriteClick } from '../core/global.js';
 
 const currentUser = checkUserStatus();
 
@@ -78,7 +78,7 @@ const state = {
 }
 
 
-const products =  await loadProducts("men", state);
+const products =  await loadProducts("categoryMeta","men", state);
 
 let filteredProducts = [...products];
 
@@ -441,12 +441,12 @@ const displayProducts = (products) => {
                 </p>
                 
                 <div class="pro-price">
-                  <span>$${productData.originalPrice}</span>
+                  <span class="listing-price">$${productData.originalPrice}</span>
                   <div class="price-change">
                     <div class="product-discount">
                       <p>20% OFF</p>
                     </div>
-                    <div class="price-trend">
+                    <div class="price-trend trend-up">
                       <i class="fa-solid fa-arrow-trend-up"></i>
                       <span>+5%</span>
                     </div>
@@ -459,6 +459,9 @@ const displayProducts = (products) => {
             <!-- product details -->
           
     `;
+
+    handleFavoriteClick(productElement);
+    
     productsContainer.appendChild(productElement);
   });
 

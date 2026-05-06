@@ -44,8 +44,8 @@ const state = {
   filters: new Map(),
 };
 
-const products =  await loadProducts("women", state);
-displayProducts(products);
+const products =  await loadProducts("categoryMeta","women", state);
+displayProducts(products, "productsContainer");
 
 let filteredProducts = [...products];
 

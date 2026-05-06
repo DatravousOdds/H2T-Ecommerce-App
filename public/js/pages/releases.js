@@ -95,7 +95,7 @@ const displayProducts = (products, template) => {
   updateResultsCount(products.length);
 }
 
-const products =  await loadProducts("men", state);
+const products =  await loadProducts("categoryMeta","men", state);
 displayProducts(products, releasesProductTemplate);
 
 let filteredProducts = [...products];

@@ -1,6 +1,7 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc } from '../api/firebase-client.js';
+import { serverTimestamp } from '../api/firebase-client.js';
 
 
 const imageGridContainer = document.querySelector('.images-grid-container');
@@ -11,6 +12,9 @@ const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('price');
 const productSize = document.getElementById("size");
 const sizeInfo = document.getElementById("sizeInfo");
+const productInfo = document.getElementById("product-info");
+const productBrand = document.getElementById("brand");
+const productCondition = document.getElementById("condition");
 
 const titleCharCounter = document.getElementById('titleCharCounter');
 const descriptionWordCounter = document.getElementById('descriptionWordCounter');
@@ -94,24 +98,25 @@ const sneakersSizes = [...kidsRange, ...womenRange, ...mensRange]
 const CATEGORY_FIELDS = {
     "women-sneakers": 
     {
-        fields:
-        [
-            createSneakerFields(womenRange)
-        ]
+        fields: createSneakerFields(womenRange)
     },
     "men-sneakers": 
     {
-        fields:
-        [
-            createSneakerFields(mensRange)
-        ]
+        fields: createSneakerFields(mensRange)
     },
     "kids-sneakers": 
     {
-        fields:
-        [
-            createSneakerFields(kidsRange)
-        ]
+        fields: createSneakerFields(kidsRange)
+
+    },
+    "men-shoes": {
+        fields: createSneakerFields(mensRange)
+    },
+    "women-shoes": {
+        fields: createSneakerFields(womenRange)
+    },
+    "women-bags": {
+        fields: []
     },
     "apparel": {
         fields: [{ type: "dropdown", name:"size", options: ["XXS","XS", "S","M","L","XL","XXL"] }]
@@ -122,6 +127,9 @@ const CATEGORY_FIELDS = {
     },
     "accessories": {
         fields: [{ type: "dropdown", name:"size", options: ['OS','S/M','L/XL'] }]
+    },
+    "other": {
+        fields: []
     }
         
     
@@ -198,7 +206,6 @@ imageGridContainer.addEventListener('click', (e) => {
 
 productCategory.addEventListener("change", () => {
     if (!category) return;
-    
     getCategoryFields(category.value.trim());
 })
 
@@ -351,15 +358,9 @@ function setDefaultDimensions(category) {
 }
 
 function getCategoryFields(category) {
-    console.log(category)
-    let fields;
-    if (category !== "men-sneakers" && category !== "women-sneakers") {
-       category = category.split("-")[1];
-       renderSizeOptions(category)
-    } else {
-       renderSizeOptions(category)
-       console.log(fields);
-    }
+    if (!category) return;
+    const normalizedCategory = CATEGORY_FIELDS[category] ? category : category.split("-")[1];
+    renderSizeOptions(normalizedCategory);
     
 
   
@@ -367,21 +368,41 @@ function getCategoryFields(category) {
 
 function renderSizeOptions(category) {
     const fields = CATEGORY_FIELDS[category].fields;
-    sizeInfo.style.display = 'block';
-    productSize.innerHTML = "";
-    fields.forEach(field => {
-        if (field.type === "dropdown") {
-            const options = field.options;
-            options.forEach(option => {
-                const opt = document.createElement("option");
-                opt.value = option;
-                opt.textContent = option;
+    if (fields.length === 0) {
+        sizeInfo.style.display = "none";
 
-                productSize.appendChild(opt)
+    } else {
+        sizeInfo.style.display = 'block';
+        productSize.innerHTML = "";
+        fields.forEach(field => {  
+            if (field.type === "dropdown") {
+                const options = field.options;
+                options.forEach(option => {
+                    const opt = document.createElement("option");
+                    opt.value = option;
+                    opt.textContent = option;
 
-            })
-        }
-    })
+                    productSize.appendChild(opt)
+                });
+            } else if (field.type === "text") {
+                const productSku = document.getElementById("sku");
+                if (productSku) return;
+                const skuInput = ` 
+                    <div class="input-header">
+                        <label for="sku">SKU</label>
+                        <div class="char-counter" id="skuCounter">0/100</div>
+                    </div>
+                    <input type="text" id="${field.name}" name="${field.name}" placeholder="Enter product sku" />
+                    <p class="errorText" id="error-sku"></p>
+                `;
+                const inputContainer = document.createElement("div");
+                inputContainer.classList.add("input-container");
+                inputContainer.innerHTML = skuInput;
+                
+                productInfo.appendChild(inputContainer);
+            }
+        });
+    };
 }
 
 
@@ -522,8 +543,7 @@ function showSuccessMessage() {
     itemName.textContent = listing.productName;
     itemImage.src = listing.images[0].url; // Assuming the first image is the primary one
     modalProductName.textContent = listing.productName;
-    modalProductMeta.textContent = `$${listing.originalPrice} - ${listing.shipping.courier} ${listing.shipping.service_name}`;
-
+    modalProductMeta.textContent = listing.shipping.courier ? `$${listing.originalPrice} - ${listing.shipping.courier} ${listing.shipping.service_name}` : `$${listing.originalPrice} - Free Shipping`;
     successModal.classList.add('show');
 
     // Add event listener to view listing button
@@ -560,6 +580,9 @@ function resetForm() {
     productCategory.value = '';
     productDescription.value = '';
     productPrice.value = '';
+    productBrand.value = '';
+    if (productSize) productSize.value = '';
+
 
     const images = document.querySelectorAll('.image-preview');
     images.forEach(image => {
@@ -590,6 +613,8 @@ function validateProductInfo() {
     const description = productDescription.value.trim() !== '';
     const price = productPrice.value.trim() !== '';
     const shipping = !!productShipping;
+    const brand = productBrand.value.trim() !== '';
+    const condition = productCondition.value.trim() !== '';
 
     let isValid = true;
 
@@ -602,6 +627,16 @@ function validateProductInfo() {
     if (!category) { 
         showError('category', "Please enter a category to continue");
         isValid = false; 
+        return;
+    };
+    if (!brand) {
+        showError('brand', "Please enter a brand");
+        isValid = false;
+        return;
+    };
+    if (!condition) {
+        showError("condition", "Please enter a condition to continue");
+        isValid = false;
         return;
     };
     if (!description) { 
@@ -658,6 +693,10 @@ function collectListingInfo() {
     listing.ownerId = currentUser.email;
     listing.status = 'active';
     listing.description = productDescription.value.trim();
+    listing.brand = productBrand.value.trim();
+    listing.condition = productCondition.value.trim();
+    listing.size = productSize.value.trim();
+    listing.createdAt = serverTimestamp();
 
 }
 

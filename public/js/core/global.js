@@ -48,6 +48,26 @@ const colors = [
   { name: "Orange", value: "orange", hex: "#F06142" },
 ];
 
+
+const kidsRange = Array.from({ length: 12 }, (_, i) => {
+  if (i < 7) {
+    return 10.5 + i * 0.5;
+  } 
+  return 1 + (i - 7) * 0.5;
+  
+});
+ 
+const mensRange = Array.from({length:17 }, (_,i) => {
+  if (i > 12) {
+    return i;
+}
+  return 6 + i * 0.5;
+})
+
+const womenRange = Array.from({length: 17}, (_,i) => {
+  return 4 + i * 0.5;
+});
+
 const generateRegions = (countriesData) => {
   const selectSelect = document.getElementById("shipping-state");
 
@@ -317,10 +337,10 @@ function closeDropdown(event, dropdownId, headerId = null, iconId = null) {
   }
 }
 
-const loadProducts = async (categoryMeta, state) => {
+const loadProducts = async (field,categoryMeta, state = { lastVisible: null, filters: new Map()}) => {
   let q;
   const productsCollection = collection(db, "listings");
-  const baseConstraints = [where("status", "==", "active"), where("categoryMeta", "==", `${categoryMeta}`)];
+  const baseConstraints = [where("status", "==", "active"), where(field, "==", `${categoryMeta}`)];
   state.lastVisible ? baseConstraints.push(startAfter(state.lastVisible)) : null;
   q = query(productsCollection, ...baseConstraints, limit(48));
   
@@ -339,7 +359,10 @@ const loadProducts = async (categoryMeta, state) => {
   }
   // filter products for men products
   const menProducts = querySnapshot.docs;
-  state.lastVisible = menProducts[menProducts.length - 1];
+
+  if (state.lastVisible) {
+    state.lastVisible = menProducts[menProducts.length - 1];
+  }
   console.log("Last Visible:", state.lastVisible);
   return menProducts;
   
@@ -422,7 +445,21 @@ function deleteMapEntry(entry) {
     }
 };
 
+function handleFavoriteClick(element) {
+  const heartIcon = element.querySelector(".liked i");
+  heartIcon.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      heartIcon.classList.toggle('fa-regular');
+      heartIcon.classList.toggle('fa-solid');
+      heartIcon.style.color = heartIcon.classList.contains('fa-solid') ? 'red' : 'black';
+  });
+};
+
 const updateResultsCount = (count) => {
+  if (!pageResults) return;
+
   if (count === 1) {
     pageResults.textContent = `${count} result`;
     return;
@@ -433,8 +470,8 @@ const updateResultsCount = (count) => {
 
 
 
-const displayProducts = (products) => {
-  const productsContainer = document.getElementById("productsContainer");
+const displayProducts = (products, containerElement) => {
+  const productsContainer = document.getElementById(`${containerElement}`);
   // clear existing products
   productsContainer.innerHTML = "";
   // display
@@ -472,12 +509,9 @@ const displayProducts = (products) => {
                 </p>
                 
                 <div class="pro-price">
-                  <span>$${productData.originalPrice}</span>
+                  <span class="listing-price">$${productData.originalPrice.toFixed(2)}</span>
                   <div class="price-change">
-                    <div class="product-discount">
-                      <p>20% OFF</p>
-                    </div>
-                    <div class="price-trend">
+                    <div class="price-trend trend-up">
                       <i class="fa-solid fa-arrow-trend-up"></i>
                       <span>+5%</span>
                     </div>
@@ -487,15 +521,24 @@ const displayProducts = (products) => {
               </div>
               
             </div>
-            <!-- product details -->
-          
+            <!-- product details -->   
     `;
+
+    handleFavoriteClick(productElement);
+
+
     productsContainer.appendChild(productElement);
   });
 
   // update results count
-  updateResultsCount(products.length);
-}
+  if (products.length) {
+    updateResultsCount(products.length);
+  }
+  
+};
+
+
+
 
 
 // Payment Method Validation Utilities
@@ -847,6 +890,10 @@ export {
   updateResultsCount,
   displayProducts,
   resetFilterUI,
+  handleFavoriteClick,
+  kidsRange,
+  mensRange,
+  womenRange,
   colors
 
 };

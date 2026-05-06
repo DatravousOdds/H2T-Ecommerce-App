@@ -280,9 +280,9 @@ p {
   cursor: pointer;
 }
 
-.product-image .liked i {
+/* .product-image .liked i {
   font-size: 1.5rem;
-}
+} */
 
 .product-image .liked:hover {
   background-color: rgba(255, 255, 255, 1);
@@ -291,7 +291,7 @@ p {
 
 
 
-.des {
+/* .des {
   display: flex;
   flex-direction: column;
 }
@@ -305,9 +305,9 @@ p {
   font-weight: 500;
   font-size: 0.875rem;
   color: #333;
-}
+} */
 
-.des .pro-price {
+/* .des .pro-price {
   font-weight: 700;
   font-size: 1rem;
   display: flex;
@@ -355,7 +355,7 @@ p {
 .price-trend.sideways-trend {
   color: #666;
   background: #f4f3f1;
-}
+} */
 
 /* ── Sort / Filter Controls ─────────────────────── */
 
@@ -459,6 +459,23 @@ p {
 .sort-content a:hover {
   background-color: #EDEDED;
   color: #000;
+}
+
+.size-btn {
+  border: 1px solid #dc2626;
+  border-radius: 4px;
+  background: transparent;
+  padding: 0.5rem 1rem;
+
+}
+
+.size-btn .size-value {
+  font-weight: 500;
+}
+
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 /* .selected {
