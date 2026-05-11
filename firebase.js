@@ -12,10 +12,12 @@ const initializeFirebase = () => {
 
     console.log("Using environment variable configuration...");
     const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+  
 
     // Initialize Firebase
     const firebaseApp = admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
+      credential: admin.credential.cert(serviceAccount),
+      storageBucket: serviceAccount.storageBucket
     });
 
     // Initailize Firestore

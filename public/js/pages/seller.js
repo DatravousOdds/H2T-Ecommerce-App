@@ -42,6 +42,7 @@ const dimensionExitBtn = document.getElementById('dimensionExitBtn');
 const loader = document.getElementById('loader');
 
 const currentUser =  await checkUserStatus();
+console.log(currentUser)
 const storage = getStorage(app, 'gs://ecom-website-94d87');
 
 const PLACEHOLDER_DESTINATION = {
@@ -64,7 +65,7 @@ const CATEGORY_DEFAULTS = {
 let listing = {
     availableForTrade: true,
     originalPrice: 0,
-    ownerId: '',
+    userId: '',
     productName: '',
     images: [],
     status: '',
@@ -690,7 +691,7 @@ function collectListingInfo() {
     listing.originalPrice = parseFloat(productPrice.value);
     listing.productName = productTitle.value.trim();
     listing.availableForTrade = tradeStatus.classList.contains('active');
-    listing.ownerId = currentUser.email;
+    listing.userId = currentUser.uid;
     listing.status = 'active';
     listing.description = productDescription.value.trim();
     listing.brand = productBrand.value.trim();

@@ -23,10 +23,15 @@ const { initializeFirebase, getDb, getAdmin } = require("./firebase");
 
 // Initialize Firebase
 const { admin, db } = initializeFirebase();
+const bucket = admin.storage().bucket();
 
 // aws config
 const aws = require("aws-sdk");
 const dotenv = require("dotenv");
+const { messaging } = require("firebase-admin");
+const { data } = require("jquery");
+const { stat } = require("fs");
+const { doc } = require("firebase/firestore");
 dotenv.config();
 
 // aws parameters
@@ -85,9 +90,7 @@ app.use(express.json());
 app.post('/seller/api/shipping-rates',  async (req, res) => {
   const { fromAddress , toAddress, parcel } = req.body;
 
-  // console.log("from address", fromAddress);
-  // console.log("to address", toAddress);
-  // console.log("Parcels", parcel)
+  
 
   try {
     const { data } = await easyship.rates_request({
@@ -141,7 +144,6 @@ app.post('/seller/api/shipping-rates',  async (req, res) => {
 
   
 })
-
 
 // routes
 // home route
@@ -489,6 +491,51 @@ app.post("/delete-product", (req, res) => {
     });
 });
 
+app.post("/orders", async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const data = req.body;
+
+  if (!token) return res.status(401);
+
+  try {
+    const verifiedToken = await admin.auth().verifyIdToken(token);
+
+    if(data.items.length > 0) {
+
+      const orderData = {
+        buyerId: verifiedToken.uid,
+        status: "captured",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        paymentMethod: data.paymentMethod,
+        paymentIntentId: data.paymentIntentId,
+        shippingAddress: {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          address1: data.address1,
+          address2: data.address2,
+          city: data.city,
+          state: data.state,
+          postalCode: data.postalCode,
+          country: data.country,
+          phone: data.phone
+        },
+        items: data.items,
+        orderSource: data.orderSource
+      };
+
+      const docRef = await db.collection("orders").add(orderData);
+      return res.status(200).json({success: true, message: `Document written with ID: , ${docRef.id}` })
+    } else {
+      return res.status(400).json({success: false, message: "Order is empty!"});
+    }
+  
+  } catch (error) {
+    return res.status(500).json({success: false, message: error.message})
+  }
+  
+})
+
 // product page
 app.get("/products/:id", (req, res) => {
   res.sendFile(path.join(staticPth, "shop/product.html"));
@@ -506,104 +553,189 @@ app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });
 
-app.post("/order", (req, res) => {
-  const { order, email, add } = req.body;
 
-  let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD
-    }
-  });
-
-  const mailOption = {
-    from: "valid sender email id",
-    to: email,
-    subject: "Clothing: Order Placed",
-    html: `
-        <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <style>
-        body{
-            min-height: 90vh;
-            background: #f5f5f5;
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .heading{
-            text-align: center;
-            font-size: 40px;
-            width: 50%;
-            display: block;
-            line-height: 50px;
-            margin: 30px auto 60px;
-            text-transform: capitalize;
-        }
-        .heading span{
-            font-weight: 300;
-        }
-
-        .btn{
-            width: 200px;
-            height: 50px;
-            border-radius: 5px;
-            background: red;
-            color: #f5f5f5;
-            display: block;
-            margin: auto;
-            font-size: 18px;
-            text-transform: capitalize;
-        }
-    </style>
-
-
-
-</head>
-<body>
-    
-<div>
-    <h1 class="heading">dear ${
-      email.split("@")[0]
-    }, <span>your order is successfully placed</span></h1>
-    <button class="btn"> check status</button>
-</div>
-
-
-</body>
-</html>
-        `
-  };
-
-  let docName = email + Math.floor(Math.random() * 123719287419824);
-  db.collection("order")
-    .doc(docName)
-    .set(req.body)
-    .then((data) => {
-      transporter.sendMail(mailOption, (err, info) => {
-        if (err) {
-          res.json({
-            alert: "opps! it looks like some error occured. Try again"
-          });
-        } else {
-          res.json({ alert: "your order has been placed " });
-        }
-      });
-    });
-});
 
 // 404 route
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPth, "/static/404.html"));
 });
+
+// update and modify product information
+app.put("/products/:id", async (req, res) => {
+    const data = req.body;
+    const token = req.headers.authorization.split(" ")[1];
+    const docId = req.params.id;
+
+    if(!token) return res.status(401).json({ hasToken: false });
+
+    try {
+      const verifyToken = await admin.auth().verifyIdToken(token);
+
+      const docRef = await db.collection("listings").doc(docId).get();
+      if (!docRef.exists) return res.status(404).json({ result: `Not listing found for ${docId}`});
+
+      if(verifyToken.uid === docRef.data().userId) {
+        const updateData = {
+          ...(data.images !== undefined && { images: data.images }),
+          ...(data.description !== undefined && { description: data.description }),
+          ...(data.category !== undefined && { category: data.category }),
+          ...(data.brand !== undefined && { brand: data.brand }),
+          ...(data.condition !== undefined && { condition: data.condition }),
+          ...(data.size !== undefined && { size: data.size }),
+          ...(data.shipping !== undefined && { shipping: data.shipping }),
+          ...(data.listingPrice !== undefined && { listingPrice: data.listingPrice }),
+        };
+
+        if (Object.keys(updateData).length === 0) return res.status(400).json({update: false, message: "No changes made"});
+
+        await db.collection("listings").doc(docId).update({
+          ...updateData,
+          lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.status(200).json({update: true, message: "Update successful"});
+
+      } else {
+        return res.status(403).json({result: "No match"})
+      }
+    } catch (error) {
+      res.status(500).json({ verified: false, message: error.message})
+    }
+    
+});
+
+// update and modify user profile information
+app.put("/users/:id", async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const userId = req.params.id;
+  const data = req.body;
+  
+  if (!token) return res.status(401).json({ success: false, message: "User unauthorized"});
+
+  try {
+    const verifyToken = await admin.auth().verifyIdToken(token);
+
+    if (verifyToken.uid === userId) {
+      const docRef = db.collection("users").doc(userId);
+      const doc = await docRef.get();
+
+      if (doc.exists) {    
+        const updateData = {
+          ...(data.number !== undefined && { number: data.number}),
+          ...(data.notification !== undefined && { notification: data.notification })
+        }
+
+        if (Object.keys(updateData).length === 0) return res.status(400).json({update: false, message: "No changes made"});
+
+        await docRef.update({
+          ...updateData,
+          lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.status(200).json({ update: true, message: "Update successful"});
+      }
+      
+    } else {
+      return res.status(403);
+    }
+
+  } catch (error) {
+    return res.status(500).json({success: false, message: error.message})
+  }
+ 
+  
+});
+
+app.put("/userProfiles/:id", async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const userId = req.params.id;
+  const data = req.body;
+  
+  if (!token) return res.status(401).json({ success: false, message: "User unauthorized"});
+
+  try {
+    const verifyToken = await admin.auth().verifyIdToken(token);
+
+    if (verifyToken.uid === userId) {
+      const docRef = db.collection("userProfiles").doc(userId);
+      const doc = await docRef.get();
+
+      if (doc.exists) {    
+        const updateData = {
+          ...(data.firstname !== undefined && { firstname: data.firstname }),
+          ...(data.lastname !== undefined && { lastname: data.lastname }),
+          ...(data.backgroundImage !== undefined && { backgroundImage: data.backgroundImage }),
+          ...(data.username !== undefined && { username: data.username }),
+          ...(data.shipping !== undefined && { shipping: {
+            address1: data.shipping.address1,
+            address2: data.shipping.address2,
+            country: data.shipping.country,
+            city: data.shipping.city,
+            state: data.shipping.state,
+            postalCode: data.shipping.postalCode,
+            phone: data.shipping.phone
+          } }),
+        };
+
+        if (Object.keys(updateData).length === 0) return res.status(400).json({update: false, message: "No changes made"});
+
+        await docRef.update({
+          ...updateData,
+          lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.status(200).json({ update: true, message: "Update successful"});
+      } else {
+        res.status(404).json({success: false, message: "No document found!"})
+      }
+      
+    } else {
+      return res.status(403);
+    }
+  } catch (error) {
+    return res.status(500).json({success: false, message: error.message})
+  }
+});
+
+
+
+
+
+// delete entire product 
+app.delete("/products/:id", async (req, res) => {
+    const token = req.headers.authorization.split(" ")[1];
+    const docId = req.params.id;
+
+    if(!token) return res.status(401).json({success: false, message: "No token found"});
+
+    try {
+      const verifyToken = await admin.auth().verifyIdToken(token);
+
+      const docRef = await db.collection("listings").doc(docId).get();
+      if (!docRef.exists) return res.status(404).json({ success: false, message: "No document found!"});
+
+      if (verifyToken.uid === docRef.data().userId) {
+        const images = docRef.data().images;
+        await Promise.all(images.map(image => 
+          admin.storage().bucket().file(image.path).delete()
+        ));
+
+        await db.collection("listings").doc(docId).delete();
+
+        return res.status(200).json({success: true, message: "Document successfully deleted"})
+      } else {
+        return res.status(403).json({ success: false, message: "Not authorize"})
+      }
+    } catch (error) {
+      return res.status(500).json({success: false, message: error.message })
+    }
+});
+
+app.delete("/users/:id", async (req, res) => {
+
+})
+
+
 
 
 

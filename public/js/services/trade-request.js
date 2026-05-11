@@ -240,8 +240,8 @@ async function loadSelectedUser() {
 }
 
 async function loadYourInventory() {
-  const userId = currentUser.email;
-  console.log("ownerId: ", userId)
+  const userId = currentUser.uid;
+  console.log("userId: ", userId)
   if (!userId || typeof userId !== "string") {
       console.error("this function takes a string ")
   }
@@ -250,7 +250,7 @@ async function loadYourInventory() {
   // load user products
   const listingsRef = collection(db, "listings");
   const q  = query(listingsRef, 
-    where("ownerId", "==", userId),
+    where("userId", "==", userId),
     where("status", "==", "active"),
     where("availableForTrade", "==", true)
   );
@@ -283,7 +283,7 @@ async function loadTheirInventory() {
   // load user products
   const listingsRef = collection(db, "listings");
   const q  = query(listingsRef, 
-    where("ownerId", "==", selectedUserId),
+    where("userId", "==", selectedUserId),
     where("status", "==", "active"),
     where("availableForTrade", "==", true)
   );

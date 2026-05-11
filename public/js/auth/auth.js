@@ -36,14 +36,14 @@ const fetchUserProfile = async (user) => {
     }
 
     console.log("Fetching user profile for email:", user.email);
-    const docRef = doc(db, "userProfiles", user.email);
+    const docRef = doc(db, "userProfiles", user.uid);
     const docSnap = await getDoc(docRef);
     console.log(docSnap);
 
     // Fetching user profile
     if (docSnap.exists()) {
       const userData = {
-        uid: user.uid,
+        userId: user.uid,
         email: user.email,
         ...docSnap.data()
       };
@@ -185,6 +185,7 @@ const createUserDocument = async (user, additionalData) => {
     await setDoc(doc(db, "users", user.email), {
       // profile data
       createdAt: new Date(),
+      userId: user.uid,
       email: user.email,
       name: additionalData.name,
       notification: additionalData.notification,
@@ -204,7 +205,7 @@ const createUserDocument = async (user, additionalData) => {
 const createUserProfile = async (user, additionalData) => {
   try {
     // add to userProfiles collection
-    await setDoc(doc(db, "userProfiles", user.email), {
+    await setDoc(doc(db, "userProfiles", user.uid), {
       // profile data
       ...additionalData
     });
@@ -275,15 +276,30 @@ document.addEventListener("DOMContentLoaded", () => {
            console.log("User profile updated with name:", name.value);
 
            const userData = {
-            "Email": email.value,
-            "FirstName": name.value,
-            "LastName": "",
+            "userId": user.uid,
+            "email": email.value,
+            "firstName": name.value,
+            "lastName": "",
             "phoneNumber": number.value,
+            "username": "",
+            "backgroundImage": "",
+            "shipping": {
+              "address1": "",
+              "address2": "",
+              "city": "",
+              "state": "",
+              "postalCode": "",
+              "country": "",
+              "phone": ""
+            }
+
             
            }
 
            // Proceed to submit form data to your server
            await createUserDocument(user, {
+            createdAt: new Date(),
+            userId: user.uid,
             name: name.value,
             phoneNumber: number.value,
             tac: tac.checked,
@@ -297,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
           showAlert("Account created successfully!");
 
           sessionStorage.setItem("user", JSON.stringify({ 
-            uid:user.uid,
+            userId:user.uid,
             email: email.value,
             name: name.value,
             seller: false
@@ -359,7 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             sessionStorage.setItem("user", JSON.stringify({
-              uid: user.uid,
+              userId: user.uid,
               email: user.email,
               name: userData.name,
               seller: userData.seller
