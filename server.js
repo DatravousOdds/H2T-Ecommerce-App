@@ -32,6 +32,8 @@ const { messaging } = require("firebase-admin");
 const { data } = require("jquery");
 const { stat } = require("fs");
 const { doc } = require("firebase/firestore");
+const { verify } = require("crypto");
+const { update } = require("firebase/database");
 dotenv.config();
 
 // aws parameters
@@ -553,6 +555,30 @@ app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });
 
+app.get("/orders/:id", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) return res.status(401).json({success: false, message: "No token provided"});
+
+    const verifiedToken = await admin.auth().verifyIdToken(token);
+
+    const docId = req.params.id;
+
+    const docRef = await db.collection("orders").doc(docId).get();
+    if (!docRef.exists) return res.status(404).json({success: false, message: "Order not found"});
+
+    const order = docRef.data();
+
+    if (verifiedToken.uid === order.buyerId || order.items.some(item => item.sellerId === verifiedToken.uid)) {
+      return res.status(200).json({ success: true, data: order });
+    } else {
+      return res.status(403).json({success: false, message: "Unauthorized"})
+    }
+  } catch (error) {
+    return res.status(500).json({success: false, message: error.message})
+  }
+})
+
 
 
 // 404 route
@@ -698,6 +724,99 @@ app.put("/userProfiles/:id", async (req, res) => {
 });
 
 
+app.put("/orders/:id", async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const data = req.body;
+
+  if (!token) return res.status(401).json({success: false, message: "Not authorized!"});
+
+  try {
+    const verifyToken = await admin.auth().verifyIdToken(token);
+    
+    const docId = req.params.id;
+
+    const docRef =  await db.collection("orders").doc(docId).get();
+    if(!docRef.exists) return res.status(404).json({success: false, message: "Document not found!"});
+
+    const order = docRef.data();
+
+    const isBuyer = verifyToken.uid === order.buyerId;
+    const isSeller = order.items.some(item => item.sellerId === verifyToken.uid);
+    const isAdmin = verifyToken.admin === true;
+
+    if (!isBuyer && !isSeller && !isAdmin) {
+      return res.status(403).json({success:false, message: "Role type not found!" })
+    }
+
+    const locked = ['fullfilled', 'shipped', 'completed', 'invoiced', 'cancelled', 'returned', 'disputed', 'refunded'];
+    const isLocked = locked.some(val => order.status.includes(val));
+
+    const updatedData = {};
+
+    if (!isLocked) {
+      if (isBuyer) {  
+        if (data.shipping !== undefined) {
+          updatedData.shipping = {
+            address1: data.shipping.address1,
+            address2: data.shipping.address2,
+            country: data.shipping.country,
+            city: data.shipping.city,
+            state: data.shipping.state,
+            postalCode: data.shipping.postalCode,
+            phone: data.shipping.phone
+          }
+        }
+      }
+  
+      if (isSeller) {
+        if (data.items.length > 0) {
+          updatedData.items = data.items.map(item => {
+            if (item.sellerId === verifyToken.uid) {
+              if(data.trackingNumber !== undefined || data.itemStatus !== undefined) {
+                return {
+                  ...item,
+                  trackingNumber:  data.trackingNumber,
+                  shippingCarrier: data.shippingCarrier,
+                  itemStatus: data.itemStatus
+                }
+              }
+              return item;
+            } else {
+              return item;
+            }
+          })
+        }
+      }
+  
+      if(isAdmin) {
+        if (data.status !== undefined) {
+          updatedData.status = data.status
+        }
+      }
+
+      if (Object.keys(updatedData).length === 0) {
+        return res.status(400).json({update: false, message: "No changes made"})
+      }
+
+      await docRef.update({
+        ...updatedData,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      res.status(200).json({ update: true, message: "Update successful"});
+
+    } else {
+      res.status(409).json({ success: false, message: "Order is locked!" })
+    }
+    
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+
+
+
 
 
 
@@ -731,8 +850,47 @@ app.delete("/products/:id", async (req, res) => {
     }
 });
 
-app.delete("/users/:id", async (req, res) => {
+app.delete("/orders/:id", async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  if (!token) return res.status(401).json({ success: false, message: "Not authorizated" });
 
+  try {
+    const verifiedToken = await admin.auth().verifyIdToken(token);
+    const docId = req.params.id;
+
+    const docRef = await db.collection("orders").doc(docId).get();
+    if (!docRef.exists) {
+      return res.status(404).json({success: false, message: "Document not found!"});
+    }
+
+    const order = docRef.data();
+
+    const isBuyer = verifiedToken.uid === order.buyerId;
+    const isSeller = order.items.some(item => item.sellerId === verifiedToken.uid);
+    const isAdmin = verifiedToken.admin === true;
+
+    if (isBuyer || isSeller || isAdmin) {
+      const locked = ['fullfilled', 'shipped', 'completed', 'invoiced','disputed'];
+      const isLocked = locked.some(val => order.status.includes(val));
+
+      if (!isLocked) {
+        await docRef.update({
+          status: "cancelled",
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        })
+
+        return res.status(200).json({ success: true, message: "Order has been cancelled!" })
+      }
+
+       return res.status(409).json({ success: false, message: "Order is locked!" })
+
+    } else {
+      return res.status(403).json({success: false, message: "Role type not found!" })
+    }
+
+  } catch (err) {
+    res.status(500).json({success: false, message: `Internal server error: ${err.message}`})
+  }
 })
 
 
