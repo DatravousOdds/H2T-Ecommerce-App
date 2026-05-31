@@ -10,9 +10,11 @@
       src="https://kit.fontawesome.com/854f8a6196.js"
       crossorigin="anonymous"
     ></script>
-
+    <link rel="stylesheet" href="../css/global.css" />
     <link rel="stylesheet" href="../css/style2.css" />
-    <link rel="stylesheet" href="../css/product.css" />
+    <link rel="stylesheet" href="../css/components/product-card.css">
+    <link rel="stylesheet" href="../css/components/newsletter.css">
+    <link rel="stylesheet" href="../css/pages/productDetails.css">
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
       rel="stylesheet"
@@ -22,13 +24,8 @@
       rel="stylesheet"
     />
     <title>Head-To-Toes Best Apparel At Calculated Prices</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
@@ -49,107 +46,126 @@
     </section>
     <!-- End of Navbar-->
 
-    <!-- <section id="page-header">
-        <h2>Super value deals</h2>
-         Change the description below later 
-        <p>Save more by Beoming a Head-To-Toe Member</p>
-    </section> -->
-    <h6 class="path">Home / Men / T-shirt</h6>
-    <section id="prodetails" class="section-p1">
-      <div class="single-pro-image">
-        <img src="/images/buy-1.jpg" width="100%" id="MainImg" alt="" />
+    
 
-        <div class="s-img-group">
-          <div class="s-img-col">
-            <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
-          </div>
-          <div class="s-img-col">
-            <img src="/images/buy-2.jpg" width="100%" class="s-img" alt="" />
-          </div>
-          <div class="s-img-col">
-            <img src="/images/buy-3.jpg" width="100%" class="s-img" alt="" />
-          </div>
-          <div class="s-img-col">
-            <img src="/images/buy-2.jpg" width="100%" class="s-img" alt="" />
-          </div>
-        </div>
-      </div>
+    <section id="prodetails" class="section-p1 product-details">
+      <nav aria-label="Breadcrumb">
+        <ol class="product-breadcrumb">
+          <li><a href="/">Home</a></li>
+          <li><a href="/men">Men</a></li>
+          <li><a href="/t-shirt">T-Shirt</a></li>
+        </ol>
+      </nav>
 
-      <div class="s_prod_details">
-        <div style="display: flex; padding-top: 1rem">
-          <div class="auth-icon">
-            <img src="./images/auth.png" alt="verified" width="30px" />
-          </div>
-          <div><p>Authenticity Guarantee</p></div>
-        </div>
+      <div class="product-details-wrapper">
 
-        <h4>Men's Fashion T Shirt</h4>
-        <h1>Supreme Grey T-shirt</h1>
-        <div class="rating" style="display: flex">
-          <div class="stars" id="stars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-          </div>
-          <div class="rates" style="padding-left: 0.25rem">(120)</div>
-        </div>
+        <div class="single-pro-image">
+          <img src="/images/buy-1.jpg" width="100%" id="MainImg" alt="" />
 
-        <h2 style="font-size: 2.2rem">$139.00</h2>
-        <hr style="width: 100%; text-align: left; margin-left: 0" />
-        <h4 style="padding: 0; padding-bottom: 5px">Color:</h4>
-        <div id="colors" class="clrs">
-          <div class="colors"></div>
-          <div class="colors"></div>
-          <div class="colors"></div>
-          <div class="colors"></div>
-        </div>
-        <h4 style="padding-top: 1rem">Size:</h4>
-        <div class="sizes">
-          <div class="size-btn">XS</div>
-          <div class="size-btn">S</div>
-          <div class="size-btn">M</div>
-          <div class="size-btn">L</div>
-          <div class="size-btn">XL</div>
-        </div>
-
-        <div class="buttons-container">
-          <a class="cta-btn buy-btn" href="#">Buy It Now</a>
-          <a class="cta-btn atc-btn" href="#">Add To Chart</a>
-          <a class="cta-btn stu-btn" href="#">Sell To Us</a>
-        </div>
-        <hr style="width: 100%; text-align: left; margin-left: 0" />
-        <div class="details-container">
-          <div class="prod-details">
-            <div class="detail-container">
-              <div class="detail-subheader">
-                <div>
-                  <h4 style="padding: 8px">Product Details</h4>
-                </div>
-                <div class="expand-details">
-                  <i class="fa-solid fa-plus"></i>
-                </div>
-              </div>
-
-              <p class="detail-text">
-                New with box: A brand-new, unused, and unworn item (including
-                handmade items) in the original packaging (such as the original
-                box or bag) and/or with the original tags attached.
-              </p>
+          <div class="s-img-group">
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
             </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="detail-container">
-              <div class="detail-subheader">
-                <div>
-                  <h4 style="padding: 8px">Shipping & Returns</h4>
-                </div>
-                <div class="expand-details">
-                  <i class="fa-solid fa-plus"></i>
-                </div>
-              </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-1.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-2.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-3.jpg" width="100%" class="s-img" alt="" />
+            </div>
+            <div class="s-img-col">
+              <img src="/images/buy-2.jpg" width="100%" class="s-img" alt="" />
+            </div>
+          </div>
+        </div>
 
-              <p class="detail-text">
+        <div class="s_prod_details">
+          <!-- Auth Badge-->
+          <!-- <div class="auth-badge">
+            <i class="fa-solid fa-check"></i>
+            <span>Authenticity Guarantee</span>
+          </div> -->
+
+          <p class="prod-category">Men's Fashion T Shirt</p>
+          <h1 class="prod-title">Supreme Grey T-shirt</h1>
+
+          <div class="prod-prices">
+            <p class="prod-price" aria-label="Price: 139.00">$139.00</p>
+            <p class="original-price">$125</p>
+          </div>
+          
+
+          <hr/>
+
+          <p class="option-label" id="size-label">Size:</p>
+          <div class="sizes" role="group">
+            <button class="size-btn">XS</button>
+            <button class="size-btn">S</button>
+            <button class="size-btn">M</button>
+            <button class="size-btn">L</button>
+            <button class="size-btn">XL</button>
+          </div>
+
+          <hr/>
+
+          <div class="buttons-container">
+            <div class="button-group">
+              <a class="cta-btn make-offer-btn" id="offerBtn" href="#" role="button">Make Offer</a>
+              <a class="cta-btn atc-btn" id="addToCartBtn" href="#" role="button">
+                <i class="fa-solid fa-bag-shopping"></i>
+                Add To Cart
+              </a>
+            </div>
+            <a class="cta-btn buy-btn" href="/checkout" role="button">Buy It Now</a>
+            <a class="cta-btn trade-btn" href="/trade" role="button">Trade</a>
+            <!-- <a class="cta-btn stu-btn" href="#" role="button">Sell To Us</a> -->
+          </div>
+
+          <hr/>
+
+          <div class="details-container">
+
+            <div class="detail-container">
+                <button class="detail-trigger">
+                  Product Details
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+                <p class="detail-text" id="detail-product">
+                  New with box: A brand-new, unused, and unworn item (including
+                  handmade items) in the original packaging (such as the original
+                  box or bag) and/or with the original tags attached.
+                </p>
+            </div>
+
+            <div class="detail-container">
+              <button class="detail-trigger">
+                Shipping & Returns
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <p class="detail-text" id="detail-shipping">
                 All orders will be shipped out within 72 hours (Monday-Friday)
                 of your purchase. You will be emailed tracking information as
                 soon as your package ships. Returns are permitted on items
@@ -164,257 +180,321 @@
                 considered final sale.
               </p>
             </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="detail-container">
-              <div class="detail-subheader">
-                <div>
-                  <h4 style="padding: 8px">Selling</h4>
-                </div>
-                <div class="expand-details">
-                  <i class="fa-solid fa-plus"></i>
-                </div>
-              </div>
 
-              <p class="detail-text">
+            <div class="detail-container">
+              <button class="detail-trigger">
+                Selling
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <p class="detail-text" id="detail-selling">
                 All orders will be shipped out within 72 hours (Monday-Friday)
                 of your purchase. You will be emailed tracking information as
                 soon as your package ships.
               </p>
             </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="detail-container">
-              <div class="detail-subheader">
-                <div>
-                  <h4 style="padding: 8px">Payment Methods</h4>
-                </div>
-                <div class="expand-details">
-                  <i class="fa-solid fa-plus"></i>
-                </div>
-              </div>
 
-              <p class="detail-text">
-                All orders will be shipped out within 72 hours (Monday-Friday)
-                of your purchase. You will be emailed tracking information as
-                soon as your package ships. Returns are permitted on items
-                within 16 days from the fulfillment date. Sneaker Politics does
-                not offer returns for refunds, but rather only for store credit.
-                Please visit our Returns Page for any questions about returns
-                and/or to start your return process. Socks, underwear,
-                sunglasses, release date products and items that are discounted
-                40% or more off the retail price are designated as FINAL SALE
-                and may not be returned for a refund, store credit or size
-                exchange. Visit our FAQ Page for any questions about what is
-                considered final sale.
+            <div class="detail-container">
+              <button class="detail-trigger">
+                Payment Methods
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <p class="detail-text" id="detail-payment">
+                We accept Visa, Mastercard, American Express, PayPal, Apple Pay, and Google Pay.
+                All transactions are encrypted and processed securely.
               </p>
             </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="detail-container">
-              <div class="detail-subheader">
-                <div>
-                  <h4 style="padding: 8px">Authenticity</h4>
-                </div>
-                <div class="expand-details">
-                  <i class="fa-solid fa-plus"></i>
-                </div>
-              </div>
 
-              <p class="detail-text">
-                Authenticity Guarantee. This item is shipped to an eBay
-                authenticator before delivery.
+            <div class="detail-container">
+              <button class="detail-trigger">
+                Authenticity
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <p class="detail-text" id="detail-auth">
+                Every item is verified by an independent authenticator before delivery,
+                ensuring you receive only genuine products.
               </p>
             </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
+        
           </div>
+
+          <div class="sm-reviews-section">
+            <div class="review-header">
+              <h3>Recent Reviews</h3>
+              <button type="button" id="writeReviewBtn" class="write-review" style="display: none;">
+                <i class="fa-solid fa-plus"></i>
+                Write a review
+              </button>
+            </div>
+            
+            <div class="review-ratings" style="display: flex">
+              <div class="stars" id="stars">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+              </div>
+              <p class="reviews-count" id="reviewsCount">(200)</p>
+            </div>
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+            <div class="comments">
+              <!-- comment -->
+            <div class="comment-container">
+              <!-- comment date -->
+              <div class="rating-timestamp" style="display: flex">
+                <div class="stars" id="stars">
+                  <span class="star" data-value="1">★</span>
+                  <span class="star" data-value="2">★</span>
+                  <span class="star" data-value="3">★</span>
+                  <span class="star" data-value="4">★</span>
+                  <span class="star" data-value="5">★</span>
+                </div>
+                <span class="comment-date">01/07/2024</span>
+              </div>
+              <!-- comment & user -->
+              <div class="active-comment">
+                <div class="comment">
+                  <p>This was an great purchase</p>
+                </div>
+                <div class="user-pfp" style="display: flex">
+                  <div class="user">
+                    <img src="../images/3.png" alt="user image" />
+                  </div>
+                  <div class="user-name">
+                    <a href="#">John Will</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- eof comment -->
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+            <!-- comment -->
+            <div class="comment-container">
+              <!-- comment date -->
+              <div class="rating-timestamp" style="display: flex">
+                <div class="stars" id="stars">
+                  <span class="star" data-value="1">★</span>
+                  <span class="star" data-value="2">★</span>
+                  <span class="star" data-value="3">★</span>
+                  <span class="star" data-value="4">★</span>
+                  <span class="star" data-value="5">★</span>
+                </div>
+                <span class="comment-date">01/07/2024</span>
+              </div>
+              <!-- comment & user -->
+              <div class="active-comment">
+                <div class="comment">
+                  <p>This was an great purchase</p>
+                </div>
+                <div class="user-pfp" style="display: flex">
+                  <div class="user">
+                    <img src="./images/product-10.jpg" alt="user image" />
+                  </div>
+                  <div class="user-name">
+                    <a href="#">John Will</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- eof comment -->
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+            <!-- comment -->
+            <div class="comment-container">
+              <!-- comment date -->
+              <div class="rating-timestamp" style="display: flex">
+                <div class="stars" id="stars">
+                  <span class="star" data-value="1">★</span>
+                  <span class="star" data-value="2">★</span>
+                  <span class="star" data-value="3">★</span>
+                  <span class="star" data-value="4">★</span>
+                  <span class="star" data-value="5">★</span>
+                </div>
+                <span class="comment-date">01/07/2024</span>
+              </div>
+              <!-- comment & user -->
+              <div class="active-comment">
+                <div class="comment">
+                  <p>This was an great purchase</p>
+                </div>
+                <div class="user-pfp" style="display: flex">
+                  <div class="user">
+                    <img src="./images/product-10.jpg" alt="user image" />
+                  </div>
+                  <div class="user-name">
+                    <a href="#">John Will</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- eof comment -->
+            <hr
+              style="
+                width: 100%;
+                text-align: left;
+                margin-left: 0;
+                border-color: black;
+              "
+            />
+            <!-- comment -->
+            <div class="comment-container">
+              <!-- comment date -->
+              <div class="rating-timestamp" style="display: flex">
+                <div class="stars" id="stars">
+                  <span class="star" data-value="1">★</span>
+                  <span class="star" data-value="2">★</span>
+                  <span class="star" data-value="3">★</span>
+                  <span class="star" data-value="4">★</span>
+                  <span class="star" data-value="5">★</span>
+                </div>
+                <span class="comment-date">01/07/2024</span>
+              </div>
+              <!-- comment & user -->
+              <div class="active-comment">
+                <div class="comment">
+                  <p>This was an great purchase</p>
+                </div>
+                <div class="user-pfp" style="display: flex">
+                  <div class="user">
+                    <img src="./images/product-10.jpg" alt="user image" />
+                  </div>
+                  <div class="user-name">
+                    <a href="#">John Will</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- eof comment -->
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+            <!-- comment -->
+            <div class="comment-container">
+              <!-- comment date -->
+              <div class="rating-timestamp" style="display: flex">
+                <div class="stars" id="stars">
+                  <span class="star" data-value="1">★</span>
+                  <span class="star" data-value="2">★</span>
+                  <span class="star" data-value="3">★</span>
+                  <span class="star" data-value="4">★</span>
+                  <span class="star" data-value="5">★</span>
+                </div>
+                <span class="comment-date">01/07/2024</span>
+              </div>
+              <!-- comment & user -->
+              <div class="active-comment">
+                <div class="comment">
+                  <p>This was an great purchase</p>
+                </div>
+                <div class="user-pfp" style="display: flex">
+                  <div class="user">
+                    <img src="./images/product-10.jpg" alt="user image" />
+                  </div>
+                  <div class="user-name">
+                    <a href="#">John Will</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            </div>
+            
+          </div>
+
         </div>
       </div>
     </section>
+    <!-- Sales Chart-->
+     <section class="section-p1">
+        <div class="header-wrapper">
+          <div class="chart-header">
+            <p class="subheader">Sales Chart</p>
+            <h2 class="header">Price History</h2>
+          </div>
+         
+          <div class="chart-tooltip">
+            <p>Last sale</p>
+            <span>$139</span>
+          </div>
+        </div>
 
-    <!-- SM Screen reviews-->
-    <div class="sm-reviews-section">
-      <h3>Reviews</h3>
-      <div class="review-header" style="display: flex">
-        <p style="padding-right: 0.35rem; padding-top: 12px">(200) reviews</p>
-        <div class="stars" id="stars">
-          <span class="star" data-value="1">★</span>
-          <span class="star" data-value="2">★</span>
-          <span class="star" data-value="3">★</span>
-          <span class="star" data-value="4">★</span>
-          <span class="star" data-value="5">★</span>
-        </div>
-      </div>
-      <hr style="width: 100%; text-align: left; margin-left: 0" />
-      <!-- comment -->
-      <div class="comment-container">
-        <!-- comment date -->
-        <div class="rating-timestamp" style="display: flex">
-          <div class="stars" id="stars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
+        <!--Chart filters-->
+        <div class="chart-filter-grid">
+          <div class="filter">
+            <p>1M</p>
           </div>
-          <span class="comment-date">01/07/2024</span>
-        </div>
-        <!-- comment & user -->
-        <div class="active-comment">
-          <div class="comment">
-            <p>This was an great purchase</p>
-          </div>
-          <div class="user-pfp" style="display: flex">
-            <div class="user">
-              <img src="./images/product-10.jpg" alt="user image" />
-            </div>
-            <div class="user-name">
-              <a href="#">John Will</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- eof comment -->
-      <hr style="width: 100%; text-align: left; margin-left: 0" />
-      <!-- comment -->
-      <div class="comment-container">
-        <!-- comment date -->
-        <div class="rating-timestamp" style="display: flex">
-          <div class="stars" id="stars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-          </div>
-          <span class="comment-date">01/07/2024</span>
-        </div>
-        <!-- comment & user -->
-        <div class="active-comment">
-          <div class="comment">
-            <p>This was an great purchase</p>
-          </div>
-          <div class="user-pfp" style="display: flex">
-            <div class="user">
-              <img src="./images/product-10.jpg" alt="user image" />
-            </div>
-            <div class="user-name">
-              <a href="#">John Will</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- eof comment -->
-      <hr style="width: 100%; text-align: left; margin-left: 0" />
-      <!-- comment -->
-      <div class="comment-container">
-        <!-- comment date -->
-        <div class="rating-timestamp" style="display: flex">
-          <div class="stars" id="stars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-          </div>
-          <span class="comment-date">01/07/2024</span>
-        </div>
-        <!-- comment & user -->
-        <div class="active-comment">
-          <div class="comment">
-            <p>This was an great purchase</p>
-          </div>
-          <div class="user-pfp" style="display: flex">
-            <div class="user">
-              <img src="./images/product-10.jpg" alt="user image" />
-            </div>
-            <div class="user-name">
-              <a href="#">John Will</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- eof comment -->
-      <hr
-        style="
-          width: 100%;
-          text-align: left;
-          margin-left: 0;
-          border-color: black;
-        "
-      />
-      <!-- comment -->
-      <div class="comment-container">
-        <!-- comment date -->
-        <div class="rating-timestamp" style="display: flex">
-          <div class="stars" id="stars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-          </div>
-          <span class="comment-date">01/07/2024</span>
-        </div>
-        <!-- comment & user -->
-        <div class="active-comment">
-          <div class="comment">
-            <p>This was an great purchase</p>
-          </div>
-          <div class="user-pfp" style="display: flex">
-            <div class="user">
-              <img src="./images/product-10.jpg" alt="user image" />
-            </div>
-            <div class="user-name">
-              <a href="#">John Will</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- eof comment -->
-      <hr style="width: 100%; text-align: left; margin-left: 0" />
-      <!-- comment -->
-      <div class="comment-container">
-        <!-- comment date -->
-        <div class="rating-timestamp" style="display: flex">
-          <div class="stars" id="stars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-          </div>
-          <span class="comment-date">01/07/2024</span>
-        </div>
-        <!-- comment & user -->
-        <div class="active-comment">
-          <div class="comment">
-            <p>This was an great purchase</p>
-          </div>
-          <div class="user-pfp" style="display: flex">
-            <div class="user">
-              <img src="./images/product-10.jpg" alt="user image" />
-            </div>
-            <div class="user-name">
-              <a href="#">John Will</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- eof comment -->
-      <hr style="width: 100%; text-align: left; margin-left: 0" />
-      <div class="sm-pagination-reviews">
-        <div class="pagination-btns">
-          <i class="fa-solid fa-arrow-left"></i>
-        </div>
-        <div class="pagination-btns">1</div>
-        <div class="pagination-btns">2</div>
-        <div class="pagination-btns">3</div>
-        <div class="pagination-btns">4</div>
-        <div class="pagination-btns">
-          <i class="fa-solid fa-arrow-right"></i>
-        </div>
-      </div>
-    </div>
 
-    <!-- END -->
+          <div class="filter">
+            <p>3M</p>
+          </div>
+
+          <div class="filter">
+            <p>6M</p>
+          </div>
+
+          <div class="filter">
+            <p>1Y</p>
+          </div>
+
+          <div class="filter">
+            <p>All</p>
+          </div>
+        </div>
+        <!-- Statiscal Data-->
+         <div class="stat-row">
+          <div class="stat-card">
+            <div class="stat-label">
+              Avg. sales price
+            </div>
+            <div class="stat-val">
+              $135
+            </div>
+            <div class="stat-delta up">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+              4.2%
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">
+              Lowest offer
+            </div>
+            <div class="stat-val">
+              $120
+            </div>
+            <div class="stat-delta down">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+              4.2%
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">
+              Highest offer
+            </div>
+            <div class="stat-val">
+              $135
+            </div>
+            <div class="stat-delta down">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+              1.5%
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">
+              Market value
+            </div>
+            <div class="stat-val">
+              $135
+            </div>
+            <div class="stat-delta up">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+              3.2%
+            </div>
+          </div>
+         </div>
+        <!--Chart Canvas-->
+        <div class="canvas-container">
+          <canvas id="priceChart" width="1120" height="300"></canvas>
+        </div>
+
+        <hr/>
+     </section>
 
     <!-- Products-->
     <section id="product1">
@@ -966,560 +1046,8 @@
         <!---  End Of Product Container -->
       </div>
     </section>
-    <!-- end of Products-->
-
-    <!-- Products-->
-    <section id="product1">
-      <h2 class="pro-header">Others have bought</h2>
-      <!-- Contains all product cards -->
-      <div class="pro-container">
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>2 Colors</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350 USD</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-
-        <!--- Product Container -->
-        <div class="pro" onclick="window.location.href='product.html';">
-          <!--- Image container-->
-          <div class="product-image">
-            <div class="liked">
-              <i class="fa-regular fa-heart"></i>
-            </div>
-
-            <img
-              src="./images/Supreme Al Green .png"
-              class="image-custom"
-              alt=""
-            />
-          </div>
-          <!--- Image container-->
-
-          <!-- product details -->
-          <div class="des">
-            <div class="pro-brand">
-              <p class="pro-brand-txt">Nike SB Dunk High Supreme Rammellzee</p>
-            </div>
-
-            <div class="discount">
-              <p>20% OFF</p>
-            </div>
-
-            <div class="pro-price">
-              <span class="p_rice">$350</span>
-            </div>
-          </div>
-          <!-- product details -->
-        </div>
-        <!---  End Of Product Container -->
-      </div>
-    </section>
-    <!-- end of Products-->
-
+    
+    <!-- Newsletter -->
     <section id="newsletter" class="section-p1 section-m1">
       <div class="newstext">
         <!-- change later, look at plainning sheet -->
@@ -1536,6 +1064,194 @@
     </section>
 
     <footer class="section-p1"></footer>
+
+    <!-- ===== MODALS ===== -->
+    <div class="modal-overlay">
+      <div class="modal" id="reviewModal" style="display: none;">...</div>
+      <div class="offer-modal" id="offerModal" aria-modal="true">
+      <div class="offer-header">
+        <h2>Make offer</h2>
+        <button type="button" class="modal-close" aria-label="close button">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="offerBody">
+        <div class="offer-info">
+          <img src="../images/Jordan 3 Retro Cardinal Red (11).jpg" alt="">
+          <div class="product-info">
+            <p class="product-brand">Nike SB</p>
+            <p class="product-size">Size 4</p>
+            <p class="product-price">$46.60</p>
+          </div>
+        </div>
+        <div class="offer-input">
+          <label for="offerInput">Your offer</label>
+          <input type="number" id="offerInput" value="">
+        </div>
+        <div class="offer-suggestions" aria-label="Quick offer suggestion">
+          <button type="button" class="offer-suggestion" data-value="">
+            <span>10% Off</span>
+            <span>$41.00</span>
+          </button>
+          <button type="button" class="offer-suggestion" data-value="">
+            <span>20% Off</span>
+            <span>$36.00</span>
+          </button>
+          <button type="button" class="offer-suggestion" data-value="">
+            <span>15% Off</span>
+            <span>$39.10</span>
+          </button>
+        </div>
+        <div class="offer-tooltip" id="offerTooltip">
+          <p>An offer accepted is not a purchase. If the seller accepts, you’ll have 24  hours to buy item at offer price</p>
+        </div>
+        <button class="send-offer-btn" id="sendOfferBtn" type="button">Send Offer</button>
+      </div>
+      </div>
+      
+      <div class="offer-sent" id="offerSent">
+        <div class="offer-header">
+          <h2>Offer sent</h2>
+          <button type="button" class="modal-close" aria-label="close button">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="sent-body" id="offerBody">
+          <div class="icon-wrapper">
+            <i class="fa-solid fa-paper-plane"></i>
+          </div>
+          <div class="offer-tooltip" id="offerTooltip">
+            <p>We will notify the seller of your offer. Seller has 24 hours to accept or decline your offer</p>
+          </div>
+          <button class="send-offer-btn" type="button">View offers</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
+      <div class="cart-drawer-header">
+        <h2>Your Bag</h2>
+        <button class="modal-close" id="cartDrawerClose" aria-label="Close cart">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    
+      <div class="cart-drawer-body" id="cartDrawerBody">
+        <!-- cart items will go here -->
+        <div class="cart-item">
+          <div class="seller-profile">
+            <img src="/images/76daa18d85a855e4afb84e59d9bd3546.jpg" alt="" class="seller-profile-picture">
+            <a href="#" class="seller-name">
+              <span>newUser1</span>
+            </a>
+          </div>
+          <div class="product-info-wrapper">
+           <img src="../images/Jordan 3 Retro Cardinal Red (11).jpg" alt="Product image" />
+          <div class="cart-item-info">
+            <div class="cart-product-info">
+              <p class="cart-item-brand">Nike SB</p>
+              <p class="cart-item-name">Supreme Grey T-shirt</p>
+              <p class="cart-item-size">Size: M</p>
+              <p class="cart-item-price">$139.00</p>
+            </div>
+            
+          </div> 
+          </div>
+          
+          <button class="cart-item-remove"  aria-label="Remove item">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+        <div class="cart-item">
+          <div class="seller-profile">
+            <img src="/images/76daa18d85a855e4afb84e59d9bd3546.jpg" alt="" class="seller-profile-picture">
+            <a href="#" class="seller-name">
+              <span>newUser1</span>
+            </a>
+          </div>
+          <div class="product-info-wrapper">
+           <img src="../images/Jordan 3 Retro Cardinal Red (11).jpg" alt="Product image" />
+          <div class="cart-item-info">
+            <div class="cart-product-info">
+              <p class="cart-item-brand">Nike SB</p>
+              <p class="cart-item-name">Supreme Grey T-shirt</p>
+              <p class="cart-item-size">Size: M</p>
+              <p class="cart-item-price">$139.00</p>
+            </div>
+            
+          </div> 
+          </div>
+          
+          <button class="cart-item-remove" aria-label="Remove item">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+        <div class="cart-item">
+          <div class="seller-profile">
+            <img src="/images/76daa18d85a855e4afb84e59d9bd3546.jpg" alt="" class="seller-profile-picture">
+            <a href="#" class="seller-name">
+              <span>newUser1</span>
+            </a>
+          </div>
+          <div class="product-info-wrapper">
+           <img src="../images/Jordan 3 Retro Cardinal Red (11).jpg" alt="Product image" />
+          <div class="cart-item-info">
+            <div class="cart-product-info">
+              <p class="cart-item-brand">Nike SB</p>
+              <p class="cart-item-name">Supreme Grey T-shirt</p>
+              <p class="cart-item-size">Size: M</p>
+              <p class="cart-item-price">$139.00</p>
+            </div>
+            
+          </div> 
+          </div>
+          
+          <button class="cart-item-remove" aria-label="Remove item">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+        <div class="cart-item">
+          <div class="seller-profile">
+            <img src="/images/76daa18d85a855e4afb84e59d9bd3546.jpg" alt="" class="seller-profile-picture">
+            <a href="#" class="seller-name">
+              <span>newUser1</span>
+            </a>
+          </div>
+          <div class="product-info-wrapper">
+           <img src="../images/Jordan 3 Retro Cardinal Red (11).jpg" alt="Product image" />
+          <div class="cart-item-info">
+            <div class="cart-product-info">
+              <p class="cart-item-brand">Nike SB</p>
+              <p class="cart-item-name">Supreme Grey T-shirt</p>
+              <p class="cart-item-size">Size: M</p>
+              <p class="cart-item-price">$139.00</p>
+            </div>
+            
+          </div> 
+          </div>
+          
+          <button class="cart-item-remove" aria-label="Remove item">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+    
+      <div class="cart-drawer-footer">
+        <div class="cart-subtotal">
+          <span>Subtotal</span>
+          <span>$139.00</span>
+        </div>
+        <a href="/checkout" class="checkout-btn" id="checkoutBtn" role="button">Checkout</a>
+      </div>
+    </div>
+    
+    
+
+    
+    
+    <!-- Drawer backdrop (separate from your modal overlay) -->
+    <div class="cart-drawer-backdrop" id="cartBackdrop"></div>
+    <!-- ===== END MODALS ===== -->
 
     <script>
       var bigImage = document.getElementById("MainImg");
@@ -1558,8 +1274,9 @@
     </script>
     <script src="../js/components/toggleDetails.js"></script>
     <script src="../js/components/newsletter.js"></script>
-    <script type="module" src="js/core/global.js"></script>
-    <!-- <script src="../js/pages/product.js"></script> -->
+    <script type="module" src="../js/components/priceChart.js"></script>
+    <script type="module" src="../js/core/global.js"></script>
+    <script type="module" src="../js/pages/product.js"></script>
     <script type="module" src="../js/components/nav.js"></script>
     <script src="../js/components/footer.js"></script>
   </body>

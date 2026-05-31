@@ -20,6 +20,7 @@ easyship.auth('prod_aYTcBC7VD6gMPL9uP6blT9GDh1GVfCkykvQ4INaMhjs=');
 
 // Import Firebase configuration
 const { initializeFirebase, getDb, getAdmin } = require("./firebase");
+const { verifyAuth } = require("./middleware/auth");
 
 // Initialize Firebase
 const { admin, db } = initializeFirebase();
@@ -28,12 +29,6 @@ const bucket = admin.storage().bucket();
 // aws config
 const aws = require("aws-sdk");
 const dotenv = require("dotenv");
-const { messaging } = require("firebase-admin");
-const { data } = require("jquery");
-const { stat } = require("fs");
-const { doc } = require("firebase/firestore");
-const { verify } = require("crypto");
-const { update } = require("firebase/database");
 dotenv.config();
 
 // aws parameters
@@ -185,22 +180,18 @@ app.get("/forgot-password", (req, res) => {
 app.get("/profile", (req, res) => {
   res.sendFile(path.join(staticPth, "account/profile.html"));
 });
-
 //signup route
 app.get("/signup", (req, res) => {
   res.sendFile(path.join(staticPth, "auth/signup.html"));
 });
-
 //list product route
 app.get("/list-product", (req, res) => {
   res.sendFile(path.join(staticPth, "list-product.html"));
 });
-
 // trade request route
 app.get("/trade-request", (req, res) => {
   res.sendFile(path.join(staticPth, "trade/trade-request.html"));
 });
-
 // view trade request route
 app.get("/view-trade-request", (req, res) => {
   res.sendFile(path.join(staticPth, "viewTradeRequest.html"));
@@ -209,17 +200,14 @@ app.get("/view-trade-request", (req, res) => {
 app.get("/trade", (req, res) => {
   res.sendFile(path.join(staticPth, "trade/trade.html"))
 })
-
 // sell to us route
 app.get("/sell-to-us", (req, res) => {
   res.sendFile(path.join(staticPth, "sell-to-us/sell-to-us.html"));
 });
-
 // releases route
 app.get("/releases", (req, res) => {
   res.sendFile(path.join(staticPth, "shop/releases.html"));
 });
-
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));
@@ -493,19 +481,14 @@ app.post("/delete-product", (req, res) => {
     });
 });
 
-app.post("/orders", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
+app.post("/orders", verifyAuth, async (req, res) => {
   const data = req.body;
 
-  if (!token) return res.status(401);
-
   try {
-    const verifiedToken = await admin.auth().verifyIdToken(token);
-
     if(data.items.length > 0) {
 
       const orderData = {
-        buyerId: verifiedToken.uid,
+        buyerId: req.token.uid,
         status: "captured",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -555,13 +538,8 @@ app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });
 
-app.get("/orders/:id", async (req, res) => {
+app.get("/orders/:id", verifyAuth, async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    if (!token) return res.status(401).json({success: false, message: "No token provided"});
-
-    const verifiedToken = await admin.auth().verifyIdToken(token);
-
     const docId = req.params.id;
 
     const docRef = await db.collection("orders").doc(docId).get();
@@ -569,7 +547,7 @@ app.get("/orders/:id", async (req, res) => {
 
     const order = docRef.data();
 
-    if (verifiedToken.uid === order.buyerId || order.items.some(item => item.sellerId === verifiedToken.uid)) {
+    if (req.token.uid === order.buyerId || order.items.some(item => item.sellerId === req.token.uid)) {
       return res.status(200).json({ success: true, data: order });
     } else {
       return res.status(403).json({success: false, message: "Unauthorized"})
@@ -579,28 +557,21 @@ app.get("/orders/:id", async (req, res) => {
   }
 })
 
-
-
 // 404 route
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPth, "/static/404.html"));
 });
 
 // update and modify product information
-app.put("/products/:id", async (req, res) => {
+app.put("/products/:id", verifyAuth, async (req, res) => {
     const data = req.body;
-    const token = req.headers.authorization.split(" ")[1];
     const docId = req.params.id;
 
-    if(!token) return res.status(401).json({ hasToken: false });
-
     try {
-      const verifyToken = await admin.auth().verifyIdToken(token);
-
       const docRef = await db.collection("listings").doc(docId).get();
       if (!docRef.exists) return res.status(404).json({ result: `Not listing found for ${docId}`});
 
-      if(verifyToken.uid === docRef.data().userId) {
+      if(req.token.uid === docRef.data().userId) {
         const updateData = {
           ...(data.images !== undefined && { images: data.images }),
           ...(data.description !== undefined && { description: data.description }),
@@ -631,17 +602,12 @@ app.put("/products/:id", async (req, res) => {
 });
 
 // update and modify user profile information
-app.put("/users/:id", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
+app.put("/users/:id", verifyAuth, async (req, res) => {
   const userId = req.params.id;
   const data = req.body;
-  
-  if (!token) return res.status(401).json({ success: false, message: "User unauthorized"});
 
   try {
-    const verifyToken = await admin.auth().verifyIdToken(token);
-
-    if (verifyToken.uid === userId) {
+    if (req.token.uid === userId) {
       const docRef = db.collection("users").doc(userId);
       const doc = await docRef.get();
 
@@ -658,7 +624,7 @@ app.put("/users/:id", async (req, res) => {
           lastUpdated: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        res.status(200).json({ update: true, message: "Update successful"});
+        res.status(200).json({ update: true, message: "Update successful" });
       }
       
     } else {
@@ -672,17 +638,12 @@ app.put("/users/:id", async (req, res) => {
   
 });
 
-app.put("/userProfiles/:id", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
+app.put("/userProfiles/:id", verifyAuth, async (req, res) => {
   const userId = req.params.id;
   const data = req.body;
   
-  if (!token) return res.status(401).json({ success: false, message: "User unauthorized"});
-
   try {
-    const verifyToken = await admin.auth().verifyIdToken(token);
-
-    if (verifyToken.uid === userId) {
+    if (req.token.uid === userId) {
       const docRef = db.collection("userProfiles").doc(userId);
       const doc = await docRef.get();
 
@@ -703,7 +664,7 @@ app.put("/userProfiles/:id", async (req, res) => {
           } }),
         };
 
-        if (Object.keys(updateData).length === 0) return res.status(400).json({update: false, message: "No changes made"});
+        if (Object.keys(updateData).length === 0) return res.status(400).json({ update: false, message: "No changes made"});
 
         await docRef.update({
           ...updateData,
@@ -712,27 +673,21 @@ app.put("/userProfiles/:id", async (req, res) => {
 
         res.status(200).json({ update: true, message: "Update successful"});
       } else {
-        res.status(404).json({success: false, message: "No document found!"})
+        res.status(404).json({ success: false, message: "No document found!"})
       }
       
     } else {
       return res.status(403);
     }
   } catch (error) {
-    return res.status(500).json({success: false, message: error.message})
+    return res.status(500).json({ success: false, message: error.message })
   }
 });
 
-
-app.put("/orders/:id", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
+app.put("/orders/:id", verifyAuth, async (req, res) => {
   const data = req.body;
 
-  if (!token) return res.status(401).json({success: false, message: "Not authorized!"});
-
   try {
-    const verifyToken = await admin.auth().verifyIdToken(token);
-    
     const docId = req.params.id;
 
     const docRef =  await db.collection("orders").doc(docId).get();
@@ -740,12 +695,12 @@ app.put("/orders/:id", async (req, res) => {
 
     const order = docRef.data();
 
-    const isBuyer = verifyToken.uid === order.buyerId;
-    const isSeller = order.items.some(item => item.sellerId === verifyToken.uid);
-    const isAdmin = verifyToken.admin === true;
+    const isBuyer = req.token.uid === order.buyerId;
+    const isSeller = order.items.some(item => item.sellerId === req.token.uid);
+    const isAdmin = req.token.admin === true;
 
     if (!isBuyer && !isSeller && !isAdmin) {
-      return res.status(403).json({success:false, message: "Role type not found!" })
+      return res.status(403).json({ success:false, message: "Role type not found!" })
     }
 
     const locked = ['fullfilled', 'shipped', 'completed', 'invoiced', 'cancelled', 'returned', 'disputed', 'refunded'];
@@ -771,7 +726,7 @@ app.put("/orders/:id", async (req, res) => {
       if (isSeller) {
         if (data.items.length > 0) {
           updatedData.items = data.items.map(item => {
-            if (item.sellerId === verifyToken.uid) {
+            if (item.sellerId === req.token.uid) {
               if(data.trackingNumber !== undefined || data.itemStatus !== undefined) {
                 return {
                   ...item,
@@ -813,27 +768,15 @@ app.put("/orders/:id", async (req, res) => {
     return res.status(500).json({ success: false, message: err.message })
   }
 })
-
-
-
-
-
-
-
 // delete entire product 
-app.delete("/products/:id", async (req, res) => {
-    const token = req.headers.authorization.split(" ")[1];
+app.delete("/products/:id", verifyAuth, async (req, res) => {
     const docId = req.params.id;
 
-    if(!token) return res.status(401).json({success: false, message: "No token found"});
-
     try {
-      const verifyToken = await admin.auth().verifyIdToken(token);
-
       const docRef = await db.collection("listings").doc(docId).get();
       if (!docRef.exists) return res.status(404).json({ success: false, message: "No document found!"});
 
-      if (verifyToken.uid === docRef.data().userId) {
+      if (req.token.uid === docRef.data().userId) {
         const images = docRef.data().images;
         await Promise.all(images.map(image => 
           admin.storage().bucket().file(image.path).delete()
@@ -850,24 +793,20 @@ app.delete("/products/:id", async (req, res) => {
     }
 });
 
-app.delete("/orders/:id", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  if (!token) return res.status(401).json({ success: false, message: "Not authorizated" });
-
+app.delete("/orders/:id", verifyAuth, async (req, res) => {
   try {
-    const verifiedToken = await admin.auth().verifyIdToken(token);
     const docId = req.params.id;
 
     const docRef = await db.collection("orders").doc(docId).get();
     if (!docRef.exists) {
-      return res.status(404).json({success: false, message: "Document not found!"});
+      return res.status(404).json({ success: false, message: "Document not found!" });
     }
 
     const order = docRef.data();
 
-    const isBuyer = verifiedToken.uid === order.buyerId;
-    const isSeller = order.items.some(item => item.sellerId === verifiedToken.uid);
-    const isAdmin = verifiedToken.admin === true;
+    const isBuyer = req.token.uid === order.buyerId;
+    const isSeller = order.items.some(item => item.sellerId === req.token.uid);
+    const isAdmin = req.token.admin === true;
 
     if (isBuyer || isSeller || isAdmin) {
       const locked = ['fullfilled', 'shipped', 'completed', 'invoiced','disputed'];

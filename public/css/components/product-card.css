@@ -1,3 +1,8 @@
+:root {
+  --color-status-success: #16803c;
+  --color-status-success-light: #F0FDF4;
+}
+
 /* Product Card */
 .pro-price {
   display: flex;
@@ -23,8 +28,8 @@
 }
 
 .price-trend.trend-up {
-  color: var(--color-green-primary);
-  background-color: var(--color-green-light);
+  color: var(--color-status-success);
+  background-color: var(--color-status-success-light);
   padding: 0.0625rem 0.25rem;
   border-radius: 0.25rem;
 

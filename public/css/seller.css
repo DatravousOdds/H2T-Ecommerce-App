@@ -48,6 +48,7 @@ nav .header-title {
     font-size: 1.5rem;
     font-weight: bold;
     color: #333;
+    margin-bottom: 0;
 }
 
 nav .logo img {

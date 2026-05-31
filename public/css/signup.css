@@ -31,11 +31,10 @@ body {
 }
 
 .logo {
-  height: 75%;
-  width: 75%;
+  height: 100px;
+  width: 100px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 50px;
 }
 
 input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),

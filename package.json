@@ -12,6 +12,7 @@
     "@api/easyship": "file:.api/apis/easyship",
     "aws-sdk": "^2.1213.0",
     "bcrypt": "^5.1.0",
+    "chart.js": "^4.5.1",
     "countries-list": "^3.1.1",
     "country-region-data": "^3.0.0",
     "dotenv": "^16.4.7",

@@ -50,15 +50,16 @@ const handleTabs = () => {
 const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthContent) => `
   <nav class="navbar" aria-label="main navigation">
     <!-- Left section with search and logo -->
+    
     <div class="search-section">
+      <a href="/" aria-label="Go to homepage"><img src="../images/Hexxo_Bg_Removed.png" class="logo-img" width="80" height="80"/></a>
+
       <form class="search-form" role="search">
         <input type="text" placeholder="Search here...." class="search-input" aria-label="Search Products">
         <button type="submit" class="search-button" aria-label="Search">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </form>
-
-      <a href="/"><img src="../images/logoh2t_home.png" class="logo-img" width="80px" height="50px"/></a>
     </div>
 
     <!-- Small screen nav - USER SPECIFIC CONTENT -->
