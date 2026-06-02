@@ -1,6 +1,7 @@
-import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where } from '../api/firebase-client.js';
+import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
 import { formatFirebaseDate } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
+
 
 const user = await checkUserStatus();
 const searchQuery = new URLSearchParams(window.location.search);
@@ -25,12 +26,15 @@ const cartDrawerClose = document.getElementById('cartDrawerClose');
 const cartDrawer = document.getElementById('cartDrawer');
 const addToCartBtn = document.getElementById('addToCartBtn');
 const cartDrawerBody = document.getElementById('cartDrawerBody');
+const priceHistoryFilters = document.querySelectorAll('.chart-filter-grid .filter');
 
 
+console.log("price history filters", priceHistoryFilters)
 
 
 setBreadcrumb();
 displayProductDetails();
+displayPricingKpis();
 displayReviews();
 
 /* ==== EVENT LISTENERS ===== */
@@ -250,8 +254,8 @@ async function displayProductDetails() {
 
     productCategory.textContent = data.category;
     productTitle.textContent = data.productName;
-    productPrice.textContent = `$${data.listingPrice}`;
-    productOriginalPrice.textContent = `$${data.originalPrice}`;
+    productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
+    productOriginalPrice.textContent = `$${data.originalPrice.toFixed(2)}`;
 
     const productMainImage = data.images.find(image => image.isPrimary === true);
 
@@ -379,7 +383,68 @@ async function deleteItemFromFirebaseCart(id) {
     console.log(deletedItem)
 }
 
-async getAverage
+async function getMarketValuePrice() {
+    const data = await getProductData(productId)
+    const ordersColRef = collection(db, "orders");
+
+    let q = query(ordersColRef, 
+        where("productName", "==", data.productName),
+        where("brand", "==", data.brand),
+        orderBy("salePrice", "asc"),
+        limit(1)
+    );
+
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        return [];
+    }
+
+    const marketPrice = querySnapshot.docs[0].data().salePrice;
+
+    return marketPrice.toFixed(2) || 0;
+};
+
+async function getAverageSalePrice() {
+    const data = await getProductData(productId);
+
+    const ordersColRef = collection(db, "orders");
+
+    let q = query(ordersColRef, where("productName", "==", data.productName));
+
+    if (data.sku) {
+        q = query(ordersColRef, 
+            where("productName", "==", data.productName),
+            where("sku", "==", data.sku));
+    }
+
+    const querySnapshot = await getDocs(q);
+
+    const prices = querySnapshot.docs.map(doc => doc.data().listingPrice);
+
+    const totalPrice = prices.reduce((sum, price) => sum += price, 0);
+
+    const averagePrice = totalPrice / prices.length || 0;
+
+    return parseFloat(averagePrice.toFixed(2));
+};
+
+async function getOfferKpis() {
+    const offersColRef = collection(db, "offers");
+    const baseConstraints = [where("status", "==", "active"), where("productId", "==", productId)];
+    
+    const highestOffers = query(offersColRef, ...baseConstraints, orderBy("offerAmount", "desc"));
+    const lowestOffers = query(offersColRef, ...baseConstraints, orderBy("offerAmount", "asc"));
+
+    const [lowest, highest] = await Promise.all([getDocs(lowestOffers), getDocs(highestOffers)]);
+    console.log(lowest, highest)
+
+    return {
+        highest: highest.empty ? 0 : highest.docs[0].data().offerAmount,
+        lowest: lowest.empty ? 0 : lowest.docs[0].data().offerAmount,
+    };
+}
 
 /* ==== HELPER FUNCTIONS ===== */
 
@@ -404,7 +469,7 @@ function closeModal() {
 
 function calculateDiscountPrice(discountAmount, price) {
     let discount = parseFloat(price * (discountAmount/100)).toFixed(2);
-    return price - discount;
+    return (price - discount).toFixed(2);
 }
 
 function displayCartItem(item) {
@@ -465,6 +530,25 @@ function getTotalReviews(reviews) {
         reviewCount.innerText = `(${count})`;
     }
     
+}
+
+async function displayPricingKpis() {
+    const offers = await getOfferKpis();
+    const average = await getAverageSalePrice();
+    const marketValuePrice = await getMarketValuePrice();
+
+    const highestOffer = document.getElementById('highestOffer');
+    const lowestOffer = document.getElementById('lowestOffer');
+    const averageSalesPrice = document.getElementById('averageSalesPrice');
+    const marketPrice = document.getElementById('marketValue');
+
+    highestOffer.textContent = `$${offers.highest.toFixed(2)}`;
+    lowestOffer.textContent = `$${offers.lowest.toFixed(2)}`;
+    averageSalesPrice.textContent = `$${average}`;
+    marketPrice.textContent = `$${marketValuePrice}`
+
+
+
 }
 
 
