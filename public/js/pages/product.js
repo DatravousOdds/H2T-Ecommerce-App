@@ -7,6 +7,7 @@ const user = await checkUserStatus();
 const searchQuery = new URLSearchParams(window.location.search);
 const productId = searchQuery.get('id');
 
+
 const productCategory = document.querySelector('.prod-category');
 const productTitle = document.querySelector('.prod-title');
 const productPrice = document.querySelector('.prod-price')
@@ -27,6 +28,8 @@ const cartDrawer = document.getElementById('cartDrawer');
 const addToCartBtn = document.getElementById('addToCartBtn');
 const cartDrawerBody = document.getElementById('cartDrawerBody');
 const priceHistoryFilters = document.querySelectorAll('.chart-filter-grid .filter');
+const proContainer = document.querySelector('.pro-container');
+const buyBtn = document.getElementById('buyBtn');
 
 
 console.log("price history filters", priceHistoryFilters)
@@ -36,6 +39,9 @@ setBreadcrumb();
 displayProductDetails();
 displayPricingKpis();
 displayReviews();
+const products = await loadRelateProducts();
+
+displayProducts(products)
 
 /* ==== EVENT LISTENERS ===== */
 detailTriggers.forEach((trigger) => {
@@ -55,7 +61,7 @@ offerBtn.addEventListener('click', () => {
     modalOverlay.classList.add('show');
     offerModal.classList.add('active')
     document.body.style.overflow = 'hidden';
-
+    createOfferInFirebase()
     setOfferModalData();
 })
 
@@ -85,6 +91,12 @@ addToCartBtn.addEventListener('click', () => {
     
 
 });
+
+buyBtn.addEventListener('click', async () => {
+    const data = await getProductData(productId);
+    console.log(data)
+    window.location.href = `/checkout?listingId=${data.listingId}`
+})
 
 /* ==== ASYNC FUNCTIONS ===== */
 
@@ -401,9 +413,9 @@ async function getMarketValuePrice() {
         return [];
     }
 
-    const marketPrice = querySnapshot.docs[0].data().salePrice;
+    const marketPrice = querySnapshot.docs[0].data().salePrice || 0;
 
-    return marketPrice.toFixed(2) || 0;
+    return marketPrice.toFixed(2);
 };
 
 async function getAverageSalePrice() {
@@ -444,6 +456,29 @@ async function getOfferKpis() {
         highest: highest.empty ? 0 : highest.docs[0].data().offerAmount,
         lowest: lowest.empty ? 0 : lowest.docs[0].data().offerAmount,
     };
+}
+
+async function loadRelateProducts() {
+    const data = await getProductData(productId);
+    console.log("related data:", data)
+    let q;
+    
+    const productsCollection = collection(db, "listings");
+    const baseConstraints = [where("status", "==", "active"),where("productName","!=", data.productName), where("brand", "==", data.brand), where("category", "==", data.category)];
+    q = query(productsCollection, ...baseConstraints, limit(20));
+  
+ 
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        return [];
+    }
+
+    return querySnapshot;
+}
+
+async function createCheckoutSession() {
+
 }
 
 /* ==== HELPER FUNCTIONS ===== */
@@ -551,4 +586,77 @@ async function displayPricingKpis() {
 
 }
 
+function displayProducts(products) {
+    const productsContainer = document.querySelector('.pro-container');
+    // clear existing products
+    productsContainer.innerHTML = "";
+    console.log(products)
+    // display
+    if (products.length === 0) {
+      productsContainer.innerHTML = `<div class="no-results">No results!</div>`
+    }
+    products.forEach((doc) => {
+      const productData = doc.data();
+      const productElement = document.createElement("div");
+      productElement.classList.add("pro");
+      productElement.onclick = () => {
+        window.location.href = `shop/product.html?id=${doc.id}`;
+      };
+      productElement.innerHTML = `
+        
+              <!--- Image container-->
+              <div class="product-image">
+                <div class="liked">
+                  <i class="fa-regular fa-heart"></i>
+                </div>
+  
+                <img
+                  src="${productData.images[0].url}"
+                  class="image-custom"
+                  alt="${productData.productName}"
+                />
+              </div>
+              <!--- Image container-->
+  
+              <!-- product details -->
+              <div class="des">
+                <div class="price-description">
+                  <p class="product-name">
+                    ${productData.productName}
+                  </p>
+                  
+                  <div class="pro-price">
+                    <span class="listing-price">$${productData.originalPrice.toFixed(2)}</span>
+                    <div class="price-change">
+                      <div class="price-trend trend-up">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>+5%</span>
+                      </div>
+                    </div>
+                  </div>
+  
+                </div>
+                
+              </div>
+              <!-- product details -->   
+      `;
+  
+    //   handleFavoriteClick(productElement);
+  
+  
+      productsContainer.appendChild(productElement);
+    });
+  
+    // update results count
+    if (products.length) {
+      updateResultsCount(products.length);
+    }
+    
+};
 
+
+
+
+export {
+    getProductData
+}

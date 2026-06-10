@@ -1,48 +1,40 @@
-window.onload = () => {
-    if (!sessionStorage.user) {
-        location.replace('/login');
+import { collection, getDocs, db } from '../api/firebase-client';
+import { checkUserStatus } from '../auth/auth.js';
+
+const currentUser = await checkUserStatus();
+const cartItems = await getCartItems(currentUser.userId);
+const searchQuery = new URLSearchParams(window.location.search);
+const listingId = searchQuery.get('listingId');
+
+console.log(listingId)
+
+// window.onload = () => {
+//     if (!sessionStorage.user) {
+//         location.replace('/login');
+//     }
+// }
+
+
+
+
+
+
+async function getCartItems(userId) {
+    try {
+        const cartRef = collection(db, 'carts', userId, 'items');
+        const itemSnapshot = await getDocs(cartRef);
+
+        if (itemSnapshot.empty) {
+            return [];
+        }
+    
+        const cartItems = itemSnapshot.docs.map(doc => doc.data())
+
+        return cartItems;
+    } catch (error) {
+        console.error(`Failed to fetch cart items for user ${userId}:`, error);
+        throw error;
     }
 }
-
-const placeOrderBtn = document.querySelector('.place-order-btn');
-placeOrderBtn.addEventListener('click', () => {
-    let address = getAddress();
-
-    if (address) {
-        fetch('/order', {
-            method: 'post',
-            headers: new Headers({ 'Content-Type': 'application/json' }),
-            body: JSON.stringify({
-                order: JSON.parse(localStorage.cart),
-                email: JSON.parse(sessionStorage.user).email,
-                add: address,
-
-            })
-        }).then(res => res.json())
-            .then(data => {
-                if(data.alert == 'your order is placed'){
-                    delete localStorage.cart;
-                    showAlert(data.alert, 'success');
-                } else{
-                    showAlert(data.alert);
-                }
-            })
-    }
-})
-
-const getAddress = () => {
-    // validation
-    let address = document.querySelector('#addy').value;
-    let street = document.querySelector('#street').value;
-    let city = document.querySelector('#city').value;
-    let state = document.querySelector('#state').value;
-    let zipcode = document.querySelector('#pincode').value;
-    let landmark = document.querySelector('#landmark').value;
-
-    if (!address.length || !street.length || !city.length ||
-        !state.length || !landmark.length || !zipcode.length) {
-        return showAlert('fill all the inputs first');
-    } else {
-        return { address, street, city, state, zipcode, landmark };
-    }
-}
+    
+    

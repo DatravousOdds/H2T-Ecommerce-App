@@ -10,13 +10,12 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 const nodemailer = require("nodemailer");
 const easyship = require('@api/easyship');
+const Stripe = require("stripe");
 
 easyship.auth('prod_aYTcBC7VD6gMPL9uP6blT9GDh1GVfCkykvQ4INaMhjs=');
 
 
-
-
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Import Firebase configuration
 const { initializeFirebase, getDb, getAdmin } = require("./firebase");
@@ -141,6 +140,7 @@ app.post('/seller/api/shipping-rates',  async (req, res) => {
 
   
 })
+
 
 // routes
 // home route
@@ -829,6 +829,20 @@ app.delete("/orders/:id", verifyAuth, async (req, res) => {
 
   } catch (err) {
     res.status(500).json({success: false, message: `Internal server error: ${err.message}`})
+  }
+})
+
+// checkout
+app.post("/api/checkout", verifyAuth, async (req, res) => {
+  const { priceData } = req.body;
+  try {
+    const session = await stripe.checkout.sessions.create({
+        success_url: '/',
+        line_items: [...priceData],
+        mode: 'payment',
+      });
+  } catch (error) {
+
   }
 })
 
