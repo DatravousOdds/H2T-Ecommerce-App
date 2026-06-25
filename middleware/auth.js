@@ -1,8 +1,15 @@
-const { getAdmin } = require("../firebase");
+const { getAdmin } = require("../firebase.js");
 const admin = getAdmin();
 
 const verifyAuth =  async (req, res, next) => {
-    const token = req.headers.authorization.split(" ")[1];
+    const authHeaders = req.headers.authorization;
+    
+    if (!authHeaders) return res.status(401).json({
+        success: false,
+        message: 'Missing headers'
+    })
+
+    const token = authHeaders.split(" ")[1];
 
     if (!token) return res.status(401).json({
         success: false,
@@ -10,7 +17,7 @@ const verifyAuth =  async (req, res, next) => {
     })
 
     try {
-        const verifyToken = admin.auth().verifyIdToken(token);
+        const verifyToken = await admin.auth().verifyIdToken(token);
         req.token = verifyToken.uid;
         next()
     } catch (err) {

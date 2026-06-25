@@ -1503,9 +1503,10 @@ const editModalTemplate = (product) => `
 
 `;
 
-loadOverviewTabInfo(userData);
+// loadOverviewTabInfo(userData);
 
 async function loadOverviewTabInfo(userData) {
+  console.log("user data:", userData);
   if (!userData) return null;
 
   // create reference

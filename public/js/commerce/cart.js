@@ -1,104 +1,94 @@
 
 import { getDocs, where, query, collection, doc, addDoc, updateDoc } from '../api/firebase-client.js';
 import { db } from '../api/firebase-client.js';
+import { checkUserStatus } from '../auth/auth.js';
+import { getCartItems, initCartDrawer } from '../components/cartDrawer.js';
 
+const currentUser = await checkUserStatus();
+let bagItems = await getCartItems(currentUser);
 
+displayCartItems(bagItems);
+initCartDrawer();
 
-// create small product cards
-const createSmCards = (data) => {
-    return `
-    <div class="sm-product">  
-                    <img src="${data.image}" class="sm-product-img"
-                     alt="">
-                     <div class="sm-text">
-                        <p class="sm-product-name">${data.name}</p>
-                        <p class="sm-des">${data.shortDes}</p>
-                     </div>
-                     <div class="item-counter">
-                        <button class="counter-btn decrement">-</button>
-                        <p class="item-count">${data.item}</p>
-                        <button class="counter-btn increment">-</button>
-                     </div>
-                     <p class="sm-price" data-price="${data.sellPrice}">$${data.sellPrice * data.item}</p>
-                     <button class="sm-delete-btn"><img src="images/close.png" alt=""></button>
-                </div>
-    `;
+window.addEventListener('cartUpdated', async () => {
+    bagItems = await getCartItems(currentUser);
+    displayCartItems(bagItems);
+})
 
-}
+function displayCartItems(items) {
+    const bagItemGrid = document.getElementById('bagItemGrid');
+    bagItemGrid.innerHTML = "";
 
-let totalBill = 0;
-
-const fixProducts = (name) => {
-    const element = document.querySelector(`.${name}`);
-    let data = JSON.parse(localStorage.getItem(name));
-    if (data == null) {
-        element.innerHTML = `<img src="images/empty-cart.png" class="empty-img" alt="">`;
-    } else {
-        for (let i = 0; i < data.length; i++) {
-            element.innerHTML += createSmCards(data[i]);
-            if (name == 'cart') {
-                totalBill += Number(data[i].sellPrice * data[i].item);
-            }
-           billUpdate();
-        }
+    if (items.length <= 0) {
+        bagItemGrid.innerHTML = `
+            <div class="empty-wrapper">
+                <h3>Cart is empty!</h3>
+                <img src="./images/empty-cart_1.png" alt="Seller profile photo">
+            </div>
+            
+        `;
     }
 
-    setupEvent(name);
-}
+    items.forEach(item => {
+        console.log("bag item:", item);
+        const div = document.createElement('div');
+        div.classList.add('item-container');
+        div.dataset.id = item.listingId;
+        div.innerHTML = `
+            <div class="item-wrapper">
+                <div class="item-info">
+                  <div class="seller-info">
+                    <img src="./images/pexels-erik-mclean-9367504%202.jpg" alt="Seller profile photo">
+                    <div class="seller-at">
+                      <p>${item.sellerName}</p>
+                      <p>@gioseller</p>
+                    </div>
+                  </div>
+                  <img src="${item.image}" class="product-img" alt="Nike Air Jordan 1 sneaker">
+                </div>
+                <div class="item-description">
+                  <p>${item.brand} ${item.productName}</p>
+                  <div class="item-price">
+                    ${item.retailPrice ? `<p class="retail-price">$${item.retailPrice}`: ''}
+                    <p class="listing-price">$${item.listingPrice.toFixed(2)}</p>
+                  </div>
+                  <p>Size ${item.size}</p>
+                  <p>Brand New</p>
+                  <div class="button-container">
+                    <button class="delete-product" id="deleteProduct">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
 
-const billUpdate = () => {
-    let billPrice = document.querySelector('.bill');
-            billPrice.innerHTML = `$${totalBill}`;
-}
+              <div class="item-cost">
+                <div class="cost-row">
+                  <p class="item-cost-label">Subtotal:</p>
+                  <p class="item-cost">$${item.listingPrice.toFixed(2)}</p>
+                </div>
 
-const setupEvent = (name) => {
-    // setup counter event
-    const counterMinus = document.querySelectorAll(`.${name} .decrement`);
-    const counterAdd = document.querySelectorAll(`.${name} .increment`);
-    const notetakes = document.querySelectorAll(`.${name} .item-count`);
-    const price = document.querySelectorAll(`.${name} .sm-price`);
-    const delBtn = document.querySelectorAll(`.${name} .sm-delete-btn`);
+                <button type="button" class="checkout-btn" id="checkoutBtn">Checkout</button>
+              </div>
+        `;
 
-    let product = JSON.parse(localStorage.getItem(name));
-
-    notetakes.forEach((item, i) => {
-        let cost = Number(price[i].getAttribute('data-price'));
-
-        counterMinus[i].addEventListener('click', () => {
-            if (item.innerHTML > 1) {
-                item.innerHTML--;
-                totalBill -= cost;
-                price[i].innerHTML = `${item.innerHTML * cost}`;
-                if(name == 'cart'){ billUpdate() }
-                product[i].item = item.innerHTML;
-                localStorage.setItem(name, JSON.stringify(product));
-            }
-        })
-        counterAdd[i].addEventListener('click', () => {
-            if (item.innerHTML < 9) {
-                item.innerHTML++;
-                totalBill += cost;
-                price[i].innerHTML = `${item.innerHTML * cost}`;
-                if(name == 'cart'){ billUpdate() }
-                product[i].item = item.innerHTML;
-                localStorage.setItem(name, JSON.stringify(product));
-            }
-        })
+        bagItemGrid.appendChild(div);
 
     })
 
-    delBtn.forEach((item, i) => {
-        item.addEventListener('click', () => {
-            product = product.filter((data, index) => index != i);
-            localStorage.setItem(name, JSON.stringify(product));
-            location.reload();
+    const checkoutBtns = document.querySelectorAll('.checkout-btn');
+    console.log(checkoutBtns);
+
+    checkoutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.item-container');
+            const id = card.dataset.id;
+            const item = items.find(item => item.listingId === id)
+            sessionStorage.setItem('item', JSON.stringify(item))
+            window.location.href = `/checkout?listingId=${id}`;
         })
     })
 }
-
-
-// fixProducts('cart');
-// fixProducts('wishlist');
 
 export function createAuthCartItem(authRequest) {
     console.log(`Item recieved: ${authRequest.productDetails} 👈🏾`)
@@ -288,3 +278,5 @@ export function updateCartCount(count) {
     
     
 }
+
+

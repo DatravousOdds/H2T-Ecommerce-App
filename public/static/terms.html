@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Terms &amp; Agreements — Hexxo</title>
+<link rel="modulepreload" href="js/components/nav.js">
+<link rel="stylesheet" href="css/style2.css" />
+<link rel="stylesheet" href="css/components/newsletter.css" />
+<link rel="stylesheet" href="css/components/cartDrawer.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --primary-red: #e80e0e;
+    --primary-black: #000000;
+    --primary-white: #ffffff;
+    --light-gray: #f8f8f8;
+    --medium-gray: #888888;
+    --dark-gray: #333333;
+    --dark-black: #1e1e1e;
+    --border-soft: #ececec;
+
+    --brand-blackToDark: linear-gradient(90deg, #000000 0%, #333333 100%);
+    --main-gradient: linear-gradient(180deg, #e80e0e 0%, #000000 100%);
+
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --transition: 0.2s ease;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Poppins", sans-serif;
+    color: var(--dark-black);
+    background: var(--primary-white);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  ul { list-style: none; }
+  img { display: block; max-width: 100%; }
+
+  /* ============ NAVBAR ============ */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: var(--primary-black);
+    border-bottom: 1px solid #1a1a1a;
+    padding: 0 32px;
+  }
+  .navbar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    gap: 24px;
+  }
+  .search-section { display: flex; align-items: center; gap: 20px; }
+  .logo-text {
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+    color: var(--primary-white);
+  }
+  .logo-text span { color: var(--primary-red); }
+  .search-form {
+    display: none;
+    align-items: center;
+    background: var(--dark-black);
+    border: 1px solid #2c2c2c;
+    border-radius: 999px;
+    padding: 6px 6px 6px 16px;
+  }
+  @media (min-width: 1024px) { .search-form { display: flex; } }
+  .search-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--primary-white);
+    font-family: inherit;
+    font-size: 0.85rem;
+    width: 180px;
+  }
+  .search-input::placeholder { color: var(--medium-gray); }
+  .search-button {
+    background: var(--dark-gray);
+    border: none;
+    color: var(--primary-white);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    cursor: pointer;
+  }
+
+  .nav-list {
+    display: none;
+    align-items: center;
+    gap: 28px;
+  }
+  @media (min-width: 1024px) { .nav-list { display: flex; } }
+  .nav-link {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #cfcfcf;
+    display: flex; align-items: center; gap: 6px;
+    transition: color var(--transition);
+  }
+  .nav-link:hover { color: var(--primary-white); }
+
+  .nav-right { display: flex; align-items: center; gap: 14px; }
+  .icon-btn {
+    background: none; border: none; color: #cfcfcf;
+    font-size: 1.05rem; cursor: pointer; position: relative;
+    width: 36px; height: 36px; display: grid; place-items: center;
+    border-radius: 50%; transition: background var(--transition), color var(--transition);
+  }
+  .icon-btn:hover { color: var(--primary-white); background: #1a1a1a; }
+  .cart-amount {
+    position: absolute; top: -2px; right: -2px;
+    background: var(--primary-red); color: var(--primary-white);
+    font-size: 0.6rem; font-weight: 700;
+    min-width: 16px; height: 16px; border-radius: 50%;
+    display: grid; place-items: center; padding: 0 3px;
+  }
+  .login-button, .signup-button {
+    font-size: 0.85rem; font-weight: 600;
+    padding: 9px 18px; border-radius: var(--radius-sm);
+    cursor: pointer; transition: var(--transition);
+  }
+  .login-button {
+    background: transparent; border: 1px solid #3a3a3a; color: var(--primary-white);
+  }
+  .login-button:hover { border-color: var(--primary-white); }
+  .signup-button {
+    background: var(--primary-red); border: 1px solid var(--primary-red); color: var(--primary-white);
+  }
+  .signup-button:hover { background: #c50b0b; }
+  .menu-toggle {
+    display: grid; background: none; border: none; color: var(--primary-white);
+    font-size: 1.2rem; cursor: pointer;
+  }
+  @media (min-width: 1024px) { .menu-toggle { display: none; } }
+
+  /* ============ HERO ============ */
+  .hero {
+    background: var(--main-gradient);
+    color: var(--primary-white);
+    padding: 56px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(255,255,255,0.08), transparent 55%);
+  }
+  .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #ffd2d2;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; margin-bottom: 14px; }
+  .hero p { color: #f1d8d8; font-size: 1rem; max-width: 620px; line-height: 1.6; }
+  .hero-meta {
+    margin-top: 26px; display: flex; flex-wrap: wrap; gap: 22px;
+    font-size: 0.85rem; color: #ffe7e7;
+  }
+  .hero-meta strong { color: var(--primary-white); font-weight: 600; }
+
+  /* ============ LAYOUT ============ */
+  .page-wrap {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 240px 1fr; gap: 48px;
+    padding: 48px 24px 96px;
+  }
+  @media (max-width: 860px) { .page-wrap { grid-template-columns: 1fr; } }
+
+  /* ----- TOC sidebar (signature element) ----- */
+  .toc-wrap { display: none; }
+  @media (max-width: 860px) { .toc-wrap { display: block; margin-bottom: 8px; } }
+  .toc-select {
+    width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border-soft); font-family: inherit; font-size: 0.9rem;
+    background: var(--light-gray); color: var(--dark-black);
+  }
+
+  .toc {
+    position: sticky; top: 96px;
+    display: none;
+    flex-direction: column;
+    border-left: 2px solid var(--border-soft);
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+  }
+  @media (min-width: 861px) { .toc { display: flex; } }
+  .toc a {
+    padding: 9px 18px;
+    font-size: 0.85rem;
+    color: var(--medium-gray);
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+    transition: color var(--transition), border-color var(--transition);
+    display: flex; gap: 10px;
+  }
+  .toc a .num { color: #c8c8c8; font-weight: 700; font-size: 0.75rem; }
+  .toc a:hover { color: var(--dark-black); }
+  .toc a.active {
+    color: var(--primary-red); border-left-color: var(--primary-red); font-weight: 600;
+  }
+  .toc a.active .num { color: var(--primary-red); }
+
+  /* ----- Content ----- */
+  .content { min-width: 0; }
+  .notice {
+    background: var(--light-gray);
+    border: 1px solid var(--border-soft);
+    border-left: 3px solid var(--primary-red);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    font-size: 0.85rem;
+    color: var(--dark-gray);
+    line-height: 1.6;
+    margin-bottom: 40px;
+  }
+  .notice strong { color: var(--dark-black); }
+
+  section.term {
+    padding-bottom: 36px;
+    margin-bottom: 36px;
+    border-bottom: 1px solid var(--border-soft);
+    scroll-margin-top: 100px;
+  }
+  section.term:last-of-type { border-bottom: none; }
+  .term-head {
+    display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px;
+  }
+  .term-badge {
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    background: var(--primary-black);
+    color: var(--primary-white);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.8rem; font-weight: 700;
+  }
+  .term h2 { font-size: 1.25rem; font-weight: 700; color: var(--primary-black); }
+  .term p, .term li {
+    font-size: 0.92rem; line-height: 1.75; color: var(--dark-gray);
+    margin-bottom: 12px;
+  }
+  .term ul.bullets { margin: 8px 0 12px 0; padding-left: 4px; }
+  .term ul.bullets li { display: flex; gap: 10px; margin-bottom: 8px; }
+  .term ul.bullets li::before {
+    content: "—"; color: var(--primary-red); flex-shrink: 0; font-weight: 700;
+  }
+  .term .tier-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+    gap: 12px; margin: 14px 0;
+  }
+  .tier-card {
+    border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .tier-card .tier-name { font-weight: 700; color: var(--primary-black); font-size: 0.85rem; margin-bottom: 4px; }
+  .tier-card p { margin: 0; font-size: 0.8rem; color: var(--medium-gray); }
+  .term a.inline-link { color: var(--primary-red); font-weight: 600; }
+  .term a.inline-link:hover { text-decoration: underline; }
+
+  .back-to-top {
+    position: fixed; bottom: 28px; right: 28px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--primary-black); color: var(--primary-white);
+    border: none; cursor: pointer; display: grid; place-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    opacity: 0; pointer-events: none;
+    transition: opacity var(--transition), background var(--transition);
+    z-index: 150;
+  }
+  .back-to-top.show { opacity: 1; pointer-events: auto; }
+  .back-to-top:hover { background: var(--primary-red); }
+
+  /* ============ FOOTER ============ */
+  footer {
+    background: var(--brand-blackToDark);
+    color: var(--primary-white);
+    padding: 56px 24px 32px;
+    font-family: "Poppins", sans-serif;
+  }
+  .footer-container {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  @media (max-width: 991px) { .footer-container { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 576px) { .footer-container { grid-template-columns: 1fr; } }
+  .footer-logo { display: flex; flex-direction: column; gap: 10px; }
+  .footer-logo p { font-size: 0.82rem; color: #aaa; line-height: 1.6; }
+  .footer-social h3, .footer-links h3, .footer-contact h3 {
+    font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--primary-white);
+  }
+  .footer-social .social-icons { display: flex; gap: 14px; }
+  .footer-social .social-icons a {
+    color: var(--primary-white); font-size: 1.2rem; transition: color var(--transition);
+  }
+  .footer-social .social-icons a:hover { color: var(--primary-red); }
+  .footer-links li { margin-bottom: 10px; }
+  .footer-links a { color: #ccc; font-size: 0.88rem; transition: color var(--transition); }
+  .footer-links a:hover { color: var(--primary-red); }
+  .footer-contact p { color: #ccc; font-size: 0.88rem; line-height: 1.7; margin-bottom: 4px; }
+  .footer-contact a { color: var(--primary-white); }
+  .footer-contact a:hover { color: var(--primary-red); }
+  .footer-bottom {
+    max-width: 1200px; margin: 40px auto 0; padding-top: 20px;
+    border-top: 1px solid #2a2a2a; font-size: 0.78rem; color: #888;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  /* Print */
+  @media print {
+    .navbar, footer, .back-to-top, .toc, .toc-wrap { display: none !important; }
+    .hero { background: none; color: var(--primary-black); padding: 0 0 24px; }
+    .hero::after { display: none; }
+    .hero p, .eyebrow, .hero-meta { color: var(--dark-gray) !important; }
+    .page-wrap { grid-template-columns: 1fr; padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<section id="header">
+    <nav></nav>
+  </section>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow"><i class="fa-solid fa-file-shield"></i> Legal</span>
+    <h1>Terms &amp; Agreements</h1>
+    <p>These Terms govern your use of Hexxo's marketplace, authentication services, and everything you buy, sell, or trade through us. Please read them before you list or check out.</p>
+    <div class="hero-meta">
+      <span>Effective date: <strong>June 20, 2026</strong></span>
+      <span>Last updated: <strong>June 20, 2026</strong></span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ BODY ============ -->
+<div class="page-wrap">
+
+  <!-- Mobile section jump -->
+  <div class="toc-wrap">
+    <select class="toc-select" id="tocSelect" aria-label="Jump to section">
+      <option value="s1">01 — Acceptance of Terms</option>
+      <option value="s2">02 — Eligibility &amp; Your Account</option>
+      <option value="s3">03 — The Marketplace</option>
+      <option value="s4">04 — Authentication Services</option>
+      <option value="s5">05 — Fees &amp; Payments</option>
+      <option value="s6">06 — Listings &amp; Prohibited Items</option>
+      <option value="s7">07 — Shipping &amp; Risk of Loss</option>
+      <option value="s8">08 — Returns, Disputes &amp; Refunds</option>
+      <option value="s9">09 — User Conduct</option>
+      <option value="s10">10 — Intellectual Property</option>
+      <option value="s11">11 — Disclaimers</option>
+      <option value="s12">12 — Limitation of Liability</option>
+      <option value="s13">13 — Indemnification</option>
+      <option value="s14">14 — Termination</option>
+      <option value="s15">15 — Governing Law &amp; Disputes</option>
+      <option value="s16">16 — Changes to These Terms</option>
+      <option value="s17">17 — Contact Us</option>
+    </select>
+  </div>
+
+  <!-- Sticky TOC -->
+  <nav class="toc" id="toc" aria-label="Table of contents">
+    <a href="#s1" data-target="s1"><span class="num">01</span> Acceptance of Terms</a>
+    <a href="#s2" data-target="s2"><span class="num">02</span> Eligibility &amp; Account</a>
+    <a href="#s3" data-target="s3"><span class="num">03</span> The Marketplace</a>
+    <a href="#s4" data-target="s4"><span class="num">04</span> Authentication</a>
+    <a href="#s5" data-target="s5"><span class="num">05</span> Fees &amp; Payments</a>
+    <a href="#s6" data-target="s6"><span class="num">06</span> Listings &amp; Prohibited Items</a>
+    <a href="#s7" data-target="s7"><span class="num">07</span> Shipping &amp; Risk of Loss</a>
+    <a href="#s8" data-target="s8"><span class="num">08</span> Returns &amp; Disputes</a>
+    <a href="#s9" data-target="s9"><span class="num">09</span> User Conduct</a>
+    <a href="#s10" data-target="s10"><span class="num">10</span> Intellectual Property</a>
+    <a href="#s11" data-target="s11"><span class="num">11</span> Disclaimers</a>
+    <a href="#s12" data-target="s12"><span class="num">12</span> Limitation of Liability</a>
+    <a href="#s13" data-target="s13"><span class="num">13</span> Indemnification</a>
+    <a href="#s14" data-target="s14"><span class="num">14</span> Termination</a>
+    <a href="#s15" data-target="s15"><span class="num">15</span> Governing Law</a>
+    <a href="#s16" data-target="s16"><span class="num">16</span> Changes to Terms</a>
+    <a href="#s17" data-target="s17"><span class="num">17</span> Contact Us</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="content">
+
+    <div class="notice">
+      <strong>Template notice:</strong> This document is a starting draft written for a buy/sell/trade sneaker and streetwear marketplace with a tiered authentication service. It is not legal advice. Have a licensed attorney in your operating jurisdiction review and tailor it — especially the sections on liability, authentication guarantees, and dispute resolution — before publishing it live.
+    </div>
+
+    <section class="term" id="s1">
+      <div class="term-head"><div class="term-badge">01</div><h2>Acceptance of Terms</h2></div>
+      <p>By creating an account, browsing listings, or using any part of Hexxo (the "Platform," "we," "us"), you agree to be bound by these Terms &amp; Agreements ("Terms") and our Privacy Policy. If you don't agree, please don't use the Platform.</p>
+      <p>We may update these Terms from time to time as described in Section 16. Continuing to use Hexxo after an update means you accept the revised Terms.</p>
+    </section>
+
+    <section class="term" id="s2">
+      <div class="term-head"><div class="term-badge">02</div><h2>Eligibility &amp; Your Account</h2></div>
+      <p>You must be at least 18 years old, or the age of majority in your jurisdiction, to create an account or transact on Hexxo. By registering, you confirm that the information you provide is accurate and that you'll keep it up to date.</p>
+      <ul class="bullets">
+        <li>You're responsible for keeping your password confidential and for all activity that happens under your account.</li>
+        <li>One account per person. Accounts can't be sold, transferred, or shared.</li>
+        <li>Tell us immediately at the contact below if you suspect unauthorized access to your account.</li>
+      </ul>
+    </section>
+
+    <section class="term" id="s3">
+      <div class="term-head"><div class="term-badge">03</div><h2>The Marketplace</h2></div>
+      <p>Hexxo connects buyers and sellers of sneakers, streetwear, and accessories, and supports three core flows: <strong>buying</strong> a listed item, <strong>selling</strong> an item you own (including "Sell to Us" offers), and <strong>trading</strong> items directly with another user.</p>
+      <p>Hexxo is a marketplace, not the seller of record for peer-to-peer listings. We facilitate the transaction, hold payment until conditions are met, and route items through authentication where applicable — but the underlying sale or trade is between the buyer and the seller.</p>
+    </section>
+
+    <section class="term" id="s4">
+      <div class="term-head"><div class="term-badge">04</div><h2>Authentication Services</h2></div>
+      <p>Certain listings and trades require items to pass through our authentication facility before they're released to the buyer or trade partner. We currently offer three tiers:</p>
+      <div class="tier-grid">
+        <div class="tier-card"><div class="tier-name">Tier 1</div><p>Visual inspection against brand and construction references.</p></div>
+        <div class="tier-card"><div class="tier-name">Tier 2</div><p>Tier 1 plus material, stitching, and hardware verification.</p></div>
+        <div class="tier-card"><div class="tier-name">Tier 3</div><p>Full forensic review for high-value or frequently counterfeited items.</p></div>
+      </div>
+      <p>Authentication confirms an item matches the brand and model it's listed as, based on the tier selected. It is not an appraisal of condition, market value, or fitness for a particular purpose. Items that fail authentication are returned to the seller and the transaction is canceled, minus any applicable authentication fee.</p>
+    </section>
+
+    <section class="term" id="s5">
+      <div class="term-head"><div class="term-badge">05</div><h2>Fees &amp; Payments</h2></div>
+      <p>Hexxo charges a service fee on completed sales and a separate fee for authentication, shown to you before you confirm a listing, purchase, or trade. Payments are processed by our third-party payment partners; Hexxo never stores your full card or bank details.</p>
+      <p>Seller payouts are released after the buyer's order clears authentication (where required) and any return window has passed. We may withhold or reverse a payout if we reasonably suspect fraud, a counterfeit item, or a Terms violation.</p>
+    </section>
+
+    <section class="term" id="s6">
+      <div class="term-head"><div class="term-badge">06</div><h2>Listings &amp; Prohibited Items</h2></div>
+      <p>Sellers are solely responsible for the accuracy of their listings, including condition, size, and photos. Misrepresenting an item is a violation of these Terms and may result in payout reversal and account suspension.</p>
+      <p>You may not list or trade:</p>
+      <ul class="bullets">
+        <li>Items you know or suspect to be counterfeit or replica.</li>
+        <li>Stolen goods or items obtained through fraud.</li>
+        <li>Items prohibited by law in the buyer's or seller's jurisdiction.</li>
+        <li>Anything outside Hexxo's supported categories (sneakers, streetwear, and accessories).</li>
+      </ul>
+    </section>
+
+    <section class="term" id="s7">
+      <div class="term-head"><div class="term-badge">07</div><h2>Shipping &amp; Risk of Loss</h2></div>
+      <p>Sellers and trade participants ship items to the address and carrier we provide, with tracking, within the window shown at checkout. Risk of loss for an item in transit to our authentication facility sits with the seller until we confirm receipt; risk of loss for an item shipped from us to a buyer sits with Hexxo until delivery is confirmed.</p>
+      <p>Missed shipping deadlines may result in automatic cancellation of the sale or trade.</p>
+    </section>
+
+    <section class="term" id="s8">
+      <div class="term-head"><div class="term-badge">08</div><h2>Returns, Disputes &amp; Refunds</h2></div>
+      <p>Items that fail authentication, or arrive materially different from their listing, are eligible for a refund or trade reversal under our Buyer Protection process. To start a dispute, contact us within 48 hours of delivery with photos and a description of the issue.</p>
+      <p>We'll review evidence from both parties and may request the item back before issuing a refund. Hexxo's decision on authentication-related disputes is final; decisions on condition-related disputes can be appealed once with new evidence.</p>
+    </section>
+
+    <section class="term" id="s9">
+      <div class="term-head"><div class="term-badge">09</div><h2>User Conduct</h2></div>
+      <p>Treat other users and our authentication staff fairly. You agree not to:</p>
+      <ul class="bullets">
+        <li>Circumvent the Platform to complete a transaction off-platform once it's been initiated on Hexxo.</li>
+        <li>Manipulate reviews, ratings, or release timing through false claims.</li>
+        <li>Use bots, scrapers, or automated tools against the Platform without our written permission.</li>
+        <li>Harass, threaten, or impersonate another user or staff member.</li>
+      </ul>
+    </section>
+
+    <section class="term" id="s10">
+      <div class="term-head"><div class="term-badge">10</div><h2>Intellectual Property</h2></div>
+      <p>The Hexxo name, logo, and Platform design are owned by us and may not be copied or used without permission. Product names, logos, and trademarks shown on listings belong to their respective brand owners; their appearance on Hexxo doesn't imply sponsorship or endorsement of the Platform.</p>
+    </section>
+
+    <section class="term" id="s11">
+      <div class="term-head"><div class="term-badge">11</div><h2>Disclaimers</h2></div>
+      <p>The Platform is provided "as is." Authentication reduces but doesn't eliminate the risk of receiving a misrepresented item, and Hexxo doesn't guarantee uninterrupted access to the Platform, error-free listings from third-party sellers, or any particular resale value for items purchased through us.</p>
+    </section>
+
+    <section class="term" id="s12">
+      <div class="term-head"><div class="term-badge">12</div><h2>Limitation of Liability</h2></div>
+      <p>To the fullest extent permitted by law, Hexxo's total liability for any claim arising from your use of the Platform is limited to the fees you paid us on the transaction giving rise to the claim. We're not liable for indirect, incidental, or consequential damages, including lost profits or lost resale value.</p>
+    </section>
+
+    <section class="term" id="s13">
+      <div class="term-head"><div class="term-badge">13</div><h2>Indemnification</h2></div>
+      <p>You agree to indemnify and hold Hexxo harmless from claims, losses, or expenses arising from your listings, your breach of these Terms, or your violation of any law or third party's rights.</p>
+    </section>
+
+    <section class="term" id="s14">
+      <div class="term-head"><div class="term-badge">14</div><h2>Termination</h2></div>
+      <p>You may close your account at any time. We may suspend or terminate accounts that violate these Terms, attempt fraud, or repeatedly fail authentication checks. Pending transactions at the time of termination are resolved under the dispute process in Section 8 wherever possible.</p>
+    </section>
+
+    <section class="term" id="s15">
+      <div class="term-head"><div class="term-badge">15</div><h2>Governing Law &amp; Dispute Resolution</h2></div>
+      <p>These Terms are governed by the laws of the state in which Hexxo is incorporated, without regard to conflict-of-law principles. <em>[Insert your chosen governing state/country and any arbitration clause here before publishing.]</em></p>
+    </section>
+
+    <section class="term" id="s16">
+      <div class="term-head"><div class="term-badge">16</div><h2>Changes to These Terms</h2></div>
+      <p>We'll post updates to this page and revise the "Last updated" date above. For material changes, we'll also notify you by email or an in-app notice before the change takes effect.</p>
+    </section>
+
+    <section class="term" id="s17">
+      <div class="term-head"><div class="term-badge">17</div><h2>Contact Us</h2></div>
+      <p>Questions about these Terms? Reach us at <a href="mailto:legal@hexxo.com" class="inline-link">legal@hexxo.com</a>.</p>
+    </section>
+
+  </main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<!-- ============ FOOTER ============ -->
+<!-- newsletter -->
+<section id="newsletter" class="section-p1 section-m1">
+    <div class="newstext">
+      <!-- change later, look at planning sheet -->
+      <h4>Sign Up for Newsletter</h4>
+      <!-- change later, look at planning sheet -->
+      <p>
+        Get E-mail updates about latest shop and <span>special offers</span>
+      </p>
+    </div>
+    <div id="newsletter-form" class="form">
+      <input id="newsletter-email" type="email" placeholder="Your email address" />
+      <button type="submit" id="newsletter-submit" class="normal">Sign Up</button>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer></footer>
+  <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
+  </div>
+
+    <script>
+    // Mobile section jump
+    document.getElementById('tocSelect').addEventListener('change', function () {
+        document.getElementById(this.value).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Scrollspy for sticky TOC
+    const tocLinks = Array.from(document.querySelectorAll('#toc a'));
+    const sections = tocLinks.map(l => document.getElementById(l.dataset.target));
+
+    const setActive = (id) => {
+        tocLinks.forEach(l => l.classList.toggle('active', l.dataset.target === id));
+    };
+
+    const spy = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) setActive(entry.target.id);
+        });
+    }, { rootMargin: '-110px 0px -70% 0px', threshold: 0 });
+
+    sections.forEach(s => s && spy.observe(s));
+
+    // Back to top button
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        backToTop.classList.toggle('show', window.scrollY > 480);
+    });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    </script>
+
+    <script type="module" src="js/components/cartDrawer.js"></script>
+    <script type="module" src="js/components/nav.js"></script>
+    <script src="js/components/footer.js"></script>
+    <script type="module" src="js/pages/home.js"></script>
+    <script>
+        // sidebar
+        $(function () {
+        $(".nav-btn-dd").click(function () {
+            $("#menu").addClass("active");
+        });
+        $(".close-btn").click(function () {
+            $("#menu").removeClass("active");
+        });
+        });
+    </script>
+
+</body>
+</html>

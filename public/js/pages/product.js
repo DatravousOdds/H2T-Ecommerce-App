@@ -1,11 +1,13 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
 
 
 const user = await checkUserStatus();
 const searchQuery = new URLSearchParams(window.location.search);
 const productId = searchQuery.get('id');
+
 
 
 const productCategory = document.querySelector('.prod-category');
@@ -31,17 +33,16 @@ const priceHistoryFilters = document.querySelectorAll('.chart-filter-grid .filte
 const proContainer = document.querySelector('.pro-container');
 const buyBtn = document.getElementById('buyBtn');
 
-
-console.log("price history filters", priceHistoryFilters)
-
-
+initCartDrawer();
 setBreadcrumb();
 displayProductDetails();
 displayPricingKpis();
 displayReviews();
 const products = await loadRelateProducts();
+displayProducts(products);
+const item = await createCartItem();
 
-displayProducts(products)
+
 
 /* ==== EVENT LISTENERS ===== */
 detailTriggers.forEach((trigger) => {
@@ -56,12 +57,12 @@ detailTriggers.forEach((trigger) => {
 })
 
 offerBtn.addEventListener('click', () => {
-    console.log("offer btn clicked")
+    // console.log("offer btn clicked")
 
     modalOverlay.classList.add('show');
     offerModal.classList.add('active')
     document.body.style.overflow = 'hidden';
-    createOfferInFirebase()
+    // createOfferInFirebase()
     setOfferModalData();
 })
 
@@ -72,33 +73,46 @@ modalCloseBtn.addEventListener('click', () => {
     
 })
 
-cartDrawerClose.addEventListener('click', () => {
-    modalOverlay.classList.remove('show');
-    cartDrawer.classList.remove('is-open');
-    document.body.style.overflow = 'auto';
-});
-
 addToCartBtn.addEventListener('click', () => {
-    addToCart()
+    addToCart(productId,user)
 
-    modalOverlay.classList.add('show');
     cartDrawer.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
-
     addToCartBtn.classList.add('disabled');
-    
-    
-    
 
 });
 
 buyBtn.addEventListener('click', async () => {
-    const data = await getProductData(productId);
-    console.log(data)
-    window.location.href = `/checkout?listingId=${data.listingId}`
+    sessionStorage.setItem('item', JSON.stringify(item))
+    window.location.href = `/checkout?listingId=${productId}`
 })
 
 /* ==== ASYNC FUNCTIONS ===== */
+async function createCartItem() {
+  try {
+    const profile = await getSellerInfo(productId);
+
+    let cartItem = {
+      sellerName: profile.username,
+      sellerPicture: profile.profilePicture,
+      sellerId: profile.id,
+      listingId: productId,
+      listingPrice: profile.listingPrice,
+      image: profile.listingImage,
+      size: profile.listingSize,
+      quantity: 1,
+      brand: profile.listingBrand,
+      productName: profile.productName,
+      shipping: profile.shipping,
+      shippingCost: profile.shipping.estimateRate || 0,
+      shippingFrom: ""
+    };
+
+    return cartItem;
+
+  } catch (error) {
+    console.error(`Failed to load seller profile ${error}`)
+  }
+}
 
 async function getProductData(productId) {
     if (!productId) {
@@ -119,16 +133,6 @@ async function getProductData(productId) {
     
 }
 
-async function createCartItemInFirebase(cartItem) {
-    const cartRef = doc(db, "carts", user.userId);
-
-    const subColRef = collection(cartRef, "items");
-
-    const docRef = await addDoc(subColRef, { ...cartItem });
-
-    return docRef.id;
-}
-
 async function getReviews() {
     const q = query(
         collection(db, "reviews"),
@@ -138,90 +142,6 @@ async function getReviews() {
     const docSnapshot = await getDocs(q);
     return docSnapshot;
 
-}
-
-async function getSellerInfo() {
-    const data = await getProductData(productId);
-    
-    const sellerId = data.userId;
-    const productMainImage = data.images.find(image => image.isPrimary === true);
-
-    const sellerDocRef = doc(db, 'userProfiles', sellerId);
-
-    const docSnapshot = await getDoc(sellerDocRef);
-    if (!docSnapshot.exists()) {
-        return;
-    } 
-
-    const sellerProfileData = docSnapshot.data();
-
-    return {
-        id: data.userId,
-        username: sellerProfileData.username,
-        profilePicture: sellerProfileData.profileImage,
-        listingId: data.listingId,
-        listingPrice: data.listingPrice,
-        listingSize: data.size,
-        listingBrand: data.brand,
-        listingImage: productMainImage.url,
-        productName: data.productName
-    }
-}
-
-async function addToCart() {
-
-    if (!user) {
-        window.location.href = '/login';
-        return;
-    };
-
-    const profile = await getSellerInfo();
-
-    console.log(profile)
-
-    let cartItem = {
-        sellerName: profile.username,
-        sellerPicture: profile.profilePicture,
-        sellerId: profile.id,
-        listingId: profile.listingId,
-        price: profile.listingPrice,
-        image: profile.listingImage,
-        size: profile.listingSize,
-        quantity: "",
-        brand: profile.listingBrand,
-        productName: profile.productName
-    };
-
-    const firebaseId = await createCartItemInFirebase(cartItem);
-
-    cartItem.id = firebaseId;
-    
-    displayCartItem(cartItem);
-    updateSubtotal();
-}
-
-async function calculateSubtotal() {
-    const collectionRef = collection(db, "carts", user.userId, "items");
-
-    const cartSnapshot = await getDocs(collectionRef);
-
-    const total = cartSnapshot.docs.reduce((acc, curr) => {
-       const itemData = curr.data()
-       return acc + (parseFloat(itemData.price) || 0)
-    }, 0);
-
-    return total;
-};
-
-async function updateSubtotal() {
-    const subtotal = await calculateSubtotal();
-
-    const cartSubtotal = document.querySelector('.cart-subtotal');
-    cartSubtotal.innerHTML = "";
-    cartSubtotal.innerHTML = `      
-          <span>Subtotal</span>
-          <span>$${subtotal}</span>
-    `;
 }
 
 async function displayReviews() {
@@ -293,9 +213,9 @@ async function displayProductDetails() {
 
 async function setBreadcrumb() {
     const data = await getProductData(productId);
-    console.log(data)
+    // console.log(data)
     const breadcrumb = document.querySelector('.product-breadcrumb');
-    console.log("product data:", data);
+    // console.log("product data:", data);
     breadcrumb.innerHTML = `
         <li><a href="/">Home</a></li>
         <li>></li>
@@ -386,15 +306,7 @@ async function setOfferModalData() {
         })
     });
 }
-
-async function deleteItemFromFirebaseCart(id) {
-    const docRef = doc(db, "carts", id);
-
-    const deletedItem = await deleteDoc(docRef);
-
-    console.log(deletedItem)
-}
-
+  
 async function getMarketValuePrice() {
     const data = await getProductData(productId)
     const ordersColRef = collection(db, "orders");
@@ -450,7 +362,7 @@ async function getOfferKpis() {
     const lowestOffers = query(offersColRef, ...baseConstraints, orderBy("offerAmount", "asc"));
 
     const [lowest, highest] = await Promise.all([getDocs(lowestOffers), getDocs(highestOffers)]);
-    console.log(lowest, highest)
+    // console.log(lowest, highest)
 
     return {
         highest: highest.empty ? 0 : highest.docs[0].data().offerAmount,
@@ -460,7 +372,7 @@ async function getOfferKpis() {
 
 async function loadRelateProducts() {
     const data = await getProductData(productId);
-    console.log("related data:", data)
+    // console.log("related data:", data)
     let q;
     
     const productsCollection = collection(db, "listings");
@@ -475,10 +387,6 @@ async function loadRelateProducts() {
     }
 
     return querySnapshot;
-}
-
-async function createCheckoutSession() {
-
 }
 
 /* ==== HELPER FUNCTIONS ===== */
@@ -498,59 +406,9 @@ function ratingStars(maxRatings = 5) {
     return ratingHTML;
 }
 
-function closeModal() {
-
-}
-
 function calculateDiscountPrice(discountAmount, price) {
     let discount = parseFloat(price * (discountAmount/100)).toFixed(2);
     return (price - discount).toFixed(2);
-}
-
-function displayCartItem(item) {
-    cartDrawerBody.innerHTML = "";
-    cartDrawerBody.innerHTML = `
-        <div class="cart-item" data-id="${item.id}">
-          <div class="seller-profile">
-            <img src=${item.image} alt="" class="seller-profile-picture">
-            <a href="#" class="seller-name">
-              <span>${item.sellerName}</span>
-            </a>
-          </div>
-          <div class="product-info-wrapper">
-           <img src="${item.image}" alt="Product image" />
-          <div class="cart-item-info">
-            <div class="cart-product-info">
-              <p class="cart-item-brand">${item.brand}</p>
-              <p class="cart-item-name">${item.productName}</p>
-              <p class="cart-item-size">Size: ${item.size}</p>
-              <p class="cart-item-price">$${item.price}</p>
-            </div>
-            
-          </div> 
-          </div>
-          
-          <button class="cart-item-remove" aria-label="Remove item">
-            <i class="fa-regular fa-trash-can"></i>
-          </button>
-        </div>
-    
-    `;
-    const cartItemRemoveBtn = document.querySelector('.cart-item-remove');
-    cartItemRemoveBtn.addEventListener('click', (e) => {
-        console.log('Removing item...');
-        deleteItemFromFirebaseCart(item.id);
-
-        const cartItemEl = e.target.closest('.cart-item');
-        cartItemEl.remove();
-        removeItemFromCart(cartItemEl)
-
-    })
-}
-
-function removeItemFromCart(item) {
-    item.remove();
-    updateSubtotal();
 }
 
 function setProductDescription(data) {
@@ -590,7 +448,7 @@ function displayProducts(products) {
     const productsContainer = document.querySelector('.pro-container');
     // clear existing products
     productsContainer.innerHTML = "";
-    console.log(products)
+    // console.log(products)
     // display
     if (products.length === 0) {
       productsContainer.innerHTML = `<div class="no-results">No results!</div>`

@@ -44,7 +44,7 @@
 
 body {
   width: 100%;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: "Oswald", sans-serif !important;
   overflow-x: hidden;
 }
 
@@ -79,6 +79,9 @@ body {
 }
 
 /* End of Ulities */
+
+h1, h2 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px !important; }
+body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
 h1 {
   font-size: 50px;
@@ -318,13 +321,17 @@ button.white {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: var(--color);
+  background: var(--color-button-primary);
   color: white;
   padding: 2px 6px;
   border-radius: 50%;
   font-size: 12px;
   min-width: 18px;
   text-align: center;
+}
+
+.cart-amount.active {
+  display: flex;
 }
 
 .cart-link {
@@ -650,6 +657,7 @@ button.white {
 }
 
 .hero-text {
+  position: relative;
   width: 100%;
   padding: 0 4rem;
 }
@@ -853,7 +861,6 @@ button.white {
 }
 
 .sub-headline {
-  flex-shrink: 2;
   display: flex;
   align-items: flex-end;
   width: 100%;
@@ -868,16 +875,20 @@ button.white {
 }
 
 .m-hL {
+  width: 55%;
   text-align: left;
 }
 
 #hero .hero-text-container {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 10rem;
 }
 
 #hero h4 {
@@ -888,15 +899,12 @@ button.white {
 
 #hero h1 {
   /* change color later */
-  color: var(--color-te);
-  font-size: 5rem;
+  color: var(--color-text-secondary);
   margin-bottom: var(--mar-1);
-  font-family: "Space Grotesk", sans-serif;
 }
 
 #hero h2 {
   color: var(--color-text-alert);
-  font-size: 30;
   margin-bottom: var(--mar-1);
 }
 
@@ -1257,6 +1265,7 @@ button.white {
 }
 
 .banner-brand-logo {
+  height: 100%;
   max-height: 200px;
   max-width: 200px;
   background-color:  var(--color-background-primary);

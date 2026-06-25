@@ -10,16 +10,15 @@ const bcrypt = require("bcrypt");
 const path = require("path");
 const nodemailer = require("nodemailer");
 const easyship = require('@api/easyship');
-const Stripe = require("stripe");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 easyship.auth('prod_aYTcBC7VD6gMPL9uP6blT9GDh1GVfCkykvQ4INaMhjs=');
 
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Import Firebase configuration
 const { initializeFirebase, getDb, getAdmin } = require("./firebase");
-const { verifyAuth } = require("./middleware/auth");
+const { verifyAuth } = require("./middleware/auth.js");
 
 // Initialize Firebase
 const { admin, db } = initializeFirebase();
@@ -35,6 +34,7 @@ const region = "us-east-1";
 const bucketName = "ecom-websiteh2t";
 const accessKeyId = process.env.aws_access_key_id;
 const secretKeyId = process.env.aws_secret_access_key;
+const MARKETPLACE_FEE_RATE = 0.05
 
 aws.config.update({
   region,
@@ -66,6 +66,7 @@ async function generateUrl() {
 let staticPth = path.join(__dirname, "public");
 console.log(staticPth);
 
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 // intial express.js
 const app = express();
 
@@ -79,6 +80,41 @@ app.use(
     }
   })
 );
+
+app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
+  let event = request.body;
+  // Only verify the event if you have an endpoint secret defined.
+  // Otherwise use the basic event deserialized with JSON.parse
+  if (endpointSecret) {
+    // Get the signature sent by Stripe
+    const signature = request.headers['stripe-signature'];
+    try {
+      event = stripe.webhooks.constructEvent(
+        request.body,
+        signature,
+        endpointSecret
+      );
+    } catch (err) {
+      console.log(`⚠️  Webhook signature verification failed.`, err.message);
+      return response.sendStatus(400);
+    }
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      const paymentIntent = event.data.object;
+      console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
+      // Then define and call a method to handle the successful payment intent.
+      handlePaymentIntentSucceeded(paymentIntent);
+    default:
+      // Unexpected event type
+      console.log(`Unhandled event type ${event.type}.`);
+  }
+
+  // Return a 200 response to acknowledge receipt of the event
+  response.sendStatus(200);
+});
 
 app.use(express.json());
 
@@ -534,6 +570,34 @@ app.get("/cart", (req, res) => {
   res.sendFile(path.join(staticPth, "cart.html"));
 });
 
+app.get("/api/cart", verifyAuth, async (req, res) => {
+  const uid = req.token;
+  console.log("uid:", uid)
+
+  try {
+    const snapshot = await db.collection('carts').doc(uid).collection('items').get();
+
+    if (snapshot.empty) {
+      console.log("No matching documents");
+      return res.json([]);
+    }
+
+    const cartItems = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+
+    return res.json(cartItems);
+
+  } catch (err) {
+    return res.status(500).json({status:"Interal server error", error: err.message })
+  }
+
+
+
+})
+
+
 app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });
@@ -832,23 +896,161 @@ app.delete("/orders/:id", verifyAuth, async (req, res) => {
   }
 })
 
-// checkout
-app.post("/api/checkout", verifyAuth, async (req, res) => {
-  const { priceData } = req.body;
-  try {
-    const session = await stripe.checkout.sessions.create({
-        success_url: '/',
-        line_items: [...priceData],
-        mode: 'payment',
-      });
-  } catch (error) {
 
-  }
+
+// checkout
+app.post("/create-checkout-session", async (req, res) => {
+  const { priceData } = req.body;
+  console.log("session data:", priceData)
+  try {
+    // const session = await stripe.checkout.sessions.create({
+    //     line_items: priceData.map(item => ({
+    //       price_data: {
+    //         currency: 'usd',
+    //         unit_amount: Math.round(item.price * 100),
+    //         product_data: {
+    //           description: item.brand,
+    //           name: item.productName,
+    //         },
+    //       },
+    //       quantity: 1,
+    //     })),
+    //     mode: 'payment',
+    //     ui_mode: "elements",
+    //     return_url: `${req.headers.origin}/complete?session_id={CHECKOUT_SESSION_ID}`,
+    // });
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(priceData[0].price * 100),
+      currency: 'usd',
+      payment_method_types: ['card'],
+      metadata: {
+        buyer_id: priceData[0].buyerId,
+        buyer_email: priceData[0].buyerEmail,
+        seller_id: priceData[0].sellerId,
+        shipping_cost: priceData[0].shippingCost,
+        shipping_from: priceData[0].shippingFrom,
+        item: JSON.stringify({
+          name: priceData[0].productName,
+          size: priceData[0].size,
+          brand: priceData[0].brand,
+          image: priceData[0].image,
+          salesTax: parseFloat(priceData[0].salesTax),
+          marketplaceFee: parseFloat(priceData[0].marketplaceFee)
+        })
+
+      },
+    });
+
+    res.json({ clientSecret: paymentIntent.client_secret })
+  } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 })
 
+app.get('/checkout/session', async (req, res) => {
+    const { sessionId } = req.query;
+    console.log('session id:', sessionId);
 
+    let isPaid = false;
 
+    try{
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
 
+      isPaid = session.payment_status === 'paid';
+
+      if(!isPaid) {
+        return res.status(400).json( {status: "unpaid"} )
+      }
+
+      return res.json({
+        id: session.id,
+        orderDate: session.created,
+        email: session.customer_email,
+        shippingAddress: session.shipping_details,
+        shippingCost: session.shipping_cost,
+        subtotalAmount: session.amount_subtotal,
+      })
+
+    } catch (error)  {
+      res.status(500).json({error: "Interval server error" })
+    }
+    
+})
+
+app.post("/order-summary", verifyAuth, async(req, res) => {
+    const { listingId } = req.body;
+    // console.log('id', listingId)
+
+    try {
+      const docRef = await db.collection("listings").doc(listingId).get();
+      const listing = docRef.data();
+      // console.log("listingData:", listing)
+
+      const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice; 
+      const tax = 0.20; // just for testing
+      const delivery = listing.shipping === "" ? 0 : listing.shipping.estimateRate;
+
+      return res.status(200).json({
+        marketplaceFee: marketplaceFee.toFixed(2),
+        price: listing.listingPrice,
+        tax: tax.toFixed(2),
+        delivery: delivery,
+        total: parseFloat((marketplaceFee + delivery + tax + listing.listingPrice).toFixed(2))
+      })
+
+    } catch (error) {
+      res.status(500).json({success: false, message: `Internal server error: ${error.message}`})
+    }
+})
+
+// payment
+app.get("/payment/card-details", async (req, res) => {
+  const { id } = req.query;
+  console.log("lastest charge id:", id);
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(id, {
+      expand: ['latest_charge.payment_method_details']
+    });
+
+    const charge = paymentIntent.latest_charge;
+    console.log("charge data:",charge)
+
+    return res.json({
+      cardType: charge.payment_method_details.card.brand,
+      last4: charge.payment_method_details.card.last4
+    });
+
+  } catch (err) {
+    res.status(500).json({ error:"Interal Server Error", err})
+  }
+  
+})
+
+async function handlePaymentIntentSucceeded(paymentData){
+  console.log(paymentData)
+  try {
+    const data = {
+      id: paymentData.id,
+      buyerId: paymentData.metadata.buyer_id,
+      buyerEmail: paymentData.metadata.buyer_email,
+      createdAt: paymentData.created,
+      subtotal: (paymentData.amount / 100).toFixed(2),
+      status: paymentData.status,
+      shippingCost: paymentData.metadata.shipping_cost,
+      shippingAddress: paymentData.metadata.shipping_from,
+      item: JSON.parse(paymentData.metadata.item)
+    }
+
+    const docRef = await db.collection('orders').add(data);
+    console.log(`created a order with the id: ${docRef.id}`);
+    return JSON.stringify({status: "order created!"})
+
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 app.use((req, res) => {
   if (req.path.endsWith(".js")) {

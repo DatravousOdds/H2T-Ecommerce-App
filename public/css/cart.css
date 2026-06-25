@@ -1,9 +1,3 @@
-
-
-
-
-
-
 .cart-section{
     width: 100%;
     padding: 20px 10vw;
@@ -15,8 +9,107 @@
     width: 70%;
 }
 
+.seller-info img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* border: 1px solid #000; */
+}
+
+.seller-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.retail-price {
+    text-decoration: line-through;
+    color: #959191;
+}
+
+.item-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+.cost-row {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.delete-product {
+    margin-top: 0.5rem;
+    background-color: transparent;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+
+
+
+.item-container {
+    max-width: 840px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Wraps the .item-container cards inside #bagItemGrid. No rule existed for
+   this before, so multiple cart items had nothing keeping them apart. */
+.bag-item-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.bag-note {
+    color: #747474;
+}
+
+.product-img {
+    /* border: 1px solid #000; */
+    margin-top: 1rem;
+    border-radius: 8px;
+    object-fit: cover;
+    width: 200px;
+    height: 200px;
+}
+
+.empty-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.empty-wrapper img {
+    width: 100px;
+    height: auto;
+    object-fit: contain;
+}
+
 .checkout-section{
     width: 28%;
+}
+
+.item-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .section-heading{
@@ -24,13 +117,6 @@
     font-weight: 500;
     margin: 20px 0;
     text-transform: capitalize;
-}
-
-.cart, .wishlist{
-    width: 100%;
-    padding: 20px;
-    border: 1px solid #d8d8d8;
-    margin-bottom: 60px;
 }
 
 .sm-product{
@@ -106,7 +192,29 @@
 .sm-price{
     font-size: 50px;
     font-weight: 500;
-    color: ;
+    
+}
+
+.content-wrapper {
+    width: 1200px;
+    margin: auto;
+}
+
+
+
+header {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.seller-at p:nth-child(1) {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.seller-at p:nth-child(2) {
+    color: #747474;
+    font-weight: 500;
 }
 
 .sm-delete-btn{
@@ -150,20 +258,11 @@
     padding-bottom: 1rem;
 }
 
-.checkout-btn, .place-order-btn{
-    display: block;
+.checkout-btn {
+    /* border: 1px solid #000; */
+    padding: 0.5rem;
     width: 100%;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    height: 40px;
-    border-radius: 5px;
-    background: red;
-    color: #fff;
-    text-align: center;
-    line-height: 40px;
-    text-transform: capitalize;
-    text-decoration: none;
+
 }
 
 .bill{
@@ -180,7 +279,13 @@
 }
 
 
-/* 
+/*
+Disabled: legacy mobile nav-sidebar styles. Left commented out rather than
+deleted since #navbar doesn't match the #menu id your jQuery toggle script
+actually targets in cart.html — this block looks superseded by that newer
+nav implementation. Re-enable and rename the id to #menu if you want this
+sidebar behavior back.
+
 @media (max-width: 820px) {
     .section-p1 {
         padding: 40px 40px;
@@ -206,23 +311,13 @@
       right: 0px;
     }
 
-    
+    navigation bar
+    end navbar
+    search bar
+}
+*/
 
-    /* navagation bar */
-
- 
-
-    
-
-    /* navagation bar */
-
-   
-    /* end navbar */
-
-    /* search bar */
-   
-
-    @media (max-width: 920px) {
+@media (max-width: 920px) {
 
     /* cart */
 
@@ -244,6 +339,7 @@
         justify-content: space-between;
 
     }
+
 
     .text {
         text-transform: capitalize;
@@ -281,14 +377,7 @@
 @media (max-width: 390px) {
     .section-p1 {
         padding: 40px 40px;
-    
-
-   
-
-
-
-
-
+    }
 
     /* cart */
 

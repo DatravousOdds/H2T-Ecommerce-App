@@ -32,19 +32,22 @@ const fetchUserProfile = async (user) => {
     if (cachedProfile) {
       console.log("✅ Using cached profile from sessionStorage");
       console.log(cachedProfile);
-      return JSON.parse(cachedProfile);
+      const idToken = await user.getIdToken()
+      const parsed = JSON.parse(cachedProfile);
+      return {...parsed, idToken}
     }
 
     console.log("Fetching user profile for email:", user.email);
     const docRef = doc(db, "userProfiles", user.uid);
     const docSnap = await getDoc(docRef);
-    console.log(docSnap);
+    const idToken = await user.getIdToken();
 
     // Fetching user profile
     if (docSnap.exists()) {
       const userData = {
         userId: user.uid,
         email: user.email,
+        idToken: idToken,
         ...docSnap.data()
       };
 

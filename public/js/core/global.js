@@ -1,37 +1,153 @@
-import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
+import { collection, addDoc, getDocs, where, query, limit, getDoc, startAfter } from '../api/firebase-client.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
+import { getCartItems } from '../components/cartDrawer.js';
+import { checkUserStatus } from '../auth/auth.js';
 
-// function to generate countries
-// const generateCountries = (apiUrl, selectId) => {
-//   fetch(apiUrl)
-//     .then((res) => res.json())
-//     .then((data) => {
-//       const select = document.getElementById(selectId);
+const currentUser = await checkUserStatus();
+const cartItemCount = await getCartItems(currentUser);
+let cartCount = Number(localStorage.getItem('cartCount')) || 0;
+setCartCount(cartItemCount.length);
 
-//       // sorts countries
-//       const sortCountries = data.sort((a, b) => {
-//         return a.name.common.localeCompare(b.name.common);
-//       });
 
-//       // Check if there is an select element
-//       if (select) {
-//         sortCountries.forEach((country) => {
-//           const option = document.createElement("option");
-//           option.value = country.cca2;
-//           option.textContent = country.name.common;
+async function addToCart(productId, currentUser) {
+  try {
+    const profile = await getSellerInfo(productId);
+    
+    if(!profile) throw new Error("Seller information does not exist");
+  
+    let cartItem = {
+      sellerName: profile.username,
+      sellerPicture: profile.profilePicture,
+      sellerId: profile.id,
+      listingId: productId,
+      listingPrice: profile.listingPrice,
+      image: profile.listingImage,
+      size: profile.listingSize,
+      quantity: 1,
+      brand: profile.listingBrand,
+      productName: profile.productName,
+      shipping: profile.shipping
+    };
 
-//           select.appendChild(option);
-//         });
+    if(!currentUser) {
+      const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
+      
+      const filteredCart = existingCart.filter(item => item.listingId !== productId);
 
-//         // Call generateRegions to populate regions
-//         // generateRegions(data);
-//       } else {
-//         console.error(`Select element with id "${selectId}" not found.`);
-//       }
-//     })
+      filteredCart.push(cartItem)
 
-//     .catch((err) => console.log(("Error Message:", err)));
-// };
+      localStorage.setItem('cart', JSON.stringify(filteredCart));
+    } else {
+        const firebaseId = await createCartItemInFirebase(cartItem, currentUser.userId);
+        cartItem.id = firebaseId; 
+    }
+
+    incrementCartCount();
+
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
+  } catch(error) {
+    console.error(`Adding to cart failed: ${error}`);
+  }
+
+  
+}
+
+async function getSellerInfo(productId) {
+  const data = await getProductData(productId);
+  
+  const sellerId = data.userId;
+  const productMainImage = data.images.find(image => image.isPrimary === true);
+
+  // const sellerDocRef = doc(db, 'userProfiles', sellerId);
+
+  // const docSnapshot = await getDoc(sellerDocRef);
+  // if (!docSnapshot.exists()) {
+  //     return;
+  // } 
+
+  // const sellerProfileData = docSnapshot.data();
+
+  return {
+      id: data.userId,
+      username: "",
+      profilePicture: "",
+      listingId: productId,
+      listingPrice: data.listingPrice,
+      listingSize: data.size,
+      listingBrand: data.brand,
+      listingImage: productMainImage.url,
+      productName: data.productName,
+      shipping: data.shipping
+  }
+}
+
+async function getProductData(productId) {
+  if (!productId) {
+      console.log("No id provided")
+  }
+  
+  const docRef = doc(db, "listings", productId);
+  
+  const docSnap = await getDoc(docRef);
+  
+  if(!docSnap.exists()) {
+      console.log("No id provided")
+  }
+  
+  const data = docSnap.data();
+
+  return data;
+  
+}
+
+async function createCartItemInFirebase(cartItem, userId) {
+  const cartRef = doc(db, "carts", userId);
+
+  const subColRef = collection(cartRef, "items");
+
+  const docRef = await addDoc(subColRef, { ...cartItem });
+
+  return docRef.id;
+}
+
+async function removeFromCart(productId, user) {
+  console.log("pId:", productId)
+  console.log("user:", user)
+  if(!user) {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const updatedCart = cart.filter(item => item.listingId !== productId);
+    console.log("updated cart:", updatedCart)
+    localStorage.setItem('cart', JSON.stringify(updatedCart))
+    
+  } else {
+    console.log("Trying to delete from firebase...")
+    try {
+     await deleteItemFromFirebaseCart(productId, user.userId);
+    } catch (error) {
+      console.error(`Failed to remove from firebase ${error}`);
+     
+    }
+  }
+  
+  window.dispatchEvent(new CustomEvent('cartUpdated'));
+}
+
+async function deleteItemFromFirebaseCart(id, userId) {
+  console.log("userId:", userId)
+  console.log("id", id)
+  const docRef = doc(db, "carts", userId, "items", id);
+  const deletedItem = await deleteDoc(docRef);
+  return {delete: true, message: deletedItem}
+  
+}
+
+async function calculateSubtotal(items) {
+  console.log("items to calculate:", items)
+  return items.reduce((acc, curr) => {
+    console.log(curr)
+    return acc + (parseFloat(curr.listingPrice) || 0)
+  }, 0);
+};
 
 const colors = [
   { name: "Black",  value: "black",  hex: "#000000" },
@@ -82,6 +198,7 @@ const generateRegions = (countriesData) => {
   if (regionSelect) {
   }
 };
+
 
 function formatFirebaseDate(timestamp) {
   const date = timestamp.toDate();
@@ -467,6 +584,28 @@ const updateResultsCount = (count) => {
   pageResults.textContent = `${count} results`;
 
 };
+
+function setCartCount(count) {
+  cartCount = count;
+  localStorage.setItem('cartCount', cartCount);
+  document.dispatchEvent(new CustomEvent('cart-updated', { detail: cartCount}))
+};
+
+export function incrementCartCount(amount = 1) {
+  setCartCount(cartCount + amount);
+};
+
+export function decrementCartCount(amount = 1) {
+  setCartCount(cartCount - amount);
+}
+
+export function getCartCount() {
+  return cartCount;
+};
+
+export function resetCartCount() {
+  setCartCount(0);
+}
 
 
 
@@ -894,6 +1033,13 @@ export {
   kidsRange,
   mensRange,
   womenRange,
-  colors
+  colors,
+  addToCart,
+  removeFromCart,
+  deleteItemFromFirebaseCart,
+  createCartItemInFirebase,
+  getSellerInfo,
+  getProductData,
+  calculateSubtotal
 
 };

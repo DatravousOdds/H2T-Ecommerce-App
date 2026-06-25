@@ -1,4 +1,5 @@
 import { logout, checkUserStatus } from "../auth/auth.js";
+import { getCartCount } from "../core/global.js";
 
 // Function to handle tabs submenu navigation
 const handleTabs = () => {
@@ -129,7 +130,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
           </a>
         </li>
         <li>
-          <a href="/cart" class="nav-link cart-link" aria-label="Shopping cart">
+          <a href="#" class="nav-link cart-link" id="cartBtn" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
             <span class="cart-amount" id="cart-amount" aria-label="Cart items">0</span>
           </a>
@@ -222,7 +223,7 @@ const LoggedOutNav = () => ({
           </a>
         </li>
         <li>
-          <a href="/cart" class="nav-link cart-link" aria-label="Shopping cart">
+          <a href="#" class="nav-link cart-link" id="cartBtn" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
             <span class="cart-amount" id="cart-amout" aria-label="Cart items">0</span>
           </a>
@@ -274,7 +275,7 @@ const LoggedInNav = (user) => ({
           </a>
         </li>
         <li>
-          <a href="/cart" class="nav-link cart-link" aria-label="Shopping cart">
+          <a href="#" class="nav-link cart-link" id="cartBtn" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
             <span class="cart-amount" id="cart-amount" aria-label="Cart items">0</span>
           </a>
@@ -364,19 +365,18 @@ const LoggedInNav = (user) => ({
 // ============================================
 // MAIN FUNCTION - OPTIMIZED VERSION
 // ============================================
-const newNav = () => {
+const newNav =  async () => {
   const nav = document.querySelector("#header");
   if (!nav) return;
 
   // check sessionStorage
-  const storedUser = sessionStorage.getItem('user');
-  console.log("current stored:", storedUser);
+  const user = await checkUserStatus();
 
   // if user is logined show menu with profile icon without login & signout button
-  if (storedUser) {
-    console.log('⚡ Found user in session - showing logged in nav');
-    const user = JSON.parse(storedUser);
-    const content = LoggedInNav(user);
+  if (user) {
+    console.log('⚡ Logged in — showing logged in nav');
+    const currnetUser = JSON.parse(JSON.stringify(user));
+    const content = LoggedInNav(currnetUser);
 
     nav.innerHTML = getSharedNavHTML(
       content.rightSide,
@@ -389,7 +389,7 @@ const newNav = () => {
     
   } else {
     // No user found in session 
-    console.log('⚡ No user in session - showing logged out nav');
+    console.log('⚡ No user — showing logged out nav');
     const content = LoggedOutNav();
 
     nav.innerHTML = getSharedNavHTML(
@@ -400,13 +400,27 @@ const newNav = () => {
 
     setupEventListeners(nav);
   }
- 
-  
+  console.log("cart update..")
+  updateCartCount()
 
-  
+  document.addEventListener('cart-updated', updateCartCount);
+
 };
 
 
+function updateCartCount() {
+  const cartAmount = document.querySelectorAll('.cart-amount');
+  console.log("Cart count", getCartCount())
+  if (getCartCount() > 0) {
+      cartAmount.forEach(el => {
+      console.log("element:", el);
+      el.textContent = getCartCount();
+      el.classList.add('active')
+    })
+  } else {
+    cartAmount.forEach(el => el.classList.remove('active'));
+  }
+}
 
 // ============================================
 // SETUP LOGOUT HANDLERS
@@ -444,11 +458,21 @@ const setupEventListeners = (nav) => {
   const slideMenu = nav.querySelector(".slide-menu");
   const closeSlideMenu = nav.querySelector(".close-slide-menu");
   const slideMenuOverlay = nav.querySelector(".slide-menu-overlay");
+  const cartBtns = nav.querySelectorAll('#cartBtn');
+  const cartDrawer = document.getElementById('cartDrawer');
 
   if (!menuButton || !slideMenu || !closeSlideMenu || !slideMenuOverlay) {
     console.error("Required navigation elements not found");
     return;
   }
+
+  cartBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      console.log("Opening cart...");
+      cartDrawer?.classList.add('is-open');
+    });
+  });
+  
 
   // Mobile menu button
   menuButton.addEventListener("click", () => {

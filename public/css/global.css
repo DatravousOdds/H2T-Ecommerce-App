@@ -177,6 +177,7 @@ p {
   height: 40vh;
   background-size: cover;
   background-color: #f4f3f1;
+  background-position: top;
   display: flex;
   justify-content: center;
   text-align: center;
@@ -184,13 +185,24 @@ p {
   padding: 14px;
 }
 
+h1, h2 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px !important; }
+body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
+
+.men-header {
+  background-image: url('../images/men_banner_2.jpg');
+}
+
+/* .men-header {
+  background-image: url('../images/mens_1.jpg');
+} */
+
 #page-header h2 {
   text-transform: uppercase;
 }
 
 #page-header h2,
 #page-header p {
-  color: #000;
+  color: #fff;
 }
 
 /* ── Product Page Layout ────────────────────────── */
@@ -280,65 +292,9 @@ p {
   cursor: pointer;
 }
 
-/* .product-image .liked i {
-  font-size: 1.5rem;
-} */
-
 .product-image .liked:hover {
   background-color: rgba(255, 255, 255, 1);
   transform: scale(1.1);
-}
-
-
-
-/* .des {
-  display: flex;
-  flex-direction: column;
-}
-
-.des .product-name {
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-.des .product-discount p {
-  font-weight: 500;
-  font-size: 0.875rem;
-  color: #333;
-} */
-
-/* .des .pro-price {
-  font-weight: 700;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.pro-price .price-change {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-}
-
-.pro-price .product-discount {
-  padding: 3px;
-  border: 1px solid #dc2626;
-  border-radius: 0.5rem;
-  
-
-}
-
-.pro-price .product-discount  p {
-  margin: 0;
-  color: #dc2626;
-}
-
-.pro-price .price-trend {
-  padding: 0.25rem;
-  font-size: 0.875rem;
-  border-radius: 0.5rem;
 }
 
 /* Price trend colors */
@@ -477,11 +433,6 @@ p {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
-
-/* .selected {
-  font-weight: 700 !important;
-  color: red;
-} */
 
 /* ── Misc ───────────────────────────────────────── */
 
@@ -705,6 +656,8 @@ hr {
 .modal-overlay.show {
   display: flex;
 }
+
+
 
 /* ── Responsive ─────────────────────────────────── */
 

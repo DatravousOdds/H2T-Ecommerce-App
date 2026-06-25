@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="./css/confirm.css">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/854f8a6196.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <section id="header"></section>
+
+    <div class="confirmation-wrapper">
+        <div class="confirm-header">
+            <h1>Thank you!</h1>
+        </div>
+        <div class="details-grid">
+            <div class="confirm-left-content">
+                <div class="order-details">
+                    <h2 class="detail-header"><i class="fa-solid fa-circle-check"></i> Your Order was successfully!</h2>
+                    <div class="details" id="orderDetails">
+                        <strong><p>A order confirmation will be sent to <span class="email">datravousodds@gmail.com</span></p></strong>
+                        <strong><p>We will update order with tracking number once it has been shipped by seller</p></strong>
+                        <p id="orderDate">Order Date: Jun 1, 2026</p>
+                        <p id="orderId">Order Id: 12323o232oq23</p>
+                    </div>
+                </div>
+            <div class="shipment-details">
+                <div class="order-details">
+                    <h2 class="detail-header"><i class="fa-solid fa-box-archive"></i> Shipment</h2>
+                    <div class="dt-wrapper">
+                        <h3 class="sub-header">Shipping Address</h3>
+                        <div class="details">
+                            <p>Shipping To: <span id="toAddress">Medlock Drive Fort Worth, TX 76116</span></p> 
+                        </div> 
+                        <h3 class="sub-header">Shipping & Tracking</h3>
+                        <div class="details">
+                            <p>Shipping Estimate: 2-3 days</p>
+                            <p>Tracking Number: No available</p>  
+                        </div>  
+                    </div>  
+                </div>
+                
+            </div>
+            <div class="payment-details">
+                <div class="order-details">
+                    <h2 class="detail-header"><i class="fa-solid fa-credit-card"></i> Payment Method</h2>
+                    <div class="details">
+                        <div class="pay-card">
+                            <div class="card-icon"></div>
+                            <div class="card-details">Ending in ...9233</div>
+                        </div>
+                    </div>  
+                </div>
+                
+            </div>
+
+            <div class="cta-buttons">
+                <button type="button">Print Order</button>
+                <button type="button"></button>
+            </div>
+            </div>
+            <div class="confirm-right-content">
+                <div class="order-details">
+                  <h2><i class="fa-solid fa-clipboard"></i> Order Details</h2>
+                    <div class="order-summary">
+                        <div class="order-item">
+                            <div class="product-info-wrapper">
+                                <img src="../images/Jordan 3 Retro Cardinal Red (11).jpg" alt="Product image" />
+                            
+                                <div class="cart-product-info">
+                                    <p class="cart-item-brand">Nike SB</p>
+                                    <p class="cart-item-name">Supreme Grey T-shirt</p>
+                                    <p class="cart-item-size">Size: M</p>
+                                    <p class="cart-item-price">$139.00</p>
+                                </div>
+                            
+                            </div> 
+                            </div>
+                            <div class="seller-profile">
+                            <img src="/images/76daa18d85a855e4afb84e59d9bd3546.jpg" alt="" class="seller-profile-picture">
+                            <a href="#" class="seller-name">
+                                <span>newUser1</span>
+                            </a>
+                            </div>           
+                        </div>
+                </div> 
+                
+                <div class="order-details">
+                    <h2><i class="fa-solid fa-clipboard-list"></i> Order Summary</h2>
+                    <div class="order-total">
+                        <div class="line-item-container">
+                          <dd>Item Price:</dd>
+                          <dt>$120</dt>
+                        </div>
+                        <div class="line-item-container">
+                          <dd>Delivery Price:</dd>
+                          <dt>$5.97</dt>
+                        </div>
+                        <div class="line-item-container">
+                          <dd>Marketplace fee:</dd>
+                          <dt>$1.25</dt>
+                        </div>
+                        <div class="line-item-container">
+                          <dd>Sales Tax:</dd>
+                          <dt>$1.25</dt>
+                        </div>
+                        <hr>
+                        <div class="line-item-container">
+                          <dt>Total</dt>
+                          <dd class="total-cost">$128.00 USD</dd>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+       
+    </div>
+<script type="module" src="./js/commerce/confirm.js"></script>
+</body>
+</html>

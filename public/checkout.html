@@ -5,10 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Head-To-Toes : Checkout</title>
-
-    <link rel="stylesheet" href="css/signup.css" />
-    <link rel="stylesheet" href="css/style2.css" />
-    <link rel="stylesheet" href="css/cart.css" />
+    <script src="https://js.stripe.com/dahlia/stripe.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/signup.css" /> -->
+    <!-- <link rel="stylesheet" href="css/style2.css" /> -->
+    <!-- <link rel="stylesheet" href="css/cart.css" /> -->
     <link rel="stylesheet" href="css/checkout.css" />
   </head>
   <link
@@ -24,34 +27,128 @@
       <img src="/public/images/error.png" class="alert-img" alt="" />
       <p class="alert-msg"></p>
     </div>
+    <div class="container-wrapper">
+      <div class="shipping-payment">
+        
+        <div class="input-form">
+          <h3 class="heading">Shipping Address</h3> 
+          <div id="shippingInfo" class="shipping-info">
+            <label for="addy">Address</label>
+            <input type="text" id="addy" placeholder="Address" />
+            <label for="apt">Apartment, suite, etc</label>
+            <input type="text" id="street" placeholder="street" />
+            <div class="three-input-container">
+            <div class="form-col">
+              <label for="city">City</label>
+              <input type="text" id="city" placeholder="city" />
+            </div>
+            <div class="form-col">
+              <label for="state">State</label>
+              <input type="text" id="state" placeholder="state" />
+            </div>
+            <div class="form-col">
+              <label for="pincode">Zip code</label>
+              <input type="text" id="pincode" placeholder="zip code" />
+            </div>
+          </div>
+          <label for="phone">Phone number</label>
+          <input type="text" id="phoneNumber" placeholder="zip code" />
+          </div> 
+          
+        </div>
 
-    <div class="form">
-      <h1 class="heading">checkout</h1>
-      <p class="text">delivery address</p>
-      <input type="text" id="addy" placeholder="address" />
-      <input type="text" id="street" placeholder="street" />
-      <div class="three-input-container">
-        <input type="text" id="city" placeholder="city" />
-        <input type="text" id="state" placeholder="state" />
-        <input type="text" id="pincode" placeholder="zip code" />
+        <div class="input-form">
+          <h2 class="heading">Payment Method</h2>
+          <form id="payment-form">
+            <div id="contact-details-element">
+              <!--Stripe.js injects the Contact Details Element-->
+            </div>
+            <h4>Billing Address</h4>
+            <div id="billing-address-element">
+              <!--Stripe.js injects the Address Element-->
+            </div>
+            <h4>Payment</h4>
+            <div id="payment-element">
+              <!--Stripe.js injects the Payment Element-->
+            </div>
+          </form>
+        </div>
+        
+        
       </div>
-      <input type="text" id="landmark" placeholder="land mark" />
-    </div>
-
-    <div class="cart-section">
-      <div class="product-list">
-        <p class="section-heading">your cart</p>
-        <div class="cart"></div>
-      </div>
-      <div class="checkout-section">
-        <div class="checkout-box">
-          <p class="text">your total bill,</p>
-          <h1 class="bill">$00</h1>
-          <button class="place-order-btn">place order</button>
+      <div class="cart-section">
+        <div class="product-list">
+          <h3 class="heading">Order Details</h3>
+          <div class="cart">
+            <div class="cart-item">
+              <div class="product-info-wrapper">
+                <img src="../images/Jordan 3 Retro Cardinal Red (11).jpg" alt="Product image" />
+               <div class="cart-item-info">
+                 <div class="cart-product-info">
+                   <p class="cart-item-brand">Nike SB</p>
+                   <p class="cart-item-name">Supreme Grey T-shirt</p>
+                   <p class="cart-item-size">Size: M</p>
+                   <p class="cart-item-price">$139.00</p>
+                 </div>
+                 
+               </div> 
+               </div>
+              <div class="seller-profile">
+                <img src="/images/76daa18d85a855e4afb84e59d9bd3546.jpg" alt="" class="seller-profile-picture">
+                <a href="#" class="seller-name">
+                  <span>newUser1</span>
+                </a>
+              </div>           
+            </div>
+          </div>
+        </div>
+        <div class="checkout-section">
+          <div class="checkout-box" id="checkoutBox">
+            <h3>Order Summary</h3>
+            <div class="line-item-container">
+              <dd>Item Price:</dd>
+              <dt>$120</dt>
+            </div>
+            <div class="line-item-container">
+              <dd>Delivery Price:</dd>
+              <dt>$5.97</dt>
+            </div>
+            <div class="line-item-container">
+              <dd>Marketplace fee:</dd>
+              <dt>$1.25</dt>
+            </div>
+            <div class="line-item-container">
+              <dd>Sales Tax:</dd>
+              <dt>$1.25</dt>
+            </div>
+            <hr>
+            <div class="line-item-container">
+              <dt>Total</dt>
+              <dd class="total-cost">$128.00 USD</dd>
+            </div>
+            <button id="submit" class="place-order-btn">
+              <div class="spinner hidden" id="spinner"></div>
+              <span id="button-text">Pay now</span>  
+            </button>
+            <div id="payment-message" class="hidden"></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <script type="module" src="./js/commerce/checkout.js"></script>
+    <!-- <p class="first-last-name">Datravous</p>
+          <p class="address-street">7651 Courtney Oaks Drive</p>
+          <p class="address-city">Fort Worth, TX 76116</p>  -->
+    
+
+    <!-- <input type="text" id="addy" placeholder="address" />
+        <input type="text" id="street" placeholder="street" />
+        <div class="three-input-container">
+          <input type="text" id="city" placeholder="city" />
+          <input type="text" id="state" placeholder="state" />
+          <input type="text" id="pincode" placeholder="zip code" />
+        </div> -->
+
+    <script type="module" src="js/commerce/checkout.js"></script>
   </body>
 </html>

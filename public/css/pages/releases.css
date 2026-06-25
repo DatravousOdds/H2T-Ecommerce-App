@@ -25,6 +25,7 @@
 body {
   background-color: var(--background-color);
   color: var(--primary-color);
+  font-family: "Oswald", sans-serif !important;
 }
 
 /* Releases */
@@ -41,6 +42,10 @@ body {
   border-radius: 999px; /* true pill shape */
   box-shadow: 0 2px 6px rgba(229, 56, 59, 0.4); /* colored glow */
 }
+
+/* .release-header {
+  background-image: url('');
+} */
 
 .release-date-wrapper > div {
   color: #fff;

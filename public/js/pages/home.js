@@ -1,8 +1,16 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, displayProducts } from '../core/global.js';
+import { loadProducts, displayProducts, getCartCount } from '../core/global.js';
+import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
 import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js'
 
 const categoryCarousel = document.querySelector(".category-carousel");
+const cartBtn = document.querySelector('#cartBtn i');
+const cartDrawer = document.getElementById('cartDrawer');
+
+
+initCartDrawer();
+
+
 
 const categories = [
   {category: "sneakers", title: "Sneakers", image: "./images/download.jpg"},
@@ -11,6 +19,12 @@ const categories = [
   {category: "shoes", title: "Shoes", image: "./images/new-balance-Whitewithblackandraincloud-low-top-sneakers-1_800x1000.jpg.jpg"}
 
 ];
+
+
+
+
+
+
 
 const justDropped = async () => {
   const q = query(
@@ -310,25 +324,7 @@ const createProductCards = (data, parent) => {
   }
 };
 
-const add_product_to_cart_or_wishlist = (type, product) => {
-  let data = JSON.parse(localStorage.getItem(type));
-  if (data == null) {
-    data = [];
-  }
 
-  product = {
-    item: 1,
-    name: product.name,
-    sellPrice: product.sellPrice,
-    size: size || null,
-    shortDes: product.shortDes,
-    image: product.images[0]
-  };
-
-  data.push(product);
-  localStorage.setItem(type, JSON.stringify(data));
-  return "added";
-};
 
 document.addEventListener("DOMContentLoaded", () => {
   const slides = document.querySelectorAll(".slide");

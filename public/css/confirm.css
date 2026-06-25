@@ -1,0 +1,245 @@
+/* ===== Reset ===== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== Design tokens ===== */
+:root {
+    --color-primary: #f30c1e;
+    --color-border: #d4d4d4;
+    --color-text: #000;
+
+    --radius-sm: 4px;
+    --radius-md: 8px;
+
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-underline: 0 2px 4px rgba(197, 75, 75, 0.2);
+
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+}
+
+/* ===== Base typography ===== */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: var(--space-xs);
+    margin-bottom: var(--space-xs);
+}
+
+p {
+    line-height: 1.5;
+}
+
+/* ===== Page layout ===== */
+.confirmation-wrapper {
+    padding: var(--space-md);
+    margin: auto 0;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: var(--space-sm);
+}
+
+/* ===== Header ===== */
+.confirm-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-sm);
+}
+
+.confirm-header h1 {
+    text-align: center;
+}
+
+.confirm-header h1::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 5px;
+    margin-top: var(--space-xs);
+    background-color: var(--color-primary);
+    box-shadow: var(--shadow-underline);
+}
+
+/* ===== Order details card ===== */
+.order-details {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+.order-details h2 {
+    transition: transform 0.3s ease;
+}
+
+.order-details h2:hover {
+    transform: translateY(-2px);
+}
+
+.order-details h2 i {
+    color: var(--color-primary);
+}
+
+.order-content {
+    margin-bottom: var(--space-sm);
+}
+
+/* ===== Product info ===== */
+.product-info-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.product-info-wrapper img {
+    width: 100px;
+    height: 100px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+}
+
+.cart-item-info {
+    margin-top: var(--space-sm);
+}
+
+.cart-item-brand {
+    font-weight: 600;
+}
+
+.cart-item-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.cart-item-size {
+    margin-top: 0.25rem;
+    /* margin: auto; */
+    font-weight: 500;
+    border-radius: 4px;
+    background: #80808029;
+    padding: 0.25rem 8px;
+    color: #706f6f;
+    margin-bottom: 0.25rem;
+}
+
+/* ===== Seller profile ===== */
+.seller-profile {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+}
+
+.seller-profile p {
+    font-weight: 600;
+}
+
+.seller-profile-picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: var(--shadow-sm);
+}
+
+.seller-name {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.seller-name:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ===== Line items / totals ===== */
+.line-item-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.line-item-container dd {
+    font-weight: 600;
+    padding: 0.25rem 0;
+}
+
+.details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.details dd {
+    font-weight: 600;
+}
+
+.details dt,
+.details dd {
+    padding: var(--space-xs) 0;
+}
+
+.total-cost {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* ===== CTA buttons ===== */
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+}
+.cta-buttons button {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    width: 100%;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+}
+
+.cta-buttons button:hover {
+
+}
+
+.seller-profile {
+    display: block;
+}
+
+.sell-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cta-buttons button:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+}
+
+/* Primary action */
+.cta-buttons button:nth-child(1) {
+    background-color: var(--color-primary);
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.cta-buttons button:nth-child(1):hover {
+    background-color: rgba(221, 111, 111, 0.9);
+}
+
+/* Secondary action */
+.cta-buttons button:nth-child(2) {
+    background-color: transparent;
+    border-color: var(--color-text);
+}
