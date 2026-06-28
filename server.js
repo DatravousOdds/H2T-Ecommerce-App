@@ -27,6 +27,9 @@ const bucket = admin.storage().bucket();
 // aws config
 const aws = require("aws-sdk");
 const dotenv = require("dotenv");
+const { data } = require("jquery");
+const { type } = require("os");
+const { error } = require("console");
 dotenv.config();
 
 // aws parameters
@@ -1030,7 +1033,7 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
 })
 
 // payment
-app.get("/payment/card-details", async (req, res) => {
+app.get('/payment/card-details', async (req, res) => {
   const { id } = req.query;
   console.log("lastest charge id:", id);
 
@@ -1051,7 +1054,111 @@ app.get("/payment/card-details", async (req, res) => {
     res.status(500).json({ error:"Interal Server Error", err})
   }
   
+});
+
+app.get('/api/payment-methods', verifyAuth, async (req, res) => {
+  const uid = req.token;
+  console.log("user:", uid);
+
+  try {
+    let docRef = await db.collection('userProfiles').doc(uid).get();
+    const user = docRef.data();
+
+    if (user.stripeCustomerId) {
+      const paymentMethods = await stripe.paymentMethods.list({
+        type: 'card',
+        customer: user.stripeCustomerId,
+      })
+      
+      return res.json({paymentMethods: paymentMethods.data.map(m => ({
+        id: m.id,
+        brand: m.card.brand,
+        last4: m.card.last4,
+        expMonth:m.card.exp_month,
+        expYear: m.card.exp_year
+      }))})
+
+    } else {
+      return res.json({paymentMethods: []})
+    }   
+  } catch (error) {
+    return res.status(400).json({ error: error.message})
+  }
 })
+
+app.post('/api/payment-methods/setup-intent', verifyAuth, async (req, res) => {
+  const uid = req.token;
+  console.log("user:", uid);
+  try {
+    let docRef = await db.collection('userProfiles').doc(uid).get();
+    const user = docRef.data();
+
+    if (user.stripeCustomerId) {
+      const setupIntent = await stripe.setupIntents.create({
+        customer: user.stripeCustomerId,
+        automatic_payment_methods: { enabled: true }
+      })
+
+      return res.send({clientSecret: setupIntent.client_secret})
+    }
+
+    const customer = await stripe.customers.create({
+      name: user.firstName,
+      email: user.email
+    });
+
+    docRef = db.collection('userProfiles').doc(uid);
+    await docRef.update({
+      stripeCustomerId: customer.id
+    })
+
+    const s = await stripe.setupIntents.create({
+      customer: customer.id,
+      automatic_payment_methods: { enabled: true }
+    })
+
+    res.send({clientSecret: s.client_secret})
+
+  } catch (error) {
+    res.status(400).json({ error: error.message})
+  }
+})
+
+app.delete('/api/payment-methods/:id', verifyAuth, async (req, res) => {
+  const paymentMethodId  = req.params.id;
+  const uid  = req.token;
+  console.log("card id to delete:", paymentMethodId );
+  console.log("payment method:", uid)
+
+  try {
+    const paymentMethod = await stripe.paymentMethods.retrieve(
+      paymentMethodId
+    );
+
+    const stripeCustomerId = paymentMethod.customer;
+    
+    const docRef = await db.collection('userProfiles').doc(uid).get();
+    const firebaseStripeCustomerId = docRef.data().stripeCustomerId;
+
+    const match = stripeCustomerId === firebaseStripeCustomerId;
+
+    if (match) {
+      const deletePaymentMethod = await stripe.paymentMethods.detach(
+        paymentMethodId
+      )
+
+      return res.status(200).json({success: true, message: `stripe payment_methods detach ${deletePaymentMethod.id}`});
+
+    } else {
+      return res.status(403).json({error:'Not authorized'})
+    }
+    
+  } catch (error) {
+    return res.status(500).json({ error: error.message})
+  }
+})
+
+
 
 async function handlePaymentIntentSucceeded(paymentData){
   console.log(paymentData)
