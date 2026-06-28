@@ -1065,18 +1065,24 @@ app.get('/api/payment-methods', verifyAuth, async (req, res) => {
     const user = docRef.data();
 
     if (user.stripeCustomerId) {
-      const paymentMethods = await stripe.paymentMethods.list({
+      const paymentMethod = await stripe.paymentMethods.list({
         type: 'card',
         customer: user.stripeCustomerId,
       })
+
+      const pm = {
+        paymentMethods: paymentMethod.data.map(m => ({
+          id: m.id,
+          brand: m.card.brand,
+          last4: m.card.last4,
+          expMonth:m.card.exp_month,
+          expYear: m.card.exp_year
+        }))
+      }
       
-      return res.json({paymentMethods: paymentMethods.data.map(m => ({
-        id: m.id,
-        brand: m.card.brand,
-        last4: m.card.last4,
-        expMonth:m.card.exp_month,
-        expYear: m.card.exp_year
-      }))})
+      console.log(res.json(pm))
+      return res.json(pm)
+
 
     } else {
       return res.json({paymentMethods: []})
@@ -1099,7 +1105,7 @@ app.post('/api/payment-methods/setup-intent', verifyAuth, async (req, res) => {
         automatic_payment_methods: { enabled: true }
       })
 
-      return res.send({clientSecret: setupIntent.client_secret})
+      return res.json({clientSecret: setupIntent.client_secret})
     }
 
     const customer = await stripe.customers.create({
@@ -1117,10 +1123,10 @@ app.post('/api/payment-methods/setup-intent', verifyAuth, async (req, res) => {
       automatic_payment_methods: { enabled: true }
     })
 
-    res.send({clientSecret: s.client_secret})
+    return res.json({clientSecret: s.client_secret})
 
   } catch (error) {
-    res.status(400).json({ error: error.message})
+    return res.status(400).json({ error: error.message})
   }
 })
 
