@@ -12,7 +12,7 @@ const nodemailer = require("nodemailer");
 const easyship = require('@api/easyship');
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
-easyship.auth('prod_aYTcBC7VD6gMPL9uP6blT9GDh1GVfCkykvQ4INaMhjs=');
+easyship.auth(process.env.EASYSHIP_KEY);
 
 
 
