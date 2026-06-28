@@ -4426,17 +4426,19 @@
           </div>
 
           <!-- Payments Reports and Taxes -->
+          <!-- TEMPORARILY DISABLED FOR MVP (Monthly Statements + Tax Center) -->
+          <!--
           <div class="inner-wrapper" id="payments-reports">
-            <!-- Filter Bar -->
+             Filter Bar 
             <div class="filter-container">
-              <!-- Filter Dropdown-->
+               Filter Dropdown
               <div class="dropdown filter-dropdown">
                 <button class="btn filter-btn" id="filterBtn">
                   <i class="far far-filter"></i>
                   <span>Filter</span>
                 </button>
 
-                <!-- Dropdown Menu for small  -->
+                 Dropdown Menu for small  
                 <div class="filter-dropdown-menu" id="filterMenu">
                   <ul>
                     <li>Clear All Filter</li>
@@ -4447,50 +4449,50 @@
                   </ul>
                 </div>
               </div>
-              <!-- Year Dropdown -->
+               Year Dropdown 
               <div class="dropdown year-dropdown-container">
                 <button class="btn year-btn" id="yearBtn">
                   <i class="far fa-calendar"></i>
                   <span id="selectedYear"></span>
                 </button>
 
-                <!-- Dropdown section for Year -->
+                 Dropdown section for Year 
                 <div class="filter-dropdown-menu year-dropdown" id="yearMenu">
                   <ul class="tax-year-list">
-                    <!-- Years need to be loaded dynamically from firebase -->
-                    <!-- <li data-year="2025">2025</li>
+                     Years need to be loaded dynamically from firebase 
+                     <li data-year="2025">2025</li>
                     <li data-year="2024">2024</li>
                     <li data-year="2023">2023</li>
-                    <li data-year="2022">2022</li> -->
+                    <li data-year="2022">2022</li> 
                   </ul>
                 </div>
               </div>
             </div>
 
-            <!-- Monthly Statement Section -->
+             Monthly Statement Section 
             <div class="statement-section">
               <div class="section-header" id="statementHeader">
                 <h3>Monthly Statements</h3>
                 <i class="fas fa-chevron-down icon"></i>
               </div>
               <div class="statement-list" id="statementList">
-                <!-- Statement Item 1 -->
+                 Statement Item 1 
                 <div class="statement-item">
-                  <!-- This section will dynamically display statement data retrieved from the backend -->
+                   This section will dynamically display statement data retrieved from the backend 
                 </div>
               </div>
             </div>
 
-            <!-- Tax Center -->
+             Tax Center 
             <div class="tax-section">
               <div class="section-header" id="taxHeader">
                 <h3>Tax Center</h3>
                 <i class="fas fa-chevron-down icon"></i>
               </div>
-              <!-- W-9 form Section -->
+               W-9 form Section 
               <div class="tax-content" id="taxContent">
                 <div class="tax-container">
-                  <!-- Tax Warning -->
+                   Tax Warning 
                   <div class="tax-warning-box">
                     <i class="fa-solid fa-question"></i>
                     <div class="tax-warning-text">
@@ -4509,7 +4511,7 @@
                     </div>
                   </div>
 
-                  <!-- Tax Center Navigation -->
+                   Tax Center Navigation 
                   <nav class="tax-nav">
                     <ul class="tax-nav-tabs">
                       <li class="tax-nav-item active" data-tab="tax-documents">
@@ -4521,7 +4523,7 @@
                     </ul>
                   </nav>
 
-                  <!-- Tax Documents Tab Content -->
+                   Tax Documents Tab Content 
                   <div class="tax-tab-content active" id="tax-documents">
                     <div class="tax-year-selector">
                       <label for="tax-year" class="tax-year-label"
@@ -4538,7 +4540,7 @@
                       </select>
                     </div>
 
-                    <!-- No form 1099k modal -->
+                     No form 1099k modal 
                     <div
                       class="no-form-1099k-modal"
                       id="no-form-1099k-modal"
@@ -4587,7 +4589,7 @@
                       </div>
                     </div>
 
-                    <!-- Important Tax Dates -->
+                     Important Tax Dates 
                     <div class="tax-important-dates">
                       <h2 class="tax-dates-title">Important Tax Dates</h2>
                       <div class="tax-dates-list">
@@ -4635,12 +4637,12 @@
                     </div>
                   </div>
 
-                  <!-- Tax Settings Tab Content -->
+                   Tax Settings Tab Content 
                   <div class="tax-tab-content" id="tax-settings">
                     <div class="tax-information-preview">
                       <h2>Your Tax Information</h2>
 
-                      <!-- Tax ID field -->
+                       Tax ID field 
                       <div class="tax-info-field">
                         <div class="field-label">Tax ID (SSN/EIN)</div>
                         <div class="field-value" id="taxId-value">
@@ -4648,13 +4650,13 @@
                         </div>
                       </div>
 
-                      <!-- Tax Form Type field -->
+                       Tax Form Type field 
                       <div class="tax-info-field">
                         <div class="field-label">Tax Form Type</div>
                         <div class="field-value" id="w9-value">Form W-9</div>
                       </div>
 
-                      <!-- Business Type field  -->
+                       Business Type field  
                       <div class="tax-info-field">
                         <div class="field-label">Business Type</div>
                         <div class="field-value" id="businessType-value">
@@ -4662,7 +4664,7 @@
                         </div>
                       </div>
 
-                      <!-- Tax Withholding field -->
+                       Tax Withholding field 
                       <div class="tax-info-field">
                         <div class="field-label">Tax Withholding</div>
                         <div class="field-value" id="taxWithholding-value">
@@ -4670,7 +4672,7 @@
                         </div>
                       </div>
 
-                      <!-- State field -->
+                       State field 
                       <div class="tax-info-field">
                         <div class="field-label">State</div>
                         <div class="field-value" id="taxState-value">
@@ -4678,7 +4680,7 @@
                         </div>
                       </div>
 
-                      <!-- Last Updated field -->
+                       Last Updated field 
                       <div class="tax-info-field">
                         <div class="field-label">Last Updated</div>
                         <div class="field-value" id="taxLastUpdate-value">
@@ -4686,7 +4688,7 @@
                         </div>
                       </div>
 
-                      <!-- Action buttons -->
+                       Action buttons 
                       <div class="tax-actions">
                         <button
                           id="updateTaxInfoBtn"
@@ -4699,11 +4701,11 @@
                       </div>
                     </div>
 
-                    <!-- Edit form (initially hidden) -->
+                     Edit form (initially hidden) 
                     <div class="tax-information-form" id="tax-form">
                       <form action="" method="POST" id="taxInformationForm">
                         <h2>Update Your Tax Information</h2>
-                        <!-- Tax ID Field -->
+                         Tax ID Field 
                         <div class="tax-fields">
                           <label for="taxId" class="taxId"
                             >Tax ID (SSN/EIN)*</label
@@ -4732,7 +4734,7 @@
                             </p>
                           </div>
                         </div>
-                        <!-- Tax Form Type Field -->
+                         Tax Form Type Field 
                         <div class="tax-fields">
                           <label for="taxType" class="taxType"
                             >Tax Form Type*</label
@@ -4744,7 +4746,7 @@
                             <option value="Form W-9">Form W-9</option>
                           </select>
                         </div>
-                        <!-- Business Type Field-->
+                         Business Type Field
                         <div class="tax-fields">
                           <label for="businessType" class="businessType"
                             >Business Type</label
@@ -4760,7 +4762,7 @@
                           </select>
                         </div>
 
-                        <!-- Tax Withholding Field-->
+                         Tax Withholding Field
                         <div class="tax-fields">
                           <label for="taxWithholding" class="taxWithholding"
                             >Tax Withholding</label
@@ -4781,7 +4783,7 @@
                           </div>
                         </div>
 
-                        <!-- State Field -->
+                         State Field 
                         <div class="tax-fields">
                           <label for="tax-state" class="tax-state"
                             >State*</label
@@ -4795,7 +4797,7 @@
                           </select>
                         </div>
 
-                        <!-- Form controls-->
+                         Form controls
                         <div class="tax-form-controls">
                           <button type="submit" class="btn save-changes-btn">
                             Save changes
@@ -4828,6 +4830,7 @@
               </div>
             </div>
           </div>
+          -->
 
           
         </div>

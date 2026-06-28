@@ -1135,26 +1135,29 @@ app.delete('/api/payment-methods/:id', verifyAuth, async (req, res) => {
   console.log("payment method:", uid)
 
   try {
-    const paymentMethod = await stripe.paymentMethods.retrieve(
-      paymentMethodId
-    );
-
-    const stripeCustomerId = paymentMethod.customer;
-    
     const docRef = await db.collection('userProfiles').doc(uid).get();
     const firebaseStripeCustomerId = docRef.data().stripeCustomerId;
 
-    const match = stripeCustomerId === firebaseStripeCustomerId;
+    try {
+      const paymentMethod = await stripe.customers.retrievePaymentMethod(
+      firebaseStripeCustomerId,
+      paymentMethodId
+      );
 
-    if (match) {
-      const deletePaymentMethod = await stripe.paymentMethods.detach(
-        paymentMethodId
-      )
+      console.log("payment user:", paymentMethod)
 
-      return res.status(200).json({success: true, message: `stripe payment_methods detach ${deletePaymentMethod.id}`});
+      const stripeCustomerId = paymentMethod.customer;
+      const match = stripeCustomerId === firebaseStripeCustomerId;
 
-    } else {
-      return res.status(403).json({error:'Not authorized'})
+      if (match) {
+        const deletePaymentMethod = await stripe.paymentMethods.detach(
+          paymentMethodId
+        )
+  
+        return res.status(200).json({ message: `stripe payment_methods detach ${deletePaymentMethod.id}`});
+      }
+    } catch (error) {
+      return res.status(403).json({error: error.message})
     }
     
   } catch (error) {
