@@ -131,7 +131,7 @@ async function loadAndRenderCards() {
   cardList.innerHTML = `<p class="default-paragraph">Loading...</p>`;
 
   try {
-    const { paymentMethods } = await apiFetch("", { method: "GET" });
+    const { paymentMethods } = await apiFetch('/api/payment-methods', { method: "GET" });
 
     cardList.innerHTML = "";
 
@@ -174,7 +174,7 @@ async function handleRemoveCard(paymentMethodId, cardElementNode) {
   if (!confirmed) return;
 
   try {
-    await apiFetch(`/${paymentMethodId}`, { method: "DELETE" });
+    await apiFetch(`/api/payment-methods/${paymentMethodId}`, { method: "DELETE" });
     cardElementNode.remove();
     notification.success("Card removed", "update");
   } catch (error) {
@@ -254,7 +254,7 @@ async function openAddCardModal() {
       stripe = window.Stripe(STRIPE_PUBLISHABLE_KEY);
     }
 
-    const { clientSecret } = await apiFetch("/setup-intent", {
+    const { clientSecret } = await apiFetch('/api/payment-methods/setup-intent', {
       method: "POST"
     });
 

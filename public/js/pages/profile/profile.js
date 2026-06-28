@@ -114,18 +114,18 @@ async function loadProfileData() {
       loadReviewData(userData);
       loadFavoritesData(userData);
       loadNotificationData(userData);
-      await loadPaymentInfoData(userData);
-      await initPayouts(userData);
+      // await loadPaymentInfoData(userData);
+      // await initPayouts(userData);
       await initPaymentMethods(userData);
 
       loadSellingData(userData);
       loadPurchasesData(userData);
       loadSettingsData(userData);
 
-      initStatementsTax(userData);
-      await loadYearFilters(userData);
-      loadStatements(userData, currentYear);
-      loadTaxDocuments(userData, currentYear);
+      // initStatementsTax(userData);
+      // await loadYearFilters(userData);
+      // loadStatements(userData, currentYear);
+      // loadTaxDocuments(userData, currentYear);
     }
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
