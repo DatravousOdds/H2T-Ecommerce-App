@@ -1,25 +1,59 @@
 "use strict";
 
-import { db, doc, updateDoc } from "../../api/firebase-client.js";
+import { db, doc, updateDoc, ref, getStorage, app, uploadBytes, getDownloadURL } from "../../api/firebase-client.js";
+import { checkUserStatus } from "../../auth/auth.js";
+
+const USER = await checkUserStatus();
+const storage = getStorage(app, 'gs://ecom-website-94d87');
 
 // ---------------------------------------------------------------------------
 // Database writes
 // ---------------------------------------------------------------------------
 
-export const updateProfilePicture = async (email, imageUrl) => {
-  try {
-    // First upload to S3 (will implement this later)
 
-    // Then update profile
-    const userDocRef = doc(db, "userProfiles", email);
+
+
+export const updateProfilePicture = async (userId, file) => {
+  try {
+    const storageRef = ref(
+      storage,
+      `profile-pictures/${userId}/${Date.now()}-${file.name}`
+    );
+    await uploadBytes(storageRef, file);
+    const imageUrl = await getDownloadURL(storageRef);
+ 
+    const userDocRef = doc(db, "userProfiles", userId);
     await updateDoc(userDocRef, {
       profileImage: imageUrl,
       lastUpdated: new Date()
     });
+
+    console.log("Image update success!")
   } catch (error) {
-    console.error("Error updating profile picture:", error);
+    console.error("Was not able to upload profile image:", error)
   }
 };
+
+export const updateBackgroundPicture = async (userId, file) => {
+  try {
+    const storageRef = ref(
+      storage,
+      `background-pictures/${userId}/${Date.now()}-${file.name}`
+    );
+    await uploadBytes(storageRef, file);
+    const imageUrl = await getDownloadURL(storageRef);
+ 
+    const userDocRef = doc(db, "userProfiles", userId);
+    await updateDoc(userDocRef, {
+      backgroundImage: imageUrl,
+      lastUpdated: new Date()
+    });
+
+    console.log("Background Image update successfully!")
+  } catch (error) {
+    console.error("Was not able to upload profile image:", error)
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Wiring: profile picture + background image upload/remove
@@ -91,6 +125,7 @@ function initProfilePictureUpload() {
       }
 
       reader.readAsDataURL(file);
+      updateProfilePicture(USER.userId,file)
     }
 
     fileInput.value = "";
@@ -107,8 +142,9 @@ function initProfilePictureUpload() {
 
 function initBackgroundImageUpload() {
   const uploadBackgroundBtn = document.getElementById(
-    "upload-background-btn"
+    "uploadBackgroundBtn"
   );
+  console.log("uploadButton", uploadBackgroundBtn)
   const removeBackgroundBtn = document.getElementById(
     "remove-background-btn"
   );
@@ -118,7 +154,6 @@ function initBackgroundImageUpload() {
   if (!uploadBackgroundBtn || !backgroundElement || !backgroundInput) return;
 
   uploadBackgroundBtn.addEventListener("click", () => {
-    console.log("Uploading background image...");
     backgroundInput.click();
   });
 
@@ -160,6 +195,7 @@ function initBackgroundImageUpload() {
     };
 
     reader.readAsDataURL(file);
+    updateBackgroundPicture(USER.userId, file)
 
     if (removeBackgroundBtn) removeBackgroundBtn.style.display = "inline";
     uploadBackgroundBtn.style.display = "none";

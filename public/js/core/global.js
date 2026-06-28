@@ -9,6 +9,38 @@ let cartCount = Number(localStorage.getItem('cartCount')) || 0;
 setCartCount(cartItemCount.length);
 
 
+export async function getCountries() {
+  try {
+    const response = await fetch('/countries');
+
+    if (!response.ok) {
+      throw error;
+    }
+
+    const res = await response.json();
+    return res;
+
+  } catch (error) {
+    console.error(`Failed to fetch countries: ${error}`)
+  }
+}
+
+export async function getStates() {
+  try {
+    const response = await fetch('/states');
+
+    if (!response.ok) {
+      throw error;
+    }
+
+    const res = await response.json();
+    return res;
+
+  } catch (error) {
+    console.error(`Failed to fetch countries: ${error}`)
+  }
+}
+
 async function addToCart(productId, currentUser) {
   try {
     const profile = await getSellerInfo(productId);
@@ -276,7 +308,7 @@ function validateForm(formElement) {
 
   // Clear previous errors
   if (addressError)
-    clearError(formElement.querySelector("[name='address']"), addressError);
+    clearError(formElement.querySelector("[name='shipping-address']"), addressError);
   if (fnameError)
     clearError(formElement.querySelector("[name='fname']"), fnameError);
   if (lnameError)

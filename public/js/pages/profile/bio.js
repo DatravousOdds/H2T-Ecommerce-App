@@ -1,4 +1,20 @@
 "use strict";
+import { checkUserStatus } from "../../auth/auth.js";
+import { db, doc, updateDoc } from '../../api/firebase-client.js';
+
+const currentUser = await checkUserStatus();
+
+async function updateBio(data, userId) {
+  const userDocRef = doc(db, "userProfiles" ,userId)
+  await updateDoc(userDocRef, {
+    bio: data.bio,
+    websiteLinks: data.websiteLinks,
+    lastUpdated: new Date()
+  })
+
+  console.log("Bio has been updated successfully")
+
+}
 
 /**
  * Bio editing + website link section of the profile page.
@@ -17,6 +33,8 @@ export function initBio() {
   const websiteFeedback = document.getElementById("website-feedback");
   const titleFeedback = document.getElementById("title-feedback");
   const websiteUrlDisplay = document.getElementById("website-link-display");
+  const webLinks = [];
+  
 
   if (!bioTextarea || !updateBioBtn || !saveBioBtn || !url || !title) return;
 
@@ -100,7 +118,7 @@ export function initBio() {
   });
 
   // Save
-  saveBioBtn.addEventListener("click", () => {
+  saveBioBtn.addEventListener("click", async () => {
     wordCountDisplay.style.display = "none";
 
     bioTextarea.disabled = true;
@@ -118,6 +136,9 @@ export function initBio() {
     currentBio = bioTextarea.value.trim();
     currentUrl = url.value.trim();
     currentUrlTitle = title.value.trim();
+
+    webLinks.push({url: currentUrl, title: currentUrlTitle});
+    console.log("webLinks array:",webLinks)
 
     if (currentBio === "") {
       bioTextarea.style.display = "none";
@@ -215,5 +236,10 @@ export function initBio() {
     title.value = "";
 
     /* TODO: Save user data to firebase  */
+    await updateBio({
+      bio: currentBio,
+      websiteLinks: webLinks
+    }, currentUser.userId);
+
   });
 }

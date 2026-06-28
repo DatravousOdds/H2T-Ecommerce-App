@@ -146,6 +146,7 @@
   --review-spacing-small: 0.25rem;
   --review-avatar-size: 3rem;
   --review-font-size: 1rem;
+  
 
   /* Reply Form */
   --review-background-color: #fff;
@@ -173,7 +174,7 @@
   color: #fff;
   cursor: pointer;
   display: inline-block;
-  font-family: "Farfetch Basis", "Helvetica Neue", Arial, sans-serif;
+  /* font-family: "Farfetch Basis", "Helvetica Neue", Arial, sans-serif; */
   font-size: 16px;
   font-weight: 700;
   line-height: 1.5;
@@ -1634,6 +1635,7 @@ button:disabled {
 }
 
 .review-card {
+  display: none;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -2047,6 +2049,7 @@ button:disabled {
 
 .rating-feedback {
   display: flex;
+  justify-content: center;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 1rem;
@@ -2191,6 +2194,7 @@ button:disabled {
   width: 70%;
   height: 100%;
   background-color: var(--review-star-color);
+  transition: background-color 0.3s ease;
 }
 
 .rating-stars i {
@@ -2212,7 +2216,7 @@ button:disabled {
 
 .see-all-reviews {
   padding: 20px 0px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -2263,6 +2267,7 @@ button:disabled {
 }
 
 #user-stats {
+  align-items: center;
   padding: 16px 10px;
   display: flex;
   justify-content: center;
@@ -2729,12 +2734,11 @@ button:disabled {
 }
 
 .payment-wrapper {
+  display: none;
   max-width: 96%;
   width: 100%;
   height: 100%;
-  /* border: 1px solid #d9d9d9; */
   border-radius: 12px;
-  display: flex;
   padding: 10px 24px;
 }
 
@@ -2762,12 +2766,23 @@ button:disabled {
   flex-direction: column;
 }
 
+.share-btn {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  background-color: #000;
+  align-items: center;
+  padding: 10px 1rem;
+  border-radius: 12px;
+}
+
 .share-btn button {
-  background: #fff;
-  color: var(--black);
-  font-weight: 500;
+  background: transparent;
   border: none;
-  cursor: pointer;
+  color: white;
+}
+
+.share-btn button i {
+  color: #fff;
 }
 
 #name-infor {

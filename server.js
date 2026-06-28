@@ -896,6 +896,31 @@ app.delete("/orders/:id", verifyAuth, async (req, res) => {
   }
 })
 
+app.get('/countries', async (req, res) => {
+    try {
+      const response = await fetch(
+        'https://api.restcountries.com/countries/v5?limit=100&offset=200&pretty=1',
+        { headers: { 'Authorization': 'Bearer rc_live_c6c7200d1e9b48d59bf1f59acce2a437' } }
+    );
+    const data = await response.json();
+      return res.json(data)
+    } catch (error) {
+      res.status(500).json({request: false, errMsg: error.message})
+    }
+})
+
+app.get('/states', async (req, res) => {
+  try {
+    const response = await fetch('https://countriesnow.space/api/v0.1/countries/states');
+      
+      const states = await response.json();
+      return res.json(states)
+  } catch (error) {
+    res.status(500).json({request: fail, errMsg: error.message})
+  }
+  
+})
+
 
 
 // checkout

@@ -2,12 +2,16 @@
 
 console.log("profile page here")
 
+console.log("state:",document.readyState)
+
 import { checkUserStatus } from "../../auth/auth.js";
 import {
   formatFirebaseDate,
   formatFollowers,
   initGenericDropdowns,
-  initProductFilterDropdown
+  initProductFilterDropdown,
+  initCountryDropdown,
+  initStatesDropdown
 } from "./ui-helpers.js";
 
 import {
@@ -41,12 +45,10 @@ function loadProfileDisplayData(userData) {
     profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
   }
 
-  document.querySelector("#profile-picture").value = userData.profileImage;
-  document.querySelector("#username").textContent = `@${userData.Username}`;
+  document.querySelector("#profile-picture").src = userData.profileImage;
+  document.querySelector("#username").textContent = `@${userData.username}`;
 
-  document.querySelector(".timestamp").textContent = `Joined ${new Date(
-    formatFirebaseDate(userData.accountInfo.joinedDate)
-  ).getFullYear()}`;
+  document.querySelector(".timestamp").textContent = `Joined ${formatFirebaseDate(userData.accountInfo.joinedDate)}`;
 
   document.querySelector("#verified-tag").value = userData.isVerified;
 
@@ -99,9 +101,10 @@ async function loadSettingsData(userData) {
 // ---------------------------------------------------------------------------
 
 async function loadProfileData() {
-  console.log("loading")
+  console.log("loading");
   try {
     const userData = await checkUserStatus();
+    console.log("Profile Data:", userData)
     const currentYear = new Date().getFullYear();
 
     if (userData) {
@@ -134,16 +137,16 @@ async function loadProfileData() {
 // Entry point
 // ---------------------------------------------------------------------------
 
-document.addEventListener("DOMContentLoaded", () => {
+
   // Static UI wiring that doesn't depend on fetched profile data
   initGenericDropdowns();
   initProductFilterDropdown();
+  initStatesDropdown();
+  initCountryDropdown();
   initProfileInfo();
   initProfileMedia();
   initBio();
   initReviews();
-  initWallet();
-
+  // initWallet();
   // Fetch the user's profile and populate everything else
   loadProfileData();
-});

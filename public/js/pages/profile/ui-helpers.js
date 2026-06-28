@@ -1,5 +1,10 @@
 "use strict";
 
+import { getCountries, getStates } from "../../core/global.js";
+
+const countries = await getCountries();
+const states = await getStates();
+
 /**
  * Shared, data-agnostic UI helpers used across the profile page modules:
  * popup menus, dropdown toggles, form-error helpers, formatters,
@@ -147,11 +152,11 @@ export function clearFormErrors(form) {
 // ---------------------------------------------------------------------------
 
 export function formatFirebaseDate(timestamp) {
-  const date = timestamp.toDate();
-  return date.toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric"
+  const dateObject = new Date(timestamp.seconds * 1000);
+  return dateObject.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
   });
 }
 
@@ -485,3 +490,40 @@ export function initProductFilterDropdown() {
     productsFilterDropdown.classList.remove("show");
   });
 }
+
+export function initCountryDropdown() {
+  const countryContainer = document.getElementById('shipping-country');
+
+  console.log("countries", countries)
+  countries.data.objects.forEach(country => {
+    const name = country.names.common;
+    const option = document.createElement('option');
+    option.value = country.codes.alpha_2;
+    option.textContent = name;
+
+    countryContainer.append(option)
+  });
+
+}
+
+export function initStatesDropdown() {
+  const countryContainer = document.getElementById('shipping-country');
+  const stateContainer = document.getElementById('shipping-state');
+
+  countryContainer.addEventListener('change', (e) => {
+    console.log("country selected:", e.target.value);
+    const selectedCountry = e.target.value;
+    const stateArray = states.data.filter(state => state.iso2 === selectedCountry);
+    stateArray[0].states.forEach(state => {
+      const option = document.createElement('option');
+      option.value = state.name;
+      option.textContent = state.state_code;
+      stateContainer.append(option);
+    })
+  })
+  
+  
+  
+  
+}
+

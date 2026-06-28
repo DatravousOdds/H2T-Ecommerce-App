@@ -12,13 +12,23 @@ export function loadReviewData(userData) {
   document.querySelector("#total-ratings").textContent =
     userData.ratings.metrics.totalRatings;
 
+    const totalRatings = userData.ratings.metrics.totalRatings || 0;
+
   for (let i = 1; i <= 5; i++) {
+    const ratingCount = userData.ratings.ratingCount[i] || 0;
     const element = document.querySelector(`#rating-count-${i}`);
     if (element) {
-      const ratingCount = userData.ratings.ratingCounts[i] || 0;
       const reviewText = ratingCount === 1 ? "review" : "reviews";
       element.textContent = `${ratingCount} ${reviewText}`;
     }
+
+    const fillElement = document.querySelector(`.rating-bar-fill[data-rating="${i}"]`);
+    if (fillElement) {
+      const percentage = totalRatings > 0 ? (ratingCount/totalRatings) * 100 : 0;
+      fillElement.style.width = `${percentage}%`;
+    }
+    
+    
   }
 }
 

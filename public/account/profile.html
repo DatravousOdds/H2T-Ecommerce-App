@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
@@ -13,6 +14,7 @@
 
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/profile.css" />
+    <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
     <link
       rel="stylesheet"
@@ -111,7 +113,7 @@
                     accept="image/*"
                     style="display: none"
                   />
-                  <button id="upload-background-btn" type="button">
+                  <button id="uploadBackgroundBtn" type="button">
                     <i class="fa-solid fa-image"></i>
                     Change Background
                   </button>
@@ -156,8 +158,8 @@
                     <div class="share-btn">
                       <button>
                         <i class="fa-solid fa-share-nodes"></i>
+                        Share
                       </button>
-                      <p class="share-btn-text">Share Profile</p>
                     </div>
                   </div>
                   <!-- User Stats Section -->
@@ -384,7 +386,7 @@
                       >
                       <input
                         type="text"
-                        name="shipping-fname"
+                        name="fname"
                         id="shipping-fname"
                         placeholder="Your name.."
                         value=""
@@ -398,7 +400,7 @@
                       >
                       <input
                         type="text"
-                        name="shipping-lname"
+                        name="lname"
                         id="shipping-lname"
                         placeholder="Your last name..."
                         value=""
@@ -432,7 +434,7 @@
                       <label for="shipping-address2">Address 2</label>
                       <input
                         type="text"
-                        name="shipping-address2"
+                        name="shipping-address"
                         id="shipping-address2"
                         placeholder="Your address..."
                       />
@@ -445,7 +447,7 @@
                       >
                       <input
                         type="text"
-                        name="shipping-city"
+                        name="city"
                         id="shipping-city"
                         placeholder="Your address..."
                       />
@@ -459,7 +461,7 @@
                         >
                         <select
                           id="shipping-state"
-                          name="shipping-state"
+                          name="state-region"
                           required
                         >
                           <option value="">Select</option>
@@ -473,7 +475,7 @@
                         >
                         <input
                           type="number"
-                          name="shipping-postal"
+                          name="postal"
                           id="shipping-postal"
                           placeholder="Enter zip code"
                         />
@@ -487,7 +489,7 @@
                       >
                       <input
                         type="tel"
-                        name="shipping-phoneNumber"
+                        name="phoneNumber"
                         id="shipping-phoneNumber"
                         placeholder="Enter phone number..."
                       />
@@ -541,7 +543,7 @@
                   <div class="rating-breakdown">
                     <div class="rating-process">
                       <div class="rating-bar">
-                        <div class="rating-bar-fill"></div>
+                        <div class="rating-bar-fill" data-rating="5"></div>
                       </div>
                       <p class="review-overall">5.0</p>
                       <p id="rating-count-5" class="review-counter">
@@ -551,7 +553,7 @@
 
                     <div class="rating-process">
                       <div class="rating-bar">
-                        <div class="rating-bar-fill"></div>
+                        <div class="rating-bar-fill" data-rating="4"></div>
                       </div>
                       <p class="review-overall">4.0</p>
                       <p id="rating-count-4" class="review-counter">
@@ -561,7 +563,7 @@
 
                     <div class="rating-process">
                       <div class="rating-bar">
-                        <div class="rating-bar-fill"></div>
+                        <div class="rating-bar-fill" data-rating="3"></div>
                       </div>
                       <p class="review-overall">3.0</p>
                       <p id="rating-count-3" class="review-counter">
@@ -570,7 +572,7 @@
                     </div>
                     <div class="rating-process">
                       <div class="rating-bar">
-                        <div class="rating-bar-fill"></div>
+                        <div class="rating-bar-fill" data-rating="2"></div>
                       </div>
                       <p class="review-overall">2.0</p>
                       <p id="rating-count-2" class="review-counter">
@@ -579,7 +581,7 @@
                     </div>
                     <div class="rating-process">
                       <div class="rating-bar">
-                        <div class="rating-bar-fill"></div>
+                        <div class="rating-bar-fill" data-rating="1"></div>
                       </div>
                       <p class="review-overall">1.0</p>
                       <p id="rating-count-1" class="review-counter">
@@ -4827,424 +4829,7 @@
             </div>
           </div>
 
-          <!-- Payment Methods Selection-->
-          <div class="payment-method-popup">
-            <div class="select-method-card" id="methodSelection">
-              <div class="mb-24 space-between">
-                <div>
-                  <h1 class="card-title">Add Payment Method</h1>
-                  <p class="card-subtitle">Choose how you'd like to pay</p>
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    class="close"
-                    id="closePopup"
-                    aria-label="Close popup"
-                  >
-                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="payment-options">
-                <div class="payment-option">
-                  <div class="option-icon">
-                    <i class="fa-regular fa-credit-card"></i>
-                  </div>
-                  <div class="option-details">
-                    <div class="option-title">Credit or Debit Card</div>
-                    <div class="option-description">
-                      Pay with Visa, Mastercard, or other cards
-                    </div>
-                  </div>
-                </div>
-
-                <div class="payment-option">
-                  <div class="option-icon">
-                    <i class="fa-solid fa-building-columns"></i>
-                  </div>
-                  <div class="option-details">
-                    <div class="option-title">Bank Account</div>
-                    <div class="option-description">
-                      Connect your bank account directly
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Credit Card Form -->
-            <div class="form-card" id="card-form">
-              <button class="back-button">
-                <i class="fa-solid fa-arrow-left"></i>
-                Back
-              </button>
-
-              <div class="mb-24">
-                <h1 class="card-title">Add Card</h1>
-                <p class="card-subtitle">Enter your card information</p>
-              </div>
-
-              <div class="secure-badge">
-                <i class="fa-solid fa-lock"></i>
-                <span class="secure-text"
-                  >Your payment info is stored securely</span
-                >
-              </div>
-
-              <form id="cardForm">
-                <div class="form-group">
-                  <label class="form-label">Card Number</label>
-                  <input
-                    id="cardNumber"
-                    type="text"
-                    class="form-input"
-                    placeholder="1234 5678 9012 3456"
-                  />
-                </div>
-
-                <div class="input-row">
-                  <div class="form-group">
-                    <label class="form-label">Expiry Date</label>
-                    <input
-                      id="expiry"
-                      type="text"
-                      class="form-input"
-                      placeholder="MM/YY"
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Security Code</label>
-                    <input
-                      id="cvv"
-                      type="text"
-                      class="form-input"
-                      placeholder="CVC"
-                    />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Name on Card</label>
-                  <input
-                    id="nameOnCard"
-                    type="text"
-                    class="form-input"
-                    placeholder="Enter cardholder name"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Billing Address</label>
-                  <input
-                    id="billingAddress"
-                    type="text"
-                    class="form-input"
-                    placeholder="Enter your address"
-                  />
-                </div>
-
-                <button type="submit" class="button button-primary">
-                  Add Card
-                </button>
-              </form>
-            </div>
-
-            <!-- Bank Form -->
-            <div class="form-card" id="bankForm">
-              <button type="button" class="back-button">
-                <i class="fa-solid fa-arrow-left"></i>
-                Back
-              </button>
-
-              <div class="mb-24">
-                <h1 class="card-title">Link Bank Account</h1>
-                <p class="card-subtitle">Enter your bank account details</p>
-              </div>
-
-              <div class="secure-badge">
-                <i class="fa-solid fa-lock"></i>
-                <span class="secure-text"
-                  >Your banking info is stored securely</span
-                >
-              </div>
-
-              <form id="bank-form">
-                <div class="form-group">
-                  <label class="form-label">Account Holder Name</label>
-                  <input
-                    id="accountHolderName"
-                    type="text"
-                    class="form-input"
-                    placeholder="Enter your name"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Routing Number</label>
-                  <input
-                    id="routingNumber"
-                    type="text"
-                    class="form-input"
-                    value="726286823"
-                    placeholder="Enter 9-digit routing number"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Account Number</label>
-                  <input
-                    id="accountNumber"
-                    value="86063057"
-                    type="text"
-                    class="form-input"
-                    placeholder="Enter account number"
-                  />
-                </div>
-
-                <div class="bank-info">
-                  <div class="bank-info-title">Account Information</div>
-                  <div class="bank-detail">
-                    <span class="bank-detail-label">Account Type</span>
-                    <span class="bank-detail-value">Checking</span>
-                  </div>
-                  <div class="bank-detail">
-                    <span class="bank-detail-label">Bank</span>
-                    <span class="bank-detail-value">Sample Bank</span>
-                  </div>
-                </div>
-
-                <button type="submit" class="button button-primary">
-                  Link Account
-                </button>
-              </form>
-            </div>
-
-            <!-- Success State -->
-            <div class="form-card success-card" id="successCard">
-              <div class="success-icon">
-                <i class="fa-solid fa-check"></i>
-              </div>
-              <h2 class="success-title">Payment Method Added</h2>
-              <p class="success-message mb-24">
-                Your payment method has been successfully added to your account
-              </p>
-              <button class="button button-primary">Done</button>
-            </div>
-          </div>
-
-          <!-- Security Verification Modal -->
-          <div class="modal-overlay step-1 hidden" id="securityVerification1">
-            <div class="modal-container">
-              <div class="modal-header">
-                <h2>Security Verification</h2>
-              </div>
-
-              <div class="security-message">
-                <div class="security-icon">
-                  <i class="fa-solid fa-lock"></i>
-                </div>
-                <div class="security-text">
-                  <p class="default-paragraph">
-                    <strong>Secure Card Update Process</strong>
-                  </p>
-                  <p class="default-paragraph">
-                    To protect your account, please enter your password to
-                    verify your identity
-                  </p>
-                </div>
-              </div>
-              <div class="security-process-status">
-                <div class="status-icon">
-                  <div class="status-icon-circle">1</div>
-                  <p class="security-status-text">Password</p>
-                </div>
-                <div class="status-line"></div>
-                <div class="status-icon">
-                  <div class="status-icon-circle">2</div>
-                  <p class="security-status-text">Verification Code</p>
-                </div>
-                <div class="status-line"></div>
-                <div class="status-icon">
-                  <div class="status-icon-circle">3</div>
-                  <p class="security-status-text">Update</p>
-                </div>
-              </div>
-              <div class="security-password">
-                <label class="form-label">Enter your password</label>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  class="form-input"
-                />
-              </div>
-
-              <div class="security-controls">
-                <button id="step-1-verify-back" class="button button-ghost">
-                  Back
-                </button>
-                <button
-                  id="step-1-verify-continue"
-                  class="button button-primary"
-                >
-                  Continue
-                </button>
-              </div>
-            </div>
-          </div>
-          <!-- End of Security Verification Modal -->
-
-          <!-- Security Verification Modal Step 2-->
-          <div class="modal-overlay step-2 hidden" id="securityVerification2">
-            <div class="modal-container">
-              <div class="modal-header">
-                <h2>Two-Factor Authentication</h2>
-              </div>
-              <div class="security-message">
-                <div class="security-icon">
-                  <i class="fa-solid fa-lock"></i>
-                </div>
-                <div class="security-text">
-                  <p class="default-paragraph">
-                    <strong>Enter Verification Code</strong>
-                  </p>
-                  <p class="default-paragraph">
-                    We've sent a verification code to your phone number ending
-                    <span class="phone-number">****1234</span>
-                  </p>
-                </div>
-              </div>
-              <div class="security-process-status">
-                <div class="status-icon">
-                  <div class="status-icon-circle">1</div>
-                  <p class="security-status-text">Password</p>
-                </div>
-                <div class="status-line"></div>
-                <div class="status-icon">
-                  <div class="status-icon-circle">2</div>
-                  <p class="security-status-text">Verification Code</p>
-                </div>
-                <div class="status-line"></div>
-                <div class="status-icon">
-                  <div class="status-icon-circle">3</div>
-                  <p class="security-status-text">Update</p>
-                </div>
-              </div>
-              <div class="security-code">
-                <input type="text" class="otp-input" />
-
-                <input type="text" class="otp-input" />
-
-                <input type="text" class="otp-input" />
-
-                <input type="text" class="otp-input" />
-
-                <input type="text" class="otp-input" />
-
-                <input type="text" class="otp-input" />
-              </div>
-
-              <div class="security-controls">
-                <button id="backBtn" class="button button-ghost">Back</button>
-                <button id="verifyBtn" class="button button-primary">
-                  Verify
-                </button>
-              </div>
-            </div>
-          </div>
-          <!-- End of Security Verification Modal Step 2 -->
-
-          <!-- Security Verification Modal Step 3 -->
-          <div class="modal-overlay step-3 hidden" id="securityVerification3">
-            <div class="modal-container">
-              <div class="modal-header">
-                <h2>Update Card Information</h2>
-              </div>
-              <div class="current-card-update">
-                <div class="card-icon">
-                  <i class="fa-solid fa-credit-card"></i>
-                </div>
-                <div class="card-details">
-                  <p class="card-type">Visa Debit</p>
-                  <p class="card-number">ending in 5338</p>
-                </div>
-              </div>
-              <div class="security-message">
-                <div class="security-icon">
-                  <i class="fa-solid fa-lock"></i>
-                </div>
-                <div class="security-text">
-                  <p class="default-paragraph">
-                    <strong>Secure Card Update Process</strong>
-                  </p>
-                  <p class="default-paragraph">
-                    For security reasons, some card information can be changed
-                    through your card issuer
-                  </p>
-                </div>
-              </div>
-
-              <div class="security-process-status">
-                <div class="status-icon">
-                  <div class="status-icon-circle">1</div>
-                  <p class="security-status-text">Password</p>
-                </div>
-
-                <div class="status-icon">
-                  <div class="status-icon-circle">2</div>
-                  <p class="security-status-text">Verification Code</p>
-                </div>
-
-                <div class="status-icon">
-                  <div class="status-icon-circle">3</div>
-                  <p class="security-status-text">Update</p>
-                </div>
-              </div>
-
-              <form>
-                <div class="form-group">
-                  <label class="form-label">Card Number</label>
-                  <input
-                    id="card-number"
-                    type="text"
-                    class="form-input"
-                    value="**** **** **** 5338"
-                    disabled
-                  />
-                  <p class="default-paragraph input-note">
-                    Card number cannot be modified
-                  </p>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Card Holder</label>
-                  <input type="text" class="form-input" />
-                </div>
-                <div class="input-row">
-                  <div class="form-group">
-                    <label class="form-label">Expiration Date</label>
-                    <input type="text" class="form-input" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">CVV</label>
-                    <input type="text" class="form-input" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Billing Address</label>
-                  <input type="text" class="form-input" />
-                </div>
-                <div class="form-controls">
-                  <button id="backUpdateBtn" class="button button-ghost">
-                    Back
-                  </button>
-                  <button id="updateCardBtn" class="button button-primary">
-                    Update Card
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+          
         </div>
         <!-- Favorites Content-->
         <div class="tab" id="favorites">
@@ -6227,6 +5812,7 @@
     <script type="module" src="js/components/nav.js"></script>
     <script src="js/pages/components/profile/selling.js"></script>
     <script src="js/pages/components/profile/purchases.js"></script>
+    <script type="module" src="../js/pages/profile/profile-media.js"></script>
     <script type="module" src="js/components/Chart.js"></script>
   </body>
 </html>

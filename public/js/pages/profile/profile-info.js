@@ -4,13 +4,15 @@ import { validateForm } from "../../core/global.js";
 import { db, doc, updateDoc } from "../../api/firebase-client.js";
 import { notification } from "./ui-helpers.js";
 
+
+
 // ---------------------------------------------------------------------------
 // Database writes
 // ---------------------------------------------------------------------------
 
-export const updateProfile = async (email, updateData) => {
+export const updateProfile = async (userId, updateData) => {
   try {
-    const userDocRef = doc(db, "userProfiles", email);
+    const userDocRef = doc(db, "userProfiles", userId);
     await updateDoc(userDocRef, {
       ...updateData,
       lastUpdated: new Date()
@@ -22,15 +24,22 @@ export const updateProfile = async (email, updateData) => {
   }
 };
 
-export const updateShippingInfo = async (email, shippingData) => {
+export const updateShippingInfo = async (userId, shippingData) => {
+  console.log("shipping data:",shippingData)
   try {
-    const userDocRef = doc(db, "userProfiles", email);
+    const userDocRef = doc(db, "userProfiles", userId);
     await updateDoc(userDocRef, {
-      address1: shippingData.address1,
-      address2: shippingData.address2,
-      state: shippingData.state,
-      postalCode: shippingData.postalCode,
-      lastUpdated: new Date()
+      shipping: {
+        address: shippingData.address1,
+        address2: shippingData.address2,
+        city: shippingData.city,
+        country: shippingData.country,
+        phoneNumber: shippingData.phoneNumber,
+        state: shippingData.state,
+        zipCode: shippingData.postalCode,
+        lastUpdated: new Date()
+      }
+      
     });
     notification.success("Shipping information updated", "update");
   } catch (error) {
@@ -44,23 +53,25 @@ export const updateShippingInfo = async (email, shippingData) => {
 // ---------------------------------------------------------------------------
 
 export function loadPersonalInfoData(userData) {
-  document.querySelector("#personal-fname").value = userData.FirstName;
-  document.querySelector("#personal-lname").value = userData.LastName;
-  document.querySelector("#personal-email").value = userData.Email;
-  document.querySelector("#personal-phoneNumber").value = userData.phoneNumber;
-  document.querySelector("#profile-username").value = userData.Username;
+  document.querySelector("#personal-fname").value = userData.firstName;
+  document.querySelector("#personal-lname").value = userData.lastName;
+  document.querySelector("#personal-email").value = userData.email;
+  document.querySelector("#personal-phoneNumber").value = userData.shipping.phoneNumber;
+  document.querySelector("#profile-username").value = userData.username;
 }
 
 export function loadShippingInfoData(userData) {
-  document.querySelector("#shipping-fname").value = userData.FirstName;
-  document.querySelector("#shipping-lname").value = userData.LastName;
-  document.querySelector("#shipping-address").value = userData.address1;
-  document.querySelector("#shipping-address2").value = userData.address2;
-  document.querySelector("#shipping-city").value = userData.city;
-  document.querySelector("#shipping-state").value = userData.state;
-  // document.querySelector("#shipping-postalCode").value =
-  //   userData.postalCode || "";
-  document.querySelector("#shipping-phoneNumber").value = userData.phoneNumber;
+  console.log("userData being loaded:", userData)
+  document.querySelector("#shipping-fname").value = userData.firstName;
+  document.querySelector("#shipping-lname").value = userData.lastName;
+  document.querySelector("#shipping-address").value = userData.shipping.address;
+  document.querySelector("#shipping-address2").value = userData.shipping.address2;
+  document.querySelector("#shipping-city").value = userData.shipping.city;
+  document.querySelector("#shipping-country").value = userData.shipping.country;
+  document.querySelector("#shipping-state").value = userData.shipping.state;
+  document.querySelector("#shipping-postal").value =
+    userData.shipping.zipCode;
+  document.querySelector("#shipping-phoneNumber").value = userData.shipping.phoneNumber;
 }
 
 // ---------------------------------------------------------------------------
@@ -94,7 +105,7 @@ export function initProfileInfo() {
           username: document.querySelector("#profile-username").value,
           lastUpdated: new Date()
         };
-        await updateProfile(user.email, updateData);
+        await updateProfile(user.userId, updateData);
       }
     });
   }
@@ -108,29 +119,29 @@ export function initProfileInfo() {
         // double-checking which storage your auth flow actually writes to.
         const user = JSON.parse(sessionStorage.user);
         const shippingData = {
-          firstName: document.querySelector("#shippingInformation #fname")
+          firstName: document.querySelector("#shippingInformation #shipping-fname")
             .value,
-          lastName: document.querySelector("#shippingInformation #lname")
+          lastName: document.querySelector("#shippingInformation #shipping-lname")
             .value,
-          address1: document.querySelector("#shippingInformation #address")
+          address1: document.querySelector("#shippingInformation #shipping-address")
             .value,
           address2: document.querySelector(
-            "#shippingInformation #address-two"
+            "#shippingInformation #shipping-address2"
           ).value,
-          city: document.querySelector("#shippingInformation #city").value,
-          state: document.querySelector("#shippingInformation #state-select")
+          city: document.querySelector("#shippingInformation #shipping-city").value,
+          state: document.querySelector("#shippingInformation #shipping-state")
             .value,
-          postalCode: document.querySelector("#shippingInformation #postal")
+          postalCode: document.querySelector("#shippingInformation #shipping-postal")
             .value,
-          country: document.querySelector("#shippingInformation #country")
+          country: document.querySelector("#shippingInformation #shipping-country")
             .value,
           phoneNumber: document.querySelector(
-            "#shippingInformation #phoneNumber"
+            "#shippingInformation #shipping-phoneNumber"
           ).value,
           lastUpdated: new Date()
         };
 
-        await updateShippingInfo(user.email, shippingData);
+        await updateShippingInfo(user.userId, shippingData);
       }
     });
   }
@@ -324,3 +335,4 @@ function initTabNavigation() {
     });
   });
 }
+
