@@ -31,7 +31,7 @@
 import { auth } from "../../api/firebase-client.js";
 import { notification, openPopupMenu, closePopupMenu } from "./ui-helpers.js";
 
-const STRIPE_PUBLISHABLE_KEY = "pk_REPLACE_WITH_YOUR_PUBLISHABLE_KEY";
+const STRIPE_PUBLISHABLE_KEY = "pk_test_51Tfwj9PHPIWBS1BJqszOAwKKlL5xCJGBsfTJhcbyWndXlUBiLbDsGhlmLCf7XGxdiFtamED8mlZxZbVKJDBu1tao004NMblLug";
 const API_BASE = "/api/payment-methods";
 const CARD_LIST_SELECTOR = ".card-list";
 const MODAL_ID = "add-card-modal";
