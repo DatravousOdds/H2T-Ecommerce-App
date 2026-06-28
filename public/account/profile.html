@@ -1361,6 +1361,8 @@
                   <p class="stat-card-value">892</p>
                 </article>
 
+                <!-- HIDDEN FOR MVP: Trade Offers / Sell to Us not in scope -->
+                <!--
                 <article id="trade-offers" class="stat-card">
                   <header class="stat-header">
                     <h2>Trade Offers</h2>
@@ -1375,6 +1377,7 @@
                   </header>
                   <p class="stat-card-value">12</p>
                 </article>
+                -->
                 <article id="total-sales" class="stat-card">
                   <header class="stat-header">
                     <h2>Total Sales</h2>
@@ -1510,6 +1513,8 @@
                       </div>
                     </div>
                   </div>
+                  <!-- HIDDEN FOR MVP: Trade Request / Sell to Us buttons -->
+                  <!--
                   <div class="trade-request">
                     <button type="button" id="trade-request-btn">
                       <i class="fa-solid fa-right-left"></i>
@@ -1522,6 +1527,7 @@
                       Sell to us
                     </button>
                   </div>
+                  -->
                   <div class="list-products">
                     <button
                       type="button"
@@ -1563,6 +1569,8 @@
                       Active
                     </button>
                   </li>
+                  <!-- HIDDEN FOR MVP: For Trade / Sell to Us / Pending Trades filter tabs -->
+                  <!--
                   <li role="presentation" class="filter-item">
                     <button
                       role="tab"
@@ -1596,6 +1604,7 @@
                       Pending Trades
                     </button>
                   </li>
+                  -->
                   <li role="presentation" class="filter-item">
                     <button
                       role="tab"
@@ -1843,75 +1852,77 @@
                   </div>
                 </div>
 
-                <!-- For Trade products content goes here -->
+                <!-- HIDDEN FOR MVP: For Trade / Sell to Us / Pending Trades product tables -->
+                <!--
+                 For Trade products content goes here 
                 <div
                   class="for-trade-products-content content-section"
                   data-section="for-trade-products"
                   id="for-trade-products"
                 >
-                  <!-- code to display for trade products -->
+                   code to display for trade products 
                   <div class="table-responsive">
                     <table class="product-table">
                       <thead>
                         <tr>
                           <th>PRODUCT</th>
-                          <!-- Product image, name, and category -->
+                           Product image, name, and category 
                           <th>SKU</th>
-                          <!-- Unique product identifier -->
+                           Unique product identifier 
                           <th>STATUS</th>
-                          <!-- In stock, Low stock, Out of stock -->
+                           In stock, Low stock, Out of stock 
                           <th>CONDITION</th>
-                          <!-- New, Like New, Good, Fair etc -->
+                           New, Like New, Good, Fair etc 
                           <th>QTY</th>
-                          <!-- Current inventory quantity -->
+                           Current inventory quantity 
                           <th>RETAIL PRICE</th>
-                          <!-- Original/MSRP price -->
+                           Original/MSRP price 
                           <th>SALE PRICE</th>
-                          <!-- Current selling price -->
+                           Current selling price 
                           <th>LAST UPDATED</th>
-                          <!-- Date of last inventory/price update -->
+                           Date of last inventory/price update 
                           <th>ACTIONS</th>
-                          <!-- Edit, Delete, View Details etc -->
+                           Edit, Delete, View Details etc 
                         </tr>
                       </thead>
                       <tbody id="for-trade-products-table">
                         <tr class="product-row">
-                          <!-- loaded dynamically from database -->
+                           loaded dynamically from database 
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                <!-- Sell to Us products content goes here -->
+                 Sell to Us products content goes here 
                 <div
                   class="sell-to-us-products-content content-section"
                   data-section="sell-to-us-products"
                   id="sell-to-us-products"
                 >
-                  <!-- code to display sell to us products -->
+                   code to display sell to us products 
                   <div class="table-responsive">
                     <table class="product-table">
                       <thead>
                         <tr>
                           <th>PRODUCT</th>
-                          <!-- Product image, name, and category -->
+                           Product image, name, and category 
                           <th>BRAND</th>
-                          <!-- Brand name -->
+                           Brand name 
                           <th>MARKET VALUE</th>
-                          <!-- Current market value -->
+                           Current market value 
                           <th>CONDITION</th>
-                          <!-- Product condition -->
+                           Product condition 
                           <th>OFFER PRICE</th>
-                          <!-- What we'll pay -->
+                           What we'll pay 
                           <th>TRADE VALUE</th>
-                          <!-- Store credit value -->
+                           Store credit value 
                           <th>DEMAND</th>
-                          <!-- High, Medium, Low demand indicator -->
+                           High, Medium, Low demand indicator 
                           <th>STATUS</th>
-                          <!-- Pending, Accepted, Rejected etc -->
+                           Pending, Accepted, Rejected etc 
                           <th>ACTIONS</th>
-                          <!-- View Details, Accept, Reject etc -->
+                           View Details, Accept, Reject etc 
                         </tr>
                       </thead>
                       <tbody id="sell-to-us-products-table">
@@ -1983,7 +1994,7 @@
                   </div>
                 </div>
 
-                <!-- Pending Trades products content goes here -->
+                 Pending Trades products content goes here 
                 <div
                   class="pending-trades-products-content content-section"
                   data-section="pending-trades-products"
@@ -1994,21 +2005,21 @@
                       <thead>
                         <tr>
                           <th>TRADING</th>
-                          <!-- Items customer is trading in -->
+                           Items customer is trading in 
                           <th>TRADING VALUE</th>
-                          <!-- Value of trade-in items -->
+                           Value of trade-in items 
                           <th>REQUESTING</th>
-                          <!-- Items customer wants -->
+                           Items customer wants 
                           <th>RETAIL VALUE</th>
-                          <!-- Value of requested items -->
+                           Value of requested items 
                           <th>TRADE BALANCE</th>
-                          <!-- Difference to pay/receive -->
+                           Difference to pay/receive 
                           <th>SUBMITTED</th>
-                          <!-- When trade was proposed -->
+                           When trade was proposed 
                           <th>STATUS</th>
-                          <!-- Pending, Inspecting, Ready etc -->
+                           Pending, Inspecting, Ready etc 
                           <th>ACTIONS</th>
-                          <!-- Accept, Reject, Message etc -->
+                           Accept, Reject, Message etc 
                         </tr>
                       </thead>
                       <tbody id="pending-trades-products-table">
@@ -2123,6 +2134,7 @@
                     </table>
                   </div>
                 </div>
+                -->
 
                 <!-- Out of Stock products content goes here -->
                 <div
@@ -2761,8 +2773,10 @@
                     </div>
                   </div>
 
-                  <!-- Sell to Us Modals-->
-                  <!-- Accept Store Offer -->
+                  <!-- HIDDEN FOR MVP: Accept/Reject Offer, Trade Details, Message Trader, Approve Trade modals -->
+                  <!--
+                   Sell to Us Modals
+                   Accept Store Offer 
                   <div id="acceptModal" class="modal">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -2840,7 +2854,7 @@
                       </div>
                     </div>
                   </div>
-                  <!-- Reject Store Offer -->
+                   Reject Store Offer 
                   <div id="rejectModal" class="modal">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -2945,8 +2959,8 @@
                     </div>
                   </div>
 
-                  <!-- Pending Trades Modals-->
-                  <!-- Trade Details -->
+                   Pending Trades Modals
+                   Trade Details 
                   <div id="tradeModal" class="modal">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -3045,7 +3059,7 @@
                       </div>
                     </div>
                   </div>
-                  <!-- Message Seller -->
+                   Message Seller 
                   <div id="messageModal" class="modal">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -3055,7 +3069,7 @@
                         </button>
                       </div>
                       <div class="modal-body">
-                        <!-- Trade Info Section -->
+                         Trade Info Section 
                         <div class="trader-info-container">
                           <div class="trader-profile">
                             <div class="trader-image-wrapper">
@@ -3083,7 +3097,7 @@
                             </div>
                           </div>
 
-                          <!-- Trade Item Info -->
+                           Trade Item Info 
                           <div class="trade-item--summary">
                             <div class="item-details">
                               <span class="detail-label">Item:</span>
@@ -3140,7 +3154,7 @@
                       </div>
                     </div>
                   </div>
-                  <!-- Accept Trade -->
+                   Accept Trade 
                   <div id="approveModal" class="modal">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -3169,6 +3183,7 @@
                       </div>
                     </div>
                   </div>
+                  -->
 
                   <!-- Draft Modals -->
                   <div id="trashModal" class="modal">

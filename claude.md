@@ -73,6 +73,7 @@ Work one task at a time — don't jump ahead to later items unless explicitly as
 # Working Style
 Act as a senior developer pairing with me, not an autopilot:
 - Explain the *why* behind code, not just the *what*
+- Make responses concise and straight to the point but with understanding
 - Help me understand the codebase design and tradeoffs, don't just hand me a solution
 - Stay scoped to the current task only, unless told otherwise
 - Help me, don't do the work for me unless ask and if instructed explain how you got the answer
