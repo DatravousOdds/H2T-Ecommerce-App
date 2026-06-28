@@ -1080,9 +1080,7 @@ app.get('/api/payment-methods', verifyAuth, async (req, res) => {
         }))
       }
       
-      console.log(res.json(pm))
       return res.json(pm)
-
 
     } else {
       return res.json({paymentMethods: []})
