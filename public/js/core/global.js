@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs, where, query, limit, getDoc, startAfter } from '../api/firebase-client.js';
-import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, setDoc, serverTimestamp, db, doc, app } from '../api/firebase-client.js';
 import { getCartItems } from '../components/cartDrawer.js';
 import { checkUserStatus } from '../auth/auth.js';
 
@@ -7,6 +7,42 @@ const currentUser = await checkUserStatus();
 const cartItemCount = await getCartItems(currentUser);
 let cartCount = Number(localStorage.getItem('cartCount')) || 0;
 setCartCount(cartItemCount.length);
+
+/**
+ * favorites/{userId}/items/{listingId} -- doc ID is the listingId itself,
+ * each doc denormalizes the listing's display fields (mirrors how
+ * order.item already does this elsewhere in the app).
+ */
+let favoritedIds = await getFavoritedIds(currentUser?.userId);
+
+async function getFavoritedIds(userId) {
+  if (!userId) return new Set();
+
+  try {
+    const itemsRef = collection(db, "favorites", userId, "items");
+    const snapshot = await getDocs(itemsRef);
+    return new Set(snapshot.docs.map((d) => d.id));
+  } catch (error) {
+    console.error("Error fetching favorited ids:", error);
+    return new Set();
+  }
+}
+
+async function addFavorite(userId, listingId, listingData) {
+  await setDoc(doc(db, "favorites", userId, "items", listingId), {
+    listingId,
+    productName: listingData.productName || "",
+    originalPrice: listingData.originalPrice || 0,
+    brand: listingData.brand || "",
+    category: listingData.category || "",
+    images: listingData.images || [],
+    addedAt: serverTimestamp(),
+  });
+}
+
+async function removeFavorite(userId, listingId) {
+  await deleteDoc(doc(db, "favorites", userId, "items", listingId));
+}
 
 
 export async function getCountries() {
@@ -594,15 +630,48 @@ function deleteMapEntry(entry) {
     }
 };
 
-function handleFavoriteClick(element) {
+function handleFavoriteClick(element, listingId, listingData) {
   const heartIcon = element.querySelector(".liked i");
-  heartIcon.addEventListener("click", (e) => {
-      e.stopPropagation();
-      e.preventDefault();
 
-      heartIcon.classList.toggle('fa-regular');
-      heartIcon.classList.toggle('fa-solid');
-      heartIcon.style.color = heartIcon.classList.contains('fa-solid') ? 'red' : 'black';
+  // Reflect the real current state on render, not always defaulting to
+  // outline -- otherwise a user's own favorites would look unfavorited
+  // every time they revisit a shop page.
+  if (favoritedIds.has(listingId)) {
+    heartIcon.classList.remove("fa-regular");
+    heartIcon.classList.add("fa-solid");
+    heartIcon.style.color = "red";
+  }
+
+  heartIcon.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (!currentUser?.userId) {
+      window.location.href = "/login";
+      return;
+    }
+
+    const wasFavorited = heartIcon.classList.contains("fa-solid");
+
+    // Optimistic update -- toggle immediately, roll back if the write fails
+    heartIcon.classList.toggle("fa-regular");
+    heartIcon.classList.toggle("fa-solid");
+    heartIcon.style.color = heartIcon.classList.contains("fa-solid") ? "red" : "black";
+
+    try {
+      if (wasFavorited) {
+        await removeFavorite(currentUser.userId, listingId);
+        favoritedIds.delete(listingId);
+      } else {
+        await addFavorite(currentUser.userId, listingId, listingData);
+        favoritedIds.add(listingId);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      heartIcon.classList.toggle("fa-regular");
+      heartIcon.classList.toggle("fa-solid");
+      heartIcon.style.color = heartIcon.classList.contains("fa-solid") ? "red" : "black";
+    }
   });
 };
 
@@ -695,7 +764,7 @@ const displayProducts = (products, containerElement) => {
             <!-- product details -->   
     `;
 
-    handleFavoriteClick(productElement);
+    handleFavoriteClick(productElement, doc.id, productData);
 
 
     productsContainer.appendChild(productElement);

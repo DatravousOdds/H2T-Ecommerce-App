@@ -18,6 +18,8 @@ import {
 import { initProfileMedia } from "./profile-media.js";
 import { initBio } from "./bio.js";
 import { initFavorites } from "../profile/favorites/favorites.js";
+import { initPurchases } from "../profile/purchases/purchases.js"
+import { initNotifications } from "../profile/notifications/notifications.js";
 import { initPaymentMethods } from "./payment-methods.js";
 import { initPayouts } from "./payouts.js";
 import { initWallet, loadPaymentInfoData } from "./wallet.js";
@@ -69,12 +71,6 @@ async function loadSellingData(userData) {
   }
 }
 
-async function loadNotificationData(userData) {
-  if (userData) {
-    // load user notification settings
-  }
-}
-
 async function loadPurchasesData(userData) {
   if (userData) {
     // load purchase history
@@ -104,7 +100,7 @@ async function loadProfileData() {
       loadProfileDisplayData(userData);
       loadReviewData(userData);
       await initFavorites(userData);
-      loadNotificationData(userData);
+      await initNotifications(userData);
       // await loadPaymentInfoData(userData);
       // await initPayouts(userData);
       await initPaymentMethods(userData);
@@ -138,6 +134,7 @@ async function loadProfileData() {
   initProfileMedia();
   initBio();
   initReviews();
+  await initPurchases();
   // initWallet();
   // Fetch the user's profile and populate everything else
   loadProfileData();

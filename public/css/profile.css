@@ -7041,6 +7041,12 @@ h6 {
   object-fit: cover;
 }
 
+/* Favorites */
+.favorite-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
 /* Current Balance */
 .currency-info {
   display: flex;

@@ -1,5 +1,5 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, displayProducts, getCartCount } from '../core/global.js';
+import { loadProducts, displayProducts, getCartCount, handleFavoriteClick } from '../core/global.js';
 import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
 import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js'
 
@@ -126,20 +126,8 @@ const renderProducts = (products, containerElement) => {
                 
                 <div class="pro-price">
                   <div class="price-wrapper">
-                    <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
-                    <span class="orgin-price">$${productData.originalPrice.toFixed(2)}</span>
+                    <span class="listing-price">$${Number(productData.originalPrice || 0).toFixed(2)}</span>
                   </div>
-
-                  <div class="price-change">
-                    <div class="product-discount">
-                      <p>20% OFF</p>
-                    </div>
-                    <div class="price-trend trend-up">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span>+5%</span>
-                    </div>
-                  </div>
-
                 </div>
 
               </div>
@@ -148,6 +136,7 @@ const renderProducts = (products, containerElement) => {
             <!-- product details -->
           
     `;
+    handleFavoriteClick(productElement, doc.id, productData);
     productsContainer.appendChild(productElement);
   });
 
