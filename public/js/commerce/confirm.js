@@ -25,6 +25,7 @@ async function getOrderDetails() {
             where("id", "==", orderId)
         )
 
+        
         const unsub = onSnapshot(q, async (querySnapshot) => {
             const order = querySnapshot.docs[0].data();
             console.log(order)
@@ -124,7 +125,7 @@ function displayOrderConfirmation(orderData) {
                                     <p class="cart-item-brand">${orderData.item.brand}</p>
                                     <p class="cart-item-name">${orderData.item.name}</p>
                                     <p class="cart-item-size">Size: ${orderData.item.size}</p>
-                                    <p class="cart-item-price">$${item.price}</p>
+                                    <p class="cart-item-price">$${item.listingPrice}</p>
                                 </div>
                             
                             </div> 
@@ -148,7 +149,7 @@ function displayOrderConfirmation(orderData) {
                     <div class="order-total">
                         <div class="line-item-container">
                           <dt>Item Price:</dt>
-                          <dd>$${item.price}</dd>
+                          <dd>$${item.listingPrice}</dd>
                         </div>
                         <div class="line-item-container">
                           <dt>Delivery Price:</dt>

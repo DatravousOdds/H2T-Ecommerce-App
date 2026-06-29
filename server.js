@@ -931,22 +931,7 @@ app.post("/create-checkout-session", async (req, res) => {
   const { priceData } = req.body;
   console.log("session data:", priceData)
   try {
-    // const session = await stripe.checkout.sessions.create({
-    //     line_items: priceData.map(item => ({
-    //       price_data: {
-    //         currency: 'usd',
-    //         unit_amount: Math.round(item.price * 100),
-    //         product_data: {
-    //           description: item.brand,
-    //           name: item.productName,
-    //         },
-    //       },
-    //       quantity: 1,
-    //     })),
-    //     mode: 'payment',
-    //     ui_mode: "elements",
-    //     return_url: `${req.headers.origin}/complete?session_id={CHECKOUT_SESSION_ID}`,
-    // });
+  
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(priceData[0].price * 100),
       currency: 'usd',
@@ -1173,6 +1158,7 @@ async function handlePaymentIntentSucceeded(paymentData){
     const data = {
       id: paymentData.id,
       buyerId: paymentData.metadata.buyer_id,
+      sellerId: paymentData.metadata.seller_id,
       buyerEmail: paymentData.metadata.buyer_email,
       createdAt: paymentData.created,
       subtotal: (paymentData.amount / 100).toFixed(2),

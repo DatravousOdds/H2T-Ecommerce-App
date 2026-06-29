@@ -65,7 +65,7 @@ const CATEGORY_DEFAULTS = {
 let listing = {
     availableForTrade: true,
     originalPrice: 0,
-    userId: '',
+    userId: currentUser.userId,
     productName: '',
     images: [],
     status: '',
@@ -691,12 +691,12 @@ function collectListingInfo() {
     listing.originalPrice = parseFloat(productPrice.value);
     listing.productName = productTitle.value.trim();
     listing.availableForTrade = tradeStatus.classList.contains('active');
-    listing.userId = currentUser.uid;
+    listing.userId = currentUser.userId;
     listing.status = 'active';
-    listing.description = productDescription.value.trim();
-    listing.brand = productBrand.value.trim();
-    listing.condition = productCondition.value.trim();
-    listing.size = productSize.value.trim();
+    listing.description = productDescription?.value.trim();
+    listing.brand = productBrand?.value.trim();
+    listing.condition = productCondition?.value.trim();
+    listing.size = productSize?.value.trim();
     listing.createdAt = serverTimestamp();
 
 }

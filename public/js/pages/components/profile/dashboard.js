@@ -1503,29 +1503,18 @@ const editModalTemplate = (product) => `
 
 `;
 
-// loadOverviewTabInfo(userData);
-
 async function loadOverviewTabInfo(userData) {
   console.log("user data:", userData);
   if (!userData) return null;
 
-  // create reference
-  const data = userData.sellerOverview;
 
-  // update UI display
-  document.getElementById("total-revenue-value").textContent =
-    data.totalRevenue;
-  document.getElementById("active-listing-value").textContent =
-    data.activeListing;
-  document.getElementById("product-sold-value").textContent = data.productsSold;
-  document.getElementById("active-listing-value").textContent =
-    data.activeListing;
-  document.getElementById("product-sold-value").textContent = data.productsSold;
-  document.getElementById("selling-rate-value").textContent =
-    userData.sellerOverview.sellerRating;
 
   loadProducts(userData);
 }
+
+
+
+// ======================= PRODUCT TAB ==============================
 
 async function loadProducts(userData) {
   if (!userData) {
@@ -1998,7 +1987,7 @@ function setUpEventDelegation() {
 setUpEventDelegation();
 
 const templates = {
-  editModal: editModalTemplate,
+  editModal: editProductTemplate,
   statusModal: statusModalTemplate,
   promoteModal: promoteModalTemplate,
   acceptModal: acceptModalTemplate,
@@ -2008,7 +1997,7 @@ const templates = {
   approveModal: approveModalTemplate,
   trashModal: trashModalTemplate,
   publishModal: publishModalTemplate,
-  editModal: editProductTemplate,
+  editDraftModal: editProductTemplate,
 };
 
 // Helper Functions
@@ -2159,7 +2148,7 @@ function getModal(action) {
     "pending-message": document.getElementById("messageModal"),
     "pending-approve": document.getElementById("approveModal"),
 
-    "draft-edit": document.getElementById("editModal"),
+    "draft-edit": document.getElementById("editDraftModal"),
     "draft-publish": document.getElementById("publishModal"),
     "draft-delete": document.getElementById("trashModal"),
   };

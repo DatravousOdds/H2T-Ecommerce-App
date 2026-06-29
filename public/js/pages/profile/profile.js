@@ -1,9 +1,5 @@
 "use strict";
 
-console.log("profile page here")
-
-console.log("state:",document.readyState)
-
 import { checkUserStatus } from "../../auth/auth.js";
 import {
   formatFirebaseDate,

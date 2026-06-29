@@ -19,7 +19,7 @@ if(!user) {
 } else {
     const currentUser = await checkUserStatus();
     const data = await getOrderSummary(listingId, currentUser);
-    console.log("order summary:", data)
+    // console.log("order summary:", data)
     
     queryItem.price = data.total;
     queryItem.buyerId = currentUser.userId;
