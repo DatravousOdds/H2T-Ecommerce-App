@@ -1,6 +1,7 @@
 "use strict";
 
-import { db, doc, collection, getDocs, deleteDoc } from "../../../api/firebase-client";
+import { db, doc, collection, getDocs, deleteDoc } from "../../../api/firebase-client.js";
+
 
 /**
  * Schema assumption (favorites/{userId}/items/{itemId} is being designed
