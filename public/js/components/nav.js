@@ -219,7 +219,7 @@ const LoggedOutNav = () => ({
         </li>
         <li>
           <a href="/profile" class="nav-link" aria-label="User profile">
-            <i class="fa-regular fa-user"></i>
+            ${user}<i class="fa-regular fa-user"></i>
           </a>
         </li>
         <li>
@@ -269,7 +269,7 @@ const LoggedInNav = (user) => ({
         </li>
         <li>
           <a href="/profile" class="nav-link" aria-label="User profile">
-            <img src="${user.profilePicture || "../images/default-avatar.svg"}" 
+            <img src="${user.profileImage || "../images/default-avatar.svg"}" 
                  alt="user profile picture" 
                  class="profile-picture" />
           </a>
@@ -286,7 +286,7 @@ const LoggedInNav = (user) => ({
   desktop: `
     <li>
       <a href="/profile" class="nav-link" aria-label="User profile">
-        <img src="${user.profilePicture || "../images/default-avatar.svg"}" 
+        <img src="${user.profileImage || "../images/default-avatar.svg"}" 
              alt="user profile picture" 
              class="profile-picture" 
              onerror="this.src='../images/default-avatar.svg'" />

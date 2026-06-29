@@ -1,6 +1,6 @@
 "use strict";
 
-import { checkUserStatus } from "../../../auth/auth.js";
+
 import { db, collection, getDocs, query, where } from "../../../api/firebase-client.js";
 
 /**
@@ -120,9 +120,11 @@ function purchaseCardHTML(order) {
 
 function renderSection(sectionId, orders) {
   const section = document.getElementById(sectionId);
+  console.log("section", section)
   if (!section) return;
 
   const list = section.querySelector(".purchase-list");
+  console.log("list", list)
   if (!list) return;
 
   if (orders.length === 0) {
@@ -337,9 +339,9 @@ async function fetchBuyerOrders(userId) {
   return orders;
 }
 
-export async function initPurchases() {
+export async function initPurchases(currentUser) {
     console.log("purchases init called!")
-  const currentUser = await checkUserStatus();
+  
   if (!currentUser?.userId) return;
 
   try {

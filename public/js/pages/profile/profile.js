@@ -101,6 +101,7 @@ async function loadProfileData() {
       loadReviewData(userData);
       await initFavorites(userData);
       await initNotifications(userData);
+      await initPurchases(userData);
       // await loadPaymentInfoData(userData);
       // await initPayouts(userData);
       await initPaymentMethods(userData);
@@ -134,7 +135,7 @@ async function loadProfileData() {
   initProfileMedia();
   initBio();
   initReviews();
-  await initPurchases();
+  
   // initWallet();
   // Fetch the user's profile and populate everything else
   loadProfileData();
