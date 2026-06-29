@@ -17,6 +17,7 @@ import {
 } from "./profile-info.js";
 import { initProfileMedia } from "./profile-media.js";
 import { initBio } from "./bio.js";
+import { initFavorites } from "../profile/favorites/favorites.js";
 import { initPaymentMethods } from "./payment-methods.js";
 import { initPayouts } from "./payouts.js";
 import { initWallet, loadPaymentInfoData } from "./wallet.js";
@@ -68,12 +69,6 @@ async function loadSellingData(userData) {
   }
 }
 
-async function loadFavoritesData(userData) {
-  if (userData) {
-    // load user's favorite items
-  }
-}
-
 async function loadNotificationData(userData) {
   if (userData) {
     // load user notification settings
@@ -108,7 +103,7 @@ async function loadProfileData() {
       loadShippingInfoData(userData);
       loadProfileDisplayData(userData);
       loadReviewData(userData);
-      loadFavoritesData(userData);
+      await initFavorites(userData);
       loadNotificationData(userData);
       // await loadPaymentInfoData(userData);
       // await initPayouts(userData);
