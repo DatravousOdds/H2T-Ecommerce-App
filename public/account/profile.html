@@ -3603,9 +3603,12 @@
                   <!-- Filters -->
 
                   <div class="analytics-select">
-                    <select title="Analytics Filter">
-                      <option value="all">Last 7 days</option>
+                    <select title="Analytics Filter" id="analytics-time-filter">
+                      <option value="all">All Time</option>
                       <option value="today">Today</option>
+                      <option value="week">This Week</option>
+                      <option value="month">This Month</option>
+                      <option value="year">This Year</option>
                     </select>
                   </div>
 
@@ -3623,7 +3626,7 @@
               <!-- Analytics Content -->
               <section class="metrics-grid">
                 <!-- Total Revenue -->
-                <article class="metric-card">
+                <article class="metric-card" id="analytics-total-revenue">
                   <div class="metric-header">
                     <h2 class="metric-title">Total Revenue</h2>
                     <i class="fa-solid fa-dollar-sign"></i>
@@ -3638,7 +3641,7 @@
                   <p class="default-paragraph metric-subtitle">last month</p>
                 </article>
                 <!-- Total Orders -->
-                <article class="metric-card">
+                <article class="metric-card" id="analytics-total-orders">
                   <div class="metric-header">
                     <h2 class="metric-title">Total Orders</h2>
                     <i class="fa-solid fa-cart-shopping"></i>
@@ -3653,7 +3656,7 @@
                   <p class="default-paragraph metric-subtitle">last month</p>
                 </article>
                 <!-- Average Order Value -->
-                <article class="metric-card">
+                <article class="metric-card" id="analytics-average-order-value">
                   <div class="metric-header">
                     <h2 class="metric-title">Average Order Value</h2>
                     <i class="fa-solid fa-dollar-sign"></i>
@@ -3668,7 +3671,7 @@
                   <p class="default-paragraph metric-subtitle">last month</p>
                 </article>
                 <!-- Active Customers   -->
-                <article class="metric-card">
+                <article class="metric-card" id="analytics-active-customers">
                   <div class="metric-header">
                     <h2 class="metric-title">Active Customers</h2>
                     <i class="fa-solid fa-user"></i>
@@ -5833,6 +5836,7 @@
     <script type="module" src="js/pages/profile/selling/overview/overview.js"></script>
     <script type="module" src="js/pages/profile/selling/products/products.js"></script>
     <script type="module" src="js/pages/profile/selling/orders/orders.js"></script>
+    <script type="module" src="js/pages/profile/selling/analytics/analytics.js"></script>
     <script type="module" src="js/components/Chart.js"></script>
   </body>
 </html>

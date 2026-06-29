@@ -1847,9 +1847,9 @@ search.addEventListener("input", async (e) => {
 const productActionBtn = document.querySelector(".action-button");
 
 // Event Listeners
-productActionBtn.addEventListener("click", () => {
-  document.querySelector(".actions-menu").classList.add("active");
-});
+// productActionBtn.addEventListener("click", () => {
+//   document.querySelector(".actions-menu").classList.add("active");
+// });
 
 // Helper functions
 function clearFilter(filterInputs, filters) {
