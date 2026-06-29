@@ -8,6 +8,7 @@ const currentUser = await checkUserStatus();
 
 
 fetchTotalRevenue(currentUser.userId);
+fetchActiveListings(currentUser.userId);
 
 
 
@@ -45,11 +46,14 @@ async function fetchActiveListings(userId) {
     try {
         const docRef = collection(db, 'listings');
   
-          const q = query(docRef, where("userId", "==", '7Hy9Tq5c6Gez94LMnRkeWbPM01h1'));
+        const q = query(docRef, where("userId", "==", '7Hy9Tq5c6Gez94LMnRkeWbPM01h1'));
   
-          const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(q);
   
-           querySnapshot.docs.lengh
+        const activeListings = querySnapshot.docs.length;
+
+        console.log(activeListings);
+        return activeListings;
   
       } catch (error) {
           console.error("Failed to fetch total revenue: ", error)
@@ -57,7 +61,25 @@ async function fetchActiveListings(userId) {
 }
 
 async function fetchProductsSold(userId) {
-    
+    if (!userId) {
+        throw new Error("No uid provided!");
+    }
+
+    try {
+        const docRef = collection(db, 'listings');
+  
+        const q = query(docRef, where("userId", "==", '7Hy9Tq5c6Gez94LMnRkeWbPM01h1'));
+  
+        const querySnapshot = await getDocs(q);
+  
+        const activeListings = querySnapshot.docs.length;
+
+        console.log(activeListings);
+        return activeListings;
+  
+      } catch (error) {
+          console.error("Failed to fetch total revenue: ", error)
+      }
 }
 
 
