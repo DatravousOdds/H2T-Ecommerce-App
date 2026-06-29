@@ -6148,8 +6148,9 @@ h6 {
 /* Out of Stock styles */
 .empty-state {
   text-align: center;
-  background-color: #f9f9f9;
   padding: 24px 20px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 /* Footer Tooltip */
@@ -7406,11 +7407,7 @@ h6 {
   color: var(--text-gray-500);
 }
 
-.empty-state {
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
-}
+
 
 .empty-title {
   font-size: 1.25rem;

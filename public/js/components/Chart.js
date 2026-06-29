@@ -12,16 +12,32 @@ function lastSixMonthBuckets() {
 }
 
 // Initialize the chart using Chart.js
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const ctx = document.getElementById("salesChart").getContext("2d");
+  const currentUser = await checkUserStatus();
+
+  const ordersRef = collection(db, "orders");
+  const q = query(ordersRef, where("sellerId", "==", currentUser.userId));
+  const snapshot = await getDocs(q);
+  const orders = snapshot.docs.map((d) => d.data());
+
+  const buckets = lastSixMonthBuckets();
+  const salesByMonth = buckets.map((bucket) =>
+    orders
+      .filter((o) => {
+        const d = new Date(o.createdAt * 1000);
+        return d.getFullYear() === bucket.year && d.getMonth() === bucket.month;
+      })
+      .reduce((sum, o) => sum + (Number(o.subtotal) || 0), 0)
+  );
 
   // Fetch and format data
   const salesData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: buckets.map((b) => b.label),
     datasets: [
       {
         label: "Sales",
-        data: [35231, 38420, 42150, 40280, 43900, 45231],
+        data: salesByMonth,
         borderColor: "#dc2626",
         backgroundColor: "rgba(220, 38, 38, 0.1)",
         borderWidth: 2,
