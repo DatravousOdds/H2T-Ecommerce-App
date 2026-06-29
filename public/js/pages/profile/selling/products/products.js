@@ -1,0 +1,297 @@
+"use strict";
+
+import { checkUserStatus } from "../../../../auth/auth.js";
+import {
+  collection,
+  db,
+  getDocs,
+  query,
+  where,
+} from "../../../../api/firebase-client.js";
+
+const currentUser = await checkUserStatus();
+
+/**
+ * Real listing shape, as written by seller.js (NOT the nested
+ * basicInfo/inventory/pricing shape dashboard.js's old templates assumed):
+ *   { userId, productName, originalPrice, status, brand, condition, size,
+ *     category, categoryMeta, description, availableForTrade, createdAt,
+ *     listingId, images: [{ url, path, isPrimary, index }] }
+ *
+ * Two real gaps in the current schema, handled defensively below rather
+ * than assumed away:
+ *   - no stock/quantity field exists yet -> shown as "--"
+ *   - no view-count field exists yet -> shown as "--"
+ */
+
+const EMPTY_ROW = (colspan, message) =>
+  `<tr><td colspan="${colspan}" class="default-paragraph" style="text-align:center; padding: 24px;">${message}</td></tr>`;
+
+function firstImageUrl(listing) {
+  return listing.images && listing.images[0] && listing.images[0].url
+    ? listing.images[0].url
+    : "/images/HypebeastBG.jpeg";
+}
+
+function allProductsRow(listing) {
+  return `
+    <tr class="product-row" data-product-id="${listing.id}">
+      <td>
+        <div class="product-info">
+          <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" />
+          <div class="product-details">
+            <p class="product-name">${listing.productName || "Untitled listing"}</p>
+            <p class="product-type">${listing.category || "--"}</p>
+          </div>
+        </div>
+      </td>
+      <td><span class="listing-badge">${listing.status || "active"}</span></td>
+      <td>${listing.condition || "--"}</td>
+      <td>--</td>
+      <td>$${Number(listing.originalPrice || 0).toFixed(2)}</td>
+      <td>${listing.availableForTrade ? "$" + Number(listing.originalPrice || 0).toFixed(2) : "--"}</td>
+      <td>--</td>
+      <td>
+        <button class="action-button edit" aria-label="Edit Listing">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </button>
+      </td>
+    </tr>
+  `;
+}
+
+function activeProductsRow(listing) {
+  return `
+    <tr class="product-row" data-product-id="${listing.id}">
+      <td>
+        <div class="product-info">
+          <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" />
+          <div class="product-details">
+            <p class="product-name">${listing.productName || "Untitled listing"}</p>
+            <p class="product-sku">ID: ${listing.id.slice(0, 8)}</p>
+          </div>
+        </div>
+      </td>
+      <td><span class="category-badge">${listing.category || "--"}</span></td>
+      <td>${listing.size ? "US " + listing.size : "--"}</td>
+      <td>
+        <div class="condition-info">
+          <span class="condition-badge new">${listing.condition || "--"}</span>
+        </div>
+      </td>
+      <td>
+        <div class="stock-info">
+          <span class="stock-number">--</span>
+          <span class="stock-status in-stock">In Stock</span>
+        </div>
+      </td>
+      <td>$${Number(listing.originalPrice || 0).toFixed(2)}</td>
+      <td>
+        <div class="price-info">
+          <span class="current-price">$${Number(listing.originalPrice || 0).toFixed(2)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="views-info">
+          <span class="view-count">--</span>
+        </div>
+      </td>
+      <td>
+        <div class="listing-date">
+          <span class="date">${formatListedDate(listing.createdAt)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="action-button edit" aria-label="Edit Listing">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+          <button class="action-button pause" aria-label="Pause Listing">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+function outOfStockRow(listing) {
+  return `
+    <tr class="product-row" data-product-id="${listing.id}">
+      <td>
+        <div class="product-info">
+          <p class="product-name">${listing.productName || "Untitled listing"}</p>
+        </div>
+      </td>
+      <td><span class="category-badge">${listing.category || "--"}</span></td>
+      <td><span class="date">${formatListedDate(listing.createdAt)}</span></td>
+      <td><span class="last-price">$${Number(listing.originalPrice || 0).toFixed(2)}</span></td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>--</td>
+      <td>
+        <button class="action-button restock" aria-label="Restock Product">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"></path>
+          </svg>
+        </button>
+      </td>
+    </tr>
+  `;
+}
+
+function draftRow(listing) {
+  return `
+    <tr class="product-row" data-product-id="${listing.id}">
+      <td>
+        <div class="product-info">
+          <div class="product-image-container">
+            <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" />
+            <span class="draft-badge">Draft</span>
+          </div>
+          <div class="product-details">
+            <p class="product-name">${listing.productName || "Untitled draft"}</p>
+            <p class="product-id">ID: #${listing.id.slice(0, 8)}</p>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="completion-info">
+          <span class="completion-text">${estimateCompletion(listing)}% Complete</span>
+        </div>
+      </td>
+      <td>${listMissingFields(listing)}</td>
+      <td><span class="date">${formatListedDate(listing.createdAt)}</span></td>
+      <td><span class="date">${formatListedDate(listing.createdAt)}</span></td>
+      <td><span class="category-badge">${listing.category || "--"}</span></td>
+      <td><span class="draft-price">$${Number(listing.originalPrice || 0).toFixed(2)}</span></td>
+      <td>
+        <div class="action-buttons">
+          <button class="action-button publish" aria-label="Publish Draft">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20V10"></path>
+              <path d="M18 14l-6-6-6 6"></path>
+            </svg>
+          </button>
+          <button class="action-button delete" aria-label="Delete Draft">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"></path>
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+// A draft's "completion" isn't tracked anywhere in the schema yet -- this is
+// a simple stand-in based on which real fields are present, not a stored value.
+function estimateCompletion(listing) {
+  const fields = ["productName", "originalPrice", "brand", "condition", "size", "category", "images"];
+  const filled = fields.filter((f) => {
+    if (f === "images") return listing.images && listing.images.length > 0;
+    return Boolean(listing[f]);
+  }).length;
+  return Math.round((filled / fields.length) * 100);
+}
+
+function listMissingFields(listing) {
+  const missing = [];
+  if (!listing.productName) missing.push("Name");
+  if (!listing.images || listing.images.length === 0) missing.push("Photos");
+  if (!listing.description) missing.push("Description");
+  return missing.length ? missing.join(", ") : "--";
+}
+
+function formatListedDate(createdAt) {
+  // createdAt is a Firestore serverTimestamp() once written, which arrives
+  // back as a Firestore Timestamp object with a .toDate() method -- not a
+  // raw number like the Stripe-derived orders.createdAt field.
+  if (!createdAt || typeof createdAt.toDate !== "function") return "--";
+  return createdAt.toDate().toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function populateTable(tableId, items, rowTemplate, emptyMessage) {
+  const tbody = document.getElementById(tableId);
+  if (!tbody) return;
+
+  if (items.length === 0) {
+    tbody.innerHTML = EMPTY_ROW(8, emptyMessage);
+    return;
+  }
+
+  tbody.innerHTML = items.map(rowTemplate).join("");
+}
+
+function updateStatCard(articleId, value) {
+  const el = document.querySelector(`#${articleId} .stat-card-value`);
+  if (el) el.textContent = value;
+}
+
+async function fetchSellerListings(userId) {
+  const listingsRef = collection(db, "listings");
+  const q = query(listingsRef, where("userId", "==", userId));
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+}
+
+async function fetchTotalSales(userId) {
+  const ordersRef = collection(db, "orders");
+  const q = query(ordersRef, where("sellerId", "==", userId));
+  const snapshot = await getDocs(q);
+
+  // subtotal is stored as a string (toFixed() on the server), not a number --
+  // Number() it explicitly or this silently does string concatenation.
+  return snapshot.docs.reduce((total, docSnap) => {
+    const subtotal = Number(docSnap.data().subtotal);
+    return total + (Number.isFinite(subtotal) ? subtotal : 0);
+  }, 0);
+}
+
+async function loadProductsTab(userId) {
+  if (!userId) {
+    console.error("loadProductsTab: no userId provided");
+    return;
+  }
+
+  try {
+    const [listings, totalSales] = await Promise.all([
+      fetchSellerListings(userId),
+      fetchTotalSales(userId),
+    ]);
+
+    // No status-change write path exists yet (Status modal save isn't wired
+    // up), so right now every real listing is realistically "active" --
+    // this filtering is correct for when that gets built, not dead code.
+    const active = listings.filter((l) => l.status === "active");
+    const outOfStock = listings.filter((l) => l.status === "out-of-stock");
+    const drafts = listings.filter((l) => l.status === "draft");
+
+    populateTable("all-products-table", listings, allProductsRow, "No listings yet. List your first product to see it here.");
+    populateTable("active-products-table", active, activeProductsRow, "No active listings.");
+    populateTable("out-of-stock-products-table", outOfStock, outOfStockRow, "Nothing out of stock.");
+    populateTable("draft-products-table", drafts, draftRow, "No drafts in progress.");
+
+    updateStatCard("active-listings", active.length);
+    updateStatCard("total-sales", `$${totalSales.toFixed(2)}`);
+  } catch (error) {
+    console.error("Error loading products tab:", error);
+  }
+}
+
+await loadProductsTab(currentUser.userId);
