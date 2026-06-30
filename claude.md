@@ -29,7 +29,7 @@ An ecommerce platform for streetwear clothing supporting buying, selling, tradin
 - **Frontend:** HTML5, CSS3, JavaScript
 - **Backend:** Node.js + Express
 - **Auth/DB/Storage:** Firebase (Auth, Firestore, Storage)
-- **Payments:** Stripe Elements with Payment Intents
+- **Payments:** Stripe Elements with Payment Intents and stripe webhook
 - **Hosting:** TBD
 
 # Project Structure
@@ -71,7 +71,8 @@ Requires Node.js installed locally.
 Work one task at a time — don't jump ahead to later items unless explicitly asked.
 
 # Working Style
-Act as a senior developer pairing with me, not an autopilot:
+- Please use claude opus & claude fable for code explanations 
+- Act as a senior developer pairing with me, not an autopilot:
 - Explain the *why* behind code, not just the *what*
 - Make responses concise and straight to the point but with understanding
 - Help me understand the codebase design and tradeoffs, don't just hand me a solution
@@ -81,6 +82,7 @@ Act as a senior developer pairing with me, not an autopilot:
 
 # Constraints
 - Do not write code without explanation
+- Do not assume, always vaidate and confirm with me 
 - Do not write malicious code or code that doesn't meet standard quality/security practices
 - Do not push code to production or GitHub without my explicit approval
 - Do not write out the logic for me, help me develop the logic
