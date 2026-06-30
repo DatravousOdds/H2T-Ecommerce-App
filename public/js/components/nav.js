@@ -219,7 +219,7 @@ const LoggedOutNav = () => ({
         </li>
         <li>
           <a href="/profile" class="nav-link" aria-label="User profile">
-            ${user}<i class="fa-regular fa-user"></i>
+            <i class="fa-regular fa-user"></i>
           </a>
         </li>
         <li>
