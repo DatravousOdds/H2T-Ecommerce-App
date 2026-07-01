@@ -1,7 +1,8 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, displayProducts, getCartCount, handleFavoriteClick } from '../core/global.js';
 import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
-import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js'
+import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js';
+import { showPageLoader, hidePageLoader } from '../components/pageLoader.js';
 
 const categoryCarousel = document.querySelector(".category-carousel");
 const cartBtn = document.querySelector('#cartBtn i');
@@ -9,7 +10,7 @@ const cartDrawer = document.getElementById('cartDrawer');
 
 
 initCartDrawer();
-
+showPageLoader();
 
 
 const categories = [
@@ -27,15 +28,22 @@ const categories = [
 
 
 const justDropped = async () => {
-  const q = query(
+  try {
+    const q = query(
     collection(db, "listings"),
     where("status", "==", "active"),
     orderBy("createdAt", "desc"),
     limit(16)
   );
 
-  const querySnapshot = await getDocs(q);
-  displayProducts(querySnapshot, "justDropped");
+    const querySnapshot = await getDocs(q);
+    displayProducts(querySnapshot, "justDropped");
+  
+  } catch (error) {
+    console.error("Error fetching just dropped products:", error);
+  } finally { 
+    hidePageLoader();
+  }
   
 };
 

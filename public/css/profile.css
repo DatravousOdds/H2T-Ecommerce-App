@@ -3824,6 +3824,34 @@ h6 {
   color: #1e40af;
 }
 
+.status-badge.under-review {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.needs-info {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-badge.needs-info i {
+  color: #2563eb;
+}
+
+.status-badge.approved {
+  background: #def7ec;
+  color: #03543f;
+}
+
+.status-badge.rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge.rejected i {
+  color: #dc2626;
+}
+
 .status.completed {
   background: #def7ec;
   color: #03543f !important;

@@ -1171,6 +1171,15 @@
                     Analytics
                   </button>
                 </li>
+                <li>
+                  <button
+                    type="button"
+                    class="nav-button"
+                    data-tab="authentication"
+                  >
+                    Authentication
+                  </button>
+                </li>
               </ul>
             </nav>
             <!-- Overview Section -->
@@ -3592,6 +3601,34 @@
               </div>
             </section>
 
+            <!-- Authentication Requests Section -->
+            <section
+              id="authentication"
+              class="content-section"
+              aria-label="Authentication Requests"
+            >
+              <div class="table-responsive">
+                <table class="product-table auth-request-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">REQUEST ID</th>
+                      <th scope="col">SUBMITTED</th>
+                      <th scope="col">ITEM</th>
+                      <th scope="col">TIER</th>
+                      <th scope="col">STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="5" class="default-paragraph" style="text-align:center; padding: 24px;">
+                        Loading authentication requests...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
             <!-- Analytics Section -->
             <section id="analytics" class="content-section">
               <!-- Analytics Header -->
@@ -5840,6 +5877,7 @@
     <script type="module" src="js/pages/profile/selling/products/products.js"></script>
     <script type="module" src="js/pages/profile/selling/orders/orders.js"></script>
     <script type="module" src="js/pages/profile/selling/analytics/analytics.js"></script>
+    <script type="module" src="js/pages/profile/selling/authentication/authentication.js"></script>
     <script type="module" src="js/components/Chart.js"></script>
   </body>
 </html>

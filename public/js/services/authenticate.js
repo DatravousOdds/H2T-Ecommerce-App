@@ -629,6 +629,11 @@ async function handleFormSubmission(e) {
       let uploadRequestId = result.requestId;
       console.log("✅ Images uploaded successfully!");
 
+      // Fire-and-forget: don't block the cart-add UX on Vertex AI latency,
+      // and don't fail the whole submission if matching fails -- the
+      // request just stays at "submitted" and a reviewer can trigger it
+      // manually later (see the reviewer screen's "Run AI Match" fallback).
+      triggerAuthMatching(uploadRequestId);
 
       // Step 2: Add item to cart
       authSubmitBtn.textContent = "Adding to cart...";
@@ -813,6 +818,17 @@ async function uploadImagesToFirebase(images, userId, requestId) {
   
 }
 
+function triggerAuthMatching(requestId) {
+  fetch(`/api/authentication-requests/${requestId}/analyze`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${currentUser.idToken}`,
+    },
+  }).catch((error) => {
+    console.error("❌ AI matching trigger failed (non-fatal):", error);
+  });
+}
+
 async function deleteFirebaseRequest(requestId) {
   // get request ref
   try {
@@ -867,6 +883,8 @@ async function submitToFirebase() {
       // threshold), per the planning doc's status table. "submitted" is
       // the honest interim state between form submission and that
       // pipeline actually running.
+      // Full enum: submitted | pending_review | needs_manual_review |
+      // needs_info | approved | rejected
       status: "submitted",
       userId: user.userId,
 

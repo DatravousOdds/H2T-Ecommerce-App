@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@api/easyship": "file:.api/apis/easyship",
+    "@google-cloud/aiplatform": "^6.8.1",
     "aws-sdk": "^2.1213.0",
     "bcrypt": "^5.1.0",
     "chart.js": "^4.5.1",

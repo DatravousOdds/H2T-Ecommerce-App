@@ -19,6 +19,7 @@ easyship.auth(process.env.EASYSHIP_KEY);
 // Import Firebase configuration
 const { initializeFirebase, getDb, getAdmin } = require("./firebase");
 const { verifyAuth } = require("./middleware/auth.js");
+const { matchAuthenticationRequest } = require("./services/matching.js");
 
 // Initialize Firebase
 const { admin, db } = initializeFirebase();
@@ -250,6 +251,12 @@ app.get("/releases", (req, res) => {
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));
+});
+// authentication reviewer route -- first admin surface in the app; access
+// is gated client-side by checking the admin custom claim (UX only, see
+// authentication-review.js) and server-side by the PUT route's isAdmin check
+app.get("/admin/authentication-review", (req, res) => {
+  res.sendFile(path.join(staticPth, "admin/authentication-review.html"));
 });
 
 app.post("/signup", async (req, res) => {
@@ -1149,6 +1156,81 @@ app.delete('/api/payment-methods/:id', verifyAuth, async (req, res) => {
     return res.status(500).json({ error: error.message})
   }
 })
+
+// Triggers the AI matching step for a submitted authentication request:
+// generates an embedding for its primary image, compares against every
+// listing's referenceEmbedding, and writes matches + status. Called
+// fire-and-forget from the client right after the request doc is created
+// (see authenticate.js's handleFormSubmission()) -- see the reviewer
+// screen's "Run AI Match" button for the manual retry path if that call
+// never fires.
+app.post("/api/authentication-requests/:id/analyze", verifyAuth, async (req, res) => {
+  const requestId = req.params.id;
+
+  try {
+    const docRef = await db.collection("authenticationRequests").doc(requestId).get();
+
+    if (!docRef.exists) {
+      return res.status(404).json({ success: false, message: "Request not found" });
+    }
+
+    const isOwner = req.token.uid === docRef.data().userId;
+    const isAdmin = req.token.admin === true;
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ success: false, message: "Not authorized for this request" });
+    }
+
+    const result = await matchAuthenticationRequest(requestId);
+    res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    console.error("❌ Error matching authentication request:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Reviewer action: approve / reject / request more info on an
+// authentication request. isAdmin-gated the same way PUT /orders/:id
+// gates its status field to admins only. NOTE: inert until the
+// req.token.admin bug in middleware/auth.js is fixed and a reviewer
+// account actually has the admin custom claim set -- see the plan doc.
+app.put("/api/authentication-requests/:id", verifyAuth, async (req, res) => {
+  const requestId = req.params.id;
+  const { status, reviewerNotes } = req.body;
+
+  const allowedStatuses = ["approved", "rejected", "needs_info"];
+
+  if (!allowedStatuses.includes(status)) {
+    return res.status(400).json({ success: false, message: `status must be one of: ${allowedStatuses.join(", ")}` });
+  }
+
+  try {
+    const docRef = db.collection("authenticationRequests").doc(requestId);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      return res.status(404).json({ success: false, message: "Request not found" });
+    }
+
+    const isAdmin = req.token.admin === true;
+
+    if (!isAdmin) {
+      return res.status(403).json({ success: false, message: "Reviewer access required" });
+    }
+
+    await docRef.update({
+      status,
+      reviewerNotes: reviewerNotes || null,
+      reviewerId: req.token.uid,
+      reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("❌ Error updating authentication request:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 
 

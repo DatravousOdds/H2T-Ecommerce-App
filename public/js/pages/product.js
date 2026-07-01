@@ -2,6 +2,7 @@ import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, 
 import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
+import { showLoader, hideLoader } from '../components/pageLoader.js';
 
 
 const user = await checkUserStatus();
@@ -10,6 +11,7 @@ const productId = searchQuery.get('id');
 
 
 
+const productDetailsWrapper = document.querySelector('.product-details-wrapper');
 const productCategory = document.querySelector('.prod-category');
 const productTitle = document.querySelector('.prod-title');
 const productPrice = document.querySelector('.prod-price')
@@ -31,6 +33,7 @@ const addToCartBtn = document.getElementById('addToCartBtn');
 const cartDrawerBody = document.getElementById('cartDrawerBody');
 const priceHistoryFilters = document.querySelectorAll('.chart-filter-grid .filter');
 const proContainer = document.querySelector('.pro-container');
+const statRow = document.querySelector('.stat-row');
 const buyBtn = document.getElementById('buyBtn');
 
 initCartDrawer();
@@ -38,8 +41,15 @@ setBreadcrumb();
 displayProductDetails();
 displayPricingKpis();
 displayReviews();
-const products = await loadRelateProducts();
-displayProducts(products);
+showLoader(proContainer);
+try {
+    const products = await loadRelateProducts();
+    displayProducts(products);
+} catch (error) {
+    console.error("Error fetching related products:", error);
+} finally {
+    hideLoader(proContainer);
+}
 const item = await createCartItem();
 
 
@@ -145,70 +155,82 @@ async function getReviews() {
 }
 
 async function displayReviews() {
-    const reviews = await getReviews();
-    getTotalReviews(reviews);
+    showLoader(reviewsContainer);
+    try {
+        const reviews = await getReviews();
+        getTotalReviews(reviews);
 
-    reviewsContainer.innerHTML = "";
-    reviews.forEach(review => {
-        const reviewData = review.data()
-        
-        const div = document.createElement('div');
-        div.classList.add('comment-container');
-        div.innerHTML = `<div class="rating-timestamp" style="display: flex">
-            <div class="stars" id="stars">
-                ${ratingStars(reviewData.rating)}
-              </div>
-              <span class="comment-date">${formatFirebaseDate(reviewData.createdAt)}</span>
-            </div>
-            
-            <div class="active-comment">
-              <div class="comment">
-                <p>${reviewData.description}</p>
-              </div>
-              <div class="user-pfp" style="display: flex">
-                <div class="user">
-                  <img src=${reviewData.reviewerPhoto} alt="${reviewData.altImage}" />
+        reviewsContainer.innerHTML = "";
+        reviews.forEach(review => {
+            const reviewData = review.data()
+
+            const div = document.createElement('div');
+            div.classList.add('comment-container');
+            div.innerHTML = `<div class="rating-timestamp" style="display: flex">
+                <div class="stars" id="stars">
+                    ${ratingStars(reviewData.rating)}
+                  </div>
+                  <span class="comment-date">${formatFirebaseDate(reviewData.createdAt)}</span>
                 </div>
-                <div class="user-name">
-                  <a href="#">${reviewData.reviewerUsername}</a>
-                </div>
-              </div>
-            </div>`;
 
-        reviewsContainer.append(div);
-    })
+                <div class="active-comment">
+                  <div class="comment">
+                    <p>${reviewData.description}</p>
+                  </div>
+                  <div class="user-pfp" style="display: flex">
+                    <div class="user">
+                      <img src=${reviewData.reviewerPhoto} alt="${reviewData.altImage}" />
+                    </div>
+                    <div class="user-name">
+                      <a href="#">${reviewData.reviewerUsername}</a>
+                    </div>
+                  </div>
+                </div>`;
 
-    
+            reviewsContainer.append(div);
+        })
+    } catch (error) {
+        console.error("Error fetching reviews:", error);
+    } finally {
+        hideLoader(reviewsContainer);
+    }
 }
 
 async function displayProductDetails() {
-    const data = await getProductData(productId);
+    showLoader(productDetailsWrapper);
+    try {
+        const data = await getProductData(productId);
 
-    productCategory.textContent = data.category;
-    productTitle.textContent = data.productName;
-    productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
-    productOriginalPrice.textContent = `$${data.originalPrice.toFixed(2)}`;
+        productCategory.textContent = data.category;
+        productTitle.textContent = data.productName;
+        productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
+        productOriginalPrice.textContent = `$${data.originalPrice.toFixed(2)}`;
 
-    const productMainImage = data.images.find(image => image.isPrimary === true);
+        const productMainImage = data.images.find(image => image.isPrimary === true);
 
-    mainImage.src = productMainImage.url;
+        mainImage.src = productMainImage.url;
 
-    smallImagesGroup.innerHTML = "";
+        smallImagesGroup.innerHTML = "";
 
-    data.images.forEach(image => {
-        const div = document.createElement("div");
-        div.classList.add("s-img-col");
+        data.images.forEach(image => {
+            const div = document.createElement("div");
+            div.classList.add("s-img-col");
 
-        const img = document.createElement('img');
-        img.classList.add('s-img');
-        img.src = image.url;
+            const img = document.createElement('img');
+            img.classList.add('s-img');
+            img.src = image.url;
 
-        smallImagesGroup.append(div);
-    });
+            smallImagesGroup.append(div);
+        });
 
-    sizes.innerHTML = `<button class="size-btn">${data.size}</button>`;
+        sizes.innerHTML = `<button class="size-btn">${data.size}</button>`;
 
-    setProductDescription(data);
+        setProductDescription(data);
+    } catch (error) {
+        console.error("Error fetching product details:", error);
+    } finally {
+        hideLoader(productDetailsWrapper);
+    }
 }
 
 async function setBreadcrumb() {
@@ -226,9 +248,19 @@ async function setBreadcrumb() {
 }
 
 async function setOfferModalData() {
-    const data = await getProductData(productId);
     const offerBody = document.getElementById('offerBody');
     const offerSent = document.getElementById('offerSent');
+
+    showLoader(offerBody);
+    let data;
+    try {
+        data = await getProductData(productId);
+    } catch (error) {
+        console.error("Error fetching offer product data:", error);
+        return;
+    } finally {
+        hideLoader(offerBody);
+    }
 
     const productMainImage = data.images.find(image => image.isPrimary === true);
 
@@ -426,22 +458,26 @@ function getTotalReviews(reviews) {
 }
 
 async function displayPricingKpis() {
-    const offers = await getOfferKpis();
-    const average = await getAverageSalePrice();
-    const marketValuePrice = await getMarketValuePrice();
+    showLoader(statRow);
+    try {
+        const offers = await getOfferKpis();
+        const average = await getAverageSalePrice();
+        const marketValuePrice = await getMarketValuePrice();
 
-    const highestOffer = document.getElementById('highestOffer');
-    const lowestOffer = document.getElementById('lowestOffer');
-    const averageSalesPrice = document.getElementById('averageSalesPrice');
-    const marketPrice = document.getElementById('marketValue');
+        const highestOffer = document.getElementById('highestOffer');
+        const lowestOffer = document.getElementById('lowestOffer');
+        const averageSalesPrice = document.getElementById('averageSalesPrice');
+        const marketPrice = document.getElementById('marketValue');
 
-    highestOffer.textContent = `$${offers.highest.toFixed(2)}`;
-    lowestOffer.textContent = `$${offers.lowest.toFixed(2)}`;
-    averageSalesPrice.textContent = `$${average}`;
-    marketPrice.textContent = `$${marketValuePrice}`
-
-
-
+        highestOffer.textContent = `$${offers.highest.toFixed(2)}`;
+        lowestOffer.textContent = `$${offers.lowest.toFixed(2)}`;
+        averageSalesPrice.textContent = `$${average}`;
+        marketPrice.textContent = `$${marketValuePrice}`
+    } catch (error) {
+        console.error("Error fetching pricing KPIs:", error);
+    } finally {
+        hideLoader(statRow);
+    }
 }
 
 function displayProducts(products) {

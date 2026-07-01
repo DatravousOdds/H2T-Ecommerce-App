@@ -2,6 +2,8 @@ import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
+import { showLoader, hideLoader } from '../components/pageLoader.js';
+
 
 
 const imageGridContainer = document.querySelector('.images-grid-container');
@@ -37,12 +39,12 @@ const carrierWrapper = document.querySelector('.carrier-rows-wrapper');
 const courierExitBtn = document.getElementById('courierExitBtn');
 const dimensionExitBtn = document.getElementById('dimensionExitBtn');
 
-
-
-const loader = document.getElementById('loader');
-
 const currentUser =  await checkUserStatus();
-console.log(currentUser)
+
+if (!currentUser) {
+    window.location.href = '/login';
+};
+
 const storage = getStorage(app, 'gs://ecom-website-94d87');
 
 const PLACEHOLDER_DESTINATION = {
@@ -568,14 +570,6 @@ function removeSavingModal() {
     savingModal.classList.remove('show');
 }
 
-function showLoading() {
-    loader.style.display = 'flex';
-}
-
-function removeLoading() {
-    loader.style.display = 'none';
-}
-
 function resetForm() {
     productTitle.value = '';
     productCategory.value = '';
@@ -774,7 +768,7 @@ function handleImageRemove(input, preview, removeBtn) {
 
 
 async function fetchShippingRates(parcel) {
-    showLoading();
+    showLoader(carrierWrapper);
     const payload = {
         fromAddress: {
             line_1: currentUser.address1,
@@ -808,7 +802,7 @@ async function fetchShippingRates(parcel) {
         console.error("Error fetching data:", error);
         alert("Error loading data")
     } finally {
-        removeLoading();
+        hideLoader(carrierWrapper);
     }
     
 
