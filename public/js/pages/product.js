@@ -206,20 +206,25 @@ async function displayProductDetails() {
         productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
         productOriginalPrice.textContent = `$${data.originalPrice.toFixed(2)}`;
 
-        const productMainImage = data.images.find(image => image.isPrimary === true);
+        const productMainImage = data.images.find(image => image.isPrimary === true) || data.images[0];
 
         mainImage.src = productMainImage.url;
 
         smallImagesGroup.innerHTML = "";
 
         data.images.forEach(image => {
+            console.log("image:", image)
             const div = document.createElement("div");
             div.classList.add("s-img-col");
 
             const img = document.createElement('img');
             img.classList.add('s-img');
             img.src = image.url;
+            img.addEventListener('click', () => {
+                mainImage.src = image.url;
+            });
 
+            div.append(img);
             smallImagesGroup.append(div);
         });
 
@@ -363,6 +368,7 @@ async function getMarketValuePrice() {
 };
 
 async function getAverageSalePrice() {
+
     const data = await getProductData(productId);
 
     const ordersColRef = collection(db, "orders");
@@ -469,10 +475,10 @@ async function displayPricingKpis() {
         const averageSalesPrice = document.getElementById('averageSalesPrice');
         const marketPrice = document.getElementById('marketValue');
 
-        highestOffer.textContent = `$${offers.highest.toFixed(2)}`;
-        lowestOffer.textContent = `$${offers.lowest.toFixed(2)}`;
+        highestOffer.textContent = `$${offers.highest.toFixed(2) || 0}`;
+        lowestOffer.textContent = `$${offers.lowest.toFixed(2) || 0}`;
         averageSalesPrice.textContent = `$${average}`;
-        marketPrice.textContent = `$${marketValuePrice}`
+        marketPrice.textContent = `$${marketValuePrice || 0}`
     } catch (error) {
         console.error("Error fetching pricing KPIs:", error);
     } finally {

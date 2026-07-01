@@ -79,7 +79,9 @@ function renderRequests(requests) {
 }
 
 async function authorizedFetch(url, options = {}) {
-  const idToken = await auth.currentUser.getIdToken();
+  // Force refresh -- the server re-verifies whatever JWT is sent, and a
+  // cached token issued before the admin claim was granted won't carry it.
+  const idToken = await auth.currentUser.getIdToken(true);
 
   return fetch(url, {
     ...options,
@@ -134,8 +136,11 @@ async function init() {
   }
 
   // UX-only gate -- real enforcement is the PUT route's server-side isAdmin
-  // check (once the req.token middleware bug is fixed) plus Firestore rules.
-  const tokenResult = await auth.currentUser.getIdTokenResult();
+  // check plus Firestore rules. Forces a refresh (true) since a custom claim
+  // set after this session's token was issued won't show up in the cached
+  // token otherwise -- without this, a freshly-granted reviewer would have
+  // to log out/in before the claim was visible here.
+  const tokenResult = await auth.currentUser.getIdTokenResult(true);
 
   if (tokenResult.claims.admin !== true) {
     guardEl.style.display = "block";

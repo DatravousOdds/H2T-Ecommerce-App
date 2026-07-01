@@ -1,4 +1,4 @@
-import { collection, Timestamp, query, where, db, getDocs } from '../api/firebase-client.js';
+import { collection, query, where, db, getDocs } from '../api/firebase-client.js';
 import { getProductData } from '../pages/product.js';
 
 
@@ -25,6 +25,7 @@ const data = {
 }
 
 const ctx = document.getElementById('priceChart');
+const emptyStateEl = document.getElementById('chartEmptyState');
 const priceHistoryChart = new Chart(ctx, {
     type: 'line',
     data: data,
@@ -95,11 +96,24 @@ function formatFilter(filter) {
 
 
 async function updateData(start, end) {
-    const { dates, prices } = await fetchSalesPrices(start, end, productData.productName, productData.brand);
-    console.log("Date:", dates);
-    console.log("Prices:", prices)
+    let dates = [];
+    let prices = [];
 
-    if (dates.length < 0 || prices.length < 0) return null;
+    try {
+        ({ dates, prices } = await fetchSalesPrices(start, end, productData.productName, productData.brand));
+    } catch (error) {
+        // e.g. Firestore permission errors for unauthenticated users — treat like no data
+        console.error("Error fetching sales prices:", error);
+    }
+
+    if (dates.length === 0 || prices.length === 0) {
+        ctx.hidden = true;
+        if (emptyStateEl) emptyStateEl.hidden = false;
+        return;
+    }
+
+    ctx.hidden = false;
+    if (emptyStateEl) emptyStateEl.hidden = true;
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     priceHistoryChart.data.labels = dates.map(date => [months[date.getMonth()], date.getDate()]);
@@ -109,17 +123,18 @@ async function updateData(start, end) {
 
 async function fetchSalesPrices(startDate = null, endDate = null, productName, brand) {
     let q;
-    
-    if (startDate & endDate) {
+
+    // createdAt is stored as Unix seconds (see server.js webhook handler), not a Firestore Timestamp
+    if (startDate && endDate) {
        q = query(
         collection(db, "orders"),
-        where("createdAt", ">=", Timestamp.fromDate(startDate)),
-        where("createdAt", "<=", Timestamp.fromDate(endDate)),
-        ); 
+        where("createdAt", ">=", Math.floor(startDate.getTime() / 1000)),
+        where("createdAt", "<=", Math.floor(endDate.getTime() / 1000)),
+        );
     } else {
         q = query(collection(db, "orders"))
     }
-   
+
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
@@ -131,14 +146,12 @@ async function fetchSalesPrices(startDate = null, endDate = null, productName, b
 
     querySnapshot.docs.forEach(doc => {
         const data = doc.data();
-        const firebaseTimestamp = data.createdAt
+        const item = data.item;
 
-        const matchingItems = data.items.filter(item => item.productName === productName && item.brand === brand)
-        .map(item => item.salePrice);
-
-        if (matchingItems.length > 0) {
-            dates.push(firebaseTimestamp.toDate())
-            prices.push(...matchingItems)
+        // orders store a single "item" object (name/brand), not an "items" array
+        if (item && item.name === productName && item.brand === brand) {
+            dates.push(new Date(data.createdAt * 1000));
+            prices.push(parseFloat(data.subtotal));
         }
     })
 

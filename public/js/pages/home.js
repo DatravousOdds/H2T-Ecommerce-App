@@ -10,7 +10,7 @@ const cartDrawer = document.getElementById('cartDrawer');
 
 
 initCartDrawer();
-showPageLoader();
+
 
 
 const categories = [

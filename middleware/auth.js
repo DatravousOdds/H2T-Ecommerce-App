@@ -18,7 +18,7 @@ const verifyAuth =  async (req, res, next) => {
 
     try {
         const verifyToken = await admin.auth().verifyIdToken(token);
-        req.token = verifyToken.uid;
+        req.token = verifyToken;
         next()
     } catch (err) {
         return res.status(401).json({

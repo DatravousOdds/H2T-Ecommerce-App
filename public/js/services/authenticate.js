@@ -2,7 +2,7 @@ import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api
 import { collection, addDoc, db, serverTimestamp  } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
-// import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart, getUserCartCount, updateCartCount } from '../commerce/cart.js';
+import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart, getUserCartCount, updateCartCount } from '../commerce/cart.js';
 
 const storage = getStorage();
 
@@ -603,7 +603,17 @@ function validateStep(stepNumber) {
 
     formData.productDetails = collectProductData(categorySelected);
     displayReviewData(formData);
-    
+
+    return true;
+  } else if (stepNumber === 4) {
+    const terms1 = document.getElementById('terms1');
+    const terms2 = document.getElementById('terms2');
+
+    if (!terms1?.checked || !terms2?.checked) {
+      showNotification('Please confirm both checkboxes before submitting', 'error');
+      return false;
+    }
+
     return true;
   }
 }
@@ -616,7 +626,7 @@ async function handleFormSubmission(e) {
   }
 
   authSubmitBtn.disabled = true;
-
+  console.log("Submitting authentication request with data:", formData);
   try {
     // Step 1: Upload images to Firebase
     authSubmitBtn.textContent = "Uploading images...";
@@ -654,7 +664,7 @@ async function handleFormSubmission(e) {
       } else {
 
         console.log("✅ Added item to cart!");
-        // Step 3: Update UI on sucess
+        // Step 3: Update UI on success
         authSubmitBtn.textContent = "Success!";
 
         const cartCount = await getUserCartCount(currentUser);

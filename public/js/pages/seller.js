@@ -839,34 +839,52 @@ async function uploadImagesToFirebase(images, userId) {
         }
     });
 
-  const uploadedImages = await Promise.all(uploadPromises);
-  return uploadedImages;
-  
+  const settledUploads = await Promise.allSettled(uploadPromises);
+
+  const uploadedImages = settledUploads
+      .filter(result => result.status === 'fulfilled')
+      .map(result => result.value);
+
+  const failedUploads = settledUploads
+      .filter(result => result.status === 'rejected')
+      .map(result => result.reason);
+
+  return { images: uploadedImages, failed: failedUploads };
+
 }
- 
-async function uploadListingToFirebase(data) { 
+
+async function uploadListingToFirebase(data) {
     try {
         const docRef = await addDoc(collection(db, 'listings'), data);
         console.log("Document written with the ID: ", docRef.id);
         return docRef.id;
     } catch(e) {
         console.error("Error adding document:", e);
+        throw e;
     }
-    
+
 }
 
 async function uploadListing() {
     showSavingModal();
     try {
         const images = collectImageData('.image-preview');
-        const imagesURL =  await uploadImagesToFirebase(images, currentUser.email);
-        listing.images = imagesURL;
-        await uploadListingToFirebase(listing); 
+        const { images: uploadedImages, failed } = await uploadImagesToFirebase(images, currentUser.email);
+
+        if (failed.length > 0) {
+            removeSavingModal();
+            alert(`${failed.length} of ${images.length} photo(s) failed to upload. Please try again.`);
+            return;
+        }
+
+        listing.images = uploadedImages;
+        await uploadListingToFirebase(listing);
         removeSavingModal();
         showSuccessMessage();
     } catch (e) {
         removeSavingModal();
-        console.log("Error occur when uploading data: ", e);
+        console.error("Error occurred when uploading listing: ", e);
+        alert("Something went wrong while posting your listing. Please try again.");
     }
 }
 

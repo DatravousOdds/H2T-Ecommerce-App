@@ -435,6 +435,28 @@
     color: #fff;
 }
 
+.chart-empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #878787;
+}
+
+.chart-empty-state i {
+    font-size: 2.5rem;
+    color: #e1e1e1;
+    margin-bottom: 0.75rem;
+}
+
+.chart-empty-state h3 {
+    color: #000;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.chart-empty-state p {
+    font-size: 0.875rem;
+}
+
 .filter p {
     font-size: 0.875rem;
     font-weight: 600;

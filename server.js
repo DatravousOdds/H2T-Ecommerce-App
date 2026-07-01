@@ -581,7 +581,7 @@ app.get("/cart", (req, res) => {
 });
 
 app.get("/api/cart", verifyAuth, async (req, res) => {
-  const uid = req.token;
+  const uid = req.token.uid;
   console.log("uid:", uid)
 
   try {
@@ -1049,7 +1049,7 @@ app.get('/payment/card-details', async (req, res) => {
 });
 
 app.get('/api/payment-methods', verifyAuth, async (req, res) => {
-  const uid = req.token;
+  const uid = req.token.uid;
   console.log("user:", uid);
 
   try {
@@ -1083,7 +1083,7 @@ app.get('/api/payment-methods', verifyAuth, async (req, res) => {
 })
 
 app.post('/api/payment-methods/setup-intent', verifyAuth, async (req, res) => {
-  const uid = req.token;
+  const uid = req.token.uid;
   console.log("user:", uid);
   try {
     let docRef = await db.collection('userProfiles').doc(uid).get();
@@ -1122,7 +1122,7 @@ app.post('/api/payment-methods/setup-intent', verifyAuth, async (req, res) => {
 
 app.delete('/api/payment-methods/:id', verifyAuth, async (req, res) => {
   const paymentMethodId  = req.params.id;
-  const uid  = req.token;
+  const uid  = req.token.uid;
   console.log("card id to delete:", paymentMethodId );
   console.log("payment method:", uid)
 
@@ -1191,9 +1191,8 @@ app.post("/api/authentication-requests/:id/analyze", verifyAuth, async (req, res
 
 // Reviewer action: approve / reject / request more info on an
 // authentication request. isAdmin-gated the same way PUT /orders/:id
-// gates its status field to admins only. NOTE: inert until the
-// req.token.admin bug in middleware/auth.js is fixed and a reviewer
-// account actually has the admin custom claim set -- see the plan doc.
+// gates its status field to admins only. NOTE: still inert until a
+// reviewer account actually has the admin custom claim set.
 app.put("/api/authentication-requests/:id", verifyAuth, async (req, res) => {
   const requestId = req.params.id;
   const { status, reviewerNotes } = req.body;
