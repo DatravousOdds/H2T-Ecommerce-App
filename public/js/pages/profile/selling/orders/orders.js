@@ -137,6 +137,83 @@ function renderOrders(orders) {
   tbody.innerHTML = orders.map(orderRow).join("");
 }
 
+/**
+ * Trend indicators compare against a FIXED calendar month-over-month
+ * window, independent of whatever range the page's own filter is set to --
+ * the HTML label literally says "Compared to last month," so changing what
+ * it actually compares against based on the filter would make that label
+ * lie. allOrders (unfiltered) is always used here, not the filtered set.
+ *
+ * Pending Orders' trend indicator is intentionally left untouched (still
+ * the original hardcoded "-5"/"yesterday"): pending orders are always 0 by
+ * architecture (status is set once, at creation, to Stripe's "succeeded" --
+ * no order is ever created in any other state). A 0-vs-0 comparison is
+ * degenerate no matter what period it's measured against, so there's
+ * nothing real to compute here until a real fulfillment-status field
+ * exists (see purchases.js's fulfillmentStatus handling for the same gap
+ * on the buyer side).
+ */
+
+function isInCalendarMonth(order, year, month) {
+  const d = toDate(order.createdAt);
+  return d.getFullYear() === year && d.getMonth() === month;
+}
+
+function percentChange(current, previous) {
+  if (previous === 0) {
+    // No baseline to compare against -- not 0% (which would imply "no
+    // change" from a real number), and not a divide-by-zero NaN either.
+    return current === 0 ? null : Infinity;
+  }
+  return ((current - previous) / previous) * 100;
+}
+
+function renderTrend(articleId, current, previous, { isCurrency = false } = {}) {
+  const trendIcon = document.querySelector(`#${articleId} .trend-icon`);
+  const trendStatus = document.querySelector(`#${articleId} .trend-status`);
+  if (!trendIcon || !trendStatus) return;
+
+  const change = percentChange(current, previous);
+
+  if (change === null) {
+    trendIcon.className = "trend-icon";
+    trendIcon.innerHTML = "";
+    trendStatus.className = "trend-status";
+    trendStatus.textContent = "No data last month";
+    return;
+  }
+
+  const isUp = change >= 0;
+  trendIcon.className = `trend-icon ${isUp ? "up" : "down"}`;
+  trendIcon.innerHTML = `<i class="fa-solid fa-arrow-trend-${isUp ? "up" : "down"}"></i>`;
+  trendStatus.className = `trend-status ${isUp ? "up" : "down"}`;
+
+  trendStatus.textContent =
+    change === Infinity
+      ? "New this month"
+      : `${isUp ? "+" : ""}${change.toFixed(1)}%`;
+}
+
+function updateTrends(allOrders) {
+  const now = new Date();
+  const thisMonthOrders = allOrders.filter((o) => isInCalendarMonth(o, now.getFullYear(), now.getMonth()));
+
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthOrders = allOrders.filter((o) =>
+    isInCalendarMonth(o, lastMonthDate.getFullYear(), lastMonthDate.getMonth())
+  );
+
+  const thisMonthRevenue = thisMonthOrders.reduce((sum, o) => sum + (Number(o.subtotal) || 0), 0);
+  const lastMonthRevenue = lastMonthOrders.reduce((sum, o) => sum + (Number(o.subtotal) || 0), 0);
+
+  const thisMonthAOV = thisMonthOrders.length > 0 ? thisMonthRevenue / thisMonthOrders.length : 0;
+  const lastMonthAOV = lastMonthOrders.length > 0 ? lastMonthRevenue / lastMonthOrders.length : 0;
+
+  renderTrend("total-orders", thisMonthOrders.length, lastMonthOrders.length);
+  renderTrend("total-revenue", thisMonthRevenue, lastMonthRevenue, { isCurrency: true });
+  renderTrend("average-order-value", thisMonthAOV, lastMonthAOV, { isCurrency: true });
+}
+
 function updateStats(orders) {
   const totalOrders = orders.length;
   const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.subtotal) || 0), 0);
@@ -147,10 +224,6 @@ function updateStats(orders) {
   setStat("total-revenue", `$${totalRevenue.toFixed(2)}`);
   setStat("average-order-value", `$${averageOrderValue.toFixed(2)}`);
   setStat("pending-orders", pendingOrders);
-
-  // No historical baseline exists to compare against yet, so the trend
-  // indicators (the +10.5%/last-month text from the static markup) are
-  // left untouched rather than filled with a fabricated comparison.
 }
 
 function setStat(articleId, value) {
@@ -210,6 +283,7 @@ async function loadOrdersTab(userId) {
 
     wireControls(allOrders);
     applyFiltersAndRender(allOrders, "all", "");
+    updateTrends(allOrders);
   } catch (error) {
     console.error("Error loading orders tab:", error);
   }

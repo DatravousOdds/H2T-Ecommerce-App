@@ -1,5 +1,7 @@
 import { logout, checkUserStatus } from "../auth/auth.js";
 import { getCartCount } from "../core/global.js";
+import { setupSearch } from "../pages/search.js";
+import { setupNotifications } from "../pages/notifications.js";
 
 // Function to handle tabs submenu navigation
 const handleTabs = () => {
@@ -125,8 +127,9 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
         <li><a href="/accessories" class="nav-link">Accessories</a></li>
         <li><a href="/seller" class="nav-link">Sell</a></li>
         <li>
-          <a href="#notifications" class="nav-link" aria-label="Notifications">
+          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
             <i class="fa-regular fa-bell"></i>
+            <span class="notification-badge" aria-label="Unread notifications">0</span>
           </a>
         </li>
         <li>
@@ -213,8 +216,9 @@ const LoggedOutNav = () => ({
     <div class="small-screen-nav-container">
       <ul class="small-screen-nav">
         <li>
-          <a href="#notifications" class="nav-link" aria-label="Notifications">
+          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
             <i class="fa-regular fa-bell"></i>
+            <span class="notification-badge" aria-label="Unread notifications">0</span>
           </a>
         </li>
         <li>
@@ -263,8 +267,9 @@ const LoggedInNav = (user) => ({
     <div class="small-screen-nav-container">
       <ul class="small-screen-nav">
         <li>
-          <a href="#notifications" class="nav-link" aria-label="Notifications">
+          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
             <i class="fa-regular fa-bell"></i>
+            <span class="notification-badge" aria-label="Unread notifications">0</span>
           </a>
         </li>
         <li>
@@ -386,6 +391,8 @@ const newNav =  async () => {
 
     setupEventListeners(nav);
     setupLogoutHandlers(nav);
+    setupSearch(nav);
+    setupNotifications(nav);
     
   } else {
     // No user found in session 
@@ -399,6 +406,8 @@ const newNav =  async () => {
     );
 
     setupEventListeners(nav);
+    setupSearch(nav);
+    setupNotifications(nav);
   }
   console.log("cart update..")
   updateCartCount()

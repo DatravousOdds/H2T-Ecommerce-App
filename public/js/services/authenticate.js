@@ -1,13 +1,18 @@
-
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api/firebase-client.js';
 import { collection, addDoc, db, serverTimestamp  } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
-import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart, getUserCartCount, updateCartCount } from '../commerce/cart.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
+// import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart, getUserCartCount, updateCartCount } from '../commerce/cart.js';
 
-// const storage = getStorage();
+const storage = getStorage();
+
+initCartDrawer();
+
+
 
 let currentUser = null;
 currentUser = await checkUserStatus();
+console.log("current User:", currentUser);
 
 
 // Image upload functionality
@@ -270,12 +275,12 @@ tierContainers.forEach(tier => {
 
 const editButtons = {
   images: {
-    selector:'.reivew-images .review-edit',
-    step: 1
+    selector:'.review-images .review-edit',
+    step: 2
   },
   details: {
     selector:'.review-details .review-edit',
-    step: 2
+    step: 3
   }
 };
 
@@ -639,7 +644,7 @@ async function handleFormSubmission(e) {
       console.log("cart results: ", cartResult.success);
 
       if (!cartResult.success) {
-        await deleteFirebaseRequest(currentUser.email, uploadRequestId);
+        await deleteFirebaseRequest(uploadRequestId);
         throw new Error("Failed to add item to cart");
       } else {
 
@@ -808,10 +813,10 @@ async function uploadImagesToFirebase(images, userId, requestId) {
   
 }
 
-async function deleteFirebaseRequest(userId, requestId) {
+async function deleteFirebaseRequest(requestId) {
   // get request ref
   try {
-    const docRef = doc(db, "userProfiles", user.email, "cart", requestId);
+    const docRef = doc(db, "authenticationRequests", requestId);
 
     await deleteDoc(docRef);
     
@@ -830,19 +835,19 @@ async function submitToFirebase() {
 
     if (!user) {
       console.log("❌ User must be login")
-      
+      return { success: false, ref: null, errorMsg: "You must be logged in to submit an authentication request." };
     }
 
     const tempRequestId = `temp+${Date.now()}`;
 
     console.log("📤 Uploading images to Storage...");
-    // const uploadedImages = uploadImagesToFirebase(formData.images, user.uid, tempRequestId);
+    const uploadedImages = await uploadImagesToFirebase(formData.images, user.userId, tempRequestId);
     console.log("✅ All images uploaded!")
 
     const formatPrice = formData.tierSelection.cost.replace('$', '');
     
     const authRequestData = {
-      images: '',
+      images: uploadedImages,
       price: parseInt(formatPrice),
 
       productDetails: {
@@ -856,8 +861,14 @@ async function submitToFirebase() {
         cost: formData.tierSelection.cost
       },
 
-      status: "pending",
-      userId: user.uid,
+      // Transitional status -- the AI matching step (not yet built) is
+      // responsible for advancing this to "pending_review" (confident
+      // match found) or "needs_manual_review" (no match cleared the
+      // threshold), per the planning doc's status table. "submitted" is
+      // the honest interim state between form submission and that
+      // pipeline actually running.
+      status: "submitted",
+      userId: user.userId,
 
       createdAt: serverTimestamp(),
       updateAt: serverTimestamp()
@@ -878,7 +889,7 @@ async function submitToFirebase() {
 
     console.log("❌ Error storing auth Request", error);
 
-    return { success: false, ref: null, errorMsg: error.messag }
+    return { success: false, ref: null, errorMsg: error.message }
 
   }
 }
@@ -898,5 +909,3 @@ nextBtn.forEach((btn) => {
 backBtn.forEach((btn) => {
   btn.addEventListener("click", prevStep);
 });
-
-

@@ -84,7 +84,7 @@
               <li class="tab-btn" data-tab="settings">
                 <a href="#"><i class="fa-solid fa-gear"></i></a>Settings
               </li>
-              <li class="tab-btn">
+              <li class="tab-btn" id="logout-btn">
                 <a href="#"><i class="fa-solid fa-right-from-bracket"></i></a
                 >Log out
               </li>
@@ -1183,7 +1183,7 @@
                     <i class="fa-solid fa-dollar-sign blue"></i>
                   </header>
                   <p class="stat-value" id="total-revenue-value">$45,231.89</p>
-                  <p class="trend-indicator trend-positive">
+                  <p class="trend-indicator trend-positive" id="total-revenue-trend">
                     +20.1% from last month
                   </p>
                 </article>
@@ -1193,7 +1193,7 @@
                     <i class="fa-solid fa-box blue"></i>
                   </header>
                   <p class="stat-value" id="active-listing-value">456</p>
-                  <p class="trend-indicator trend-neutral">
+                  <p class="trend-indicator trend-neutral" id="active-listings-trend">
                     +19 new listings this month
                   </p>
                 </article>
@@ -1204,7 +1204,7 @@
                   </header>
 
                   <p class="stat-value" id="product-sold-value">1,234</p>
-                  <p class="trend-indicator trend-neutral">
+                  <p class="trend-indicator trend-neutral" id="products-sold-trend">
                     +123 in the last 30 days
                   </p>
                 </article>
@@ -5667,7 +5667,7 @@
                     </div>
                     <div class="settings__item-control">
                       <label class="toggle">
-                        <input type="checkbox" class="toggle__input" />
+                        <input type="checkbox" class="toggle__input" id="two-factor-toggle" />
                         <span class="toggle__slider"></span>
                       </label>
                     </div>
@@ -5682,7 +5682,7 @@
                       </p>
                     </div>
                     <div class="settings__item-control">
-                      <button class="button button--primary">
+                      <button class="button button--primary" id="update-password-btn">
                         Update Password
                       </button>
                     </div>
@@ -5707,7 +5707,7 @@
                     </div>
                     <div class="settings__item-control">
                       <label class="toggle">
-                        <input type="checkbox" class="toggle__input" />
+                        <input type="checkbox" class="toggle__input" id="notif-new-releases" />
                         <span class="toggle__slider"></span>
                       </label>
                     </div>
@@ -5722,7 +5722,7 @@
                     </div>
                     <div class="settings__item-control">
                       <label class="toggle">
-                        <input type="checkbox" class="toggle__input" />
+                        <input type="checkbox" class="toggle__input" id="notif-price-drops" />
                         <span class="toggle__slider"></span>
                       </label>
                     </div>
@@ -5738,7 +5738,7 @@
                     </div>
                     <div class="settings__item-control">
                       <label class="toggle">
-                        <input type="checkbox" class="toggle__input" />
+                        <input type="checkbox" class="toggle__input" id="notif-sales-promos" />
                         <span class="toggle__slider"></span>
                       </label>
                     </div>
@@ -5755,7 +5755,7 @@
                     </div>
                     <div class="settings__item-control">
                       <label class="toggle">
-                        <input type="checkbox" class="toggle__input" />
+                        <input type="checkbox" class="toggle__input" id="notif-newsletter" />
                         <span class="toggle__slider"></span>
                       </label>
                     </div>
@@ -5779,7 +5779,7 @@
                       </p>
                     </div>
                     <div class="settings__item-control">
-                      <select class="select">
+                      <select class="select" id="language-select">
                         <option value="en">English</option>
                         <option value="es">Spanish</option>
                       </select>
@@ -5796,7 +5796,7 @@
                     </div>
                     <div class="settings__item-control">
                       <label class="toggle">
-                        <input type="checkbox" class="toggle__input" />
+                        <input type="checkbox" class="toggle__input" id="dark-mode-toggle" />
                         <span class="toggle__slider"></span>
                       </label>
                     </div>
@@ -5834,7 +5834,7 @@
     <script src="js/components/footer.js"></script>
     <script src="js/components/newsletter.js"></script>
     <script type="module" src="js/components/nav.js"></script>
-    <script src="js/pages/components/profile/selling.js"></script>
+    <script src="../js/pages/profile/selling/selling.js"></script>
     <script type="module" src="js/pages/components/profile/purchases.js"></script>
     <script type="module" src="js/pages/profile/selling/overview/overview.js"></script>
     <script type="module" src="js/pages/profile/selling/products/products.js"></script>

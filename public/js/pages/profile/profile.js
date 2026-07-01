@@ -1,6 +1,6 @@
 "use strict";
 
-import { checkUserStatus } from "../../auth/auth.js";
+import { checkUserStatus, logout } from "../../auth/auth.js";
 import {
   formatFirebaseDate,
   formatFollowers,
@@ -20,6 +20,7 @@ import { initBio } from "./bio.js";
 import { initFavorites } from "../profile/favorites/favorites.js";
 import { initPurchases } from "../profile/purchases/purchases.js"
 import { initNotifications } from "../profile/notifications/notifications.js";
+import { initSettings } from "../profile/settings/settings.js";
 import { initPaymentMethods } from "./payment-methods.js";
 import { initPayouts } from "./payouts.js";
 import { initWallet, loadPaymentInfoData } from "./wallet.js";
@@ -71,18 +72,6 @@ async function loadSellingData(userData) {
   }
 }
 
-async function loadPurchasesData(userData) {
-  if (userData) {
-    // load purchase history
-  }
-}
-
-async function loadSettingsData(userData) {
-  if (userData) {
-    // load account settings
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Orchestration
 // ---------------------------------------------------------------------------
@@ -107,8 +96,7 @@ async function loadProfileData() {
       await initPaymentMethods(userData);
 
       loadSellingData(userData);
-      loadPurchasesData(userData);
-      loadSettingsData(userData);
+      await initSettings(userData);
 
       // initStatementsTax(userData);
       // await loadYearFilters(userData);
@@ -125,6 +113,15 @@ async function loadProfileData() {
 // Entry point
 // ---------------------------------------------------------------------------
 
+function wireLogout() {
+  const logoutBtn = document.getElementById("logout-btn");
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    logout();
+  });
+}
 
   // Static UI wiring that doesn't depend on fetched profile data
   initGenericDropdowns();
@@ -135,6 +132,7 @@ async function loadProfileData() {
   initProfileMedia();
   initBio();
   initReviews();
+  wireLogout();
   
   // initWallet();
   // Fetch the user's profile and populate everything else

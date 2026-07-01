@@ -41,11 +41,73 @@ function isWithinRange(order, range) {
   return true;
 }
 
+/**
+ * Trend indicators compare against a FIXED calendar month-over-month
+ * window, independent of the page's own time filter -- same design as
+ * the Orders tab. All four cards here consistently say "last month" in
+ * their subtitle (unlike Overview's mixed-semantic cards), so all four
+ * use the same percent-change comparison.
+ */
+
+function isInCalendarMonth(createdAt, year, month) {
+  const d = toDate(createdAt);
+  return d.getFullYear() === year && d.getMonth() === month;
+}
+
+function percentChange(current, previous) {
+  if (previous === 0) {
+    return current === 0 ? null : Infinity;
+  }
+  return ((current - previous) / previous) * 100;
+}
+
+function renderTrend(articleId, current, previous) {
+  const icon = document.querySelector(`#${articleId} .metric-trend i`);
+  const status = document.querySelector(`#${articleId} .metric-trend-status`);
+  if (!icon || !status) return;
+
+  const change = percentChange(current, previous);
+
+  if (change === null) {
+    icon.className = "fa-solid";
+    status.textContent = "No data last month";
+    return;
+  }
+
+  const isUp = change >= 0;
+  icon.className = `fa-solid fa-arrow-trend-${isUp ? "up" : "down"}`;
+  status.textContent = change === Infinity ? "New this month" : `${isUp ? "+" : ""}${change.toFixed(1)}%`;
+}
+
+function updateTrends(allOrders) {
+  const now = new Date();
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+  const thisMonthOrders = allOrders.filter((o) => isInCalendarMonth(o.createdAt, now.getFullYear(), now.getMonth()));
+  const lastMonthOrders = allOrders.filter((o) =>
+    isInCalendarMonth(o.createdAt, lastMonthDate.getFullYear(), lastMonthDate.getMonth())
+  );
+
+  const sumRevenue = (orders) => orders.reduce((sum, o) => sum + (Number(o.subtotal) || 0), 0);
+  const thisMonthRevenue = sumRevenue(thisMonthOrders);
+  const lastMonthRevenue = sumRevenue(lastMonthOrders);
+
+  const thisMonthAOV = thisMonthOrders.length > 0 ? thisMonthRevenue / thisMonthOrders.length : 0;
+  const lastMonthAOV = lastMonthOrders.length > 0 ? lastMonthRevenue / lastMonthOrders.length : 0;
+
+  const distinctBuyers = (orders) => new Set(orders.map((o) => o.buyerId).filter(Boolean)).size;
+  const thisMonthCustomers = distinctBuyers(thisMonthOrders);
+  const lastMonthCustomers = distinctBuyers(lastMonthOrders);
+
+  renderTrend("analytics-total-revenue", thisMonthRevenue, lastMonthRevenue);
+  renderTrend("analytics-total-orders", thisMonthOrders.length, lastMonthOrders.length);
+  renderTrend("analytics-average-order-value", thisMonthAOV, lastMonthAOV);
+  renderTrend("analytics-active-customers", thisMonthCustomers, lastMonthCustomers);
+}
+
 function setMetric(articleId, value) {
   const el = document.querySelector(`#${articleId} h1`);
   if (el) el.textContent = value;
-  // The +10.5%/"last month" trend text is left untouched -- no historical
-  // baseline exists yet to compute a real comparison against.
 }
 
 function updateMetrics(orders) {
@@ -122,6 +184,7 @@ async function loadAnalyticsTab(userId) {
     const allOrders = await fetchSellerOrders(userId);
     wireControls(allOrders);
     updateMetrics(allOrders);
+    updateTrends(allOrders);
   } catch (error) {
     console.error("Error loading analytics tab:", error);
   }

@@ -1152,6 +1152,40 @@ app.delete('/api/payment-methods/:id', verifyAuth, async (req, res) => {
 
 
 
+/**
+ * notifications/{userId}/items/{notificationId} -- same subcollection
+ * shape already established for favorites/cart in this app.
+ *
+ * Five types are defined in this system, but only 'purchase' and 'sale'
+ * have a real trigger today (both fire right here, from the same
+ * successful payment). The other three are intentionally left wired up
+ * in name only, with no call site yet:
+ *   - 'message': no DM/conversation system exists anywhere in this app
+ *   - 'order_status': no real fulfillment-status field exists yet
+ *     (orders.status is just Stripe's payment status)
+ *   - 'security': no account-security flow exists yet (no password
+ *     change, no 2FA -- confirmed when Settings was built)
+ * Whenever those features actually ship, calling createNotification()
+ * from their own trigger points is the only change needed here.
+ */
+async function createNotification(userId, type, title, message, link) {
+  try {
+    await db.collection("notifications").doc(userId).collection("items").add({
+      type,
+      title,
+      message,
+      link,
+      read: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (error) {
+    // A failed notification write should never take down the order flow
+    // that triggered it -- the order itself already succeeded by the
+    // time this runs.
+    console.error(`Failed to create "${type}" notification for ${userId}:`, error);
+  }
+}
+
 async function handlePaymentIntentSucceeded(paymentData){
   console.log(paymentData)
   try {
@@ -1170,6 +1204,25 @@ async function handlePaymentIntentSucceeded(paymentData){
 
     const docRef = await db.collection('orders').add(data);
     console.log(`created a order with the id: ${docRef.id}`);
+
+    const itemName = data.item?.name || "an item";
+
+    await createNotification(
+      data.buyerId,
+      "purchase",
+      "Order Confirmed",
+      `You bought ${itemName}.`,
+      "/profile?tab=purchases"
+    );
+
+    await createNotification(
+      data.sellerId,
+      "sale",
+      "Item Sold!",
+      `You sold ${itemName}.`,
+      "/profile?tab=selling"
+    );
+
     return JSON.stringify({status: "order created!"})
 
   } catch (err) {

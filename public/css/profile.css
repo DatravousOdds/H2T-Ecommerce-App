@@ -3746,7 +3746,7 @@ h6 {
   position: absolute;
   right: 0;
   margin-top: 5px;
-  min-width: 33vw;
+  min-width: 54vw;
   background-color: #fff;
   border-radius: 8px;
   padding: 1rem;
@@ -4265,6 +4265,10 @@ h6 {
 
 .trend-positive {
   color: var(--success-green-600) !important;
+}
+
+.trend-negative {
+  color: var(--alert-red-600) !important;
 }
 
 .trend-neutral {

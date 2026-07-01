@@ -61,7 +61,7 @@ const createFooter = () => {
     <div class="rights">
       <p>&copy; 2023, Head-To-Toe etc - Ecommerce website. All rights Reserved.</p>
     </div>
-`;
+  `;
 };
 
 createFooter();
