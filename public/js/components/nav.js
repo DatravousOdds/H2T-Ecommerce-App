@@ -97,24 +97,24 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
                     <span class="service-price">$30/item</span>
                   </div>
                 </a>
-                <a href="/trade" class="service-item">
+                <a class="service-item is-disabled" aria-disabled="true">
                   <div class="service-icon">
                     <i class="fa-solid fa-handshake"></i>
                   </div>
                   <div class="service-info">
                     <h4>Trade-in</h4>
                     <p>Trade in your products for a new one or store credit.</p>
-                    <span class="service-price">Best Market Prices</span>
+                    <span class="coming-soon-badge">Coming Soon</span>
                   </div>
                 </a>
-                <a href="/sell-to-us" class="service-item">
+                <a class="service-item is-disabled" aria-disabled="true">
                   <div class="service-icon">
                     <i class="fa-solid fa-store"></i>
                   </div>
                   <div class="service-info">
                     <h4>Sell to Us</h4>
                     <p>Quick and easy selling process.</p>
-                    <span class="service-price">Competitive Prices</span>
+                    <span class="coming-soon-badge">Coming Soon</span>
                   </div>
                 </a>
               </div>
@@ -183,9 +183,17 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
               <i class="fa-solid fa-chevron-right"></i>
             </button>
             <ul class="submenu">
-              <li><a href="/sell-to-us">Sell to Us</a></li>
               <li><a href="/authenticate">Authentication</a></li>
-              <li><a href="/trade">Trade-in</a></li>
+              <li>
+                <a class="is-disabled" aria-disabled="true">
+                  Trade-in <span class="coming-soon-badge">Coming Soon</span>
+                </a>
+              </li>
+              <li>
+                <a class="is-disabled" aria-disabled="true">
+                  Sell to Us <span class="coming-soon-badge">Coming Soon</span>
+                </a>
+              </li>
             </ul>
           </li>
           <li>

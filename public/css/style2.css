@@ -646,6 +646,15 @@ button.white {
   font-size: 14px;
 }
 
+.submenu li a.is-disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.submenu li a.is-disabled:hover {
+  color: #999;
+}
+
 .submenu.active {
   display: block;
 }
@@ -948,8 +957,7 @@ button.white {
 .services-dropdown {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -957,7 +965,7 @@ button.white {
   visibility: hidden;
   transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
   z-index: 1000;
-  min-width: 600px;
+  width: 420px;
   margin-top: 1rem;
 }
 
@@ -967,26 +975,27 @@ button.white {
 }
 
 .dropdown-content {
-  padding: 1rem;
+  padding: 0.5rem 0;
 }
 
 .services-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .service-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
   transition: background-color 0.3s ease-in-out;
   text-decoration: none;
   color: inherit;
+}
+
+.service-item:last-child {
+  border-bottom: none;
 }
 
 .service-item:hover {
@@ -994,6 +1003,7 @@ button.white {
 }
 
 .service-icon {
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -1014,7 +1024,7 @@ button.white {
 
 .service-info h4 {
   font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .service-info p {
@@ -1028,6 +1038,37 @@ button.white {
   color: #f30c1e;
   display: block;
   margin-top: 0.5rem;
+}
+
+/* Post-MVP services stay visible so people know they're coming, but are
+   inert -- rendered without an href so clicks and keyboard activation
+   are no-ops without needing extra JS. */
+.service-item.is-disabled {
+  cursor: not-allowed;
+}
+
+.service-item.is-disabled:hover {
+  background-color: transparent;
+}
+
+.service-item.is-disabled .service-icon {
+  background-color: #ccc;
+}
+
+.service-item.is-disabled .service-info h4,
+.service-item.is-disabled .service-info p {
+  color: #999;
+}
+
+.coming-soon-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  background-color: #eee;
+  border-radius: 999px;
 }
 
 /* hero section */
