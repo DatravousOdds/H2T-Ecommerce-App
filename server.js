@@ -1116,8 +1116,38 @@ app.put("/api/authentication-requests/:id", verifyAuth, async (req, res) => {
  * Whenever those features actually ship, calling createNotification()
  * from their own trigger points is the only change needed here.
  */
+// Maps a notification type to the userProfiles.notificationPreferences
+// field that gates it. Types with no entry here (none yet -- 'message',
+// 'order_status', 'security' have no trigger) are always sent.
+const TYPE_TO_PREFERENCE_FIELD = {
+  purchase: "orderUpdates",
+  sale: "orderUpdates",
+};
+
+// A user who has never saved preferences has no notificationPreferences
+// field at all -- that's the state of every user today, since this is a
+// new setting. Treating "never saved" as disabled would silently mute
+// order confirmations for everyone until they individually discover and
+// enable a toggle they don't know exists. So only an explicit `false`
+// suppresses; undefined (or a missing profile/doc) defaults to sending.
+async function isNotificationEnabled(userId, type) {
+  const preferenceField = TYPE_TO_PREFERENCE_FIELD[type];
+  if (!preferenceField) return true;
+
+  const profileSnap = await db.collection("userProfiles").doc(userId).get();
+  const preferences = profileSnap.exists ? profileSnap.data().notificationPreferences : undefined;
+
+  return preferences?.[preferenceField] !== false;
+}
+
 async function createNotification(userId, type, title, message, link) {
   try {
+    const enabled = await isNotificationEnabled(userId, type);
+    if (!enabled) {
+      console.log(`Skipped "${type}" notification for ${userId}: disabled in preferences`);
+      return;
+    }
+
     await db.collection("notifications").doc(userId).collection("items").add({
       type,
       title,

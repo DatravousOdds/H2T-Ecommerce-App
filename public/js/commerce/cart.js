@@ -19,6 +19,7 @@ window.addEventListener('cartUpdated', async () => {
 
 function displayCartItems(items) {
     const bagItemGrid = document.getElementById('bagItemGrid');
+    if (!bagItemGrid) return;
     bagItemGrid.innerHTML = "";
 
     if (items.length <= 0) {

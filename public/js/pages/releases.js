@@ -21,13 +21,18 @@ const categoryFilter = document.querySelectorAll("#category-filter input[type='c
 const productsContainer = document.getElementById("productsContainer");
 const loadMoreBtn = document.getElementById("loadMoreBtn");
 
-const releasesProductTemplate = (data) => `
+const releasesProductTemplate = (data) => {
+  const releaseDateMarkup = (data.releaseMonth && data.releaseDay)
+    ? `<div class="release-month">${data.releaseMonth}</div>
+       <div class="release-day">${data.releaseDay}</div>`
+    : `<div class="release-coming-soon">Coming Soon</div>`;
+
+  return `
   <!--- Image container-->
     <div class="product-image">
       <div class="release-date-wrapper">
         <i class="fa-regular fa-calendar"></i>
-        <div class="release-month">${data.releaseMonth}</div>
-        <div class="release-day">${data.releaseDay}</div>
+        ${releaseDateMarkup}
       </div>
 
       <img
@@ -44,8 +49,9 @@ const releasesProductTemplate = (data) => `
         ${data.productName}
       </p>
     </div>
-    <!-- product details -->         
+    <!-- product details -->
 `;
+};
 
 
 
