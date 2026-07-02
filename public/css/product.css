@@ -20,6 +20,8 @@
   align-items: center;
 }
 
+
+
 .user-pfp .user img {
   width: 30px;
   height: 30px;
@@ -399,10 +401,6 @@
 @media (max-width: 992px) {
   #prodetails {
     flex-direction: column;
-  }
-
-  #prodetails .single-pro-image {
-    width: 100%;
   }
 
   #prodetails .s_prod_details {

@@ -84,7 +84,7 @@ modalCloseBtn.addEventListener('click', () => {
 })
 
 addToCartBtn.addEventListener('click', () => {
-    addToCart(productId,user)
+    addToCart(productId,user )
 
     cartDrawer.classList.add('is-open');
     addToCartBtn.classList.add('disabled');
@@ -204,7 +204,7 @@ async function displayProductDetails() {
         productCategory.textContent = data.category;
         productTitle.textContent = data.productName;
         productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
-        productOriginalPrice.textContent = `$${data.originalPrice.toFixed(2)}`;
+        productOriginalPrice.textContent = data.originalPrice ? `$${data.originalPrice.toFixed(2)}` : '';
 
         const productMainImage = data.images.find(image => image.isPrimary === true) || data.images[0];
 

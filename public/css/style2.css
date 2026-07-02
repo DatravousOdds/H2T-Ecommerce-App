@@ -1149,6 +1149,14 @@ button.white {
 
 }
 
+/* A price drop is good news for buyers, so it gets the same "success" treatment as trend-up. */
+.price-trend.trend-down {
+  color: var(--color-status-success);
+  background-color: var(--color-status-success-light);
+  padding: 0.0625rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
 .price-change .product-discount {
   background-color: var(--colo);
   padding: 0.0625rem 0.25rem;
@@ -2276,24 +2284,19 @@ footer .rights {
   /* border: 2px solid red; */
 }
 
-#prodetails .single-pro-image {
-  flex: 0 0 60%;
-  width: 45%;
-  margin-right: 50px;
-  /* border: 2px solid red; */
-  /* border-radius: 12px; */
-}
-
 /* .detail-text {
   display: none;
 } */
 
 
 
-
-#prodetails .single-pro-image img {
-  border-radius: 12px;
+.s-img {
+ width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  margin: 5px;
 }
+
 
 #prodetails .s_prod_details {
   width: 45%;
@@ -2308,7 +2311,6 @@ footer .rights {
 }
 
 .s-img-col {
-  flex: 0 0 calc(25% - 6px);
   cursor: pointer;
 }
 
@@ -3189,11 +3191,6 @@ footer .rights {
     #prodetails {
       display: flex;
       flex-direction: column;
-    }
-
-    #prodetails .single-pro-image {
-      width: 100%;
-      margin-right: 50px;
     }
 
     #prodetails .s_prod_details {

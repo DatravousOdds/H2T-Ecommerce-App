@@ -66,7 +66,7 @@ const CATEGORY_DEFAULTS = {
 };
 let listing = {
     availableForTrade: true,
-    originalPrice: 0,
+    listingPrice: 0,
     userId: currentUser.userId,
     productName: '',
     images: [],

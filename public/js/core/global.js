@@ -77,47 +77,99 @@ export async function getStates() {
   }
 }
 
-async function addToCart(productId, currentUser) {
+async function addToCart(itemData, currentUser, itemType = 'product') {
+  if (!itemData) {
+    console.error("❌ No item provided for addToCart");
+    return { success: false, error: "No item provided" };
+  }
+
   try {
-    const profile = await getSellerInfo(productId);
-    
-    if(!profile) throw new Error("Seller information does not exist");
-  
-    let cartItem = {
-      sellerName: profile.username,
-      sellerPicture: profile.profilePicture,
-      sellerId: profile.id,
-      listingId: productId,
-      listingPrice: profile.listingPrice,
-      image: profile.listingImage,
-      size: profile.listingSize,
-      quantity: 1,
-      brand: profile.listingBrand,
-      productName: profile.productName,
-      shipping: profile.shipping
-    };
+    let cartItem;
+    let dedupeField;
+    let dedupeValue;
 
-    if(!currentUser) {
+    if (itemType === 'authentication') {
+      // itemData here is the authRequestData object built in authenticate.js
+      // (images, requestId, productDetails, tierSelection) -- not a productId.
+      // TODO: build the auth cart item. cart.js's createAuthCartItem() is close
+      // but unused/untested -- worth checking its Brand/tier.cost assumptions
+      // against what collectProductData()/gatherTierInformattion() actually produce.
+      cartItem = createAuthCartItem(itemData);
+      dedupeField = 'authRequestId';
+      dedupeValue = cartItem.authRequestId;
+    } else {
+      const profile = await getSellerInfo(itemData);
+
+      if (!profile) throw new Error("Seller information does not exist");
+
+      cartItem = {
+        sellerName: profile.username,
+        sellerPicture: profile.profilePicture,
+        sellerId: profile.id,
+        listingId: itemData,
+        listingPrice: profile.listingPrice,
+        image: profile.listingImage,
+        size: profile.listingSize,
+        quantity: 1,
+        brand: profile.listingBrand,
+        productName: profile.productName,
+        shipping: profile.shipping
+      };
+      dedupeField = 'listingId';
+      dedupeValue = itemData;
+    }
+
+    if (!currentUser) {
       const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
-      
-      const filteredCart = existingCart.filter(item => item.listingId !== productId);
 
-      filteredCart.push(cartItem)
+      const filteredCart = existingCart.filter(item => item[dedupeField] !== dedupeValue);
+
+      filteredCart.push(cartItem);
 
       localStorage.setItem('cart', JSON.stringify(filteredCart));
     } else {
         const firebaseId = await createCartItemInFirebase(cartItem, currentUser.userId);
-        cartItem.id = firebaseId; 
+        cartItem.id = firebaseId;
     }
 
     incrementCartCount();
 
     window.dispatchEvent(new CustomEvent('cartUpdated'));
+
+    return { success: true, item: cartItem };
   } catch(error) {
     console.error(`Adding to cart failed: ${error}`);
+    return { success: false, error: error.message };
+  }
+}
+
+// TODO: fill this in. Reference: cart.js's createAuthCartItem (currently unused/dead code)
+// builds { itemType: 'authentication', authRequestId, primaryImage, productName, category,
+// tier: {name, icon, duration}, cost, status, quantity, addedAt } from an authRequestData
+// shaped like { images, requestId, productDetails, tierSelection }.
+function createAuthCartItem(authRequestData) {
+  console.log(`Item received: ${authRequestData.productDetails} 👈🏾`)
+
+  if (!authRequestData) { 
+    throw new Error("No authRequestData provided to createAuthCartItem");
   }
 
-  
+  return {
+      itemType: 'authentication', // ✅ Key differentiator
+      authRequestId: authRequestData.requestId, // Link to auth request doc
+      primaryImage: authRequestData.images[0]?.url || null,
+      productName: authRequestData.productDetails?.details?.Brand || 'Unknown',
+      category: authRequestData.productDetails?.productCategory,
+      tier: {
+          name: authRequestData.tierSelection?.type,
+          icon: authRequestData.tierSelection?.icon,
+          duration: authRequestData.tierSelection?.duration
+      },
+      cost: parseFloat(authRequestData.tierSelection?.cost?.replace('$', '') || 0),
+      status: 'pending', // Current status
+      quantity: 1,
+      addedAt: new Date().toISOString()
+  };
 }
 
 async function getSellerInfo(productId) {
@@ -725,8 +777,36 @@ const displayProducts = (products, containerElement) => {
     productElement.onclick = () => {
       window.location.href = `shop/product.html?id=${doc.id}`;
     };
+
+    // A discount only exists if the item has a higher original price to compare against.
+    const hasDiscount =
+      typeof productData.originalPrice === "number" &&
+      productData.originalPrice > productData.listingPrice;
+    const discountPercent = hasDiscount
+      ? Math.round(
+          ((productData.originalPrice - productData.listingPrice) /
+            productData.originalPrice) *
+            100
+        )
+      : 0;
+
+    const originalPriceHTML = hasDiscount
+      ? `<span class="orgin-price">$${productData.originalPrice.toFixed(2)}</span>`
+      : "";
+    const priceChangeHTML = hasDiscount
+      ? `<div class="price-change">
+          <div class="product-discount">
+            <p>${discountPercent}% OFF</p>
+          </div>
+          <div class="price-trend trend-down">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+            <span>-${discountPercent}%</span>
+          </div>
+        </div>`
+      : "";
+
     productElement.innerHTML = `
-      
+
             <!--- Image container-->
             <div class="product-image">
               <div class="liked">
@@ -747,21 +827,17 @@ const displayProducts = (products, containerElement) => {
                 <p class="product-name">
                   ${productData.productName}
                 </p>
-                
+
                 <div class="pro-price">
-                  <span class="listing-price">$${productData.originalPrice.toFixed(2)}</span>
-                  <div class="price-change">
-                    <div class="price-trend trend-up">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span>+5%</span>
-                    </div>
-                  </div>
+                  <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
+                  ${originalPriceHTML}
+                  ${priceChangeHTML}
                 </div>
 
               </div>
-              
+
             </div>
-            <!-- product details -->   
+            <!-- product details -->
     `;
 
     handleFavoriteClick(productElement, doc.id, productData);

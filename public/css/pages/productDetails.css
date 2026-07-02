@@ -28,6 +28,8 @@
 
     --color-background-primary: #fff;
 
+    --gap-xl:      3rem;
+
 }
 
 /* Breadcrumb */
@@ -59,6 +61,30 @@
 /* Product Details */
 .product-details-wrapper {
     display: flex;
+    gap: var(--gap-xl);
+    margin-bottom: 1rem;
+}
+
+.single-pro-image {
+    flex: 1 1 50%;
+    min-width: 0;
+}
+
+.single-pro-image > img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .product-details-wrapper {
+        flex-direction: column;
+    }
+
+    .single-pro-image {
+        width: 100%;
+    }
 }
 
 .product-details {

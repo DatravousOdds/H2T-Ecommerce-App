@@ -91,26 +91,7 @@ function displayCartItems(items) {
 }
 
 export function createAuthCartItem(authRequest) {
-    console.log(`Item recieved: ${authRequest.productDetails} 👈🏾`)
-
-
-
-    return {
-        itemType: 'authentication', // ✅ Key differentiator
-        authRequestId: authRequest.requestId, // Link to auth request doc
-        primaryImage: authRequest.images[0]?.url || null,
-        productName: authRequest.productDetails?.details?.Brand || 'Unknown',
-        category: authRequest.productDetails?.productCategory,
-        tier: {
-            name: authRequest.tierSelection?.type,
-            icon: authRequest.tierSelection?.icon,
-            duration: authRequest.tierSelection?.duration
-        },
-        cost: parseFloat(authRequest.tierSelection?.cost?.replace('$', '') || 0),
-        status: 'pending', // Current status
-        quantity: 1,
-        addedAt: new Date().toISOString()
-    };
+    
 }
 
 function createShoppingCartItem(product) {
@@ -201,35 +182,35 @@ export async function handleAuthenticatedCart(user, cartItem) {
   
 }
 
-export async function addToCart(user, item, itemType) {
-    // console.log(`Item addToCart recieved: ${item} 👈🏾`)
-  try {
-    let cartItem;
+// export async function addToCart(user, item, itemType) {
+//     // console.log(`Item addToCart recieved: ${item} 👈🏾`)
+//   try {
+//     let cartItem;
 
-    if (itemType === 'authentication') {
-        cartItem = createAuthCartItem(item);
-        console.log("Create authenticated cart item: ", cartItem)
-    } else if (itemType === 'product') {
-        cartItem = createShoppingCartItem(item);
-    } else {
-        console.error("❗️Invaild ItemType!");
-    }
+//     if (itemType === 'authentication') {
+//         cartItem = createAuthCartItem(item);
+//         console.log("Create authenticated cart item: ", cartItem)
+//     } else if (itemType === 'product') {
+//         cartItem = createShoppingCartItem(item);
+//     } else {
+//         console.error("❗️Invaild ItemType!");
+//     }
 
-    // check if user is logged in or not
-    if (!user) {
-        console.log("🛒 Adding to guest cart")
-        return handleGuestCart(cartItem);
-    } else {
-        console.log("🛒 Adding to authenticated user cart")
-       return await handleAuthenticatedCart(user, cartItem);
-    }
+//     // check if user is logged in or not
+//     if (!user) {
+//         console.log("🛒 Adding to guest cart")
+//         return handleGuestCart(cartItem);
+//     } else {
+//         console.log("🛒 Adding to authenticated user cart")
+//        return await handleAuthenticatedCart(user, cartItem);
+//     }
 
-  } catch (error) {
-    console.error("❌ Error occured when adding to cart! ", error);
-    return { success: false, error: error.message };
-  }
+//   } catch (error) {
+//     console.error("❌ Error occured when adding to cart! ", error);
+//     return { success: false, error: error.message };
+//   }
 
-}
+// }
 
 export async function getUserCartCount(user) {
     try {

@@ -36,6 +36,14 @@
 
 }
 
+/* A price drop is good news for buyers, so it gets the same "success" treatment as trend-up. */
+.price-trend.trend-down {
+  color: var(--color-status-success);
+  background-color: var(--color-status-success-light);
+  padding: 0.0625rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
 .price-change .product-discount {
   background-color: var(--color-red);
   padding: 0.0625rem 0.25rem;

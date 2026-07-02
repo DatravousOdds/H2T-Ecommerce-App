@@ -2,7 +2,7 @@ import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api
 import { collection, addDoc, db, serverTimestamp  } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
-import { handleGuestCart, handleAuthenticatedCart, createAuthCartItem, addToCart, getUserCartCount, updateCartCount } from '../commerce/cart.js';
+import { addToCart } from '../core/global.js';
 
 const storage = getStorage();
 
