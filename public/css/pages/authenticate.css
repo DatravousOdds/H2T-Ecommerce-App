@@ -800,7 +800,8 @@ body {
 
 .back-btn,
 .next-btn,
-.submit-auth-btn {
+.submit-auth-btn,
+.pay-now-btn {
   padding: 0.75rem 2rem;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -814,7 +815,8 @@ body {
 
 .back-btn:focus-visible,
 .next-btn:focus-visible,
-.submit-auth-btn:focus-visible {
+.submit-auth-btn:focus-visible,
+.pay-now-btn:focus-visible {
   outline: 3px solid var(--primary-red);
   outline-offset: 2px;
 }
@@ -834,8 +836,30 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-.submit-auth-btn {
-  width: 100%;
+/* .submit-auth-btn (Add to Cart) and .pay-now-btn sit side by side in
+   .primary-actions, so they share the row instead of each claiming 100%. */
+.form-actions .primary-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex: 1;
+}
+
+.submit-auth-btn,
+.pay-now-btn {
+  flex: 1;
+}
+
+.pay-now-btn {
+  background: #000;
+  border: none;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.pay-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: #1a1a1a;
 }
 
 .back-btn {

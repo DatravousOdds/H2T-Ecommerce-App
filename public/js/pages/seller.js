@@ -32,6 +32,7 @@ const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
 
 const tradeStatus = document.querySelector('.button-container');
 const postBtn = document.getElementById('postBtn');
+const draftBtn = document.getElementById('draftBtn');
 
 const courierPanel = document.getElementById('carrierPanel');
 const carrierWrapper = document.querySelector('.carrier-rows-wrapper');
@@ -166,7 +167,14 @@ postBtn.addEventListener('click', async () => {
         collectListingInfo();
         await uploadListing();
 
-    }           
+    }
+});
+
+draftBtn.addEventListener('click', async () => {
+    // Drafts intentionally skip validationInformation() -- the entire point
+    // of a draft is to let the user save incomplete work and finish it later.
+    collectListingInfo('draft');
+    await saveDraft();
 });
 
 carrierWrapper.addEventListener('click', (e) => {
@@ -676,8 +684,8 @@ function validateImages() {
 }
 
 
-function collectListingInfo() {
-    const category = productCategory.value.trim().split('-')[1] || 'other'; 
+function collectListingInfo(status = 'active') {
+    const category = productCategory.value.trim().split('-')[1] || 'other';
     const categoryMeta = productCategory.value.trim().split('-')[0] || 'other';
 
     listing.category = category;
@@ -686,7 +694,7 @@ function collectListingInfo() {
     listing.productName = productTitle.value.trim();
     listing.availableForTrade = tradeStatus.classList.contains('active');
     listing.userId = currentUser.userId;
-    listing.status = 'active';
+    listing.status = status;
     listing.description = productDescription?.value.trim();
     listing.brand = productBrand?.value.trim();
     listing.condition = productCondition?.value.trim();
@@ -885,6 +893,29 @@ async function uploadListing() {
         removeSavingModal();
         console.error("Error occurred when uploading listing: ", e);
         alert("Something went wrong while posting your listing. Please try again.");
+    }
+}
+
+async function saveDraft() {
+    const mainEl = document.querySelector('main');
+    showLoader(mainEl);
+    try {
+        const images = collectImageData('.image-preview');
+        const { images: uploadedImages, failed } = await uploadImagesToFirebase(images, currentUser.email);
+
+        if (failed.length > 0) {
+            alert(`${failed.length} of ${images.length} photo(s) failed to upload. Please try again.`);
+            return;
+        }
+
+        listing.images = uploadedImages;
+        await uploadListingToFirebase(listing);
+        alert("Your listing has been saved as a draft.");
+    } catch (e) {
+        console.error("Error occurred when saving draft: ", e);
+        alert("Something went wrong while saving your draft. Please try again.");
+    } finally {
+        hideLoader(mainEl);
     }
 }
 

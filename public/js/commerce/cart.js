@@ -34,10 +34,36 @@ function displayCartItems(items) {
 
     items.forEach(item => {
         console.log("bag item:", item);
+        const isAuth = item.itemType === 'authentication';
         const div = document.createElement('div');
         div.classList.add('item-container');
-        div.dataset.id = item.listingId;
-        div.innerHTML = `
+        div.dataset.id = isAuth ? item.authRequestId : item.listingId;
+        div.innerHTML = isAuth ? authBagItemMarkup(item) : productBagItemMarkup(item);
+
+        bagItemGrid.appendChild(div);
+
+    })
+
+    const checkoutBtns = document.querySelectorAll('.checkout-btn');
+    console.log(checkoutBtns);
+
+    checkoutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.item-container');
+            const id = card.dataset.id;
+            const item = items.find(item => item.listingId === id || item.authRequestId === id)
+            sessionStorage.setItem('item', JSON.stringify(item))
+
+            const checkoutUrl = item.itemType === 'authentication'
+                ? `/checkout?authRequestId=${id}`
+                : `/checkout?listingId=${id}`;
+            window.location.href = checkoutUrl;
+        })
+    })
+}
+
+function productBagItemMarkup(item) {
+    return `
             <div class="item-wrapper">
                 <div class="item-info">
                   <div class="seller-info">
@@ -74,23 +100,42 @@ function displayCartItems(items) {
                 <button type="button" class="checkout-btn" id="checkoutBtn">Checkout</button>
               </div>
         `;
+}
 
-        bagItemGrid.appendChild(div);
+function authBagItemMarkup(item) {
+    return `
+            <div class="item-wrapper">
+                <div class="item-info">
+                  <div class="seller-info">
+                    <div class="seller-at">
+                      <p>Authentication Service</p>
+                      <p>${item.tier?.icon || ''} ${item.tier?.name || ''} Tier</p>
+                    </div>
+                  </div>
+                  <img src="${item.primaryImage}" class="product-img" alt="${item.productName}">
+                </div>
+                <div class="item-description">
+                  <p>${item.productName} &mdash; ${item.category}</p>
+                  <div class="item-price">
+                    <p class="listing-price">$${item.cost.toFixed(2)}</p>
+                  </div>
+                  <div class="button-container">
+                    <button class="delete-product" id="deleteProduct">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
 
-    })
+              <div class="item-cost">
+                <div class="cost-row">
+                  <p class="item-cost-label">Subtotal:</p>
+                  <p class="item-cost">$${item.cost.toFixed(2)}</p>
+                </div>
 
-    const checkoutBtns = document.querySelectorAll('.checkout-btn');
-    console.log(checkoutBtns);
-
-    checkoutBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const card = btn.closest('.item-container');
-            const id = card.dataset.id;
-            const item = items.find(item => item.listingId === id)
-            sessionStorage.setItem('item', JSON.stringify(item))
-            window.location.href = `/checkout?listingId=${id}`;
-        })
-    })
+                <button type="button" class="checkout-btn" id="checkoutBtn">Checkout</button>
+              </div>
+        `;
 }
 
 

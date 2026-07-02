@@ -3,6 +3,9 @@ import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app 
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
 import { loadProducts, handleFavoriteClick, mensRange } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
+
+initCartDrawer();
 
 const currentUser = checkUserStatus();
 

@@ -1220,6 +1220,7 @@ export {
   removeFromCart,
   deleteItemFromFirebaseCart,
   createCartItemInFirebase,
+  createAuthCartItem,
   getSellerInfo,
   getProductData,
   calculateSubtotal

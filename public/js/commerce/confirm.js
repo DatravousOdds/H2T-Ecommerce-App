@@ -16,6 +16,16 @@ await getOrderDetails();
 
 async function getOrderDetails() {
     if (redirectStatus === "succeeded") {
+        // Authentication payments never create an `orders` doc -- the
+        // webhook updates the authenticationRequests doc instead -- so
+        // there's nothing to wait on here. Everything needed to confirm
+        // is already in the sessionStorage item plus the payment intent.
+        if (item?.itemType === 'authentication') {
+            const cardDetails = await fetchCardDetails(paymentIntent);
+            displayAuthConfirmation(item, cardDetails);
+            return;
+        }
+
         const orderId = paymentIntent;
 
         const docRef = collection(db, "orders");
@@ -25,7 +35,7 @@ async function getOrderDetails() {
             where("id", "==", orderId)
         )
 
-        
+
         const unsub = onSnapshot(q, async (querySnapshot) => {
             const order = querySnapshot.docs[0].data();
             console.log(order)
@@ -37,7 +47,7 @@ async function getOrderDetails() {
 
         });
 
-        
+
     }
 }
 
@@ -56,6 +66,81 @@ async function fetchCardDetails(paymentIntent) {
         console.error(error)
     }
 }
+function displayAuthConfirmation(item, cardDetails) {
+    const detailsGrid = document.querySelector('.details-grid');
+    detailsGrid.innerHTML = "";
+    detailsGrid.innerHTML = `
+        <div class="confirm-left-content">
+                <div class="order-details">
+                    <h2 class="detail-header"><i class="fa-solid fa-circle-check"></i> Payment confirmed!</h2>
+                    <div class="" id="orderDetails">
+                        <div class="order-content">
+                            <strong><p>Your item is now queued for authentication review.</p></strong>
+                            <strong><p>We'll notify you once a reviewer has confirmed the result.</p></strong>
+                        </div>
+                        <hr>
+                        <div class="details">
+                            <dt id="orderDate">Request Id:</dt>
+                            <dd id="orderId">${item.authRequestId}</dd>
+                        </div>
+                    </div>
+                </div>
+            <div class="payment-details">
+                <div class="order-details">
+                    <h2 class="detail-header"><i class="fa-solid fa-credit-card"></i> Payment Method</h2>
+                    <div class="details">
+                            <dt class="card-icon">Card:</dt>
+                            <dd class="card-details">${cardDetails.cardType} ****${cardDetails.last4}</dd>
+
+                    </div>
+                </div>
+
+            </div>
+
+            </div>
+            <div class="confirm-right-content">
+                <div class="order-details">
+                  <h2><i class="fa-solid fa-clipboard"></i> Item Details</h2>
+                    <div class="order-summary">
+                        <div class="order-item">
+                            <div class="product-info-wrapper">
+                                <img src="${item.primaryImage}" alt="Product image" />
+
+                                <div class="cart-product-info">
+                                    <p class="cart-item-brand">${item.category}</p>
+                                    <p class="cart-item-name">${item.productName}</p>
+                                    <p class="cart-item-size">${item.tier?.icon || ''} ${item.tier?.name || ''} Tier</p>
+                                </div>
+
+                            </div>
+                            <hr>
+                            </div>
+                        </div>
+                </div>
+
+                <div class="order-details">
+                    <h2><i class="fa-solid fa-clipboard-list"></i> Order Summary</h2>
+                    <div class="order-total">
+                        <div class="line-item-container">
+                          <dt>Authentication Fee:</dt>
+                          <dd>$${item.cost.toFixed(2)}</dd>
+                        </div>
+                        <hr>
+                        <div class="line-item-container">
+                          <dd>Total</dd>
+                          <dt class="total-cost">$${item.cost.toFixed(2)} USD</dt>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="cta-buttons">
+                        <button type="button" onclick="window.print()" class="printOrderBtn">Print receipt</button>
+                        <button type="button" onclick="window.location.href='/profile?tab=selling'">View Status</button>
+                </div>
+            </div>
+    `
+};
+
 function displayOrderConfirmation(orderData) {
     console.log("order data:",orderData)
     const detailsGrid = document.querySelector('.details-grid');

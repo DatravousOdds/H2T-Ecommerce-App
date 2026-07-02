@@ -2,6 +2,9 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, renderFilterTags } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
+
+initCartDrawer();
 
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");

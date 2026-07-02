@@ -804,28 +804,47 @@ app.post("/create-checkout-session", async (req, res) => {
   const { priceData } = req.body;
   console.log("session data:", priceData)
   try {
-  
+    const item = priceData[0];
+    const isAuthPayment = item.itemType === 'authentication';
+
+    // Authentication payments carry no seller/listing/shipping -- tagging
+    // item_type here is what lets the webhook branch to the
+    // authenticationRequests update instead of creating an `orders` doc.
+    const metadata = isAuthPayment
+      ? {
+          item_type: 'authentication',
+          buyer_id: item.buyerId,
+          buyer_email: item.buyerEmail,
+          auth_request_id: item.authRequestId,
+          item: JSON.stringify({
+            name: item.productName,
+            category: item.category,
+            tier: item.tier?.name,
+            cost: item.cost
+          })
+        }
+      : {
+          buyer_id: item.buyerId,
+          buyer_email: item.buyerEmail,
+          seller_id: item.sellerId,
+          listing_id: item.listingId,
+          shipping_cost: item.shippingCost,
+          shipping_from: item.shippingFrom,
+          item: JSON.stringify({
+            name: item.productName,
+            size: item.size,
+            brand: item.brand,
+            image: item.image,
+            salesTax: parseFloat(item.salesTax),
+            marketplaceFee: parseFloat(item.marketplaceFee)
+          })
+        };
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(priceData[0].price * 100),
+      amount: Math.round(item.price * 100),
       currency: 'usd',
       payment_method_types: ['card'],
-      metadata: {
-        buyer_id: priceData[0].buyerId,
-        buyer_email: priceData[0].buyerEmail,
-        seller_id: priceData[0].sellerId,
-        listing_id: priceData[0].listingId,
-        shipping_cost: priceData[0].shippingCost,
-        shipping_from: priceData[0].shippingFrom,
-        item: JSON.stringify({
-          name: priceData[0].productName,
-          size: priceData[0].size,
-          brand: priceData[0].brand,
-          image: priceData[0].image,
-          salesTax: parseFloat(priceData[0].salesTax),
-          marketplaceFee: parseFloat(priceData[0].marketplaceFee)
-        })
-
-      },
+      metadata,
     });
 
     res.json({ clientSecret: paymentIntent.client_secret })
@@ -866,15 +885,42 @@ app.get('/checkout/session', async (req, res) => {
 })
 
 app.post("/order-summary", verifyAuth, async(req, res) => {
-    const { listingId } = req.body;
+    const { listingId, authRequestId } = req.body;
     // console.log('id', listingId)
 
     try {
+      // Authentication requests are a flat tier-cost service fee -- no
+      // seller, no shipping, no marketplace fee, so this is its own branch
+      // rather than shoehorning it into the listing-priced math below.
+      if (authRequestId) {
+        const requestRef = await db.collection("authenticationRequests").doc(authRequestId).get();
+
+        if (!requestRef.exists) {
+          return res.status(404).json({ success: false, message: "Authentication request not found" });
+        }
+
+        const request = requestRef.data();
+
+        if (request.userId !== req.token.uid) {
+          return res.status(403).json({ success: false, message: "Not authorized for this request" });
+        }
+
+        const cost = request.tierSelection?.cost ?? request.price ?? 0;
+
+        return res.status(200).json({
+          marketplaceFee: 0,
+          price: cost,
+          tax: 0,
+          delivery: 0,
+          total: parseFloat(cost.toFixed(2))
+        });
+      }
+
       const docRef = await db.collection("listings").doc(listingId).get();
       const listing = docRef.data();
       // console.log("listingData:", listing)
 
-      const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice; 
+      const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice;
       const tax = 0.20; // just for testing
       const delivery = listing.shipping === "" ? 0 : listing.shipping.estimateRate;
 
@@ -1164,9 +1210,58 @@ async function createNotification(userId, type, title, message, link) {
   }
 }
 
+// Authentication payments never go through the `orders` collection --
+// they mark the authenticationRequests doc paid and kick off the AI
+// matching step that used to fire immediately on form submission (see
+// authenticate.js's createAuthenticationRequest()). Gating matching on
+// payment is what actually makes terms2's checkbox copy on
+// authenticate.html true: "the authentication process will begin once
+// payment is confirmed."
+async function handleAuthPaymentSucceeded(paymentData) {
+  const authRequestId = paymentData.metadata.auth_request_id;
+
+  try {
+    const requestRef = db.collection('authenticationRequests').doc(authRequestId);
+    const requestSnap = await requestRef.get();
+
+    if (!requestSnap.exists) {
+      console.error(`authenticationRequests/${authRequestId} not found, skipping payment update`);
+      return;
+    }
+
+    if (requestSnap.data().paid) {
+      console.log(`authentication request ${authRequestId} already marked paid, skipping duplicate webhook delivery`);
+      return;
+    }
+
+    await requestRef.update({
+      paid: true,
+      paymentIntentId: paymentData.id,
+    });
+
+    await matchAuthenticationRequest(authRequestId);
+
+    const item = JSON.parse(paymentData.metadata.item || '{}');
+
+    await createNotification(
+      paymentData.metadata.buyer_id,
+      "authentication",
+      "Payment Confirmed",
+      `Your ${item.name || "item"} is now queued for authentication review.`,
+      "/profile?tab=selling"
+    );
+  } catch (err) {
+    console.error(`Error handling authentication payment for request ${authRequestId}:`, err);
+  }
+}
+
 async function handlePaymentIntentSucceeded(paymentData){
   console.log(paymentData)
   try {
+    if (paymentData.metadata.item_type === 'authentication') {
+      return await handleAuthPaymentSucceeded(paymentData);
+    }
+
     const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
     if (!existingOrder.empty) {
       console.log(`order for payment intent ${paymentData.id} already exists, skipping duplicate webhook delivery`);

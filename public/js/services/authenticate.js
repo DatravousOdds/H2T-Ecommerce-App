@@ -3,7 +3,7 @@ import { collection, addDoc, db, serverTimestamp, getDocs, query, where } from '
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { getUserCartCount, updateCartCount } from '../commerce/cart.js';
-import { addToCart } from '../core/global.js';
+import { addToCart, createAuthCartItem } from '../core/global.js';
 
 const storage = getStorage();
 
@@ -21,8 +21,8 @@ const imageInputs = document.querySelectorAll(".file-input");
 const imageItems = document.querySelectorAll(".image-item");
 const reviewImages = document.querySelectorAll('.review-image');
 // auth form
-const authForm = document.getElementById('authentication-form');
 const authSubmitBtn = document.getElementById('submitAuthBtn');
+const payNowBtn = document.getElementById('payNowBtn');
 // categories selection functionality
 const categories = document.getElementById('categories');
 const dynamicFormContainer = document.getElementById('dynamic-form-container');
@@ -349,7 +349,8 @@ categories.addEventListener('change', (e) => {
 
 })
 
-authForm.addEventListener('submit', handleFormSubmission);
+authSubmitBtn.addEventListener('click', handleAddToCartSubmission);
+payNowBtn.addEventListener('click', handlePayNowSubmission);
 
 addAnotherItemBtn.addEventListener('click', () => {
   // reset step
@@ -849,79 +850,112 @@ function validateStep(stepNumber) {
   }
 }
 
-async function handleFormSubmission(e) {
-  e.preventDefault();
-  
-  if(!validateStep(4)) {
+// Shared by both submission paths: uploads images and creates the
+// authenticationRequests doc. AI matching is *not* triggered here anymore --
+// it now fires from the Stripe webhook once payment is confirmed, so it
+// actually matches what the terms2 checkbox tells the user ("the
+// authentication process will begin once payment is confirmed").
+async function createAuthenticationRequest() {
+  authSubmitBtn.disabled = true;
+  payNowBtn.disabled = true;
+
+  console.log("Submitting authentication request with data:", formData);
+
+  const result = await submitToFirebase();
+
+  if (!result.success) {
+    throw new Error("Failed to upload images");
+  }
+
+  console.log("✅ Images uploaded successfully!");
+
+  const authRequestData = {
+    images: formData.images || null,
+    requestId: result.requestId || null,
+    productDetails: formData.productDetails || null,
+    tierSelection: formData.tierSelection || null,
+  };
+
+  return { requestId: result.requestId, authRequestData };
+}
+
+async function handleAddToCartSubmission() {
+  if (!validateStep(4)) {
     return;
   }
 
-  authSubmitBtn.disabled = true;
-  console.log("Submitting authentication request with data:", formData);
+  authSubmitBtn.textContent = "Uploading images...";
+
   try {
-    // Step 1: Upload images to Firebase
-    authSubmitBtn.textContent = "Uploading images...";
-    const result = await submitToFirebase();
+    const { requestId, authRequestData } = await createAuthenticationRequest();
 
-    if (!result.success) {
-      throw Error("Failed to upload images");
-      
-    } else {
-      let uploadRequestId = result.requestId;
-      console.log("✅ Images uploaded successfully!");
+    authSubmitBtn.textContent = "Adding to cart...";
 
-      // Fire-and-forget: don't block the cart-add UX on Vertex AI latency,
-      // and don't fail the whole submission if matching fails -- the
-      // request just stays at "submitted" and a reviewer can trigger it
-      // manually later (see the reviewer screen's "Run AI Match" fallback).
-      triggerAuthMatching(uploadRequestId);
+    const cartResult = await addToCart(authRequestData, currentUser, 'authentication');
+    console.log("cart results: ", cartResult.success);
 
-      // Step 2: Add item to cart
-      authSubmitBtn.textContent = "Adding to cart...";
-
-      const authRequestData = {
-        images: formData.images || null,
-        requestId: result.requestId || null,
-        productDetails: formData.productDetails || null,
-        tierSelection: formData.tierSelection || null,
-      }
-
-      const cartResult = await addToCart(authRequestData, currentUser, 'authentication');
-      console.log("cart results: ", cartResult.success);
-
-      if (!cartResult.success) {
-        await deleteFirebaseRequest(uploadRequestId);
-        throw new Error("Failed to add item to cart");
-      } else {
-
-        console.log("✅ Added item to cart!");
-        // Step 3: Update UI on success
-        authSubmitBtn.textContent = "Success!";
-        clearDraftState();
-
-        const cartCount = await getUserCartCount(currentUser);
-        updateCartCount(cartCount);
-
-        cartModal.classList.add("show");
-        cartItemCount.textContent = cartCount;
-
-        showNotification("Item successfully added!", "success")
-      }
+    if (!cartResult.success) {
+      await deleteFirebaseRequest(requestId);
+      throw new Error("Failed to add item to cart");
     }
+
+    console.log("✅ Added item to cart!");
+    authSubmitBtn.textContent = "Success!";
+    clearDraftState();
+
+    const cartCount = await getUserCartCount(currentUser);
+    updateCartCount(cartCount);
+
+    cartModal.classList.add("show");
+    cartItemCount.textContent = cartCount;
+
+    showNotification("Item successfully added!", "success");
   }
   catch (error) {
     console.error("❌ Submission failed!", error);
 
     showNotification(error.message || "Something went wrong. Please try again.", "error");
-    
+
     cartModal.classList.remove("show");
   }
 
   setTimeout(() => {
-    authSubmitBtn.innerHTML = `<i class="fa-solid fa-arrow-up-from-bracket"></i> Submit for Authentication`;
+    authSubmitBtn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> Add to Cart`;
     authSubmitBtn.disabled = false;
-    }, 
+    payNowBtn.disabled = false;
+    },
   3000);
+}
+
+async function handlePayNowSubmission() {
+  if (!validateStep(4)) {
+    return;
+  }
+
+  payNowBtn.textContent = "Uploading images...";
+
+  try {
+    const { requestId, authRequestData } = await createAuthenticationRequest();
+
+    // Skip the cart entirely -- stash the same item shape addToCart()
+    // would have stored, then hand off to checkout.js the same way
+    // cart.js's per-item Checkout button does for a product listing.
+    const cartItem = createAuthCartItem(authRequestData);
+    sessionStorage.setItem('item', JSON.stringify(cartItem));
+
+    clearDraftState();
+
+    window.location.href = `/checkout?authRequestId=${requestId}`;
+  }
+  catch (error) {
+    console.error("❌ Submission failed!", error);
+
+    showNotification(error.message || "Something went wrong. Please try again.", "error");
+
+    payNowBtn.innerHTML = `<i class="fa-solid fa-credit-card"></i> Pay Now`;
+    payNowBtn.disabled = false;
+    authSubmitBtn.disabled = false;
+  }
 }
 
 function displayReviewData(data) {
@@ -1058,17 +1092,6 @@ async function uploadImagesToFirebase(images, userId, requestId) {
   const uploadedImages = await Promise.all(uploadPromises);
   return uploadedImages;
   
-}
-
-function triggerAuthMatching(requestId) {
-  fetch(`/api/authentication-requests/${requestId}/analyze`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${currentUser.idToken}`,
-    },
-  }).catch((error) => {
-    console.error("❌ AI matching trigger failed (non-fatal):", error);
-  });
 }
 
 async function deleteFirebaseRequest(requestId) {

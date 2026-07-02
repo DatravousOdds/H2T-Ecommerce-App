@@ -5,6 +5,7 @@ const stripe = Stripe("pk_test_51Tfwj9PHPIWBS1BJqszOAwKKlL5xCJGBsfTJhcbyWndXlUBi
 
 const searchQuery = new URLSearchParams(window.location.search);
 const listingId = searchQuery.get('listingId');
+const authRequestId = searchQuery.get('authRequestId');
 const queryItem = JSON.parse(sessionStorage.getItem('item'));
 const user = JSON.parse(sessionStorage.getItem('user'));
 
@@ -18,19 +19,32 @@ if(!user) {
     window.location.href = '/login';
 } else {
     const currentUser = await checkUserStatus();
-    const data = await getOrderSummary(listingId, currentUser);
+    // Authentication requests have no seller/shipping/marketplace-fee
+    // concept -- they're a flat service fee, not a product sale.
+    const isAuthPayment = queryItem?.itemType === 'authentication';
+
+    const data = isAuthPayment
+        ? await getAuthOrderSummary(authRequestId, currentUser)
+        : await getOrderSummary(listingId, currentUser);
     // console.log("order summary:", data)
-    
+
     queryItem.price = data.total;
     queryItem.buyerId = currentUser.userId;
     queryItem.buyerEmail = currentUser.email;
-    queryItem.salesTax = data.tax;
-    queryItem.marketplaceFee = data.marketplaceFee;
+
+    if (isAuthPayment) {
+        queryItem.authRequestId = authRequestId;
+        hideShippingSection();
+        displayAuthOrderDetails(queryItem);
+    } else {
+        queryItem.salesTax = data.tax;
+        queryItem.marketplaceFee = data.marketplaceFee;
+        displayShipping(currentUser);
+        displayOrderDetails(queryItem);
+    }
 
     console.log("item to pay",queryItem)
-    displayShipping(currentUser);
-    displayOrderDetails(queryItem);
-    displayOrderSummary(data);
+    displayOrderSummary(data, isAuthPayment);
 
     await initializeCheckout(data);
 }
@@ -134,12 +148,35 @@ async function getOrderSummary(listingId, currentUser) {
 
     } catch (err) {
         console.error(err)
-        
+
     }
 }
 
-function displayOrderSummary(data) {
-    
+async function getAuthOrderSummary(authRequestId, currentUser) {
+    console.log("Getting summary for authentication request:", authRequestId);
+    try {
+        const response = await fetch('/order-summary', {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json',
+                "Authorization": `Bearer ${currentUser.idToken}`
+            },
+            body: JSON.stringify({ authRequestId })
+        });
+
+        if (!response.ok) {
+            throw new Error("fetch failed", response.status)
+        }
+
+        return await response.json();
+
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+function displayOrderSummary(data, isAuthPayment = false) {
+
     console.log("summary", data)
     const section = document.querySelector('.checkout-section');
     section.innerHTML = "";
@@ -147,8 +184,14 @@ function displayOrderSummary(data) {
     const checkoutBox = document.createElement('div');
     checkoutBox.classList.add('checkout-box');
 
-    checkoutBox.innerHTML = `
-        <h3>Order Summary</h3>
+    const lineItemsHTML = isAuthPayment
+        ? `
+            <div class="line-item-container">
+              <dd>Authentication Fee:</dd>
+              <dt>$${data.price.toFixed(2)}</dt>
+            </div>
+        `
+        : `
             <div class="line-item-container">
               <dd>Item Price:</dd>
               <dt>$${data.price.toFixed(2)}</dt>
@@ -165,6 +208,11 @@ function displayOrderSummary(data) {
               <dd>Sales Tax:</dd>
               <dt>$${data.tax}</dt>
             </div>
+        `;
+
+    checkoutBox.innerHTML = `
+        <h3>Order Summary</h3>
+        ${lineItemsHTML}
             <hr>
             <div class="line-item-container">
               <dt>Total</dt>
@@ -172,7 +220,7 @@ function displayOrderSummary(data) {
             </div>
             <button id="submit" class="place-order-btn">
               <div class="spinner hidden" id="spinner"></div>
-              <span id="button-text">Pay now</span>  
+              <span id="button-text">Pay now</span>
             </button>
             <div id="payment-message" class="hidden"></div>
     `;
@@ -214,8 +262,41 @@ function displayOrderDetails(item) {
     `;
     cart.append(cartItem)
 
-    
 
+
+}
+
+// Authentication requests have no seller and nothing ships at payment time --
+// the item preview just shows what's being authenticated and which tier.
+function displayAuthOrderDetails(item) {
+    console.log("displaying auth item", item)
+    const cart = document.querySelector('.cart');
+    cart.innerHTML = "";
+
+    const cartItem = document.createElement('div');
+    cartItem.classList.add('cart-item');
+    cartItem.innerHTML = `
+        <div class="product-info-wrapper">
+                <img src=${item.primaryImage} />
+               <div class="cart-item-info">
+                 <div class="cart-product-info" data-authRequestId="${item.authRequestId}">
+                   <p class="cart-item-brand">${item.category}</p>
+                   <p class="cart-item-name">${item.productName}</p>
+                   <p class="cart-item-size">${item.tier?.icon || ''} ${item.tier?.name || ''} Tier</p>
+                   <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+                 </div>
+               </div>
+               </div>
+    `;
+    cart.append(cartItem)
+}
+
+// No shipping address is collected at this step for an authentication
+// payment -- hide the whole block rather than leaving it half-relevant.
+function hideShippingSection() {
+    const shippingInfo = document.getElementById('shippingInfo');
+    const shippingBlock = shippingInfo?.closest('.input-form');
+    if (shippingBlock) shippingBlock.style.display = 'none';
 }
 
 function displayShipping(data) {
