@@ -1,5 +1,5 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, updateResultsCount, handleFavoriteClick } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -162,6 +162,12 @@ async function displayReviews() {
     showLoader(reviewsContainer);
     try {
         const reviews = await getReviews();
+
+        if (reviews.empty) {
+            document.querySelector('.sm-reviews-section').style.display = 'none';
+            return;
+        }
+
         getTotalReviews(reviews);
 
         reviewsContainer.innerHTML = "";
@@ -349,51 +355,15 @@ async function setOfferModalData() {
 }
   
 async function getMarketValuePrice() {
-    const data = await getProductData(productId)
-    const ordersColRef = collection(db, "orders");
+    const data = await getProductData(productId);
 
-    let q = query(ordersColRef, 
-        where("productName", "==", data.productName),
-        where("brand", "==", data.brand),
-        orderBy("salePrice", "asc"),
-        limit(1)
-    );
-
-
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-        return [];
-    }
-
-    const marketPrice = querySnapshot.docs[0].data().salePrice || 0;
-
-    return marketPrice.toFixed(2);
+    return (data.lastSalePrice || 0).toFixed(2);
 };
 
 async function getAverageSalePrice() {
-
     const data = await getProductData(productId);
 
-    const ordersColRef = collection(db, "orders");
-
-    let q = query(ordersColRef, where("productName", "==", data.productName));
-
-    if (data.sku) {
-        q = query(ordersColRef, 
-            where("productName", "==", data.productName),
-            where("sku", "==", data.sku));
-    }
-
-    const querySnapshot = await getDocs(q);
-
-    const prices = querySnapshot.docs.map(doc => doc.data().listingPrice);
-
-    const totalPrice = prices.reduce((sum, price) => sum += price, 0);
-
-    const averagePrice = totalPrice / prices.length || 0;
-
-    return parseFloat(averagePrice.toFixed(2));
+    return parseFloat((data.averageSalePrice || 0).toFixed(2));
 };
 
 async function getOfferKpis() {
@@ -513,14 +483,27 @@ function displayProducts(products) {
     // console.log(products)
     // display
     if (products.length === 0) {
-      productsContainer.innerHTML = `<div class="no-results">No results!</div>`
+      // Tier A (related) and tier B (just dropped, same category) both came up
+      // empty, so invite the user to fill the gap instead of a dead-end message.
+      // Reuses .chart-empty-state so this matches the price-history empty state
+      // above it on the same page.
+      productsContainer.style.justifyContent = 'center';
+      productsContainer.innerHTML = `
+        <div class="chart-empty-state no-results-invite">
+          <i class="fa-solid fa-box-open"></i>
+          <h3>Nothing here yet</h3>
+          <p>Be the first to list an item like this.</p>
+          <a href="/seller" class="no-results-cta">List an item</a>
+        </div>
+      `;
+      return;
     }
     products.forEach((doc) => {
       const productData = doc.data();
       const productElement = document.createElement("div");
       productElement.classList.add("pro");
       productElement.onclick = () => {
-        window.location.href = `shop/product.html?id=${doc.id}`;
+        window.location.href = `/shop/product.html?id=${doc.id}`;
       };
       productElement.innerHTML = `
         
@@ -546,7 +529,7 @@ function displayProducts(products) {
                   </p>
                   
                   <div class="pro-price">
-                    <span class="listing-price">$${productData.originalPrice.toFixed(2)}</span>
+                    <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
                     <div class="price-change">
                       <div class="price-trend trend-up">
                         <i class="fa-solid fa-arrow-trend-up"></i>
@@ -561,17 +544,12 @@ function displayProducts(products) {
               <!-- product details -->   
       `;
   
-    //   handleFavoriteClick(productElement);
-  
-  
+      handleFavoriteClick(productElement, doc.id, productData);
+
       productsContainer.appendChild(productElement);
     });
   
-    // update results count
-    if (products.length) {
-      updateResultsCount(products.length);
-    }
-    
+  
 };
 
 

@@ -8,13 +8,13 @@ const currentUser = await checkUserStatus();
 let bagItems = await getCartItems(currentUser);
 console.log("bag items:", bagItems);
 
-// displayCartItems(bagItems);
+displayCartItems(bagItems);
 initCartDrawer();
 
 window.addEventListener('cartUpdated', async () => {
     bagItems = await getCartItems(currentUser);
     console.log("bag items:", bagItems);
-    // displayCartItems(bagItems);
+    displayCartItems(bagItems);
 })
 
 function displayCartItems(items) {

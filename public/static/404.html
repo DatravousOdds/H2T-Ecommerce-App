@@ -4,20 +4,16 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page not found - User Lost</title>
+    <title>Page Not Found</title>
 
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/404.css" />
+    <link rel="stylesheet" href="css/components/newsletter.css" />
+    <link rel="stylesheet" href="css/components/cartDrawer.css"/>
   </head>
   <body>
     <section id="header">
-      <a href="/"><img src="images/H2T LogoB Small.png" class="logo" /></a>
       <nav class="navbar"></nav>
-
-      <div id="mobile">
-        <a href="/cart"><i class="far fa-shopping-bag"></i></a>
-        <i id="bar" class="fas fa-outdent"></i>
-      </div>
     </section>
 
     <section id="error-404" class="four-0-four">
@@ -54,8 +50,15 @@
         <button class="normal">Sign Up</button>
       </div>
     </section>
+
     <footer class="section-p1"></footer>
-    <script src="./js/components/footer.js"></script>
+    <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
+    </div>
+
+    <script src="js/components/footer.js"></script>
+
+    <script type="module" src="js/components/cartDrawer.js"></script>
+    <script type="module" src="js/pages/search.js"></script>
     <script type="module" src="./js/components/nav.js"></script>
   </body>
 </html>

@@ -1,6 +1,7 @@
 
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, renderFilterTags } from '../core/global.js';
+import { showLoader, hideLoader } from '../components/pageLoader.js';
 
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");
@@ -17,6 +18,8 @@ const filterDisplay = document.getElementById("filterDisplay");
 const picker = document.getElementById("colorPicker");
 
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
+const productsContainer = document.getElementById("productsContainer");
+const loadMoreBtn = document.getElementById("loadMoreBtn");
 
 const releasesProductTemplate = (data) => `
   <!--- Image container-->
@@ -78,15 +81,24 @@ const displayProducts = (products, template) => {
   productsContainer.innerHTML = "";
   // display
   if (products.length === 0) {
-    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
+    // Invite the user to fill the gap instead of a dead-end message.
+    // Reuses .chart-empty-state so this matches the price-history empty state on product.html.
+    productsContainer.style.justifyContent = 'center';
+    productsContainer.innerHTML = `
+      <div class="chart-empty-state no-results-invite">
+        <i class="fa-solid fa-box-open"></i>
+        <h3>Nothing here yet</h3>
+        <p>Be the first to list an item like this.</p>
+        <a href="/seller" class="no-results-cta">List an item</a>
+      </div>
+    `;
+    updateResultsCount(products.length);
+    return;
   }
   products.forEach((doc) => {
     const productData = doc.data();
     const productElement = document.createElement("div");
-    productElement.classList.add("pro");
-    productElement.onclick = () => {
-      window.location.href = `shop/product.html?id=${doc.id}`;
-    };
+    productElement.classList.add("pro", "pro-upcoming");
     productElement.innerHTML = template(productData);
     productsContainer.appendChild(productElement);
   });
@@ -95,8 +107,9 @@ const displayProducts = (products, template) => {
   updateResultsCount(products.length);
 }
 
-const products =  await loadProducts("categoryMeta","men", state);
+let products =  await loadProducts("categoryMeta","men", state);
 displayProducts(products, releasesProductTemplate);
+updateLoadMoreVisibility();
 
 let filteredProducts = [...products];
 
@@ -250,6 +263,29 @@ const toggleDropdown = (container, icon) => {
   container.querySelector(".sort-content").classList.toggle("show");
   icon.classList.toggle("rotate-down");
 };
+
+// shows the load more button only while Firestore has more pages left for the active category
+function updateLoadMoreVisibility() {
+  loadMoreBtn.style.display = state.hasMore ? "" : "none";
+}
+
+loadMoreBtn.addEventListener("click", async () => {
+  loadMoreBtn.disabled = true;
+  showLoader(productsContainer);
+
+  try {
+    const newProducts = await loadProducts("categoryMeta", "men", state);
+    products = [...products, ...newProducts];
+    filteredProducts = [...products];
+    filterProducts(products, state.filters);
+  } catch (error) {
+    console.error("Error loading more products:", error);
+  } finally {
+    hideLoader(productsContainer);
+    loadMoreBtn.disabled = false;
+    updateLoadMoreVisibility();
+  }
+});
 
 sortOption.forEach((link) => {
   link.addEventListener("click", function (e) {

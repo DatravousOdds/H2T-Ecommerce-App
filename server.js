@@ -813,6 +813,7 @@ app.post("/create-checkout-session", async (req, res) => {
         buyer_id: priceData[0].buyerId,
         buyer_email: priceData[0].buyerEmail,
         seller_id: priceData[0].sellerId,
+        listing_id: priceData[0].listingId,
         shipping_cost: priceData[0].shippingCost,
         shipping_from: priceData[0].shippingFrom,
         item: JSON.stringify({
@@ -1136,13 +1137,23 @@ async function createNotification(userId, type, title, message, link) {
 async function handlePaymentIntentSucceeded(paymentData){
   console.log(paymentData)
   try {
+    const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
+    if (!existingOrder.empty) {
+      console.log(`order for payment intent ${paymentData.id} already exists, skipping duplicate webhook delivery`);
+      return;
+    }
+
+    const listingId = paymentData.metadata.listing_id;
+    const salePrice = paymentData.amount / 100;
+
     const data = {
       id: paymentData.id,
       buyerId: paymentData.metadata.buyer_id,
       sellerId: paymentData.metadata.seller_id,
       buyerEmail: paymentData.metadata.buyer_email,
+      listingId,
       createdAt: paymentData.created,
-      subtotal: (paymentData.amount / 100).toFixed(2),
+      subtotal: salePrice.toFixed(2),
       status: paymentData.status,
       shippingCost: paymentData.metadata.shipping_cost,
       shippingAddress: paymentData.metadata.shipping_from,
@@ -1151,6 +1162,28 @@ async function handlePaymentIntentSucceeded(paymentData){
 
     const docRef = await db.collection('orders').add(data);
     console.log(`created a order with the id: ${docRef.id}`);
+
+    if (listingId) {
+      const listingRef = db.collection('listings').doc(listingId);
+      const listingSnap = await listingRef.get();
+
+      if (listingSnap.exists) {
+        const listing = listingSnap.data();
+        const totalSales = listing.totalSales || 0;
+        const currentAverage = listing.averageSalePrice || 0;
+        const newAverage = ((currentAverage * totalSales) + salePrice) / (totalSales + 1);
+
+        await listingRef.update({
+          totalSales: totalSales + 1,
+          averageSalePrice: parseFloat(newAverage.toFixed(2)),
+          lastSalePrice: salePrice
+        });
+      } else {
+        console.error(`listing ${listingId} not found, skipping sale price update`);
+      }
+    } else {
+      console.error(`payment intent ${paymentData.id} has no listing_id in metadata, skipping sale price update`);
+    }
 
     const itemName = data.item?.name || "an item";
 

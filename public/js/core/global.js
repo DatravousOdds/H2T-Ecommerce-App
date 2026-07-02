@@ -573,9 +573,10 @@ const loadProducts = async (field,categoryMeta, state = { lastVisible: null, fil
   state.lastVisible ? baseConstraints.push(startAfter(state.lastVisible)) : null;
   q = query(productsCollection, ...baseConstraints, limit(48));
   
-  // loop through active filters
+  // loop through active filters ("sort" is UI-only state, not a listing field)
   let whereConstraints = [];
   for (const [key, values] of state.filters) {
+    if (key === "sort") continue;
     whereConstraints.push(where(key, "in", values));
   }
 
@@ -584,17 +585,17 @@ const loadProducts = async (field,categoryMeta, state = { lastVisible: null, fil
   const querySnapshot = await getDocs(finalQuery);
 
   if (querySnapshot.empty) {
+    state.hasMore = false;
     return [];
   }
   // filter products for men products
   const menProducts = querySnapshot.docs;
 
-  if (state.lastVisible) {
-    state.lastVisible = menProducts[menProducts.length - 1];
-  }
+  state.lastVisible = menProducts[menProducts.length - 1];
+  state.hasMore = menProducts.length === 48;
   console.log("Last Visible:", state.lastVisible);
   return menProducts;
-  
+
 };
 
 const renderFilterTags = (filterTagsArray) => {
@@ -720,6 +721,7 @@ function handleFavoriteClick(element, listingId, listingData) {
 };
 
 const updateResultsCount = (count) => {
+  const pageResults = document.getElementById("pageResults");
   if (!pageResults) return;
 
   if (count === 1) {
@@ -760,7 +762,18 @@ const displayProducts = (products, containerElement) => {
   productsContainer.innerHTML = "";
   // display
   if (products.length === 0) {
-    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
+    // Invite the user to fill the gap instead of a dead-end message.
+    // Reuses .chart-empty-state so this matches the price-history empty state on product.html.
+    productsContainer.style.justifyContent = 'center';
+    productsContainer.innerHTML = `
+      <div class="chart-empty-state no-results-invite">
+        <i class="fa-solid fa-box-open"></i>
+        <h3>Nothing here yet</h3>
+        <p>Be the first to list an item like this.</p>
+        <a href="/seller" class="no-results-cta">List an item</a>
+      </div>
+    `;
+    return;
   }
   products.forEach((doc) => {
     const productData = doc.data();

@@ -125,62 +125,6 @@ export function checkUserStatus() {
   return authCheckPromise;
 }
 
-// Update your sendData function to handle the response
-// const submitFormData = async (path, data) => {
-//   try {
-//     console.log("Submitting data:", data);
-//     const response = await fetch(path, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-//       body: JSON.stringify(data)
-//     });
-
-//     const responseData = await response.json();
-//     console.log("Server response:", responseData);
-
-//     if (responseData.alert) {
-//       showAlert(responseData.alert);
-//     } else if (responseData.success) {
-//       console.log("Login successful, storing user data");
-//       // Store in both sessionStorage (for your existing code)
-
-//       const userData = {
-//         name: responseData.data.name,
-//         email: responseData.data.email,
-//         seller: responseData.data.seller,
-//         authToken: responseData.data.token
-//       };
-
-//       console.log("Storing user data:", userData);
-//       sessionStorage.user = JSON.stringify(userData);
-
-//       // and localStorage (for navigation)
-//       localStorage.setItem(
-//         "user",
-//         JSON.stringify({
-//           name: responseData.data.name,
-//           email: responseData.data.email,
-//           seller: responseData.data.seller
-//         })
-//       );
-//       localStorage.setItem("token", responseData.data.token);
-
-//       console.log("Redirecting to home page");
-//       location.replace("/");
-//     } else {
-//       console.log("Unexpected response format:", responseData);
-//       showAlert("Unexpected response from server");
-//     }
-//   } catch (error) {
-//     console.error("Error during form submission:", error);
-//     showAlert("Something went wrong. Please try again.");
-//   } finally {
-//     loader.style.display = "none";
-//   }
-// };
-
 // Create user profile in Firestore
 const createUserDocument = async (user, additionalData) => {
   try {
@@ -230,13 +174,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const number = document.querySelector("#number") || null;
   const tac = document.querySelector("#terms-and-cond") || null;
   const noti = document.querySelector("#notification") || null;
+  const signupForm = document.querySelector(".signup-form");
+  const loginForm = document.querySelector(".login-form");
 
   // Force email to lowercase as the user types (preserve cursor position)
   if (email) {
     email.addEventListener("input", () => {
-      const cursorPos = email.selectionStart;
-      email.value = email.value.toLowerCase();
-      email.setSelectionRange(cursorPos, cursorPos);
+      email.value = email.value.toLowerCase(); 
     });
   }
 
@@ -273,8 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Show loader
-        loader.style.display = "block";
-        showLoader();
+        showLoader(signupForm);
         try{
             // Create user with email and password
             const userCredential  = await createUserWithEmailAndPassword(auth, email.value, password.value);
@@ -295,6 +238,9 @@ document.addEventListener("DOMContentLoaded", () => {
             "phoneNumber": number.value,
             "username": "",
             "backgroundImage": "",
+            "profileImage": "",
+            "notification": noti.checked,
+            "tac": tac.checked,
             "shipping": {
               "address1": "",
               "address2": "",
@@ -359,11 +305,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
           showAlert(errorMessage);
         } finally {
-          hideLoader();
+          hideLoader(signupForm);
         }
 
       } else {
         // ====== LOGIN PAGE ======
+
+        // Ensure email is in lowercase while typing (already handled above), but also enforce it here before submission
+        email.value = email.value.toLowerCase();
 
         // login page validation
         if (!email.value.length || !password.value.length) {
@@ -372,8 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } 
 
 
-          showLoader();
-
+          showLoader(loginForm);
           try {
             const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
             // Signed in
@@ -405,7 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
             location.replace("/");
 
           } catch (error) {
-            
+            hideLoader(loginForm);
             console.error("Login error:", error);
             let errorMessage = "Something went wrong during login.";
 
@@ -426,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             showAlert(errorMessage);
           } finally {
-            hideLoader();
+            hideLoader(loginForm);
           }
         }
     });

@@ -82,7 +82,8 @@ Work one task at a time — don't jump ahead to later items unless explicitly as
 
 # Constraints
 - Do not write code without explanation
-- Do not assume, always vaidate and confirm with me 
+- Do not write any private information or code
+- Do not assume, always validate and confirm with me 
 - Do not write malicious code or code that doesn't meet standard quality/security practices
 - Do not push code to production or GitHub without my explicit approval
 - Do not write out the logic for me, help me develop the logic

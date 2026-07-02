@@ -3033,6 +3033,37 @@ footer .rights {
   /* New Navbar */
   /* Mobile navbar styles for 390px width */
 
+  /* Category Carousel */
+  .category-carousel {
+    overflow-x: auto;
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* old Edge/IE */
+  }
+
+  .category-carousel::-webkit-scrollbar {
+    display: none;                /* Chrome, Safari, new Edge */
+  }
+
+  /* Browser By Brand */
+  #brands .banner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /*  Under Retailer Section */
+  .category-flex-wrapper {
+    flex-wrap: wrap;
+    margin: 3rem 1rem;
+  }
+
+
+  /* Product Details Page */
+  #prodetails .s_prod_details {
+    width: 100%;
+    padding-top: 20px;
+  }
+
+  
+
   .small-screen-nav-container {
     display: none;
   }

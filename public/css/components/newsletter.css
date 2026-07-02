@@ -17,13 +17,13 @@
 #newsletter h4 {
   font-size: 22px;
   font-weight: 700;
-  color: var(--color-white);
+  color: #fff;
 }
 
 #newsletter p {
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-white);
+  color: #fff;
   margin: 0;
 }
 
@@ -65,8 +65,8 @@
 
 #newsletter button {
   /* change color */
-  background-color: var(--color-red);
-  color: var(--color-white);
+  background-color: #ff4c4c;
+  color: #fff;
   white-space: nowrap;
   padding: 0 1.5rem;
   border: none;

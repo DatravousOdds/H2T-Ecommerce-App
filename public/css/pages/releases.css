@@ -58,3 +58,14 @@ body {
 .release-date-wrapper i {
   color: #fff;
 }
+
+/* Upcoming releases aren't purchasable yet, so they shouldn't look clickable */
+.pro-upcoming {
+  cursor: default;
+}
+
+.pro-upcoming:hover {
+  transform: none;
+  border: none;
+  box-shadow: none;
+}

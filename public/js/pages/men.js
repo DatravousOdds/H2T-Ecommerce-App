@@ -2,6 +2,7 @@ import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
 import { loadProducts, handleFavoriteClick, mensRange } from '../core/global.js';
+import { showLoader, hideLoader } from '../components/pageLoader.js';
 
 const currentUser = checkUserStatus();
 
@@ -22,6 +23,8 @@ const picker = document.getElementById("colorPicker");
 const sizePicker = document.getElementById("size-filter");
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
 const paginationLinks = document.querySelectorAll(".pagination-link-container a");
+const productsContainer = document.getElementById("productsContainer");
+const loadMoreBtn = document.getElementById("loadMoreBtn");
 
 console.log("Pagination Links:", paginationLinks)
 
@@ -42,36 +45,7 @@ const colors = [
   { name: "Orange", value: "orange", hex: "#F06142" },
 ];
 
-// const loadProducts = async (categoryMeta, state) => {
-//   let q;
-//   const productsCollection = collection(db, "listings");
-//   const baseConstraints = [where("status", "==", "active"), where("categoryMeta", "==", `${categoryMeta}`)];
-//   state.lastVisible ? baseConstraints.push(startAfter(state.lastVisible)) : null;
-//   q = query(productsCollection, ...baseConstraints, limit(48));
-  
-//   // loop through active filters
-//   let whereConstraints = [];
-//   for (const [key, values] of state.filters) {
-//     whereConstraints.push(where(key, "in", values));
-//   }
 
-//   const finalQuery = whereConstraints.length ? query(q, ...whereConstraints) : q;
-
-//   const querySnapshot = await getDocs(finalQuery);
-
-//   if (querySnapshot.empty) {
-//     return [];
-//   }
-//   // filter products for men products
-//   const menProducts = querySnapshot.docs;
-//   state.lastVisible = menProducts[menProducts.length - 1];
-//   console.log("Last Visible:", state.lastVisible);
-//   return menProducts;
-  
-// };
-
-
-// loadProducts("men", state.lastVisible);
 
 const state = {
   lastVisible: null,
@@ -79,7 +53,7 @@ const state = {
 }
 
 
-const products =  await loadProducts("categoryMeta","men", state);
+let products =  await loadProducts("categoryMeta","men", state);
 
 let filteredProducts = [...products];
 
@@ -155,6 +129,24 @@ picker.addEventListener("click", e => {
   renderFilterTags(state.filters); 
 
 
+});
+
+loadMoreBtn.addEventListener("click", async () => {
+  loadMoreBtn.disabled = true;
+  showLoader(productsContainer);
+
+  try {
+    const newProducts = await loadProducts("categoryMeta", "men", state);
+    products = [...products, ...newProducts];
+    filteredProducts = [...products];
+    filterProducts(products, state.filters);
+  } catch (error) {
+    console.error("Error loading more products:", error);
+  } finally {
+    hideLoader(productsContainer);
+    loadMoreBtn.disabled = false;
+    updateLoadMoreVisibility();
+  }
 });
 
 // Close the dropdown menu if the user clicks outside of it
@@ -289,6 +281,10 @@ mensRange.forEach((size) => {
   sizePicker.appendChild(wrapper);
 });
 
+// shows the load more button only while Firestore has more pages left for the active category
+const updateLoadMoreVisibility = () => {
+  loadMoreBtn.style.display = state.hasMore ? "" : "none";
+};
 // toggles dropdown menu params: container, icon
 const toggleDropdown = (container, icon) => {
   container.querySelector(".sort-content").classList.toggle("show");
@@ -427,7 +423,19 @@ const displayProducts = (products) => {
   productsContainer.innerHTML = "";
   // display
   if (products.length === 0) {
-    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
+    // Invite the user to fill the gap instead of a dead-end message.
+    // Reuses .chart-empty-state so this matches the price-history empty state on product.html.
+    productsContainer.style.justifyContent = 'center';
+    productsContainer.innerHTML = `
+      <div class="chart-empty-state no-results-invite">
+        <i class="fa-solid fa-box-open"></i>
+        <h3>Nothing here yet</h3>
+        <p>Be the first to list an item like this.</p>
+        <a href="/seller" class="no-results-cta">List an item</a>
+      </div>
+    `;
+    updateResultsCount(products.length);
+    return;
   }
   products.forEach((doc) => {
     const productData = doc.data();
@@ -460,7 +468,7 @@ const displayProducts = (products) => {
                 </p>
                 
                 <div class="pro-price">
-                  <span class="listing-price">$${productData.originalPrice}</span>
+                  <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
                   <div class="price-change">
                     <div class="product-discount">
                       <p>20% OFF</p>
@@ -479,7 +487,7 @@ const displayProducts = (products) => {
           
     `;
 
-    handleFavoriteClick(productElement);
+    handleFavoriteClick(productElement, doc.id, productData);
     
     productsContainer.appendChild(productElement);
   });
@@ -510,3 +518,4 @@ document
 
 
 displayProducts(products);
+updateLoadMoreVisibility();

@@ -1,6 +1,7 @@
 
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags, womenRange } from '../core/global.js';
+import { showLoader, hideLoader } from '../components/pageLoader.js';
 
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");
@@ -18,6 +19,8 @@ const picker = document.getElementById("colorPicker");
 const sizePicker = document.getElementById("size-filter");
 
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
+const productsContainer = document.getElementById("productsContainer");
+const loadMoreBtn = document.getElementById("loadMoreBtn");
 
 document
   .querySelectorAll(".filter-option .expand-details")
@@ -45,8 +48,9 @@ const state = {
   filters: new Map(),
 };
 
-const products =  await loadProducts("categoryMeta","women", state);
+let products =  await loadProducts("categoryMeta","women", state);
 displayProducts(products, "productsContainer");
+updateLoadMoreVisibility();
 
 let filteredProducts = [...products];
 
@@ -102,8 +106,8 @@ filterDisplay.addEventListener('click', (e) => {
     appliedFilters.innerHTML = "";
     filterDisplay.classList.remove("active");
     state.filters = new Map();
-    displayProducts(products)
-    
+    displayProducts(products, "productsContainer")
+
   }
 
 });
@@ -219,6 +223,29 @@ const toggleDropdown = (container, icon) => {
   icon.classList.toggle("rotate-down");
 };
 
+// shows the load more button only while Firestore has more pages left for the active category
+function updateLoadMoreVisibility() {
+  loadMoreBtn.style.display = state.hasMore ? "" : "none";
+}
+
+loadMoreBtn.addEventListener("click", async () => {
+  loadMoreBtn.disabled = true;
+  showLoader(productsContainer);
+
+  try {
+    const newProducts = await loadProducts("categoryMeta", "women", state);
+    products = [...products, ...newProducts];
+    filteredProducts = [...products];
+    filterProducts(products, state.filters);
+  } catch (error) {
+    console.error("Error loading more products:", error);
+  } finally {
+    hideLoader(productsContainer);
+    loadMoreBtn.disabled = false;
+    updateLoadMoreVisibility();
+  }
+});
+
 sortOption.forEach((link) => {
   link.addEventListener("click", function (e) {
     e.preventDefault();
@@ -239,7 +266,7 @@ sortOption.forEach((link) => {
 
 
 const filterProducts = (products, filters) => {
-  if (!filters.size) return displayProducts(products)
+  if (!filters.size) return displayProducts(products, "productsContainer")
   const filtered = products.filter(product => {
     const data = product.data();
     for (const [key, values] of filters) {
@@ -257,7 +284,7 @@ const filterProducts = (products, filters) => {
     sortProducts(filters.get("sort")[0]);
     return;
   }
-  displayProducts(filtered)
+  displayProducts(filtered, "productsContainer")
 };
 
 const sortProducts = (sortType) => {
@@ -277,7 +304,7 @@ const sortProducts = (sortType) => {
     // TODO: Implement logic for featured
   }
   
-  displayProducts(sortedProducts)
+  displayProducts(sortedProducts, "productsContainer")
 
   
 };

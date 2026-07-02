@@ -192,6 +192,10 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   background-image: url('../images/men_banner_2.jpg');
 }
 
+.women-header {
+  background-image: url('../images/womens.jpg');
+}
+
 /* .men-header {
   background-image: url('../images/mens_1.jpg');
 } */
@@ -220,6 +224,7 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 }
 
 .filter-section {
+  text-align: left;
   grid-area: filter-section;
 }
 
@@ -281,8 +286,8 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
 .product-image .liked {
   position: absolute;
-  top: 10px;
-  right: 0;
+  top: 0.625rem;
+  right: 0.5rem;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   padding: 5px;
@@ -311,7 +316,7 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 .price-trend.sideways-trend {
   color: #666;
   background: #f4f3f1;
-} */
+}
 
 /* ── Sort / Filter Controls ─────────────────────── */
 
@@ -632,6 +637,44 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   transform: scale(1.05);
 }
 
+.chart-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #878787;
+}
+
+.chart-empty-state i {
+  font-size: 2.5rem;
+  color: #e1e1e1;
+  margin-bottom: 0.75rem;
+}
+
+.chart-empty-state h3 {
+  color: #000;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.chart-empty-state p {
+  font-size: 0.875rem;
+}
+
+.no-results-cta {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 0.25rem;
+  background-color: #000;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.no-results-cta:hover {
+  transform: translateY(-2px);
+}
+
 hr {
   margin-top: 0.875rem;
   margin-bottom: 0.875rem;
@@ -747,7 +790,7 @@ hr {
 @media (max-width: 575.98px) {
 
   .product-page {
-    grid-template-columns: 350px;
+    grid-template-columns: 1fr;
   }
   
 

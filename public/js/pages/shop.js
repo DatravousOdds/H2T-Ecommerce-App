@@ -1,6 +1,7 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, kidsRange, womenRange, mensRange } from '../core/global.js';
+import { loadProducts, kidsRange, womenRange, mensRange, displayProducts } from '../core/global.js';
+import { showLoader, hideLoader } from '../components/pageLoader.js';
 
 
 const params = new URLSearchParams(window.location.search);
@@ -14,7 +15,7 @@ const state = {
   lastVisible: null,
   filters: new Map(),
 };
-const products =  await loadProducts("category",`${activeFilter}`, state);
+let products =  await loadProducts("category",`${activeFilter}`, state);
 
 const pageHeader = document.getElementById("page-header");
 const breadcrumbs = document.querySelector(".breadcrumbs");
@@ -29,6 +30,8 @@ const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
 const picker = document.getElementById("colorPicker");
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
+const productsContainer = document.getElementById("productsContainer");
+const loadMoreBtn = document.getElementById("loadMoreBtn");
 const colors = [
   { name: "Black",  value: "black",  hex: "#000000" },
   { name: "White",  value: "white",  hex: "#ffffff" },
@@ -43,7 +46,6 @@ const colors = [
   { name: "Green",  value: "green",  hex: "#156340" },
   { name: "Orange", value: "orange", hex: "#F06142" },
 ];
-
 
 let filteredProducts = [...products];
 
@@ -106,7 +108,7 @@ filterDisplay.addEventListener('click', (e) => {
     appliedFilters.innerHTML = "";
     filterDisplay.classList.remove("active");
     state.filters = new Map();
-    displayProducts(products)
+    displayProducts(products, "productsContainer");
     
   }
 
@@ -135,6 +137,24 @@ picker.addEventListener("click", e => {
   renderFilterTags(state.filters); 
 
 
+});
+
+loadMoreBtn.addEventListener("click", async () => {
+  loadMoreBtn.disabled = true;
+  showLoader(productsContainer);
+
+  try {
+    const newProducts = await loadProducts("category", activeFilter, state);
+    products = [...products, ...newProducts];
+    filteredProducts = [...products];
+    filterProducts(products, state.filters);
+  } catch (error) {
+    console.error("Error loading more products:", error);
+  } finally {
+    hideLoader(productsContainer);
+    loadMoreBtn.disabled = false;
+    updateLoadMoreVisibility();
+  }
 });
 
 window.onclick = (event) => {
@@ -231,6 +251,10 @@ sortOption.forEach((link) => {
 });
 
 
+// shows the load more button only while Firestore has more pages left for the active category
+const updateLoadMoreVisibility = () => {
+  loadMoreBtn.style.display = state.hasMore ? "" : "none";
+};
 // toggles dropdown menu params: container, icon
 const toggleDropdown = (container, icon) => {
   container.querySelector(".sort-content").classList.toggle("show");
@@ -279,7 +303,7 @@ const updateResultsCount = (count) => {
 };
 // reusable function to filter products based on active filters, moves to global later
 const filterProducts = (products, filters) => {
-  if (!filters.size) return displayProducts(products)
+  if (!filters.size) return displayProducts(products, "productsContainer");
   const filtered = products.filter(product => {
     const data = product.data();
     for (const [key, values] of filters) {
@@ -297,7 +321,7 @@ const filterProducts = (products, filters) => {
     sortProducts(filters.get("sort")[0]);
     return;
   }
-  displayProducts(filtered)
+  displayProducts(filtered, "productsContainer")
 };
 // reusable function to sort products based on selection, moves to global later
 const sortProducts = (sortType) => {
@@ -317,75 +341,10 @@ const sortProducts = (sortType) => {
     // TODO: Implement logic for featured
   }
   
-  displayProducts(sortedProducts)
+  displayProducts(sortedProducts, "productsContainer")
 
   
 }
-// reusable function to display products, moves to global later
-const displayProducts = (products) => {
-  const productsContainer = document.getElementById("productsContainer");
-  // clear existing products
-  productsContainer.innerHTML = "";
-  // display
-  if (products.length === 0) {
-    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
-  }
-  products.forEach((doc) => {
-    const productData = doc.data();
-    const productElement = document.createElement("div");
-    productElement.classList.add("pro");
-    productElement.onclick = () => {
-      window.location.href = `shop/product.html?id=${doc.id}`;
-    };
-    productElement.innerHTML = `
-      
-            <!--- Image container-->
-            <div class="product-image">
-              <div class="liked">
-                <i class="fa-regular fa-heart"></i>
-              </div>
-
-              <img
-                src="${productData.images[0].url}"
-                class="image-custom"
-                alt="${productData.productName}"
-              />
-            </div>
-            <!--- Image container-->
-
-            <!-- product details -->
-            <div class="des">
-              <div class="price-description">
-                <p class="product-name">
-                  ${productData.productName}
-                </p>
-                
-                <div class="pro-price">
-                  <span class="listing-price">$${productData.originalPrice}</span>
-                  <div class="price-change">
-                    <div class="product-discount">
-                      <p>20% OFF</p>
-                    </div>
-                    <div class="price-trend trend-up">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span>+5%</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-              
-            </div>
-            <!-- product details -->
-          
-    `;
-    productsContainer.appendChild(productElement);
-  });
-
-  // update results count
-  updateResultsCount(products.length);
-}
-
 function setCateogryFilter() {
     const input = document.querySelectorAll(`#category-filter div #${activeFilter}`);
     input.checked = true;
@@ -468,4 +427,5 @@ function deleteMapEntry(entry) {
 setHeader();
 setState();
 setCateogryFilter();
-displayProducts(products);
+displayProducts(products, "productsContainer");
+updateLoadMoreVisibility();

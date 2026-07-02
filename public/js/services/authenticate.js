@@ -1092,7 +1092,8 @@ async function submitToFirebase() {
     const user = currentUser;
 
     if (!user) {
-      console.log("❌ User must be login")
+      console.log("❌ User must be login");
+      window.location.href = "/login";
       return { success: false, ref: null, errorMsg: "You must be logged in to submit an authentication request." };
     }
 
