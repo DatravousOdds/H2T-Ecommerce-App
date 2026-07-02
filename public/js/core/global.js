@@ -143,7 +143,7 @@ async function addToCart(itemData, currentUser, itemType = 'product') {
   }
 }
 
-// TODO: fill this in. Reference: cart.js's createAuthCartItem (currently unused/dead code)
+
 // builds { itemType: 'authentication', authRequestId, primaryImage, productName, category,
 // tier: {name, icon, duration}, cost, status, quantity, addedAt } from an authRequestData
 // shaped like { images, requestId, productDetails, tierSelection }.
@@ -165,7 +165,7 @@ function createAuthCartItem(authRequestData) {
           icon: authRequestData.tierSelection?.icon,
           duration: authRequestData.tierSelection?.duration
       },
-      cost: parseFloat(authRequestData.tierSelection?.cost?.replace('$', '') || 0),
+      cost: authRequestData.tierSelection?.cost ?? 0,
       status: 'pending', // Current status
       quantity: 1,
       addedAt: new Date().toISOString()
@@ -177,15 +177,6 @@ async function getSellerInfo(productId) {
   
   const sellerId = data.userId;
   const productMainImage = data.images.find(image => image.isPrimary === true);
-
-  // const sellerDocRef = doc(db, 'userProfiles', sellerId);
-
-  // const docSnapshot = await getDoc(sellerDocRef);
-  // if (!docSnapshot.exists()) {
-  //     return;
-  // } 
-
-  // const sellerProfileData = docSnapshot.data();
 
   return {
       id: data.userId,
@@ -265,7 +256,8 @@ async function calculateSubtotal(items) {
   console.log("items to calculate:", items)
   return items.reduce((acc, curr) => {
     console.log(curr)
-    return acc + (parseFloat(curr.listingPrice) || 0)
+    const price = curr.itemType === 'authentication' ? curr.cost : curr.listingPrice;
+    return acc + (parseFloat(price) || 0)
   }, 0);
 };
 

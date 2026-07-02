@@ -1,7 +1,8 @@
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api/firebase-client.js';
-import { collection, addDoc, db, serverTimestamp  } from '../api/firebase-client.js';
+import { collection, addDoc, db, serverTimestamp, getDocs, query, where } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
+import { getUserCartCount, updateCartCount } from '../commerce/cart.js';
 import { addToCart } from '../core/global.js';
 
 const storage = getStorage();
@@ -26,6 +27,13 @@ const authSubmitBtn = document.getElementById('submitAuthBtn');
 const categories = document.getElementById('categories');
 const dynamicFormContainer = document.getElementById('dynamic-form-container');
 let categorySelected;
+// product sku search
+const productSkuInput = document.getElementById('productSku');
+const skuSearchGroup = document.getElementById('skuSearchGroup');
+const SKU_DEBOUNCE_MS = 250;
+const SKU_MAX_RESULTS = 8;
+let cachedActiveListings = null;
+let skuDebounceTimer = null;
 // cart modal actions
 const cartModal = document.getElementById('addedToCartModal');
 const cartItemCount = document.getElementById('cartItemCount');
@@ -129,6 +137,10 @@ let formData = {
   tierSelection: ''
 }
 
+// Draft persistence -- sessionStorage (not localStorage) because this
+// should survive a refresh but not linger after the tab is closed.
+const DRAFT_STORAGE_KEY = 'h2t_auth_draft';
+
 imageInputs.forEach((input) => {
   const imageItem = input.closest(".image-item");
   const removeImageBtn = imageItem.querySelector(".remove-image-btn");
@@ -203,6 +215,130 @@ imageInputs.forEach((input) => {
   
 });
 
+async function fetchActiveListingsForSkuSearch() {
+  if (cachedActiveListings) return cachedActiveListings;
+
+  const listingsRef = collection(db, 'listings');
+  const q = query(listingsRef, where('status', '==', 'active'));
+  const snapshot = await getDocs(q);
+
+  cachedActiveListings = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+  return cachedActiveListings;
+}
+
+function matchesSku(listing, term) {
+  return (listing.sku || '').toLowerCase().includes(term.toLowerCase());
+}
+
+function skuResultRowHTML(listing) {
+  const imageUrl = listing.images?.[0]?.url || '/images/HypebeastBG.jpeg';
+
+  return `
+    <div class="search-result-item" data-sku="${listing.sku}">
+      <img src="${imageUrl}" alt="${listing.productName || ''}" class="search-result-image" />
+      <div class="search-result-info">
+        <p class="search-result-name">${listing.productName || 'Untitled listing'}</p>
+        <p class="search-result-meta">SKU: ${listing.sku}</p>
+      </div>
+    </div>
+  `;
+}
+
+const skuResultsPanel = document.createElement('div');
+skuResultsPanel.className = 'search-results-panel';
+skuSearchGroup.appendChild(skuResultsPanel);
+
+function renderSkuResults(results, term) {
+  if (!term) {
+    skuResultsPanel.innerHTML = '';
+    skuResultsPanel.classList.remove('active');
+    return;
+  }
+
+  if (results.length === 0) {
+    skuResultsPanel.innerHTML = `<p class="search-no-results">No product with this SKU</p>`;
+    skuResultsPanel.classList.add('active');
+    return;
+  }
+
+  skuResultsPanel.innerHTML = results.slice(0, SKU_MAX_RESULTS).map(skuResultRowHTML).join('');
+  skuResultsPanel.classList.add('active');
+}
+
+productSkuInput.addEventListener('input', () => {
+  const term = productSkuInput.value.trim();
+
+  clearTimeout(skuDebounceTimer);
+  skuDebounceTimer = setTimeout(async () => {
+    saveDraftState();
+
+    if (!term) {
+      renderSkuResults([], term);
+      return;
+    }
+
+    try {
+      const listings = await fetchActiveListingsForSkuSearch();
+      const results = listings.filter(listing => matchesSku(listing, term));
+      renderSkuResults(results, term);
+    } catch (error) {
+      console.error('Error searching listings by SKU:', error);
+    }
+  }, SKU_DEBOUNCE_MS);
+});
+
+// Listing docs (seller.js) only ever save brand/condition/size/description --
+// no model/color/material/etc. So only these four can be auto-filled; the
+// rest of each category's fields still need the user to fill them in by hand.
+const LISTING_FIELD_MAP = {
+  brand: 'brand',
+  condition: 'condition',
+  size: 'size',
+  additionalDetails: 'description'
+};
+
+function fillFormFieldsFromListing(listing, category) {
+  const rules = validationRules[category];
+  if (!rules) return;
+
+  rules.forEach(rule => {
+    const suffix = rule.id.split('-').slice(1).join('-');
+    const listingField = LISTING_FIELD_MAP[suffix];
+    if (!listingField) return;
+
+    const value = listing[listingField];
+    if (value === undefined || value === null || value === '') return;
+
+    const element = document.getElementById(rule.id);
+    if (element) element.value = value;
+  });
+}
+
+skuResultsPanel.addEventListener('click', async (e) => {
+  const item = e.target.closest('.search-result-item');
+  if (!item) return;
+
+  const sku = item.dataset.sku;
+  const listing = cachedActiveListings?.find(l => l.sku === sku);
+
+  productSkuInput.value = sku;
+  formData.productSku = sku;
+  skuResultsPanel.classList.remove('active');
+
+  if (listing?.category && forms[listing.category]) {
+    categories.value = listing.category;
+    categorySelected = listing.category;
+    await formLocator(categorySelected);
+    fillFormFieldsFromListing(listing, categorySelected);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!skuSearchGroup.contains(e.target)) {
+    skuResultsPanel.classList.remove('active');
+  }
+});
+
 categories.addEventListener('change', (e) => {
   const target = e.target.value;
   categorySelected = target;
@@ -219,7 +355,8 @@ addAnotherItemBtn.addEventListener('click', () => {
   // reset step
   currentStep = 1;
   showStep(currentStep);
-
+  clearDraftState();
+  // reset form data
   formData = {
     images: [],
     productDetails: {},
@@ -270,17 +407,25 @@ tierContainers.forEach(tier => {
     })
 
     tier.classList.add('selected');
+    formData.tierSelection = gatherTierInformation();
+    saveDraftState();
   })
 })
+
+// Fields are injected dynamically via formLocator(), so listen on the
+// container rather than on individual inputs that don't exist yet.
+dynamicFormContainer.addEventListener('input', () => {
+  saveDraftState();
+});
 
 const editButtons = {
   images: {
     selector:'.review-images .review-edit',
-    step: 2
+    step: 3
   },
   details: {
     selector:'.review-details .review-edit',
-    step: 3
+    step: 2
   }
 };
 
@@ -291,6 +436,7 @@ Object.entries(editButtons).forEach(([name, config]) => {
     button.addEventListener('click', () => {
       currentStep = config.step;
       showStep(currentStep);
+      saveDraftState();
     });
     console.log(`${name} edit button found`);
   } else {
@@ -349,18 +495,103 @@ function resetImages() {
   console.log("✅ All image reset");
 }
 
+function collectDraftFieldValues() {
+  if (!categorySelected) return {};
+
+  const rules = validationRules[categorySelected] || [];
+  const values = {};
+
+  rules.forEach(rule => {
+    const element = document.getElementById(rule.id);
+    if (element) values[rule.id] = element.value;
+  });
+
+  return values;
+}
+
+function saveDraftState() {
+  const draft = {
+    step: currentStep,
+    category: categorySelected || null,
+    productSku: productSkuInput.value || '',
+    tierSelection: formData.tierSelection || null,
+    fieldValues: collectDraftFieldValues()
+  };
+
+  try {
+    sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+  } catch (error) {
+    // Quota exceeded or storage disabled (private browsing) -- losing the
+    // draft isn't worth breaking the form over.
+    console.warn('Could not save authentication draft:', error);
+  }
+}
+
+function clearDraftState() {
+  sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+}
+
+async function restoreDraftState() {
+  let draft;
+
+  try {
+    const raw = sessionStorage.getItem(DRAFT_STORAGE_KEY);
+    if (!raw) return;
+    draft = JSON.parse(raw);
+  } catch (error) {
+    console.warn('Could not read saved authentication draft:', error);
+    return;
+  }
+
+  if (draft.category && forms[draft.category]) {
+    categories.value = draft.category;
+    categorySelected = draft.category;
+    await formLocator(categorySelected);
+
+    Object.entries(draft.fieldValues || {}).forEach(([id, value]) => {
+      const element = document.getElementById(id);
+      if (element) element.value = value;
+    });
+  }
+
+  if (draft.productSku) {
+    productSkuInput.value = draft.productSku;
+    formData.productSku = draft.productSku;
+  }
+
+  if (draft.tierSelection) {
+    formData.tierSelection = draft.tierSelection;
+
+    const matchingTier = Array.from(tierContainers).find(tier => {
+      const typeEl = tier.querySelector('[data-tier-type]');
+      return typeEl && typeEl.textContent.trim() === draft.tierSelection.type;
+    });
+
+    if (matchingTier) matchingTier.classList.add('selected');
+  }
+
+  // Uploaded images are data URLs -- too large to round-trip through
+  // sessionStorage reliably, so they're never persisted (see
+  // saveDraftState). If the saved step was past the upload step, land
+  // back on step 3 to re-add images rather than opening the review step
+  // with no images in it.
+  currentStep = Math.min(draft.step || 1, 3);
+}
+
 function prevStep() {
   if (currentStep > 1) {
     currentStep--;
     showStep(currentStep);
     updateProgressBar(currentStep);
+    saveDraftState();
   }
 }
 
 function nextStep() {
-  currentStep++; 
+  currentStep++;
   showStep(currentStep);
   updateProgressBar(currentStep);
+  saveDraftState();
 }
 
 function showStep(stepNumber) {
@@ -543,11 +774,11 @@ function validateStep(stepNumber) {
       showNotification('Please select a tier','error');
       return false;
     }
-    formData.tierSelection = gatherTierInformattion();
+    formData.tierSelection = gatherTierInformation();
 
     return true;
 
-  } else if (stepNumber === 2) {
+  } else if (stepNumber === 3) {
 
     const imgErrorsContainer = document.querySelector('.image-section-errors');
     const images = document.querySelectorAll('.image-preview');
@@ -592,7 +823,7 @@ function validateStep(stepNumber) {
       return true;
     }
 
-  } else if (stepNumber === 3) {
+  } else if (stepNumber === 2) {
     if (!categorySelected) {
       showNotification('Please select a category', 'error')
     }
@@ -655,7 +886,7 @@ async function handleFormSubmission(e) {
         tierSelection: formData.tierSelection || null,
       }
 
-      const cartResult = await addToCart(currentUser, authRequestData, 'authentication');
+      const cartResult = await addToCart(authRequestData, currentUser, 'authentication');
       console.log("cart results: ", cartResult.success);
 
       if (!cartResult.success) {
@@ -666,6 +897,7 @@ async function handleFormSubmission(e) {
         console.log("✅ Added item to cart!");
         // Step 3: Update UI on success
         authSubmitBtn.textContent = "Success!";
+        clearDraftState();
 
         const cartCount = await getUserCartCount(currentUser);
         updateCartCount(cartCount);
@@ -712,16 +944,20 @@ function displayReviewData(data) {
 }
 
 function formLocator(category) {
-  if (dynamicFormContainer) {
-    dynamicFormContainer.innerHTML = `<p>Loading...</p>`;
+  if (!dynamicFormContainer) {
+    return Promise.resolve();
+  }
 
-    const form = forms[category];
+  dynamicFormContainer.innerHTML = `<p>Loading...</p>`;
 
-    if (!form) {
-      dynamicFormContainer.innerHTML = '';
-    }
-    
-    fetch(form)
+  const form = forms[category];
+
+  if (!form) {
+    dynamicFormContainer.innerHTML = '';
+    return Promise.resolve();
+  }
+
+  return fetch(form)
     .then(res => {
       if (!res.ok) {
         return null;
@@ -730,13 +966,9 @@ function formLocator(category) {
     })
     .then(html => dynamicFormContainer.innerHTML = html)
     .catch(err => {
-
       dynamicFormContainer.innerHTML = "Internal Error";
       console.error("Error", err);
-      }
-    )
-  }
-
+    });
 }
 
 function createReviewTierHTML(tierData) {
@@ -760,13 +992,13 @@ function createReviewTierHTML(tierData) {
     </div>
     
     <div class="tier-cost">
-      <span>${tierData.cost}</span>
+      <span>$${tierData.cost.toFixed(2)}</span>
     </div>
   </div>         
 `;
 }
 
-function gatherTierInformattion() {
+function gatherTierInformation() {
   // gather info
   const selectedTier = document.querySelector('.tier-container.selected');
   const tierType = selectedTier.querySelector('[data-tier-type]');
@@ -778,7 +1010,7 @@ function gatherTierInformattion() {
   formData.tierSelection = {
     type: tierType ? tierType.textContent.trim() : 'N/A',
     duration: tierDuration ? tierDuration.textContent.trim() : 'N/A',
-    cost: tierCost ? tierCost.textContent.trim() : 'N/A',
+    cost: tierCost ? parseFloat(tierCost.textContent.replace(/[^0-9.]/g, '')) || 0 : 0,
     icon: tierIcon ? tierIcon.innerHTML.trim() : "N/A"
   };
 
@@ -870,11 +1102,9 @@ async function submitToFirebase() {
     const uploadedImages = await uploadImagesToFirebase(formData.images, user.userId, tempRequestId);
     console.log("✅ All images uploaded!")
 
-    const formatPrice = formData.tierSelection.cost.replace('$', '');
-    
     const authRequestData = {
       images: uploadedImages,
-      price: parseInt(formatPrice),
+      price: formData.tierSelection.cost,
 
       productDetails: {
         category: formData.productDetails.productCategory,
@@ -922,7 +1152,11 @@ async function submitToFirebase() {
   }
 }
 
+await restoreDraftState();
 showStep(currentStep);
+updateProgressBar(currentStep);
+
+window.addEventListener('beforeunload', saveDraftState);
 
 nextBtn.forEach((btn) => {
   btn.addEventListener("click", () => {

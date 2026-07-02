@@ -6,13 +6,15 @@ import { getCartItems, initCartDrawer } from '../components/cartDrawer.js';
 
 const currentUser = await checkUserStatus();
 let bagItems = await getCartItems(currentUser);
+console.log("bag items:", bagItems);
 
-displayCartItems(bagItems);
+// displayCartItems(bagItems);
 initCartDrawer();
 
 window.addEventListener('cartUpdated', async () => {
     bagItems = await getCartItems(currentUser);
-    displayCartItems(bagItems);
+    console.log("bag items:", bagItems);
+    // displayCartItems(bagItems);
 })
 
 function displayCartItems(items) {
@@ -90,9 +92,7 @@ function displayCartItems(items) {
     })
 }
 
-export function createAuthCartItem(authRequest) {
-    
-}
+
 
 function createShoppingCartItem(product) {
     return {
@@ -182,51 +182,23 @@ export async function handleAuthenticatedCart(user, cartItem) {
   
 }
 
-// export async function addToCart(user, item, itemType) {
-//     // console.log(`Item addToCart recieved: ${item} 👈🏾`)
-//   try {
-//     let cartItem;
 
-//     if (itemType === 'authentication') {
-//         cartItem = createAuthCartItem(item);
-//         console.log("Create authenticated cart item: ", cartItem)
-//     } else if (itemType === 'product') {
-//         cartItem = createShoppingCartItem(item);
-//     } else {
-//         console.error("❗️Invaild ItemType!");
-//     }
-
-//     // check if user is logged in or not
-//     if (!user) {
-//         console.log("🛒 Adding to guest cart")
-//         return handleGuestCart(cartItem);
-//     } else {
-//         console.log("🛒 Adding to authenticated user cart")
-//        return await handleAuthenticatedCart(user, cartItem);
-//     }
-
-//   } catch (error) {
-//     console.error("❌ Error occured when adding to cart! ", error);
-//     return { success: false, error: error.message };
-//   }
-
-// }
 
 export async function getUserCartCount(user) {
     try {
 
         if (!user) {
-            const cart = JSON.parse(localStorage.get('cart') || [] );
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const totalQuantity = cart.reduce((total, item) => {
-                total += (item.quantity || 1);
+                return total + (item.quantity || 1);
             }, 0);
-            
+
             return totalQuantity;
 
         } else {
             // get user current cart count
             let totalQuantity = 0;
-            const cartSnapshot = await getDocs(collection(db, "userProfiles", user.email, "cart"));
+            const cartSnapshot = await getDocs(collection(db, "carts", user.userId, "items"));
             cartSnapshot.forEach(doc => {
                 totalQuantity += doc.data().quantity || 1
             });

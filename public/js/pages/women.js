@@ -1,6 +1,6 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags } from '../core/global.js';
+import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags, womenRange } from '../core/global.js';
 
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");
@@ -15,6 +15,7 @@ const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
 
 const picker = document.getElementById("colorPicker");
+const sizePicker = document.getElementById("size-filter");
 
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
 
@@ -193,6 +194,24 @@ colors.forEach(({ name, value, hex }) => {
 
   li.appendChild(btn);
   picker.appendChild(li);
+});
+
+womenRange.forEach((size) => {
+  const wrapper = document.createElement("div");
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.className = "check";
+  checkbox.id = `size-${size}`;
+  checkbox.value = size;
+
+  const label = document.createElement("label");
+  label.setAttribute("for", `size-${size}`);
+  label.textContent = size;
+
+  wrapper.appendChild(checkbox);
+  wrapper.appendChild(label);
+  sizePicker.appendChild(wrapper);
 });
 
 const toggleDropdown = (container, icon) => {

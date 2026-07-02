@@ -18,9 +18,12 @@ const productPrice = document.querySelector('.prod-price')
 const productOriginalPrice = document.querySelector('.original-price');
 const mainImage = document.getElementById('MainImg');
 const smallImagesGroup = document.querySelector('.s-img-group');
+
 const sizes = document.querySelector('.sizes');
+
 const reviewCount = document.getElementById('reviews-count');
 const reviewsContainer = document.querySelector('.comments');
+
 const detailTriggers = document.querySelectorAll('.detail-trigger');
 const writeReviewBtn = document.getElementById("writeReviewBtn");
 const offerBtn = document.getElementById('offerBtn');
@@ -43,6 +46,7 @@ displayPricingKpis();
 displayReviews();
 showLoader(proContainer);
 try {
+    showLoader(proContainer);
     const products = await loadRelateProducts();
     displayProducts(products);
 } catch (error) {
@@ -78,13 +82,13 @@ offerBtn.addEventListener('click', () => {
 
 modalCloseBtn.addEventListener('click', () => {
     modalOverlay.classList.remove('show');
-    offerModal.style.display = 'none';
+    offerModal.classList.remove('active');
     document.body.style.overflow = 'auto';
     
 })
 
 addToCartBtn.addEventListener('click', () => {
-    addToCart(productId,user )
+    addToCart(productId,user);
 
     cartDrawer.classList.add('is-open');
     addToCartBtn.classList.add('disabled');
@@ -410,21 +414,37 @@ async function getOfferKpis() {
 
 async function loadRelateProducts() {
     const data = await getProductData(productId);
-    // console.log("related data:", data)
-    let q;
-    
     const productsCollection = collection(db, "listings");
+
+    // Tier A: related by brand + category
     const baseConstraints = [where("status", "==", "active"),where("productName","!=", data.productName), where("brand", "==", data.brand), where("category", "==", data.category)];
-    q = query(productsCollection, ...baseConstraints, limit(20));
-  
- 
+    const q = query(productsCollection, ...baseConstraints, limit(20));
+
     const querySnapshot = await getDocs(q);
 
-    if (querySnapshot.empty) {
-        return [];
+    if (!querySnapshot.empty) {
+        return querySnapshot.docs;
     }
 
-    return querySnapshot;
+    // Tier B: no related products for this brand/category combo — fall back to
+    // the newest active listings in the same category ("just dropped"), same
+    // pattern as home.js's justDropped(). Firestore won't let us combine an
+    // inequality filter on productId with orderBy("createdAt"), so we over-fetch
+    // by 1 and filter the current product out client-side instead.
+    const FALLBACK_LIMIT = 16;
+    const fallbackQuery = query(
+        productsCollection,
+        where("status", "==", "active"),
+        where("category", "==", data.category),
+        orderBy("createdAt", "desc"),
+        limit(FALLBACK_LIMIT + 1)
+    );
+
+    const fallbackSnapshot = await getDocs(fallbackQuery);
+
+    return fallbackSnapshot.docs
+        .filter((doc) => doc.id !== productId)
+        .slice(0, FALLBACK_LIMIT);
 }
 
 /* ==== HELPER FUNCTIONS ===== */

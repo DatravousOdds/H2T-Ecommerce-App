@@ -91,6 +91,38 @@ justDropped();
 mensCollection();
 womenCollection();
 belowRetailPrices();
+loadBrandCounts();
+
+// Firestore has no case-insensitive query, and seller.js saves `brand` as
+// free-text (no fixed dropdown/casing) -- so this fetches active listings
+// once and matches brands client-side, same reasoning as search.js's
+// listing search. `data-brand` on each .brand-banner is the source of
+// truth for which brand each banner counts, independent of its (currently
+// inconsistent) ?brand= link slug.
+async function loadBrandCounts() {
+  const brandBanners = document.querySelectorAll('.brand-banner[data-brand]');
+  if (brandBanners.length === 0) return;
+
+  try {
+    const q = query(collection(db, "listings"), where("status", "==", "active"));
+    const querySnapshot = await getDocs(q);
+    const activeListings = querySnapshot.docs.map(doc => doc.data());
+
+    brandBanners.forEach(banner => {
+      const brandName = banner.dataset.brand.trim().toLowerCase();
+      const count = activeListings.filter(
+        listing => (listing.brand || '').trim().toLowerCase() === brandName
+      ).length;
+
+      const listingsEl = banner.querySelector('.total-listings');
+      if (listingsEl) {
+        listingsEl.textContent = `${count.toLocaleString()} listing${count === 1 ? '' : 's'}`;
+      }
+    });
+  } catch (error) {
+    console.error("Error loading brand listing counts:", error);
+  }
+}
 
 
 
@@ -331,13 +363,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentSlide = 0;
   let slideInterval;
+  let isPaused = false;
 
   // Create indicators
   slides.forEach((_, index) => {
     const indicator = document.createElement("div");
     indicator.classList.add("indicator");
     if (index === 0) indicator.classList.add("active");
-    indicator.addEventListener("click", () => goToSlide(index));
+    indicator.addEventListener("click", () => {
+      goToSlide(index);
+      resetInterval();
+    });
     indicatorsContainer.appendChild(indicator);
   });
 
@@ -368,7 +404,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resetInterval() {
     clearInterval(slideInterval);
-    slideInterval = setInterval(nextSlide, 5000);
+    if (!isPaused) {
+      slideInterval = setInterval(nextSlide, 5000);
+    }
   }
 
   if (prevButton) {
@@ -390,10 +428,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const slidesContainer = document.querySelector(".slider-container");
   if (slidesContainer) {
     slidesContainer.addEventListener("mouseenter", () => {
+      isPaused = true;
       clearInterval(slideInterval);
     });
     slidesContainer.addEventListener("mouseleave", () => {
-      slideInterval = setInterval(nextSlide, 5000);
+      isPaused = false;
+      resetInterval();
     });
   }
 });

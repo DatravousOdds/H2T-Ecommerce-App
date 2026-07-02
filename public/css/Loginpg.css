@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap');
+
 body {
   margin: 0 !important;
   padding: 0 !important;
@@ -37,6 +39,12 @@ body {
   border-radius: 9px;
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-form h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem !important;
 }
 
 .logo {

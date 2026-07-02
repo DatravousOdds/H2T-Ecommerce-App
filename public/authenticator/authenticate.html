@@ -58,11 +58,11 @@
         </div>
         <div class="step">
           <span class="step-number">2</span>
-          <span class="step-text">Upload Photos</span>
+          <span class="step-text">Product Details</span>
         </div>
         <div class="step">
           <span class="step-number">3</span>
-          <span class="step-text">Product Details</span>
+          <span class="step-text">Upload Photos</span>
         </div>
         <div class="step">
           <span class="step-number">4</span>
@@ -165,8 +165,8 @@
 
           
         </div>
-        <!-- Step 2: Image Upload -->
-        <div class="form-step" id="step2" style="display: none">
+        <!-- Step 3: Image Upload -->
+        <div class="form-step" id="step3" style="display: none">
           <section id="image-upload-section" class="u-mg-b-md">
             <!-- Header -->
             <div class="form-header">
@@ -346,8 +346,8 @@
 
           
         </div>
-        <!-- Step 3: Product Details -->
-        <div class="form-step" id="step3" style="display: none">
+        <!-- Step 2: Product Details -->
+        <div class="form-step" id="step2" style="display: none">
           <section id="product-search-section">
             <!-- Header -->
             <div class="form-header">
@@ -361,7 +361,9 @@
               </div>
               <div class="form-input">
                 <label for="productSku">Product SKU</label>
-                <input type="text" placeholder="Enter product SKU" />
+                <div class="sku-search-group" id="skuSearchGroup">
+                  <input type="text" id="productSku" name="productSku" placeholder="Enter product SKU" autocomplete="off" />
+                </div>
               </div>
             </div>
           </section>
@@ -507,8 +509,8 @@
               <div class="checkbox-group">
                 <input type="checkbox" id="terms2" name="terms2" required />
                 <label for="terms2"
-                  >I understand that the authentication process may take 24-48
-                  hours.</label
+                  >I understand that the authentication process will begin
+                  once payment is confirmed.</label
                 >
               </div>
             </div>

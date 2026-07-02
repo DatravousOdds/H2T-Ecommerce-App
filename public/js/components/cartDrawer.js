@@ -27,7 +27,26 @@ const cartTemplate = (item) =>
         <button class="cart-item-remove"  aria-label="Remove item">
           <i class="fa-regular fa-trash-can"></i>
         </button>
-</div>`; 
+</div>`;
+
+const authTemplate = (item) =>
+`<div class="cart-item cart-item--auth" data-id="${currentUser ? item.id : item.authRequestId}">
+        <div class="product-info-wrapper">
+          <img src="${item.primaryImage}" />
+        <div class="cart-item-info">
+          <div class="cart-product-info">
+            <p class="cart-item-brand">${item.category}</p>
+            <p class="cart-item-name">${item.productName}</p>
+            <p class="cart-item-tier">${item.tier?.icon ?? ''} ${item.tier?.name ?? ''} Tier</p>
+            <p class="cart-item-price">$${item.cost.toFixed(2)}</p>
+          </div>
+        </div>
+        </div>
+
+        <button class="cart-item-remove" aria-label="Remove item">
+          <i class="fa-regular fa-trash-can"></i>
+        </button>
+</div>`;
 
 async function renderCart(currentUser) {
   const cartDrawer = document.getElementById('cartDrawer');
@@ -48,7 +67,7 @@ async function renderCart(currentUser) {
     
       <div class="cart-drawer-body" id="cartDrawerBody">
         <!-- cart items will go here -->
-        ${items.length ? items.map(cartTemplate).join('') : 'Cart is empty!'}
+        ${items.length ? items.map(item => item.itemType === 'authentication' ? authTemplate(item) : cartTemplate(item)).join('') : 'Cart is empty!'}
       </div>
     
       <div class="cart-drawer-footer">

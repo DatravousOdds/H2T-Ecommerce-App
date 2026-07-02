@@ -12,7 +12,7 @@ import {
   setDoc,
 } from "../api/firebase-client.js";
 
-
+import { showLoader, hideLoader } from "../components/pageLoader.js";
 
 // Initialize Firebase Auth
 const auth = getAuth();
@@ -231,6 +231,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const tac = document.querySelector("#terms-and-cond") || null;
   const noti = document.querySelector("#notification") || null;
 
+  // Force email to lowercase as the user types (preserve cursor position)
+  if (email) {
+    email.addEventListener("input", () => {
+      const cursorPos = email.selectionStart;
+      email.value = email.value.toLowerCase();
+      email.setSelectionRange(cursorPos, cursorPos);
+    });
+  }
+
   if (submitBtn) {
     submitBtn.addEventListener("click", async () => {
 
@@ -265,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Show loader
         loader.style.display = "block";
-
+        showLoader();
         try{
             // Create user with email and password
             const userCredential  = await createUserWithEmailAndPassword(auth, email.value, password.value);
@@ -350,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           showAlert(errorMessage);
         } finally {
-          loader.style.display = "none";
+          hideLoader();
         }
 
       } else {
@@ -363,7 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } 
 
 
-          loader.style.display = "block";
+          showLoader();
 
           try {
             const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
@@ -417,7 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             showAlert(errorMessage);
           } finally {
-            loader.style.display = "none";
+            hideLoader();
           }
         }
     });

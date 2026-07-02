@@ -10,6 +10,8 @@ import {
   initStatesDropdown
 } from "./ui-helpers.js";
 
+import { showLoader, hideLoader } from "../../components/pageLoader.js";  
+
 import {
   initProfileInfo,
   loadPersonalInfoData,
@@ -77,7 +79,7 @@ async function loadSellingData(userData) {
 // ---------------------------------------------------------------------------
 
 async function loadProfileData() {
-  console.log("loading");
+  // showLoader(document.getElementById(".profile-section"));
   try {
     const userData = await checkUserStatus();
     console.log("Profile Data:", userData)
@@ -106,6 +108,8 @@ async function loadProfileData() {
   } catch (error) {
     console.error("Error happened when loading userData from auth.js", error);
     throw error;
+  } finally {
+    // hideLoader(document.getElementById(".profile-section"));
   }
 }
 

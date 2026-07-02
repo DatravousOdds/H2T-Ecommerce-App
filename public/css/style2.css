@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap');
+
 :root {
   /* Button variants */
   --color-button-primary: #f30c1e;
@@ -214,6 +216,10 @@ button.white {
 .search-form {
   position: relative;
   width: 450px;
+}
+
+.sku-search-group {
+  position: relative;
 }
 
 .search-input {

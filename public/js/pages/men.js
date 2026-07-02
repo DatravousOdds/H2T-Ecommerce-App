@@ -1,7 +1,7 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
-import { loadProducts, handleFavoriteClick } from '../core/global.js';
+import { loadProducts, handleFavoriteClick, mensRange } from '../core/global.js';
 
 const currentUser = checkUserStatus();
 
@@ -19,6 +19,7 @@ const filterSection = document.getElementById("filter-section");
 const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
 const picker = document.getElementById("colorPicker");
+const sizePicker = document.getElementById("size-filter");
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
 const paginationLinks = document.querySelectorAll(".pagination-link-container a");
 
@@ -268,6 +269,24 @@ colors.forEach(({ name, value, hex }) => {
 
   li.appendChild(btn);
   picker.appendChild(li);
+});
+
+mensRange.forEach((size) => {
+  const wrapper = document.createElement("div");
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.className = "check";
+  checkbox.id = `size-${size}`;
+  checkbox.value = size;
+
+  const label = document.createElement("label");
+  label.setAttribute("for", `size-${size}`);
+  label.textContent = size;
+
+  wrapper.appendChild(checkbox);
+  wrapper.appendChild(label);
+  sizePicker.appendChild(wrapper);
 });
 
 // toggles dropdown menu params: container, icon
