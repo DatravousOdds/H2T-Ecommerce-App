@@ -282,6 +282,28 @@
     color: white;
 }
 
+/* Post-MVP cta-btns (Trade, Sell To Us) stay visible so people know
+   they're coming, but are inert -- rendered without an href so clicks
+   and keyboard activation are no-ops. Shared/generic so any future
+   post-MVP cta-btn can reuse it instead of a per-button copy. */
+.cta-btn.is-disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.cta-btn.is-disabled:hover {
+    transform: none;
+}
+
+.cta-btn.is-disabled .coming-soon-badge {
+    margin-top: 0;
+}
+
 /* Reviews */
 
 .sm-reviews-section {

@@ -125,6 +125,25 @@ export function checkUserStatus() {
   return authCheckPromise;
 }
 
+// Keep the in-memory + sessionStorage profile cache in sync after a write,
+// so a page refresh right after saving doesn't show stale pre-save data.
+// `patch.shipping` (if present) is merged one level deep so a partial
+// shipping update (e.g. just phoneNumber) doesn't wipe out the rest.
+export function updateCachedUser(patch) {
+  if (!cachedUser) return;
+
+  cachedUser = {
+    ...cachedUser,
+    ...patch,
+    shipping: { ...cachedUser.shipping, ...patch.shipping }
+  };
+
+  const cacheKey = `profile_${cachedUser.userId}`;
+  if (sessionStorage.getItem(cacheKey)) {
+    sessionStorage.setItem(cacheKey, JSON.stringify(cachedUser));
+  }
+}
+
 // Create user profile in Firestore
 const createUserDocument = async (user, additionalData) => {
   try {
@@ -163,8 +182,15 @@ const createUserProfile = async (user, additionalData) => {
   }
 }
 
-// DOMContentLoaded event to ensure the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", () => {
+// Wires up the login/signup form. Not just a DOMContentLoaded listener --
+// this module now has a real async dependency (firebase-client.js awaits
+// setPersistence() before finishing evaluation), so by the time this module
+// script finishes running, DOMContentLoaded has often already fired. A
+// listener added after the fact never gets called. Running immediately
+// when the DOM is already parsed (the common case here) sidesteps that race
+// entirely; the listener path only matters if this ever loads before the
+// DOM is ready.
+function initAuthForm() {
   const loader = document.querySelector(".loader");
   // select inputs
   const submitBtn = document.querySelector(".submit-btn");
@@ -186,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (submitBtn) {
     submitBtn.addEventListener("click", async () => {
-
+      console.log("Submit button clicked");
       if (name != null) {
         // ====== SIGNUP PAGE ======
 
@@ -241,17 +267,33 @@ document.addEventListener("DOMContentLoaded", () => {
             "profileImage": "",
             "notification": noti.checked,
             "tac": tac.checked,
+            "isVerified": false,
+            "accountInfo": {
+              "joinedDate": new Date()
+            },
             "shipping": {
-              "address1": "",
+              "address": "",
               "address2": "",
               "city": "",
               "state": "",
-              "postalCode": "",
+              "zipCode": "",
               "country": "",
-              "phone": ""
+              "phoneNumber": number.value
+            },
+            // Defaults so the profile page has real fields to read instead of
+            // crashing on userData.stats.followers / userData.ratings.metrics.
+            "stats": {
+              "followers": 0,
+              "following": 0,
+              "rating": 0
+            },
+            "ratings": {
+              "metrics": {
+                "averageRating": 0,
+                "totalRatings": 0
+              },
+              "ratingCount": {}
             }
-
-            
            }
 
            // Proceed to submit form data to your server
@@ -379,7 +421,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
   }
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initAuthForm);
+} else {
+  initAuthForm();
+}
 
 // Add logout functionality
 export const logout = () => {

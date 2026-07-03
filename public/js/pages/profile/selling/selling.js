@@ -1,6 +1,11 @@
 // Seller Dashboard sub-tab navigation (Overview / Products / Orders / Analytics)
 const sellingNavButtons = document.querySelectorAll(".nav-button");
-const sellingSections = document.querySelectorAll(".content-section");
+// Scoped to `section.content-section` only -- the Products tab's own sub-views
+// (all/active/out-of-stock/draft) reuse the ".content-section" class on <div>s
+// nested inside #products. A bare ".content-section" selector here would also
+// match those nested divs, so switching dashboard tabs would strip their
+// "active" state and leave the Products tab showing no sub-view at all.
+const sellingSections = document.querySelectorAll("section.content-section");
 
 sellingNavButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -19,9 +24,13 @@ sellingNavButtons.forEach((button) => {
   });
 });
 
-// Filter Menu (scoped to the Products tab only, since these classes/ids
-// are specific to its own filter bar -- not the dashboard-level nav above)
-const filterButtons = document.querySelectorAll("#products .filter-btn");
+// Filter Menu (the All/Active/Out of Stock/Draft tabs inside the Products tab).
+// Scoped to "#filter-menu .filter-btn" rather than "#products .filter-btn" --
+// the "Filter" dropdown toggle button also carries the ".filter-btn" class but
+// lives outside #filter-menu, so the broader selector used to catch it too.
+// Since that toggle has no data-section, clicking it wiped every sub-view's
+// "active" state and showed nothing.
+const filterButtons = document.querySelectorAll("#filter-menu .filter-btn");
 const filterSections = document.querySelectorAll(
   ".products-content .content-section"
 );

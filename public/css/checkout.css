@@ -184,3 +184,16 @@ p {
 .shipping-payment {
     flex: 1;
 }
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .cart-section {
+        max-width: 100%;
+        flex-direction: column;
+    }
+
+    .container-wrapper {
+        flex-direction: column;
+    }
+
+}

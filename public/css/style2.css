@@ -1584,6 +1584,42 @@ button.white {
   transform: scale(1.05);
 }
 
+/* All Brands page: text-only tiles for brands without a curated banner */
+
+.brand-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.brand-tile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-family: "Space Grotesk", sans-serif;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.brand-tile:hover {
+  border-color: #E63946;
+  transform: translateY(-2px);
+}
+
+.brand-tile-name {
+  font-weight: 700;
+}
+
+.brand-tile-count {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  white-space: nowrap;
+}
 
 
 
@@ -1719,7 +1755,6 @@ button.white {
   justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
-  padding: 20px 57px 0 78px;
 }
 
 #brands .banner-box {
@@ -2828,6 +2863,12 @@ footer .rights {
     font-size: 1rem;
   }
 
+  /* Product Details */
+  #prodetails .s_prod_details {
+    width: 100%;
+    padding-top: 20px;
+  }
+
   /* New Navbar */
   .submenu {
     padding: 10px 3rem !important;
@@ -3019,6 +3060,21 @@ footer .rights {
     margin-left: 0px;
   }
 
+  /* Category Carousel */
+  .category-carousel {
+    overflow-x: auto;
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* old Edge/IE */
+  }
+
+  /* Under Retailer Section */
+  .category-flex-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 3rem 1.5rem;
+  }
+
   
 }
 
@@ -3088,6 +3144,10 @@ footer .rights {
 
   /* Browser By Brand */
   #brands .banner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-tile-grid {
     grid-template-columns: 1fr;
   }
 

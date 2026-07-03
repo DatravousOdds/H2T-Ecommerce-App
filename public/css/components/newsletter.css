@@ -42,6 +42,10 @@
     display: none;
 }
 
+#newsletter .signup-text.hidden {
+    display: none;
+}
+
 #newsletter input {
   height: 3.125rem;
   padding: 0.8rem;
@@ -86,10 +90,12 @@
 
 .signup-text {
     margin: 0;
-
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-@media (max-width: 762px) {
+@media (max-width: 768px) {
      /* Newsletter */
 
   #newsletter {

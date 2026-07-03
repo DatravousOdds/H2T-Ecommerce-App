@@ -512,6 +512,31 @@ app.get("/api/products/:id/sales-history", async (req, res) => {
   }
 });
 
+// Same reasoning as /sales-history above: rather than open a public Firestore
+// rule on `offers` (whose current fields look harmless but aren't guaranteed
+// to stay that way -- offer creation isn't even implemented client-side yet),
+// compute the summary server-side and hand back just two numbers.
+app.get("/api/products/:id/offer-summary", async (req, res) => {
+  try {
+    // Filtering on productId alone (no status filter in the query itself)
+    // avoids needing a composite index -- status is checked in memory instead,
+    // same trick as the date-range filtering above.
+    const offersSnap = await db.collection("offers").where("productId", "==", req.params.id).get();
+
+    const activeAmounts = offersSnap.docs
+      .map((doc) => doc.data())
+      .filter((data) => data.status === "active")
+      .map((data) => data.offerAmount);
+
+    return res.json({
+      highest: activeAmounts.length ? Math.max(...activeAmounts) : 0,
+      lowest: activeAmounts.length ? Math.min(...activeAmounts) : 0,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });

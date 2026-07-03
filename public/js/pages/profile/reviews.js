@@ -1,21 +1,26 @@
 "use strict";
 
-import { notification, formatTimestamp } from "./ui-helpers.js";
+import { notification, formatTimestamp, formatFollowers } from "./ui-helpers.js";
 
 // ---------------------------------------------------------------------------
 // Data load
 // ---------------------------------------------------------------------------
 
 export function loadReviewData(userData) {
-  document.querySelector("#average-rating").textContent =
-    userData.ratings.metrics.averageRating;
-  document.querySelector("#total-ratings").textContent =
-    userData.ratings.metrics.totalRatings;
+  // Existing accounts predate the `ratings` field, so fall back to empty
+  // rather than throwing on userData.ratings.metrics being undefined.
+  const ratings = userData.ratings || {};
+  const metrics = ratings.metrics || {};
+  const ratingCounts = ratings.ratingCount || {};
+  const totalRatings = metrics.totalRatings || 0;
 
-    const totalRatings = userData.ratings.metrics.totalRatings || 0;
+  document.querySelector("#average-rating").textContent =
+    metrics.averageRating || 0;
+  document.querySelector("#total-ratings").textContent =
+    `${formatFollowers(totalRatings)} ratings`;
 
   for (let i = 1; i <= 5; i++) {
-    const ratingCount = userData.ratings.ratingCount[i] || 0;
+    const ratingCount = ratingCounts[i] || 0;
     const element = document.querySelector(`#rating-count-${i}`);
     if (element) {
       const reviewText = ratingCount === 1 ? "review" : "reviews";

@@ -3,6 +3,7 @@
 import { validateForm } from "../../core/global.js";
 import { db, doc, updateDoc } from "../../api/firebase-client.js";
 import { notification } from "./ui-helpers.js";
+import { checkUserStatus, updateCachedUser } from "../../auth/auth.js";
 
 
 
@@ -10,6 +11,8 @@ import { notification } from "./ui-helpers.js";
 // Database writes
 // ---------------------------------------------------------------------------
 
+// Returns true/false so callers can decide whether to refresh the cached
+// profile (checkUserStatus()/sessionStorage) after a successful write.
 export const updateProfile = async (userId, updateData) => {
   try {
     const userDocRef = doc(db, "userProfiles", userId);
@@ -18,9 +21,11 @@ export const updateProfile = async (userId, updateData) => {
       lastUpdated: new Date()
     });
     notification.success("Profile updated successfully", "update");
+    return true;
   } catch (error) {
     console.error("Error fetching profile:", error);
     notification.error("Error updating profile");
+    return false;
   }
 };
 
@@ -29,6 +34,11 @@ export const updateShippingInfo = async (userId, shippingData) => {
   try {
     const userDocRef = doc(db, "userProfiles", userId);
     await updateDoc(userDocRef, {
+      // firstName/lastName live at the top level (shared with Personal Info),
+      // not nested under shipping - the form collects them but was previously
+      // dropping them on the floor before this write.
+      firstName: shippingData.firstName,
+      lastName: shippingData.lastName,
       shipping: {
         address: shippingData.address1,
         address2: shippingData.address2,
@@ -39,12 +49,14 @@ export const updateShippingInfo = async (userId, shippingData) => {
         zipCode: shippingData.postalCode,
         lastUpdated: new Date()
       }
-      
+
     });
     notification.success("Shipping information updated", "update");
+    return true;
   } catch (error) {
     console.error("Error updating shipping:", error);
     notification.error("Error updating shipping information");
+    return false;
   }
 };
 
@@ -53,25 +65,26 @@ export const updateShippingInfo = async (userId, shippingData) => {
 // ---------------------------------------------------------------------------
 
 export function loadPersonalInfoData(userData) {
-  document.querySelector("#personal-fname").value = userData.firstName;
-  document.querySelector("#personal-lname").value = userData.lastName;
-  document.querySelector("#personal-email").value = userData.email;
-  document.querySelector("#personal-phoneNumber").value = userData.shipping.phoneNumber;
-  document.querySelector("#profile-username").value = userData.username;
+  const shipping = userData.shipping || {};
+  document.querySelector("#personal-fname").value = userData.firstName || "";
+  document.querySelector("#personal-lname").value = userData.lastName || "";
+  document.querySelector("#personal-email").value = userData.email || "";
+  document.querySelector("#personal-phoneNumber").value = shipping.phoneNumber || "";
+  document.querySelector("#profile-username").value = userData.username || "";
 }
 
 export function loadShippingInfoData(userData) {
   console.log("userData being loaded:", userData)
-  document.querySelector("#shipping-fname").value = userData.firstName;
-  document.querySelector("#shipping-lname").value = userData.lastName;
-  document.querySelector("#shipping-address").value = userData.shipping.address;
-  document.querySelector("#shipping-address2").value = userData.shipping.address2;
-  document.querySelector("#shipping-city").value = userData.shipping.city;
-  document.querySelector("#shipping-country").value = userData.shipping.country;
-  document.querySelector("#shipping-state").value = userData.shipping.state;
-  document.querySelector("#shipping-postal").value =
-    userData.shipping.zipCode;
-  document.querySelector("#shipping-phoneNumber").value = userData.shipping.phoneNumber;
+  const shipping = userData.shipping || {};
+  document.querySelector("#shipping-fname").value = userData.firstName || "";
+  document.querySelector("#shipping-lname").value = userData.lastName || "";
+  document.querySelector("#shipping-address").value = shipping.address || "";
+  document.querySelector("#shipping-address2").value = shipping.address2 || "";
+  document.querySelector("#shipping-city").value = shipping.city || "";
+  document.querySelector("#shipping-country").value = shipping.country || "";
+  document.querySelector("#shipping-state").value = shipping.state || "";
+  document.querySelector("#shipping-postal").value = shipping.zipCode || "";
+  document.querySelector("#shipping-phoneNumber").value = shipping.phoneNumber || "";
 }
 
 // ---------------------------------------------------------------------------
@@ -94,18 +107,30 @@ export function initProfileInfo() {
     personalInformationForm.addEventListener("submit", async (e) => {
       e.preventDefault(); // prevents form submission for validation checks
       if (validateForm(personalInformationForm)) {
-        // NOTE: this reads the session user from localStorage rather than
-        // the userData passed around elsewhere on this page, matching the
-        // original implementation.
-        const user = JSON.parse(localStorage.user);
+        // Use the same cached-user source as the rest of the profile page
+        // (auth.js checkUserStatus) instead of localStorage, which is only
+        // ever populated on login - not on signup - and could be stale/absent.
+        const user = await checkUserStatus();
+        const firstName = document.querySelector("#personal-fname").value;
+        const lastName = document.querySelector("#personal-lname").value;
+        const phoneNumber = document.querySelector("#personal-phoneNumber").value;
+        const username = document.querySelector("#profile-username").value;
+
         const updateData = {
-          firstName: document.querySelector("#fname").value,
-          lastName: document.querySelector("#lname").value,
-          phoneNumber: document.querySelector("#phoneNumber").value,
-          username: document.querySelector("#profile-username").value,
-          lastUpdated: new Date()
+          firstName,
+          lastName,
+          username,
+          // Phone number is stored under `shipping.phoneNumber` since that's
+          // the single field both this form and the Shipping form read from.
+          // Dot-notation is required so updateDoc merges instead of replacing
+          // the whole `shipping` map.
+          "shipping.phoneNumber": phoneNumber
         };
-        await updateProfile(user.userId, updateData);
+
+        const success = await updateProfile(user.userId, updateData);
+        if (success) {
+          updateCachedUser({ firstName, lastName, username, shipping: { phoneNumber } });
+        }
       }
     });
   }
@@ -114,10 +139,7 @@ export function initProfileInfo() {
     shippingInformationForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (validateForm(shippingInformationForm)) {
-        // NOTE: original code reads from sessionStorage here, while the
-        // personal info form above reads from localStorage. Worth
-        // double-checking which storage your auth flow actually writes to.
-        const user = JSON.parse(sessionStorage.user);
+        const user = await checkUserStatus();
         const shippingData = {
           firstName: document.querySelector("#shippingInformation #shipping-fname")
             .value,
@@ -141,7 +163,22 @@ export function initProfileInfo() {
           lastUpdated: new Date()
         };
 
-        await updateShippingInfo(user.userId, shippingData);
+        const success = await updateShippingInfo(user.userId, shippingData);
+        if (success) {
+          updateCachedUser({
+            firstName: shippingData.firstName,
+            lastName: shippingData.lastName,
+            shipping: {
+              address: shippingData.address1,
+              address2: shippingData.address2,
+              city: shippingData.city,
+              country: shippingData.country,
+              phoneNumber: shippingData.phoneNumber,
+              state: shippingData.state,
+              zipCode: shippingData.postalCode
+            }
+          });
+        }
       }
     });
   }
@@ -158,7 +195,9 @@ function initEditSaveCancel() {
     const allActionButtons = section.querySelectorAll(".action-buttons");
     const saveBtn = section.querySelectorAll(".save-btn");
     const cancelBtn = section.querySelectorAll(".cancel-btn");
-    const inputs = section.querySelectorAll("input");
+    // Email is excluded: changing it requires a Firebase Auth email update
+    // (re-authentication), not just a Firestore write, so it isn't wired up yet.
+    const inputs = section.querySelectorAll("input:not(#personal-email)");
     const select = section.querySelectorAll("select");
 
     select.forEach((ele) => {

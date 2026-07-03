@@ -464,20 +464,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-const newsletterForm = document.querySelector("#newsletter .form");
-const newsletterSubmitBtn = document.getElementById("newsletter-submit");
-const email = document.getElementById("newsletter-email");
+// const newsletterForm = document.querySelector("#newsletter .form");
+// const newsletterSubmitBtn = document.getElementById("newsletter-submit");
+// const email = document.getElementById("newsletter-email");
 
-newsletterSubmitBtn.addEventListener('click', () => {
-  let emailValue = email.value.trim()
-  console.log(emailValue)
-  // newsletterForm.classList.add("hidden")
-  newsletterForm.innerHTML = `
+// newsletterSubmitBtn.addEventListener('click', () => {
+//   let emailValue = email.value.trim()
+//   console.log(emailValue)
+//   // newsletterForm.classList.add("hidden")
+//   newsletterForm.innerHTML = `
   
-  <div class="success-signup">
-    <p class="signup-text">You've been successfully signed up!</p>
-  </div>
+//   <div class="success-signup">
+//     <p class="signup-text">You've been successfully signed up!</p>
+//   </div>
 
-  `;
+//   `;
   
-})
+// })

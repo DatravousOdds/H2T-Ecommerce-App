@@ -6,6 +6,10 @@ import { initCartDrawer } from '../components/cartDrawer.js';
 
 initCartDrawer();
 
+// lets links like the product-page breadcrumb (?category=sneakers) land here pre-filtered
+const params = new URLSearchParams(window.location.search);
+const categoryParam = params.get("category");
+
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");
 const sortOption = document.querySelectorAll("#sort-container .sort-content a");
@@ -52,7 +56,21 @@ const state = {
 };
 
 let products =  await loadProducts("categoryMeta","women", state);
-displayProducts(products, "productsContainer");
+
+if (categoryParam) {
+  const matchingCheckbox = document.querySelector(`#category-filter input[value="${categoryParam}"]`);
+  if (matchingCheckbox) {
+    matchingCheckbox.checked = true;
+    state.filters.set("category", [categoryParam]);
+  }
+}
+
+displayProducts(
+  state.filters.has("category")
+    ? products.filter(p => state.filters.get("category").includes(p.data().category))
+    : products,
+  "productsContainer"
+);
 updateLoadMoreVisibility();
 
 let filteredProducts = [...products];

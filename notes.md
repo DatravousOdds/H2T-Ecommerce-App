@@ -84,3 +84,70 @@ match /listings/{userId}/{listingId}/{fileName} {
 `read: if true` because these are public storefront photos/videos ([product.js](public/js/pages/product.js) renders them to any shopper, no auth gate) — the opposite of the owner-only notifications/carts/favorites rules, which guard private per-user data. `write` mirrors seller.js's own client-side whitelist (`ALLOWED_VIDEO_TYPES`, `MAX_VIDEO_SIZE`, the image type/size check in `handleImageUpload`) so the rule can't be bypassed by calling the Storage SDK directly instead of going through the UI.
 
 **Known limitation, researched not fixed:** Security Rules only see request metadata (size, contentType, path) — never actual pixel data — so this can't enforce image resolution, aspect ratio, or reject low-quality/blurry photos. That needs either a pre-upload client-side check (spoofable, UX-only) or real server-side processing after upload (e.g. a Cloud Storage `onObjectFinalized` trigger decoding the file with something like `sharp` and deleting it if it fails). This app has no Cloud Functions deployed today — `firebase-admin` is only used from the existing Express server in [server.js](server.js) — so "real" quality enforcement would mean either standing up Cloud Functions for the first time, or routing seller image uploads through an Express endpoint instead of direct client-to-Storage writes. Not started; revisit if blurry/low-res listing photos become an actual seller-quality problem worth the infra lift.
+
+## 2026-07-03 — Price History chart: same `permission-denied` shape, but couldn't use the same fix
+
+**Symptom:** Console showed `FirebaseError: [code=permission-denied]: Missing or insufficient permissions` from [priceChart.js](public/js/components/priceChart.js#L106), same as the notification bell bug above. `orders` has no Firestore rule at all — default-deny again.
+
+**Why this one couldn't just get an `allow read: if true` like `offers` did:** an `orders` doc carries `buyerId`, `sellerId`, `buyerEmail`, and `shippingAddress` ([server.js](server.js#L1274-L1286)). Rules grant/deny a whole document, not fields — so a public read rule on `orders` would let anyone with devtools pull every buyer's email and shipping address off the collection, not just the sale price the chart needs.
+
+**Fix:** added `GET /api/products/:id/sales-history` in [server.js](server.js#L477-L510) — looks up the listing's `productName`/`brand` via the admin SDK, queries `orders` for matches, and hands back only `{ createdAt, subtotal }` per sale. [priceChart.js](public/js/components/priceChart.js) now calls this endpoint via `fetch()` instead of querying Firestore directly — no rule change needed for `orders`, it stays default-deny.
+
+**Also fixed while in here:**
+- The "1Y" filter button (`formatFilter()` in priceChart.js) was computing year-to-date (`Jan 1 -> today`) instead of a trailing 12 months — mislabeled behavior, not what "1Y" implies next to "1M"/"3M"/"6M".
+- The stat-delta trend arrows in [product.html](public/shop/product.html#L242-L278) (4.2%, 1.5%, etc.) were hardcoded markup never touched by JS, unlike the stat-val numbers next to them. Added `toggleTrend()` in [product.js](public/js/pages/product.js) to hide a stat's trend arrow when that stat's underlying value is 0 (no data), instead of showing a fake percentage next to a placeholder.
+
+**Found via verification, also fixed:** `offers` (queried by `getOfferKpis()` in product.js) has the exact same missing-rule problem as `orders` did, and blocked `displayPricingKpis()` before it ever reached the new `toggleTrend()` calls — so the stat cards stayed blank and the fake trend arrows stayed visible. Looked like one bug from the browser, but it's independent of the chart fix above.
+
+First pass considered `allow read: if true` on `/offers/{offerId}`, reasoning that offer docs only hold `offerAmount`/`status`/`productId` — no PII like `orders`. Correctly pushed back on: `createOfferInFirebase()` (product.js:85) is commented out, so that field list isn't a real implementation, just what the current *read* queries touch. A future offer-creation flow will almost certainly need to record who made the offer (`buyerId`), and a standing `read: if true` rule would silently start exposing it the moment that field exists — same class of mistake the `orders` fix was specifically written to avoid.
+
+**Fix:** added `GET /api/products/:id/offer-summary` in [server.js](server.js#L515-L534) — admin SDK, filters `offers` by `productId` only (status checked in memory, dodging a composite-index requirement), returns just `{ highest, lowest }`. `getOfferKpis()` in product.js now calls this instead of querying Firestore directly. `offers` stays default-deny, same as `orders` — no Firestore rule needed for either.
+
+**Test data:** [scripts/seedSalesHistory.js](scripts/seedSalesHistory.js) writes N fake `orders` docs (tagged `isTestData: true`) for a given `listingId`, spread across the last 13 months with prices wobbling ±15% around the listing price, so every chart filter (1M/3M/6M/1Y/All) has something to render.
+
+## 2026-07-03 — Started a "Post-MVP feature, disabled" convention (no design system exists yet)
+
+**Context:** Trade and Sell To Us are both post-MVP per [CLAUDE.md](CLAUDE.md) but their buttons were still live on [product.html](public/shop/product.html#L94-L99) — Trade linked to a real `/trade` route, Sell To Us was hardcoded out with an HTML comment. Asked to disable both consistently; there was no written design system to check against, so this documents the pattern found by grepping the codebase, promoted into a shared rule, and is the seed of one.
+
+**Existing precedent found (not invented here):** `nav.js` already disables Trade-in/Sell to Us in the nav using an `is-disabled` class + `aria-disabled="true"` + a `.coming-soon-badge` span, with a comment at [style2.css:1043](public/css/style2.css#L1043) explaining the intent: *"Post-MVP services stay visible so people know they're coming, but are inert — rendered without an href so clicks and keyboard activation are no-ops without needing extra JS."*
+
+**Convention (now applied to product.html's cta-btns too):**
+- Keep the element in the DOM and visible — don't delete or comment it out. Users should see the feature exists and is coming.
+- Drop the `href` (or don't add one) so it's a real no-op, not a fake link. No extra JS needed to block clicks.
+- Add `aria-disabled="true"` for screen readers.
+- Add class `is-disabled`.
+- Add `<span class="coming-soon-badge">Coming Soon</span>` inside the element.
+- Style `is-disabled` as grey/muted with `cursor: not-allowed` and no hover animation.
+
+**What's still ad hoc, to clean up after launch:** the CSS for this lives in two places styled independently — `.service-item.is-disabled`/`.submenu li a.is-disabled` in [style2.css](public/css/style2.css#L1046) for nav, and the new generic `.cta-btn.is-disabled` in [productDetails.css](public/css/pages/productDetails.css#L285-L301) for product-page buttons — because nav items and cta-btns don't share a base class. `.coming-soon-badge` itself is shared (defined once in style2.css, reused everywhere). Once more post-MVP surfaces need this treatment, worth promoting `is-disabled` + `.coming-soon-badge` into one documented component instead of re-deriving per stylesheet. No dedicated design-system doc exists yet — this note is the first write-up of the pattern; formalize into a proper STYLEGUIDE if it keeps recurring.
+
+## 2026-07-03 — Authentication request submit: `productDetails.category` undefined after draft restore
+
+**Symptom:** Firestore rejected the write with `FirebaseError: Function addDoc() called with invalid data. Unsupported field value: undefined (found in field productDetails.category in document authenticationRequests/...)`, thrown from [authenticate.js:1172](public/js/services/authenticate.js#L1172), on submit.
+
+**Root cause:** `formData.productDetails` is only ever populated in one place — the `stepNumber === 2` branch of `validateStep()` ([authenticate.js:836](public/js/services/authenticate.js#L836)), which runs when the user clicks "Next" while physically on step 2. `restoreDraftState()` ([authenticate.js:535-580](public/js/services/authenticate.js#L535-L580)) restores `categorySelected` and refills the step-2 DOM inputs from the saved draft, but never re-derives `formData.productDetails` from them. Since uploaded images can't round-trip through `sessionStorage`, a restored draft always caps `currentStep` at 3 ([line 579](public/js/services/authenticate.js#L579)) — so after a refresh past step 2, the user lands on step 3, and going 3 → 4 never re-enters the step-2 branch. Result: the form *looks* filled in (DOM has the right values), but `formData.productDetails` is still its initial `{}` when `submitToFirebase()` reads `formData.productDetails.productCategory`.
+
+**Fix:** in `restoreDraftState()`, after refilling the step-2 fields, rebuild `formData.productDetails` the same way `validateStep(2)` does:
+```js
+formData.productDetails = collectProductData(categorySelected);
+```
+Placed after the `forEach` that repopulates the DOM inputs (not before), since `collectProductData` reads live `element.value` off those same fields.
+
+## 2026-07-03 — Authentication "Pay Now" redirected to `/login` for an already-logged-in user
+
+**Symptom:** Clicking "Pay Now" on the final step sent a logged-in user to `/login`, intermittently — not on every attempt.
+
+**Root cause:** a race in [firebase-client.js:52-58](public/js/api/firebase-client.js#L52-L58): `setPersistence(auth, browserLocalPersistence)` was fire-and-forget (`.then()/.catch()`, nothing awaited it). Meanwhile `checkUserStatus()` in [auth.js:75-126](public/js/auth/auth.js#L75-L126) attaches an `onAuthStateChanged` listener and unsubscribes after its *first* callback. If that first callback fired before `setPersistence` finished restoring the session from IndexedDB, it could fire with `user = null` — and since the listener never re-attaches, `cachedUser` locks in `false` for the rest of the page's life, even though the real session shows up moments later. This is invisible on most pages because nothing gates on `currentUser` early in the authenticate flow — `submitToFirebase()` ([authenticate.js:1121-1125](public/js/services/authenticate.js#L1121-L1125)) is the first and only place that checks it, right at the end.
+
+**Fix:** made the persistence setup an awaited top-level statement instead of a dangling promise:
+```js
+try {
+  await setPersistence(auth, browserLocalPersistence);
+  console.log('Firebase persistence enabled');
+} catch (error) {
+  console.log('Failed to enable persistence', error);
+}
+```
+Since `firebase-client.js` is an ES module, this top-level `await` blocks module evaluation for every importer — including `auth.js` — so `onAuthStateChanged` can no longer attach before persistence is configured.
+
+**Verified:** confirmed fixed by the user after a hard refresh directly on the authenticate page post-login; Pay Now no longer bounces to `/login`.

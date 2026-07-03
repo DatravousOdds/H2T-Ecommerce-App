@@ -340,6 +340,13 @@ sidebar behavior back.
 
     }
 
+    .content-wrapper {
+        width: 100%;
+        padding: 0 1rem;
+        margin: 0 auto;
+        margin-bottom: 1.5rem;
+    }
+
 
     .text {
         text-transform: capitalize;

@@ -263,6 +263,137 @@ async function fetchTotalSales(userId) {
   }, 0);
 }
 
+// Master list fetched once from Firestore; search/filter re-slice this
+// in memory instead of re-querying on every keystroke or checkbox change.
+let allListings = [];
+
+const searchInput = document.getElementById("product-search");
+const applyFiltersBtn = document.querySelector("#filter-container .filter-actions .primary");
+const clearFiltersBtn = document.querySelector("#filter-container .filter-actions .secondary");
+
+// Checkbox groups whose value maps directly onto a real listing field.
+// Price Range and Listing Type need their own comparison logic below since
+// they don't reduce to a single equality check.
+const CATEGORY_FILTER_IDS = {
+  "product-sneakers": "sneakers",
+  "product-apparel": "apparel",
+  "product-accessories": "accessories",
+};
+
+const BRAND_FILTER_IDS = {
+  "brand-nike": "nike",
+  "brand-jordan": "jordan",
+  "brand-yeezy": "yeezy",
+  "brand-offWhite": "offwhite",
+};
+
+const PRICE_RANGE_FILTER_IDS = {
+  "price-priceRange1": [25, 50],
+  "price-priceRange2": [50, 100],
+  "price-priceRange3": [100, 150],
+  "price-priceRange4": [150, Infinity],
+};
+
+// "New listings" and "Low stock" have no backing field yet (no stock/quantity
+// or "listed recently" data exists on a listing -- same schema gap noted at
+// the top of this file), so they're left unwired rather than silently
+// filtering everything to zero results.
+const STATUS_FILTER_IDS = {
+  "listType-active": "active",
+  "listType-OutOfStock": "out-of-stock",
+};
+
+function normalizeBrand(brand) {
+  return (brand || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function checkedIdsIn(filterIdMap) {
+  return Object.keys(filterIdMap).filter((id) => document.getElementById(id)?.checked);
+}
+
+function getFilteredListings() {
+  const searchTerm = (searchInput?.value || "").trim().toLowerCase();
+
+  const checkedCategories = checkedIdsIn(CATEGORY_FILTER_IDS).map((id) => CATEGORY_FILTER_IDS[id]);
+  const checkedBrands = checkedIdsIn(BRAND_FILTER_IDS).map((id) => BRAND_FILTER_IDS[id]);
+  const checkedPriceRanges = checkedIdsIn(PRICE_RANGE_FILTER_IDS).map((id) => PRICE_RANGE_FILTER_IDS[id]);
+  const checkedStatuses = checkedIdsIn(STATUS_FILTER_IDS).map((id) => STATUS_FILTER_IDS[id]);
+
+  return allListings.filter((listing) => {
+    if (searchTerm) {
+      const haystack = `${listing.productName || ""} ${listing.brand || ""} ${listing.category || ""}`.toLowerCase();
+      if (!haystack.includes(searchTerm)) return false;
+    }
+
+    if (checkedCategories.length && !checkedCategories.includes(listing.category)) return false;
+
+    if (checkedBrands.length && !checkedBrands.includes(normalizeBrand(listing.brand))) return false;
+
+    if (checkedPriceRanges.length) {
+      const price = Number(listing.originalPrice || 0);
+      const inRange = checkedPriceRanges.some(([min, max]) => price >= min && price <= max);
+      if (!inRange) return false;
+    }
+
+    if (checkedStatuses.length && !checkedStatuses.includes(listing.status)) return false;
+
+    return true;
+  });
+}
+
+function renderProductTables(listings) {
+  // No status-change write path exists yet (Status modal save isn't wired
+  // up), so right now every real listing is realistically "active" --
+  // this filtering is correct for when that gets built, not dead code.
+  const active = listings.filter((l) => l.status === "active");
+  const outOfStock = listings.filter((l) => l.status === "out-of-stock");
+  const drafts = listings.filter((l) => l.status === "draft");
+
+  populateTable("all-products-table", listings, allProductsRow, "No listings match your search or filters.");
+  populateTable("active-products-table", active, activeProductsRow, "No active listings match your search or filters.");
+  populateTable("out-of-stock-products-table", outOfStock, outOfStockRow, "No out-of-stock listings match your search or filters.");
+  populateTable("draft-products-table", drafts, draftRow, "No drafts match your search or filters.");
+
+  updateStatCard("active-listings", active.length);
+}
+
+function refreshProductTables() {
+  renderProductTables(getFilteredListings());
+}
+
+// Edit buttons live inside four separately-rendered tables (all/active/
+// out-of-stock/draft), so one delegated listener on the shared "products"
+// section catches all of them instead of re-binding after every re-render.
+function initEditListeners() {
+  const productsSection = document.getElementById("products");
+
+  productsSection?.addEventListener("click", (e) => {
+    const editBtn = e.target.closest(".action-button.edit");
+    if (!editBtn) return;
+
+    const listingId = editBtn.closest(".product-row")?.dataset.productId;
+    if (!listingId) return;
+
+    window.location.href = `/seller?listingId=${listingId}`;
+  });
+}
+
+function initSearchAndFilterListeners() {
+  searchInput?.addEventListener("input", refreshProductTables);
+
+  applyFiltersBtn?.addEventListener("click", () => {
+    refreshProductTables();
+    document.querySelector(".filter-opt .filter-dropdown-content")?.classList.remove("show");
+  });
+
+  clearFiltersBtn?.addEventListener("click", () => {
+    document
+      .querySelectorAll("#filter-container .filter-group input[type='checkbox']")
+      .forEach((checkbox) => (checkbox.checked = false));
+    refreshProductTables();
+  });
+}
+
 async function loadProductsTab(userId) {
   if (!userId) {
     console.error("loadProductsTab: no userId provided");
@@ -275,23 +406,14 @@ async function loadProductsTab(userId) {
       fetchTotalSales(userId),
     ]);
 
-    // No status-change write path exists yet (Status modal save isn't wired
-    // up), so right now every real listing is realistically "active" --
-    // this filtering is correct for when that gets built, not dead code.
-    const active = listings.filter((l) => l.status === "active");
-    const outOfStock = listings.filter((l) => l.status === "out-of-stock");
-    const drafts = listings.filter((l) => l.status === "draft");
-
-    populateTable("all-products-table", listings, allProductsRow, "No listings yet. List your first product to see it here.");
-    populateTable("active-products-table", active, activeProductsRow, "No active listings.");
-    populateTable("out-of-stock-products-table", outOfStock, outOfStockRow, "Nothing out of stock.");
-    populateTable("draft-products-table", drafts, draftRow, "No drafts in progress.");
-
-    updateStatCard("active-listings", active.length);
+    allListings = listings;
+    renderProductTables(getFilteredListings());
     updateStatCard("total-sales", `$${totalSales.toFixed(2)}`);
   } catch (error) {
     console.error("Error loading products tab:", error);
   }
 }
 
+initEditListeners();
+initSearchAndFilterListeners();
 await loadProductsTab(currentUser.userId);

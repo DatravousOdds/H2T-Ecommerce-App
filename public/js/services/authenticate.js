@@ -553,6 +553,12 @@ async function restoreDraftState() {
       const element = document.getElementById(id);
       if (element) element.value = value;
     });
+
+    // Restoring the DOM fields isn't enough -- formData.productDetails is
+    // only ever set inside validateStep(2), which a restored draft may skip
+    // (currentStep is capped at 3 below). Rebuild it here so a refresh past
+    // step 2 doesn't submit with an undefined productCategory.
+    formData.productDetails = collectProductData(categorySelected);
   }
 
   if (draft.productSku) {

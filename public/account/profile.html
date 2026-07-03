@@ -46,10 +46,6 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
-    <link
-      rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-    />
   </head>
   <body>
     <section id="header">
@@ -70,7 +66,7 @@
               </li>
               <li class="tab-btn" data-tab="selling">
                 <a href="#"><i class="fa-solid fa-hand-holding-dollar"></i></a
-                >Selling
+                >Seller Dashboard
               </li>
               <li class="tab-btn" data-tab="favorites">
                 <a href="#"><i class="fa-solid fa-bookmark"></i></a>Favorites
@@ -144,7 +140,12 @@
                       <div id="wrapper-row" class="wrapper-row">
                         <p id="username">@sara.almasi</p>
                         <div id="verified-img-container">
-                          <div id="verified-tag" class="verified-tag">
+                          <div
+                            id="verified-tag"
+                            class="verified-tag"
+                            title="Trusted seller on Head-To-Toes"
+                            style="display: none"
+                          >
                             <i class="fa-solid fa-shield"></i>
                             Verified
                           </div>
@@ -155,12 +156,15 @@
                         <h3 class="timestamp"></h3>
                       </div>
                     </div>
+                    <!-- Share button disabled until public user profile pages exist -->
+                    <!--
                     <div class="share-btn">
                       <button>
                         <i class="fa-solid fa-share-nodes"></i>
                         Share
                       </button>
                     </div>
+                    -->
                   </div>
                   <!-- User Stats Section -->
                   <div id="user-stats">
@@ -5871,7 +5875,7 @@
     <script type="module" src="js/pages/profile/profile.js"></script>
     
     <script src="js/components/footer.js"></script>
-    <script src="js/components/newsletter.js"></script>
+    <script type="module" src="js/components/newsletter.js"></script>
     <script type="module" src="js/components/nav.js"></script>
     <script src="../js/pages/profile/selling/selling.js"></script>
     <!-- <script type="module" src="js/pages/components/profile/purchases.js"></script> -->

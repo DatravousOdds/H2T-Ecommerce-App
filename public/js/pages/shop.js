@@ -6,7 +6,14 @@ import { db, collection, where, query, getDocs, limit, startAfter } from '../api
 
 
 const params = new URLSearchParams(window.location.search);
-const activeFilter = params.get("category") || params.get("brand");
+const categoryParam = params.get("category");
+const brandParam = params.get("brand");
+const activeFilter = categoryParam || brandParam;
+// brand is free text (seller.js saves whatever was typed, no fixed casing),
+// so it can't go through loadProducts()'s where(field, "==", value) equality
+// query the way category can -- it needs its own client-side-matched loader,
+// same reasoning as loadBrandFilteredProducts() below.
+const isBrandFilter = !categoryParam && !!brandParam;
 // "Under $X" homepage cards link here with ?maxPrice=X instead of a
 // category/brand -- it's a range query, not an equality one, so it can't
 // go through loadProducts() and gets its own query function below.
@@ -22,6 +29,8 @@ const state = {
 };
 let products = maxPrice
   ? await loadPriceFilteredProducts(maxPrice, state)
+  : isBrandFilter
+  ? await loadBrandFilteredProducts(activeFilter, state)
   : await loadProducts("category", `${activeFilter}`, state);
 
 const pageHeader = document.getElementById("page-header");
@@ -156,6 +165,8 @@ loadMoreBtn.addEventListener("click", async () => {
   try {
     const newProducts = maxPrice
       ? await loadPriceFilteredProducts(maxPrice, state)
+      : isBrandFilter
+      ? await loadBrandFilteredProducts(activeFilter, state)
       : await loadProducts("category", activeFilter, state);
     products = [...products, ...newProducts];
     filteredProducts = [...products];
@@ -389,10 +400,25 @@ function setCateogryFilter() {
     input.checked = true;
 };
 
+function escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = value;
+    return div.innerHTML;
+}
+
 function setHeader() {
+    // brand values in the URL are slugs (e.g. "chrome-hearts"); category
+    // values are already plain words, so only brand needs de-slugging for display.
+    // Either way this came straight from the query string, so it's escaped
+    // before going into innerHTML below.
+    const rawLabel = isBrandFilter
+        ? activeFilter.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+        : activeFilter;
+    const displayLabel = escapeHtml(rawLabel);
+
     pageHeader.innerHTML = "";
     pageHeader.innerHTML = `
-    <h2>${activeFilter}</h2>
+    <h2>${displayLabel}</h2>
 
     <p>
         Buy Item any of our newly listed item, or find something that fits your
@@ -406,7 +432,7 @@ function setHeader() {
         <ol class="breadcrumbs-routes">
             <li><a href="/">Home</a></li>
             <li><span>></span></li>
-            <li id="curr-page" class="curr-pg">${activeFilter}</li>
+            <li id="curr-page" class="curr-pg">${displayLabel}</li>
         </ol>
     `;
 };
@@ -474,6 +500,40 @@ async function loadPriceFilteredProducts(maxPrice, state) {
     return docs;
 }
 
+// Mirrors men.js's normalizeBrand() -- brand is free text with no fixed
+// casing/punctuation, so this is how brand values get compared everywhere.
+function normalizeBrand(brand) {
+    return (brand || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Same shape as loadPriceFilteredProducts() above: brand can't be matched
+// with a Firestore where(field, "==", value) equality query since sellers
+// type it free-form, so this pages through active listings and matches
+// brand client-side instead. Like the price filter, this means a given
+// Firestore page (48 docs) can come back with zero matches for the target
+// brand even though more matches exist further in -- hasMore still reflects
+// whether Firestore has more pages, not whether more matches are in them.
+async function loadBrandFilteredProducts(brandSlug, state) {
+    const productsCollection = collection(db, "listings");
+    const constraints = [where("status", "==", "active")];
+    if (state.lastVisible) constraints.push(startAfter(state.lastVisible));
+
+    const q = query(productsCollection, ...constraints, limit(48));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        state.hasMore = false;
+        return [];
+    }
+
+    const docs = querySnapshot.docs;
+    state.lastVisible = docs[docs.length - 1];
+    state.hasMore = docs.length === 48;
+
+    const targetBrand = normalizeBrand(brandSlug);
+    return docs.filter((doc) => normalizeBrand(doc.data().brand) === targetBrand);
+}
+
 function setPriceHeader(maxPrice) {
     pageHeader.innerHTML = "";
     pageHeader.innerHTML = `
@@ -516,8 +576,14 @@ if (maxPrice) {
     setPriceHeader(maxPrice);
 } else {
     setHeader();
-    setState();
-    setCateogryFilter();
+    // setState()/setCateogryFilter() seed and check the *category* checkbox
+    // filter -- meaningless (and actively wrong) for a brand slug like
+    // "chrome-hearts", so brand-filtered products already came back
+    // pre-matched from loadBrandFilteredProducts() and skip both.
+    if (!isBrandFilter) {
+        setState();
+        setCateogryFilter();
+    }
 }
 displayProducts(products, "productsContainer");
 updateLoadMoreVisibility();

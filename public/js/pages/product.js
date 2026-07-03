@@ -114,6 +114,10 @@ buyBtn.addEventListener('click', async () => {
     window.location.href = `/checkout?listingId=${productId}`
 })
 
+// Keep the button in sync when the cart changes elsewhere (drawer delete,
+// bag page delete) -- both dispatch 'cartUpdated' from removeFromCart().
+window.addEventListener('cartUpdated', setAddToCartButtonState);
+
 /* ==== ASYNC FUNCTIONS ===== */
 
 // The button only greys itself out in the click handler below, so a refresh
@@ -126,6 +130,8 @@ async function setAddToCartButtonState() {
 
         if (alreadyInCart) {
             addToCartBtn.classList.add('disabled');
+        } else {
+            addToCartBtn.classList.remove('disabled');
         }
     } catch (error) {
         console.error("Error checking cart state for add-to-cart button:", error);
@@ -284,12 +290,18 @@ async function setBreadcrumb() {
     // console.log(data)
     const breadcrumb = document.querySelector('.product-breadcrumb');
     // console.log("product data:", data);
+
+    // categoryMeta ("men"/"women") maps to the /mens and /women routes in
+    // server.js -- "men" needs the extra "s", "women" is already an exact match.
+    const categoryMetaRoutes = { men: "/mens", women: "/women" };
+    const categoryMetaRoute = categoryMetaRoutes[data.categoryMeta] || "/shop/shop.html";
+
     breadcrumb.innerHTML = `
         <li><a href="/">Home</a></li>
         <li>></li>
-        <li><a href="/${data.categoryMeta}">${data.categoryMeta}</a></li>
+        <li><a href="${categoryMetaRoute}">${data.categoryMeta}</a></li>
         <li>></li>
-        <li><a href="/${data.category}"><strong>${data.category}</strong></a></li>
+        <li><a href="${categoryMetaRoute}?category=${data.category}"><strong>${data.category}</strong></a></li>
     `
 }
 
@@ -398,19 +410,15 @@ async function getAverageSalePrice() {
 };
 
 async function getOfferKpis() {
-    const offersColRef = collection(db, "offers");
-    const baseConstraints = [where("status", "==", "active"), where("productId", "==", productId)];
-    
-    const highestOffers = query(offersColRef, ...baseConstraints, orderBy("offerAmount", "desc"));
-    const lowestOffers = query(offersColRef, ...baseConstraints, orderBy("offerAmount", "asc"));
+    // Routed through the server (not a direct Firestore read) -- see
+    // server.js's /api/products/:id/offer-summary for why.
+    const res = await fetch(`/api/products/${productId}/offer-summary`);
 
-    const [lowest, highest] = await Promise.all([getDocs(lowestOffers), getDocs(highestOffers)]);
-    // console.log(lowest, highest)
+    if (!res.ok) {
+        throw new Error(`Failed to fetch offer summary: ${res.status}`);
+    }
 
-    return {
-        highest: highest.empty ? 0 : highest.docs[0].data().offerAmount,
-        lowest: lowest.empty ? 0 : lowest.docs[0].data().offerAmount,
-    };
+    return await res.json();
 }
 
 async function loadRelateProducts() {

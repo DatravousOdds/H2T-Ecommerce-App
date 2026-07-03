@@ -2631,6 +2631,13 @@ button:disabled {
   padding: 0;
 }
 
+/* Payment tab holds Wallet Balance + Cards on File; the shared .tab rule
+   centers content vertically (justify-content: center), which pushes this
+   section down the page instead of letting it sit under the header. */
+#payment-information {
+  justify-content: flex-start;
+}
+
 #profile-inner-wrapper {
   display: flex;
   flex-direction: column;

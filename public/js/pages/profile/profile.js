@@ -50,18 +50,37 @@ function loadProfileDisplayData(userData) {
   document.querySelector("#profile-picture").src = userData.profileImage;
   document.querySelector("#username").textContent = `@${userData.username}`;
 
-  document.querySelector(".timestamp").textContent = `Joined ${formatFirebaseDate(userData.accountInfo.joinedDate)}`;
+  // Existing accounts predate `accountInfo`, so guard against it being
+  // missing rather than throwing and aborting the rest of this function
+  // (which is what shows followers/following/rating below).
+  if (userData.accountInfo?.joinedDate) {
+    document.querySelector(".timestamp").textContent =
+      `Joined ${formatFirebaseDate(userData.accountInfo.joinedDate)}`;
+  }
 
-  document.querySelector("#verified-tag").value = userData.isVerified;
+  // Verified badge = trusted seller. `.value` doesn't exist on a <div>, so this
+  // never actually showed/hid anything before - toggle visibility instead.
+  document.querySelector("#verified-tag").style.display = userData.isVerified
+    ? ""
+    : "none";
 
+  const stats = userData.stats || {};
   document.querySelector("#followers-count").textContent = formatFollowers(
-    userData.stats.followers
+    stats.followers || 0
   );
   document.querySelector("#following-count").textContent = formatFollowers(
-    userData.stats.following
+    stats.following || 0
   );
 
-  document.querySelector("#current-rating").textContent = userData.stats.rating;
+  // No ratings yet -> hide the "Rating" stat instead of showing a fake 0/5.
+  const totalRatings = userData.ratings?.metrics?.totalRatings || 0;
+  const ratingStat = document.querySelector("#rating");
+  if (totalRatings > 0) {
+    ratingStat.style.display = "";
+    document.querySelector("#current-rating").textContent = stats.rating;
+  } else {
+    ratingStat.style.display = "none";
+  }
 }
 
 // ---------------------------------------------------------------------------

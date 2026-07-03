@@ -1,5 +1,5 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app, getDoc, updateDoc } from '../api/firebase-client.js';
 import { collection, addDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -70,6 +70,11 @@ const currentUser =  await checkUserStatus();
 if (!currentUser) {
     window.location.replace('/login');
 };
+
+// Presence of ?listingId= is what turns this page from "create" into "edit" --
+// same form, same submit handlers, just pointed at an existing document.
+const editListingId = new URLSearchParams(window.location.search).get('listingId');
+const isEditing = Boolean(editListingId);
 
 const storage = getStorage(app, 'gs://ecom-website-94d87');
 
@@ -169,6 +174,14 @@ const CATEGORY_FIELDS = {
 initFormListeners();
 wordCounter();
 populateColorOptions();
+
+if (isEditing) {
+    postBtn.textContent = 'Update';
+    const headerTitle = document.querySelector('.header-title');
+    if (headerTitle) headerTitle.textContent = 'Edit listing';
+
+    await loadListingForEdit(editListingId);
+}
 
 postBtn.addEventListener('click', async () => {
     // Step 1: Validate basic information
@@ -409,6 +422,106 @@ function populateColorOptions() {
     });
 }
 
+async function loadListingForEdit(listingId) {
+    try {
+        const snap = await getDoc(doc(db, 'listings', listingId));
+
+        if (!snap.exists()) {
+            alert('Listing not found.');
+            window.location.href = '/profile';
+            return;
+        }
+
+        const existing = { id: snap.id, ...snap.data() };
+
+        if (existing.userId !== currentUser.userId) {
+            alert('You do not have permission to edit this listing.');
+            window.location.href = '/profile';
+            return;
+        }
+
+        // Carry these over directly rather than through collectListingInfo()
+        // so an edit updates the existing document instead of minting a new
+        // one, and doesn't clobber the original creation date.
+        listing.listingId = existing.id;
+        listing.createdAt = existing.createdAt;
+        listing.status = existing.status;
+
+        populateFormForEdit(existing);
+    } catch (error) {
+        console.error('Error loading listing for edit:', error);
+        alert('Something went wrong loading this listing.');
+    }
+}
+
+function populateFormForEdit(existing) {
+    productTitle.value = existing.productName || '';
+    titleCharCounter.textContent = `${productTitle.value.length}/80`;
+
+    const categoryValue = (existing.categoryMeta && existing.categoryMeta !== 'other')
+        ? `${existing.categoryMeta}-${existing.category}`
+        : 'other';
+    productCategory.value = categoryValue;
+    getCategoryFields(categoryValue);
+    if (existing.size) productSize.value = existing.size;
+
+    productBrand.value = existing.brand || '';
+    productColor.value = existing.color || '';
+    productCondition.value = existing.condition || '';
+    productPrice.value = existing.originalPrice ?? '';
+
+    productDescription.value = existing.description || '';
+    const words = productDescription.value.trim() ? productDescription.value.trim().split(/\s+/) : [];
+    descriptionWordCounter.textContent = `${words.length}/100`;
+
+    restoreShippingSelection(existing.shipping);
+    populateExistingImages(existing.images || []);
+    if (existing.video) populateExistingVideo(existing.video);
+}
+
+function restoreShippingSelection(shipping) {
+    // Only the prepaid path stores a shipping object (courier info); the
+    // own-shipping path never writes `listing.shipping` at all currently,
+    // so that's the fallback guess for anything else.
+    const isPrepaid = Boolean(shipping && typeof shipping === 'object' && shipping.courier);
+    const radio = document.getElementById(isPrepaid ? 'prepaid' : 'yourShip');
+    if (!radio) return;
+
+    radio.checked = true;
+    shippingContainers.forEach(c => c.classList.remove('selected'));
+    radio.closest('.shipping-btn-container')?.classList.add('selected');
+}
+
+function populateExistingImages(images) {
+    const containers = [...document.querySelectorAll('.images-grid-container .image-container')]
+        .filter(c => c !== videoContainer);
+    const sorted = [...images].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+
+    sorted.forEach((img, i) => {
+        const container = containers[i];
+        if (!container || !img?.url) return;
+
+        const preview = container.querySelector('.image-preview');
+        const removeBtn = container.querySelector('.remove-image-btn');
+
+        preview.src = img.url;
+        // Marks this preview as an already-uploaded Storage file, not a
+        // freshly-picked one -- see collectImageData/uploadImagesToFirebase.
+        preview.dataset.storagePath = img.path || '';
+        preview.style.display = 'block';
+        removeBtn.style.display = 'block';
+    });
+}
+
+function populateExistingVideo(video) {
+    if (!video?.url) return;
+
+    videoPreview.src = video.url;
+    videoPreview.dataset.storagePath = video.path || '';
+    videoPreview.style.display = 'block';
+    removeVideoBtn.style.display = 'block';
+}
+
 function getCategoryFields(category) {
     if (!category) return;
     const normalizedCategory = CATEGORY_FIELDS[category] ? category : category.split("-")[1];
@@ -591,6 +704,8 @@ function showSuccessMessage() {
     const itemImage = successModal.querySelector('.product-image');
     const modalProductName = successModal.querySelector('.modal-product-name');
     const modalProductMeta = successModal.querySelector('.modal-product-meta');
+    const successHeading = successModal.querySelector('.m-header-text h5');
+    if (successHeading) successHeading.textContent = isEditing ? 'Listing updated!' : 'Item listed successfully!';
 
     itemName.textContent = listing.productName;
     itemImage.src = listing.images[0].url; // Assuming the first image is the primary one
@@ -740,7 +855,15 @@ function collectListingInfo(status = 'active') {
     listing.condition = productCondition?.value.trim();
     listing.size = productSize?.value.trim();
     listing.color = productColor?.value.trim() || null;
-    listing.createdAt = serverTimestamp();
+
+    // Editing keeps the original createdAt (already carried over in
+    // loadListingForEdit) and stamps lastUpdated instead, so listings don't
+    // appear freshly-created every time they're touched.
+    if (isEditing) {
+        listing.lastUpdated = serverTimestamp();
+    } else {
+        listing.createdAt = serverTimestamp();
+    }
 
 }
 
@@ -754,6 +877,9 @@ function collectImageData(selector) {
       imageData.push({
         index: index,
         url: src,
+        // Set only on previews populated from an existing listing --
+        // marks this image as already uploaded (see uploadImagesToFirebase).
+        path: img.dataset.storagePath || null,
         isPrimary: index === 0
       });
     }
@@ -810,6 +936,7 @@ function handleImageUpload(input,preview,removeBtn) {
 function handleImageRemove(input, preview, removeBtn) {
     input.value = '';
     preview.src = '';
+    delete preview.dataset.storagePath;
     preview.style.display = 'none';
     removeBtn.style.display = 'none';
     return;
@@ -905,10 +1032,22 @@ async function fetchShippingRates(parcel) {
 }
 
 async function uploadImagesToFirebase(images, userId) {
-    const newListingRef = doc(collection(db, 'listings'));
-    const listingId = newListingRef.id;
+    // Reuse the real document ID when editing so Storage paths for any newly
+    // added images land under the same listing instead of a fresh one.
+    const listingId = listing.listingId || doc(collection(db, 'listings')).id;
     listing.listingId = listingId;
     const uploadPromises = images.map(async (img, index) => {
+        // Carried over unchanged from an existing listing -- already in
+        // Storage, so re-uploading would just duplicate it under a new path.
+        if (img.path) {
+            return {
+                url: img.url,
+                path: img.path,
+                isPrimary: img.isPrimary,
+                index: img.index
+            };
+        }
+
         try {
         const imagePath = `listings/${userId}/${listingId}/image_${index}_${Date.now()}.jpg`;
         const storageRef = ref(storage, imagePath);
@@ -950,12 +1089,17 @@ async function uploadImagesToFirebase(images, userId) {
 function collectVideoData() {
     const src = videoPreview.getAttribute('src');
     if (src && src.trim() !== '') {
-        return { url: src };
+        return { url: src, path: videoPreview.dataset.storagePath || null };
     }
     return null;
 }
 
 async function uploadVideoToFirebase(videoData, userId, listingId) {
+    // Same as images -- a video carried over unchanged is already in Storage.
+    if (videoData.path) {
+        return { url: videoData.url, path: videoData.path };
+    }
+
     const videoPath = `listings/${userId}/${listingId}/video_${Date.now()}.mp4`;
     const storageRef = ref(storage, videoPath);
 
@@ -965,13 +1109,19 @@ async function uploadVideoToFirebase(videoData, userId, listingId) {
     return { url: downloadURL, path: videoPath };
 }
 
-async function uploadListingToFirebase(data) {
+async function saveListingToFirebase(data) {
     try {
+        if (isEditing) {
+            await updateDoc(doc(db, 'listings', listing.listingId), data);
+            console.log("Document updated with the ID: ", listing.listingId);
+            return listing.listingId;
+        }
+
         const docRef = await addDoc(collection(db, 'listings'), data);
         console.log("Document written with the ID: ", docRef.id);
         return docRef.id;
     } catch(e) {
-        console.error("Error adding document:", e);
+        console.error("Error saving document:", e);
         throw e;
     }
 
@@ -996,7 +1146,7 @@ async function uploadListing() {
             listing.video = await uploadVideoToFirebase(videoData, currentUser.userId, listing.listingId);
         }
 
-        await uploadListingToFirebase(listing);
+        await saveListingToFirebase(listing);
         removeSavingModal();
         showSuccessMessage();
     } catch (e) {
@@ -1025,7 +1175,7 @@ async function saveDraft() {
             listing.video = await uploadVideoToFirebase(videoData, currentUser.userId, listing.listingId);
         }
 
-        await uploadListingToFirebase(listing);
+        await saveListingToFirebase(listing);
         alert("Your listing has been saved as a draft.");
     } catch (e) {
         console.error("Error occurred when saving draft: ", e);

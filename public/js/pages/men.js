@@ -9,6 +9,10 @@ initCartDrawer();
 
 const currentUser = checkUserStatus();
 
+// lets links like the product-page breadcrumb (?category=sneakers) land here pre-filtered
+const params = new URLSearchParams(window.location.search);
+const categoryParam = params.get("category");
+
 
 const sortSelect = document.getElementById("sort-select");
 const pgSelect = document.getElementById("pg-amount-select");
@@ -59,6 +63,14 @@ const state = {
 let products =  await loadProducts("categoryMeta","men", state);
 
 let filteredProducts = [...products];
+
+if (categoryParam) {
+  const matchingCheckbox = document.querySelector(`#category-filter input[value="${categoryParam}"]`);
+  if (matchingCheckbox) {
+    matchingCheckbox.checked = true;
+    state.filters.set("category", [categoryParam]);
+  }
+}
 
 
 
@@ -519,5 +531,6 @@ document
 
 
 
-displayProducts(products);
+filterProducts(products, state.filters);
+renderFilterTags(state.filters);
 updateLoadMoreVisibility();
