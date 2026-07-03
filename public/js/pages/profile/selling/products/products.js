@@ -4,8 +4,10 @@ import { checkUserStatus } from "../../../../auth/auth.js";
 import {
   collection,
   db,
+  doc,
   getDocs,
   query,
+  updateDoc,
   where,
 } from "../../../../api/firebase-client.js";
 
@@ -361,20 +363,49 @@ function refreshProductTables() {
   renderProductTables(getFilteredListings());
 }
 
-// Edit buttons live inside four separately-rendered tables (all/active/
+// Pausing takes a listing out of "active" by writing status: "draft" --
+// same field renderProductTables() already filters on, so the row just
+// stops matching the active table and starts matching the draft one on
+// the next render. No separate "paused" status: the ask was specifically
+// "send it to drafts," and introducing a distinct paused state would mean
+// a table for it that doesn't exist yet (see the unwired Status Modal in
+// profile.html for that larger, separate feature).
+async function pauseListing(listingId) {
+  await updateDoc(doc(db, "listings", listingId), { status: "draft" });
+
+  const listing = allListings.find((l) => l.id === listingId);
+  if (listing) listing.status = "draft";
+
+  refreshProductTables();
+}
+
+// Edit/Pause buttons live inside four separately-rendered tables (all/active/
 // out-of-stock/draft), so one delegated listener on the shared "products"
 // section catches all of them instead of re-binding after every re-render.
-function initEditListeners() {
+function initActionButtonListeners() {
   const productsSection = document.getElementById("products");
 
-  productsSection?.addEventListener("click", (e) => {
+  productsSection?.addEventListener("click", async (e) => {
     const editBtn = e.target.closest(".action-button.edit");
-    if (!editBtn) return;
+    if (editBtn) {
+      const listingId = editBtn.closest(".product-row")?.dataset.productId;
+      if (listingId) window.location.href = `/seller?listingId=${listingId}`;
+      return;
+    }
 
-    const listingId = editBtn.closest(".product-row")?.dataset.productId;
-    if (!listingId) return;
+    const pauseBtn = e.target.closest(".action-button.pause");
+    if (pauseBtn) {
+      const listingId = pauseBtn.closest(".product-row")?.dataset.productId;
+      if (!listingId) return;
 
-    window.location.href = `/seller?listingId=${listingId}`;
+      pauseBtn.disabled = true;
+      try {
+        await pauseListing(listingId);
+      } catch (error) {
+        console.error(`Error pausing listing ${listingId}:`, error);
+        pauseBtn.disabled = false;
+      }
+    }
   });
 }
 
@@ -414,6 +445,6 @@ async function loadProductsTab(userId) {
   }
 }
 
-initEditListeners();
+initActionButtonListeners();
 initSearchAndFilterListeners();
 await loadProductsTab(currentUser.userId);

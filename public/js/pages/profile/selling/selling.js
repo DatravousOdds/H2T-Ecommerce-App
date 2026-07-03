@@ -7,22 +7,35 @@ const sellingNavButtons = document.querySelectorAll(".nav-button");
 // "active" state and leave the Products tab showing no sub-view at all.
 const sellingSections = document.querySelectorAll("section.content-section");
 
+function activateSellingTab(tabId) {
+  const button = document.querySelector(`.nav-button[data-tab="${tabId}"]`);
+  const section = document.getElementById(tabId);
+  if (!button || !section) return;
+
+  sellingNavButtons.forEach((btn) => btn.classList.remove("active"));
+  sellingSections.forEach((s) => s.classList.remove("active"));
+
+  section.classList.add("active");
+  button.classList.add("active");
+}
+
 sellingNavButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    // Remove active class from all other tabs
-    sellingNavButtons.forEach((btn) => btn.classList.remove("active"));
-    sellingSections.forEach((section) => section.classList.remove("active"));
-
-    // Add active class to the clicked tab and its matching section
-    const tabId = button.getAttribute("data-tab");
-    const tabToShow = document.getElementById(tabId);
-    if (tabToShow) {
-      tabToShow.classList.add("active");
-    }
-
-    button.classList.add("active");
+    activateSellingTab(button.getAttribute("data-tab"));
   });
 });
+
+// Deep-link support, e.g. /profile?tab=selling&subtab=authentication from
+// confirm.js's "View Status" button -- only acts when the Selling tab is
+// actually the one being deep-linked to, so a ?subtab= left over from
+// navigating away doesn't hijack an unrelated ?tab= visit.
+const sellingParams = new URLSearchParams(window.location.search);
+if (sellingParams.get("tab") === "selling") {
+  const requestedSubtab = sellingParams.get("subtab");
+  if (requestedSubtab) {
+    activateSellingTab(requestedSubtab);
+  }
+}
 
 // Filter Menu (the All/Active/Out of Stock/Draft tabs inside the Products tab).
 // Scoped to "#filter-menu .filter-btn" rather than "#products .filter-btn" --

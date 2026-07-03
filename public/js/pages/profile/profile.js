@@ -1,6 +1,7 @@
 "use strict";
 
 import { checkUserStatus, logout } from "../../auth/auth.js";
+import { initCartDrawer } from "../../components/cartDrawer.js";
 import {
   formatFirebaseDate,
   formatFollowers,
@@ -156,7 +157,8 @@ function wireLogout() {
   initBio();
   initReviews();
   wireLogout();
-  
+  initCartDrawer();
+
   // initWallet();
   // Fetch the user's profile and populate everything else
   loadProfileData();

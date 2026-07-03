@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Profile - Head-To-Toes</title>
+    <script
+      src="https://kit.fontawesome.com/854f8a6196.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/style2.css" />
+    <link rel="stylesheet" href="../css/components/pageLoader.css" />
+    <link rel="stylesheet" href="../css/components/newsletter.css" />
+    <link rel="stylesheet" href="../css/pages/sellerProfile.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <section id="header">
+      <nav></nav>
+    </section>
+    <!-- End of Navbar -->
+
+    <section class="seller-header section-p1">
+      <img src="" alt="" class="seller-avatar" id="seller-picture" />
+
+      <div class="seller-header-info">
+        <div class="seller-username-row">
+          <h1 class="seller-username" id="seller-username"></h1>
+          <div class="verified-tag" id="verified-tag" title="Trusted seller on Head-To-Toes" style="display: none">
+            <i class="fa-solid fa-shield"></i>
+            Verified
+          </div>
+        </div>
+
+        <div class="seller-stats">
+          <div class="seller-stat" id="seller-rating-stat" style="display: none">
+            <i class="fa-solid fa-star"></i>
+            <span id="seller-rating"></span>
+          </div>
+          <div class="seller-stat">
+            <span id="seller-listings-count">0</span> listings
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="follow-btn" id="follow-btn">Follow</button>
+    </section>
+
+    <section class="seller-listings-section section-p1">
+      <h2 class="seller-listings-header">Listings</h2>
+      <div class="seller-listings-grid" id="seller-listings-grid"></div>
+    </section>
+
+    <!-- Newsletter -->
+    <section id="newsletter" class="section-p1 section-m1"></section>
+
+    <footer class="section-p1"></footer>
+
+    <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
+    </div>
+    <div class="cart-drawer-backdrop" id="cartBackdrop"></div>
+
+    <script type="module" src="../js/pages/sellerProfile.js"></script>
+    <script type="module" src="../js/components/newsletter.js"></script>
+    <script type="module" src="../js/components/nav.js"></script>
+    <script src="../js/components/footer.js"></script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+.seller-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.seller-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.seller-header-info {
+  flex: 1;
+}
+
+.seller-username-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.seller-username {
+  margin: 0;
+}
+
+.verified-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #000;
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.seller-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.35rem;
+  color: #706f6f;
+}
+
+.seller-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.seller-stat .fa-star {
+  color: #f5b400;
+}
+
+.follow-btn {
+  border: 2px solid #000;
+  background-color: #000;
+  color: #fff;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--border-radius-sm, 8px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.follow-btn:hover {
+  transform: translateY(-2px);
+}
+
+.follow-btn.is-following {
+  background-color: #fff;
+  color: #000;
+}
+
+.seller-listings-section {
+  margin-top: 2rem;
+}
+
+.seller-listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.seller-listing-tile {
+  display: block;
+  position: relative;
+  text-decoration: none;
+  border-radius: var(--border-radius-sm, 8px);
+  overflow: hidden;
+}
+
+.seller-listing-tile img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+.seller-listing-price {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--border-radius-sm, 8px);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.seller-listings-empty {
+  color: #706f6f;
+}

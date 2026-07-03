@@ -172,16 +172,24 @@ function createAuthCartItem(authRequestData) {
   };
 }
 
+// userProfiles/{uid} is the source of truth for public-facing seller info
+// (see profile.js's loadProfileDisplayData, which reads the same fields).
+async function getUserProfile(userId) {
+  const snap = await getDoc(doc(db, "userProfiles", userId));
+  return snap.exists() ? snap.data() : {};
+}
+
 async function getSellerInfo(productId) {
   const data = await getProductData(productId);
-  
+
   const sellerId = data.userId;
+  const sellerProfile = await getUserProfile(sellerId);
   const productMainImage = data.images.find(image => image.isPrimary === true);
 
   return {
-      id: data.userId,
-      username: "",
-      profilePicture: "",
+      id: sellerId,
+      username: sellerProfile.username || "",
+      profilePicture: sellerProfile.profileImage || "",
       listingId: productId,
       listingPrice: data.listingPrice,
       listingSize: data.size,
@@ -1221,6 +1229,7 @@ export {
   createCartItemInFirebase,
   createAuthCartItem,
   getSellerInfo,
+  getUserProfile,
   getProductData,
   calculateSubtotal
 

@@ -265,6 +265,11 @@ app.get("/seller", (req, res) => {
   res.sendFile(path.join(staticPth, "seller/seller.html"));
 });
 
+// seller profile route (public-facing, viewed via ?id=<sellerId>)
+app.get("/sellerProfile", (req, res) => {
+  res.sendFile(path.join(staticPth, "sellerProfile/sellerProfile.html"));
+});
+
 
 
 // add product
@@ -1273,6 +1278,27 @@ async function createNotification(userId, type, title, message, link) {
   }
 }
 
+// Admin-ness is a Firebase Auth custom claim (grantAdminClaim.js), not
+// natively queryable -- finding every admin via the Auth Admin SDK would mean
+// paginating listUsers() over the whole user base. grantAdminClaim.js also
+// stamps isAdmin: true on the same user's userProfiles doc so this can just
+// be a normal Firestore query instead.
+async function notifyAdminsOfReviewableRequest(item) {
+  const adminsSnap = await db.collection("userProfiles").where("isAdmin", "==", true).get();
+
+  await Promise.all(
+    adminsSnap.docs.map((adminDoc) =>
+      createNotification(
+        adminDoc.id,
+        "authentication_review",
+        "New Authentication Request",
+        `${item.name || "An item"} was submitted for authentication review.`,
+        "/admin/authentication-review.html"
+      )
+    )
+  );
+}
+
 // Authentication payments never go through the `orders` collection --
 // they mark the authenticationRequests doc paid and kick off the AI
 // matching step that used to fire immediately on form submission (see
@@ -1311,8 +1337,10 @@ async function handleAuthPaymentSucceeded(paymentData) {
       "authentication",
       "Payment Confirmed",
       `Your ${item.name || "item"} is now queued for authentication review.`,
-      "/profile?tab=selling"
+      "/profile?tab=selling&subtab=authentication"
     );
+
+    await notifyAdminsOfReviewableRequest(item);
   } catch (err) {
     console.error(`Error handling authentication payment for request ${authRequestId}:`, err);
   }

@@ -151,3 +151,37 @@ try {
 Since `firebase-client.js` is an ES module, this top-level `await` blocks module evaluation for every importer — including `auth.js` — so `onAuthStateChanged` can no longer attach before persistence is configured.
 
 **Verified:** confirmed fixed by the user after a hard refresh directly on the authenticate page post-login; Pay Now no longer bounces to `/login`.
+
+## 2026-07-03 — Auth checkout: `PayloadTooLargeError` on `POST /create-checkout-session`
+
+**Symptom:** Browser console showed a generic `Uncaught Error: Server Error` from [checkout.js:62](public/js/commerce/checkout.js#L62) (the frontend's own catch-all for any non-2xx response). The real error only surfaced server-side: `PayloadTooLargeError: request entity too large`, from `body-parser` inside `express.json()` ([server.js:119](server.js#L119)), which has no `limit` set and defaults to 100kb. Order Details also rendered a garbled, oversized-looking image instead of the expected product photo — the tell that something wasn't a normal URL.
+
+**Root cause:** `submitToFirebase()` ([authenticate.js:1119-1183](public/js/services/authenticate.js#L1119-L1183)) correctly uploads auth-request proof photos to Firebase Storage via `uploadImagesToFirebase()` ([authenticate.js:1072-1101](public/js/services/authenticate.js#L1072-L1101)) and writes the real download URLs to the Firestore doc — but its success return was only `{ success: true, requestId }`, never exposing those uploaded URLs back to the caller.
+
+`createAuthenticationRequest()` ([authenticate.js:864-886](public/js/services/authenticate.js#L864-L886)) then built the object handed off to checkout using `formData.images` instead — the *original* array from `collectImageData()` ([authenticate.js:698-714](public/js/services/authenticate.js#L698-L714)), which holds raw base64 `data:` URIs straight from `FileReader.readAsDataURL()`, never mutated with the real Storage URLs.
+
+That base64 blob flowed: `authRequestData.images[0].url` → `createAuthCartItem()`'s `primaryImage` ([global.js:160](public/js/core/global.js#L160)) → `sessionStorage['item']` → `queryItem` in checkout.js → the `/create-checkout-session` POST body — easily over the 100kb body-parser limit for a photo.
+
+**Fix:**
+1. `submitToFirebase()` now returns the uploaded URLs too: `return { success: true, requestId: docRef.id, images: uploadedImages }`.
+2. `createAuthenticationRequest()` now builds `authRequestData.images` from `result.images` instead of `formData.images`.
+
+Both `handleAddToCartSubmission()` and `handlePayNowSubmission()` call `createAuthenticationRequest()`, so the fix covers both submission paths, not just Pay Now.
+
+**Known limitation, not yet verified:** confirmed by code trace, not yet re-run through the browser end-to-end (upload photos → Pay Now → checkout renders real thumbnail → payment succeeds). Should verify before considering this closed.
+
+## 2026-07-03 — Seller Orders tab: Pending Orders trend indicator was static markup, not computed
+
+**Symptom:** Reported as "an error" on the Seller > Orders subtab — the Pending Orders card kept showing a fixed "-5 yesterday" trend regardless of actual data, standing out next to the other three stat cards which correctly showed "No data last month" for a seller with zero orders.
+
+**Root cause:** not a bug in the sense of broken code — `updateTrends()` in [orders.js](public/js/pages/profile/selling/orders/orders.js#L197-L215) already computes real month-over-month trends for Total Orders, Total Revenue, and Average Order Value via `renderTrend()`, but Pending Orders was deliberately left out, still showing the original hardcoded `-5`/`down`/`yesterday` placeholder from the HTML. The reason (per the comment in place): pending orders are always 0 today, because `status` is set once at doc creation to Stripe's `"succeeded"` — no code path ever creates an order in any other state — so a real trend would always be a degenerate 0-vs-0 comparison.
+
+**Fix:** wired Pending Orders into the same `renderTrend()` path as the other three cards instead of leaving it static:
+```js
+const thisMonthPending = thisMonthOrders.filter((o) => o.status !== "succeeded").length;
+const lastMonthPending = lastMonthOrders.filter((o) => o.status !== "succeeded").length;
+renderTrend("pending-orders", thisMonthPending, lastMonthPending);
+```
+Also updated the caption under that card in [profile.html](public/account/profile.html#L3502) from "yesterday" to "Compared to last month," since it's now a real calendar-month comparison like Total Orders, not a stale day-over-day label.
+
+**Result today:** renders "No data last month" (grey, no arrow) — the same degenerate-case output the other cards already show for a 0-history seller — via `percentChange()`'s existing `null` branch, not a special case. No fake numbers, and it starts producing real percentages automatically the moment pending orders can actually exist (see the fulfillment-status gap noted in the "Price History chart" entry above and in `purchases.js`'s equivalent handling) — no further code change needed here when that lands.

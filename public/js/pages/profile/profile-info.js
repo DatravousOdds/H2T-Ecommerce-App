@@ -352,26 +352,35 @@ function initEditSaveCancel() {
   });
 }
 
+function activateTab(tabId) {
+  const tab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+  const content = document.getElementById(tabId);
+  if (!tab || !content) return;
+
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.classList.remove("active");
+  });
+
+  document.querySelectorAll(".tab").forEach((c) => {
+    c.classList.remove("active");
+  });
+
+  tab.classList.add("active");
+  content.classList.add("active");
+
+  localStorage.setItem("activeTab", tabId);
+}
+
 function initTabNavigation() {
   const allTabs = document.querySelectorAll(".tab-btn");
 
   allTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      const tabId = tab.getAttribute("data-tab");
-
-      allTabs.forEach((btn) => {
-        btn.classList.remove("active");
-      });
-
-      document.querySelectorAll(".tab").forEach((content) => {
-        content.classList.remove("active");
-      });
-
-      tab.classList.add("active");
-      document.getElementById(tabId).classList.add("active");
-
-      localStorage.setItem("activeTab", tabId);
+      activateTab(tab.getAttribute("data-tab"));
     });
   });
+
+  // No ?tab= read here -- nav.js's handleTabs()/switchTabs() already does
+  // this deep-link on load for these same .tab-btn/.tab elements.
 }
 

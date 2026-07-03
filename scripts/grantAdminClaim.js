@@ -12,7 +12,7 @@ if (!email) {
 }
 
 async function run() {
-  const { admin } = initializeFirebase();
+  const { admin, db } = initializeFirebase();
 
   const user = await admin.auth().getUserByEmail(email);
 
@@ -21,6 +21,13 @@ async function run() {
   }
 
   await admin.auth().setCustomUserClaims(user.uid, { admin: true });
+
+  // The custom claim is what actually gates access (checked via req.token.admin
+  // in server.js and the ID token in authentication-review.js) -- this Firestore
+  // flag exists only so server-side code can *find* admins to notify (e.g. "a
+  // new authentication request needs review") without paginating through every
+  // user via the Auth Admin SDK's listUsers().
+  await db.collection("userProfiles").doc(user.uid).set({ isAdmin: true }, { merge: true });
 
   console.log(`Granted admin claim to ${email} (${user.uid}).`);
   console.log("They need to force-refresh their ID token (or log out/in) before the client picks up the new claim.");

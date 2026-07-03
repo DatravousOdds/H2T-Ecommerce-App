@@ -336,6 +336,12 @@ const LoggedInNav = (user) => ({
           <i class="fa-solid fa-gear"></i>
           <span>Settings</span>
         </a>
+        ${user.isAdmin ? `
+        <a href="/admin/authentication-review.html" class="dropdown-item">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Authentication Review</span>
+        </a>
+        ` : ""}
         <a href="#" class="dropdown-item" id="logoutBtn">
           <i class="fa-solid fa-right-from-bracket"></i>
           <span>Log Out</span>
@@ -360,6 +366,14 @@ const LoggedInNav = (user) => ({
         <li><a data-section="settings" href="/profile?tab=settings">Settings</a></li>
       </ul>
     </li>
+    ${user.isAdmin ? `
+    <li>
+      <a href="/admin/authentication-review.html" class="menu-item">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Authentication Review</span>
+      </a>
+    </li>
+    ` : ""}
     <li>
       <a href="/signup" class="menu-item">
         <i class="fa-solid fa-user-plus"></i>

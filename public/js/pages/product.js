@@ -1,5 +1,5 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, updateResultsCount, handleFavoriteClick } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -14,6 +14,13 @@ const productId = searchQuery.get('id');
 
 const productDetailsWrapper = document.querySelector('.product-details-wrapper');
 const productCategory = document.querySelector('.prod-category');
+const sellerProfileLink = document.getElementById('sellerProfileLink');
+const sellerProfilePicture = document.getElementById('sellerProfilePicture');
+const sellerName = document.getElementById('sellerName');
+const sellerVerifiedTag = document.getElementById('sellerVerifiedTag');
+const sellerRatingStat = document.getElementById('sellerRatingStat');
+const sellerRating = document.getElementById('sellerRating');
+const sellerListingsCount = document.getElementById('sellerListingsCount');
 const productTitle = document.querySelector('.prod-title');
 const productPrice = document.querySelector('.prod-price')
 const productOriginalPrice = document.querySelector('.original-price');
@@ -184,6 +191,19 @@ async function getProductData(productId) {
     
 }
 
+// Same query shape as fetchActiveListings in pages/sellerProfile.js -- public
+// page, so only "active" listings count toward what a viewer sees/can buy.
+async function fetchSellerActiveListingsCount(sellerId) {
+    const q = query(
+        collection(db, "listings"),
+        where("userId", "==", sellerId),
+        where("status", "==", "active")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.size;
+}
+
 async function getReviews() {
     const q = query(
         collection(db, "reviews"),
@@ -249,6 +269,26 @@ async function displayProductDetails() {
         const data = await getProductData(productId);
 
         productCategory.textContent = data.category;
+
+        const sellerProfile = await getUserProfile(data.userId);
+        sellerProfilePicture.src = sellerProfile.profileImage || '';
+        sellerName.textContent = sellerProfile.username || 'Unknown Seller';
+        sellerProfileLink.href = `/sellerProfile?id=${data.userId}`;
+
+        sellerVerifiedTag.style.display = sellerProfile.isVerified ? '' : 'none';
+
+        // Same "hide instead of showing a fake 0/5" gate as sellerProfile.js/profile.js.
+        const totalRatings = sellerProfile.ratings?.metrics?.totalRatings || 0;
+        if (totalRatings > 0) {
+            sellerRatingStat.style.display = '';
+            sellerRating.textContent = sellerProfile.stats?.rating;
+        } else {
+            sellerRatingStat.style.display = 'none';
+        }
+
+        const sellerActiveListings = await fetchSellerActiveListingsCount(data.userId);
+        sellerListingsCount.textContent = sellerActiveListings;
+
         productTitle.textContent = data.productName;
         productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
         productOriginalPrice.textContent = data.originalPrice ? `$${data.originalPrice.toFixed(2)}` : '';

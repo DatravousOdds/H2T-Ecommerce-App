@@ -876,7 +876,7 @@ async function createAuthenticationRequest() {
   console.log("✅ Images uploaded successfully!");
 
   const authRequestData = {
-    images: formData.images || null,
+    images: result.images || null,
     requestId: result.requestId || null,
     productDetails: formData.productDetails || null,
     tierSelection: formData.tierSelection || null,
@@ -1170,7 +1170,7 @@ async function submitToFirebase() {
 
     console.log("✅ Document created with id: ", docRef.id);
 
-    return { success: true, requestId: docRef.id }
+    return { success: true, requestId: docRef.id, images: uploadedImages }
     
   } 
   catch (error) {

@@ -172,6 +172,7 @@ p {
 /* ── Shop Page Header ───────────────────────────── */
 
 #page-header {
+  position: relative;
   margin: 18px auto;
   width: 90%;
   height: 40vh;
@@ -183,6 +184,13 @@ p {
   text-align: center;
   flex-direction: column;
   padding: 14px;
+}
+
+#page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
 }
 
 h1, h2 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px !important; }
@@ -206,6 +214,8 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
 #page-header h2,
 #page-header p {
+  position: relative;
+  z-index: 1;
   color: #fff;
 }
 

@@ -2374,7 +2374,8 @@ footer .rights {
 
 
 .s-img {
- width: 100px;
+  object-fit: cover;
+  width: 100px;
   height: 100px;
   border-radius: 8px;
   margin: 5px;
@@ -2390,6 +2391,7 @@ footer .rights {
   display: flex;
   overflow-x: auto;
   padding-top: 1rem;
+  margin-bottom: 1rem;
   gap: 8px;
 }
 

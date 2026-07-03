@@ -1,5 +1,6 @@
 /* Page Header */
 .page-header {
+  position: relative;
   text-align: center;
   margin-bottom: 2rem;
   padding: 2rem 0;
@@ -10,13 +11,24 @@
   background-repeat: no-repeat;
 }
 
+.page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
 .page-header h1 {
+  position: relative;
+  z-index: 1;
   color: #fff;
   font-size: 2.5rem;
   font-weight: 700;
 }
 
 .page-header p {
+  position: relative;
+  z-index: 1;
   color: #fff;
   font-size: 1.2rem;
   font-weight: 400;

@@ -144,14 +144,15 @@ function renderOrders(orders) {
  * it actually compares against based on the filter would make that label
  * lie. allOrders (unfiltered) is always used here, not the filtered set.
  *
- * Pending Orders' trend indicator is intentionally left untouched (still
- * the original hardcoded "-5"/"yesterday"): pending orders are always 0 by
- * architecture (status is set once, at creation, to Stripe's "succeeded" --
- * no order is ever created in any other state). A 0-vs-0 comparison is
- * degenerate no matter what period it's measured against, so there's
- * nothing real to compute here until a real fulfillment-status field
- * exists (see purchases.js's fulfillmentStatus handling for the same gap
- * on the buyer side).
+ * Pending Orders now runs through the same renderTrend() path as the other
+ * three cards. It will render "No data last month" today, because pending
+ * orders are always 0 by architecture (status is set once, at creation, to
+ * Stripe's "succeeded" -- no order is ever created in any other state), so
+ * current vs. previous is always 0 vs. 0. That's the honest answer given
+ * percentChange()'s null case, not a special case -- once a real
+ * fulfillment-status field exists (see purchases.js's fulfillmentStatus
+ * handling for the same gap on the buyer side), this starts producing real
+ * numbers with no further changes here.
  */
 
 function isInCalendarMonth(order, year, month) {
@@ -209,9 +210,13 @@ function updateTrends(allOrders) {
   const thisMonthAOV = thisMonthOrders.length > 0 ? thisMonthRevenue / thisMonthOrders.length : 0;
   const lastMonthAOV = lastMonthOrders.length > 0 ? lastMonthRevenue / lastMonthOrders.length : 0;
 
+  const thisMonthPending = thisMonthOrders.filter((o) => o.status !== "succeeded").length;
+  const lastMonthPending = lastMonthOrders.filter((o) => o.status !== "succeeded").length;
+
   renderTrend("total-orders", thisMonthOrders.length, lastMonthOrders.length);
   renderTrend("total-revenue", thisMonthRevenue, lastMonthRevenue, { isCurrency: true });
   renderTrend("average-order-value", thisMonthAOV, lastMonthAOV, { isCurrency: true });
+  renderTrend("pending-orders", thisMonthPending, lastMonthPending);
 }
 
 function updateStats(orders) {

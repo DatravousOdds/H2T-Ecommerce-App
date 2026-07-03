@@ -12,7 +12,14 @@ function lastSixMonthBuckets() {
 }
 
 // Initialize the chart using Chart.js
-document.addEventListener("DOMContentLoaded", async () => {
+// Runs directly rather than waiting on DOMContentLoaded: this is a deferred
+// module script, so the DOM is already parsed by the time it executes. Other
+// module scripts loaded earlier in profile.html (overview.js, products.js,
+// etc.) do slow sequential Firestore awaits at their top level, which delays
+// this file's own execution -- past the point DOMContentLoaded actually
+// fires. Listening for that event here meant it had already fired, so this
+// callback silently never ran and the chart never rendered.
+(async () => {
   const ctx = document.getElementById("salesChart").getContext("2d");
   const currentUser = await checkUserStatus();
 
@@ -75,10 +82,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   new Chart(ctx, config);
-});
+})();
 
 // Initialize the chart using Chart.js
-document.addEventListener("DOMContentLoaded", async () => {
+(async () => {
   const ctx = document.getElementById("revenueChart").getContext("2d");
   const currentUser = await checkUserStatus();
 
@@ -140,10 +147,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   const revenueChart = new Chart(ctx, config);
-});
+})();
 
 // Initialize the chart using Chart.js
-document.addEventListener("DOMContentLoaded", async () => {
+(async () => {
   const ctx = document.getElementById("categoryChartPie").getContext("2d");
   const currentUser = await checkUserStatus();
 
@@ -210,10 +217,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   const categoryChart = new Chart(ctx, pieConfig);
-});
+})();
 
 // Initialize the chart using Chart.js
-document.addEventListener("DOMContentLoaded", async () => {
+(async () => {
   const ctx = document.getElementById("orderTimelineBarChart").getContext("2d");
   const currentUser = await checkUserStatus();
 
@@ -285,7 +292,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   const orderTimelineChart = new Chart(ctx, barConfig);
-});
+})();
 
 // Function to update chart with new data
 function updateChart(newData) {

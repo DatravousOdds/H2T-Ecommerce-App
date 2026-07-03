@@ -135,7 +135,7 @@ function displayAuthConfirmation(item, cardDetails) {
                 </div>
                 <div class="cta-buttons">
                         <button type="button" onclick="window.print()" class="printOrderBtn">Print receipt</button>
-                        <button type="button" onclick="window.location.href='/profile?tab=selling'">View Status</button>
+                        <button type="button" onclick="window.location.href='/profile?tab=selling&subtab=authentication'">View Status</button>
                 </div>
             </div>
     `
