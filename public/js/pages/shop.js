@@ -2,10 +2,15 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, kidsRange, womenRange, mensRange, displayProducts } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { db, collection, where, query, getDocs, limit, startAfter } from '../api/firebase-client.js';
 
 
 const params = new URLSearchParams(window.location.search);
 const activeFilter = params.get("category") || params.get("brand");
+// "Under $X" homepage cards link here with ?maxPrice=X instead of a
+// category/brand -- it's a range query, not an equality one, so it can't
+// go through loadProducts() and gets its own query function below.
+const maxPrice = params.has("maxPrice") ? parseFloat(params.get("maxPrice")) : null;
 console.log(activeFilter)
 
 
@@ -15,7 +20,9 @@ const state = {
   lastVisible: null,
   filters: new Map(),
 };
-let products =  await loadProducts("category",`${activeFilter}`, state);
+let products = maxPrice
+  ? await loadPriceFilteredProducts(maxPrice, state)
+  : await loadProducts("category", `${activeFilter}`, state);
 
 const pageHeader = document.getElementById("page-header");
 const breadcrumbs = document.querySelector(".breadcrumbs");
@@ -29,6 +36,9 @@ const filterSection = document.getElementById("filter-section");
 const appliedFilters = document.getElementById("appliedFilters");
 const filterDisplay = document.getElementById("filterDisplay");
 const picker = document.getElementById("colorPicker");
+const menSizePicker = document.getElementById("men-size-filter");
+const womenSizePicker = document.getElementById("women-size-filter");
+const kidSizePicker = document.getElementById("kid-size-filter");
 const categoryFilter = document.querySelectorAll("#category-filter input[type='checkbox']");
 const productsContainer = document.getElementById("productsContainer");
 const loadMoreBtn = document.getElementById("loadMoreBtn");
@@ -144,7 +154,9 @@ loadMoreBtn.addEventListener("click", async () => {
   showLoader(productsContainer);
 
   try {
-    const newProducts = await loadProducts("category", activeFilter, state);
+    const newProducts = maxPrice
+      ? await loadPriceFilteredProducts(maxPrice, state)
+      : await loadProducts("category", activeFilter, state);
     products = [...products, ...newProducts];
     filteredProducts = [...products];
     filterProducts(products, state.filters);
@@ -231,6 +243,33 @@ colors.forEach(({ name, value, hex }) => {
     li.appendChild(btn);
     picker.appendChild(li);
 });
+
+// renders one size group's checkboxes; ids are namespaced per group since
+// mensRange/womenRange/kidsRange overlap (e.g. both include size 9), and
+// shop.html shows all three groups on one page unlike mens.html/women.html
+const renderSizeOptions = (container, range, group) => {
+  range.forEach((size) => {
+    const wrapper = document.createElement("div");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "check";
+    checkbox.id = `size-${group}-${size}`;
+    checkbox.value = size;
+
+    const label = document.createElement("label");
+    label.setAttribute("for", `size-${group}-${size}`);
+    label.textContent = size;
+
+    wrapper.appendChild(checkbox);
+    wrapper.appendChild(label);
+    container.appendChild(wrapper);
+  });
+};
+
+renderSizeOptions(menSizePicker, mensRange, "men");
+renderSizeOptions(womenSizePicker, womenRange, "women");
+renderSizeOptions(kidSizePicker, kidsRange, "kid");
 
 sortOption.forEach((link) => {
   link.addEventListener("click", function (e) {
@@ -407,6 +446,55 @@ function setState() {
     let value = activeFilter.toString();
     state.filters.set("category", [value]);
 };
+
+// Mirrors loadProducts()'s pagination shape (lastVisible/hasMore/limit 48)
+// so the same loadMoreBtn handler works for both, but queries on
+// originalPrice < maxPrice instead of an equality field -- Firestore
+// doesn't let a single query mix that range filter through loadProducts()'s
+// generic where(field, "==", value) signature.
+async function loadPriceFilteredProducts(maxPrice, state) {
+    const productsCollection = collection(db, "listings");
+    const constraints = [
+        where("status", "==", "active"),
+        where("originalPrice", "<", maxPrice),
+    ];
+    if (state.lastVisible) constraints.push(startAfter(state.lastVisible));
+
+    const q = query(productsCollection, ...constraints, limit(48));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        state.hasMore = false;
+        return [];
+    }
+
+    const docs = querySnapshot.docs;
+    state.lastVisible = docs[docs.length - 1];
+    state.hasMore = docs.length === 48;
+    return docs;
+}
+
+function setPriceHeader(maxPrice) {
+    pageHeader.innerHTML = "";
+    pageHeader.innerHTML = `
+    <h2>Under $${maxPrice}</h2>
+
+    <p>
+        Buy Item any of our newly listed item, or find something that fits your
+        budget. All our items are guarantee authenticate here are Head-To-Toe!
+    </p>
+
+    `;
+
+    breadcrumbs.innerHTML = "";
+    breadcrumbs.innerHTML = `
+        <ol class="breadcrumbs-routes">
+            <li><a href="/">Home</a></li>
+            <li><span>></span></li>
+            <li id="curr-page" class="curr-pg">Under $${maxPrice}</li>
+        </ol>
+    `;
+};
 // reusable function to delete map entry based on value, moves to global later
 function deleteMapEntry(entry) {
     for (let [key, value] of state.filters.entries()) {
@@ -424,8 +512,12 @@ function deleteMapEntry(entry) {
 };
 
 
-setHeader();
-setState();
-setCateogryFilter();
+if (maxPrice) {
+    setPriceHeader(maxPrice);
+} else {
+    setHeader();
+    setState();
+    setCateogryFilter();
+}
 displayProducts(products, "productsContainer");
 updateLoadMoreVisibility();

@@ -48,10 +48,14 @@ function buildPanel() {
   return panel;
 }
 
+const PANEL_WIDTH = 340;
+const VIEWPORT_MARGIN = 16;
+
 function positionPanel(anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
-  panel.style.top = `${rect.bottom + window.scrollY + 8}px`;
-  panel.style.left = `${Math.min(rect.left + window.scrollX, window.innerWidth - 340)}px`;
+  const maxLeft = window.innerWidth - PANEL_WIDTH - VIEWPORT_MARGIN;
+  panel.style.top = `${rect.bottom + 8}px`;
+  panel.style.left = `${Math.max(VIEWPORT_MARGIN, Math.min(rect.left, maxLeft))}px`;
 }
 
 function formatRelativeTime(createdAt) {

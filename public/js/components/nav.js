@@ -308,36 +308,36 @@ const LoggedInNav = (user) => ({
         <div class="dropdown-header">
           <h3>Account</h3>
         </div>
-        <a href="/profile" class="dropdown-item">
+        <a href="/profile?tab=profile" class="dropdown-item">
           <i class="fa-regular fa-user"></i>
           <span>Profile</span>
         </a>
-        <a href="/payment" class="dropdown-item">
-          <i class="fa-solid fa-credit-card"></i>
+        <a href="/profile?tab=payment-information" class="dropdown-item">
+          <i class="fa-solid fa-wallet"></i>
           <span>Payment Information</span>
         </a>
-        <a href="/selling" class="dropdown-item">
+        <a href="/profile?tab=selling" class="dropdown-item">
           <i class="fa-solid fa-hand-holding-dollar"></i>
-          <span>Selling</span>
+          <span>Seller Dashboard</span>
         </a>
-        <a href="/favorites" class="dropdown-item">
-          <i class="fa-solid fa-heart"></i>
+        <a href="/profile?tab=favorites" class="dropdown-item">
+          <i class="fa-solid fa-bookmark"></i>
           <span>Favorites</span>
         </a>
-        <a href="/notifications" class="dropdown-item">
+        <a href="/profile?tab=notification" class="dropdown-item">
           <i class="fa-solid fa-bell"></i>
           <span>Notifications</span>
         </a>
-        <a href="/purchases" class="dropdown-item">
-          <i class="fa-solid fa-cart-shopping"></i>
+        <a href="/profile?tab=purchases" class="dropdown-item">
+          <i class="fa-solid fa-sack-dollar"></i>
           <span>Purchases</span>
         </a>
-        <a href="/settings" class="dropdown-item">
+        <a href="/profile?tab=settings" class="dropdown-item">
           <i class="fa-solid fa-gear"></i>
           <span>Settings</span>
         </a>
         <a href="#" class="dropdown-item" id="logoutBtn">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <i class="fa-solid fa-right-from-bracket"></i>
           <span>Log Out</span>
         </a>
       </div>
@@ -519,6 +519,14 @@ const setupEventListeners = (nav) => {
   // Tab navigation
   try {
     const { switchTabs } = handleTabs();
+
+    // The account dropdown links to /profile?tab=<id> so it works as a
+    // real navigation from any page. On profile.html itself, handleTabs()
+    // finds the tab elements and this activates the requested one; on
+    // every other page it's a harmless no-op (handleTabs found nothing).
+    const requestedTab = new URLSearchParams(window.location.search).get("tab");
+    if (requestedTab) switchTabs(requestedTab);
+
     const submenuLinks = nav.querySelectorAll(".submenu a") || [];
 
     submenuLinks.forEach((link) => {

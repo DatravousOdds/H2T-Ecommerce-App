@@ -91,7 +91,7 @@ justDropped();
 mensCollection();
 womenCollection();
 belowRetailPrices();
-loadBrandCounts();
+loadHomepageCounts();
 
 // Firestore has no case-insensitive query, and seller.js saves `brand` as
 // free-text (no fixed dropdown/casing) -- so this fetches active listings
@@ -99,29 +99,54 @@ loadBrandCounts();
 // listing search. `data-brand` on each .brand-banner is the source of
 // truth for which brand each banner counts, independent of its (currently
 // inconsistent) ?brand= link slug.
-async function loadBrandCounts() {
+//
+// The "Under $X" price tier cards need a count too, and since Firestore
+// can't cheaply return counts for several disjoint price buckets in one
+// call either, they piggyback on this same fetch instead of firing their
+// own query.
+async function loadHomepageCounts() {
   const brandBanners = document.querySelectorAll('.brand-banner[data-brand]');
-  if (brandBanners.length === 0) return;
+  const priceTiers = document.querySelectorAll('.category-shop[data-max-price]');
+  if (brandBanners.length === 0 && priceTiers.length === 0) return;
 
   try {
     const q = query(collection(db, "listings"), where("status", "==", "active"));
     const querySnapshot = await getDocs(q);
     const activeListings = querySnapshot.docs.map(doc => doc.data());
 
-    brandBanners.forEach(banner => {
-      const brandName = banner.dataset.brand.trim().toLowerCase();
-      const count = activeListings.filter(
-        listing => (listing.brand || '').trim().toLowerCase() === brandName
-      ).length;
-
-      const listingsEl = banner.querySelector('.total-listings');
-      if (listingsEl) {
-        listingsEl.textContent = `${count.toLocaleString()} listing${count === 1 ? '' : 's'}`;
-      }
-    });
+    updateBrandCounts(brandBanners, activeListings);
+    updatePriceTierCounts(priceTiers, activeListings);
   } catch (error) {
-    console.error("Error loading brand listing counts:", error);
+    console.error("Error loading homepage listing counts:", error);
   }
+}
+
+function updateBrandCounts(brandBanners, activeListings) {
+  brandBanners.forEach(banner => {
+    const brandName = banner.dataset.brand.trim().toLowerCase();
+    const count = activeListings.filter(
+      listing => (listing.brand || '').trim().toLowerCase() === brandName
+    ).length;
+
+    const listingsEl = banner.querySelector('.total-listings');
+    if (listingsEl) {
+      listingsEl.textContent = `${count.toLocaleString()} listing${count === 1 ? '' : 's'}`;
+    }
+  });
+}
+
+function updatePriceTierCounts(priceTiers, activeListings) {
+  priceTiers.forEach(tierEl => {
+    const maxPrice = parseFloat(tierEl.dataset.maxPrice);
+    const count = activeListings.filter(
+      listing => Number(listing.originalPrice) < maxPrice
+    ).length;
+
+    const countEl = tierEl.querySelector('.price-tier-count');
+    if (countEl) {
+      countEl.textContent = `${count.toLocaleString()} listing${count === 1 ? '' : 's'}`;
+    }
+  });
 }
 
 
