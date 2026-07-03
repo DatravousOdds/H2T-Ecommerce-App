@@ -164,7 +164,7 @@ const renderProducts = (products, containerElement) => {
     const productElement = document.createElement("div");
     productElement.classList.add("pro");
     productElement.onclick = () => {
-      window.location.href = `shop/product.html?id=${doc.id}`;
+      window.location.href = `/shop/product.html?id=${doc.id}`;
     };
     productElement.innerHTML = `
       

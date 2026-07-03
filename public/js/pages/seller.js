@@ -4,9 +4,34 @@ import { collection, addDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 
+// Kept in sync with the color values men.js filters listings by.
+const colors = [
+    { name: "Black",  value: "black" },
+    { name: "White",  value: "white" },
+    { name: "Multi",  value: "multi" },
+    { name: "Blue",   value: "blue" },
+    { name: "Grey",   value: "grey" },
+    { name: "Red",    value: "red" },
+    { name: "Yellow", value: "yellow" },
+    { name: "Brown",  value: "brown" },
+    { name: "Pink",   value: "pink" },
+    { name: "Purple", value: "purple" },
+    { name: "Green",  value: "green" },
+    { name: "Orange", value: "orange" },
+];
+
 
 
 const imageGridContainer = document.querySelector('.images-grid-container');
+
+const videoContainer = document.getElementById('videoContainer');
+const videoInput = document.getElementById('video');
+const videoPreview = document.querySelector('.video-preview');
+const removeVideoBtn = videoContainer.querySelector('.remove-image-btn');
+
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_VIDEO_DURATION = 30; // seconds
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm'];
 
 const productTitle = document.getElementById('title');
 const productCategory = document.getElementById('category');
@@ -17,6 +42,7 @@ const sizeInfo = document.getElementById("sizeInfo");
 const productInfo = document.getElementById("product-info");
 const productBrand = document.getElementById("brand");
 const productCondition = document.getElementById("condition");
+const productColor = document.getElementById("color");
 
 const titleCharCounter = document.getElementById('titleCharCounter');
 const descriptionWordCounter = document.getElementById('descriptionWordCounter');
@@ -30,7 +56,6 @@ const savingModal = document.getElementById('savingModal');
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
 
-const tradeStatus = document.querySelector('.button-container');
 const postBtn = document.getElementById('postBtn');
 const draftBtn = document.getElementById('draftBtn');
 
@@ -43,7 +68,7 @@ const dimensionExitBtn = document.getElementById('dimensionExitBtn');
 const currentUser =  await checkUserStatus();
 
 if (!currentUser) {
-    window.location.href = '/login';
+    window.location.replace('/login');
 };
 
 const storage = getStorage(app, 'gs://ecom-website-94d87');
@@ -66,7 +91,6 @@ const CATEGORY_DEFAULTS = {
     'other':       { length: 12, width: 9,  height: 4,  weight: 1.0 },
 };
 let listing = {
-    availableForTrade: true,
     listingPrice: 0,
     userId: currentUser.userId,
     productName: '',
@@ -144,6 +168,7 @@ const CATEGORY_FIELDS = {
 
 initFormListeners();
 wordCounter();
+populateColorOptions();
 
 postBtn.addEventListener('click', async () => {
     // Step 1: Validate basic information
@@ -184,10 +209,6 @@ carrierWrapper.addEventListener('click', (e) => {
     carrierInput.checked = true;
 })
 
-tradeStatus.addEventListener('click', () => {
-    tradeStatus.classList.toggle('active');
-})
-
 shippingContainers.forEach(container => {
     container.addEventListener('click', () => {
         // remove selected from all first
@@ -200,6 +221,17 @@ shippingContainers.forEach(container => {
 imageGridContainer.addEventListener('click', (e) => {
     const imageContainer = e.target.closest('.image-container');
     if (!imageContainer) { return null;}
+
+    if (imageContainer === videoContainer) {
+        if (e.target.closest('.remove-image-btn')) {
+            e.stopPropagation();
+            handleImageRemove(videoInput, videoPreview, removeVideoBtn);
+            return;
+        }
+        handleVideoUpload(videoInput, videoPreview, removeVideoBtn);
+        return;
+    }
+
         // console.log(e.target)
         const imageInput = imageContainer.querySelector('input');
         const imagePreview = imageContainer.querySelector('.image-preview');
@@ -366,6 +398,15 @@ function setDefaultDimensions(category) {
         document.getElementById('height').value = defaults.height;
         document.getElementById('weight').value = defaults.weight;
 
+}
+
+function populateColorOptions() {
+    colors.forEach(({ name, value }) => {
+        const opt = document.createElement("option");
+        opt.value = value;
+        opt.textContent = name;
+        productColor.appendChild(opt);
+    });
 }
 
 function getCategoryFields(category) {
@@ -598,8 +639,8 @@ function resetForm() {
         button.style.display = 'none';
     });
 
-    tradeStatus.classList.remove('active');
-
+    videoPreview.src = '';
+    videoPreview.style.display = 'none';
 };
 
 
@@ -692,13 +733,13 @@ function collectListingInfo(status = 'active') {
     listing.categoryMeta = categoryMeta;
     listing.originalPrice = parseFloat(productPrice.value);
     listing.productName = productTitle.value.trim();
-    listing.availableForTrade = tradeStatus.classList.contains('active');
     listing.userId = currentUser.userId;
     listing.status = status;
     listing.description = productDescription?.value.trim();
     listing.brand = productBrand?.value.trim();
     listing.condition = productCondition?.value.trim();
     listing.size = productSize?.value.trim();
+    listing.color = productColor?.value.trim() || null;
     listing.createdAt = serverTimestamp();
 
 }
@@ -772,6 +813,51 @@ function handleImageRemove(input, preview, removeBtn) {
     preview.style.display = 'none';
     removeBtn.style.display = 'none';
     return;
+}
+
+function handleVideoUpload(input, preview, removeBtn) {
+    input.click();
+
+    input.addEventListener('change', (e) => {
+        const selectedFile = e.target.files[0];
+        if (!selectedFile) return;
+
+        if (!ALLOWED_VIDEO_TYPES.includes(selectedFile.type)) {
+            alert(`Invalid file type: ${selectedFile.type} is not a valid video type.`);
+            handleImageRemove(input, preview, removeBtn);
+            return;
+        }
+
+        if (selectedFile.size >= MAX_VIDEO_SIZE) {
+            alert("Video file is too large! Max size is 50MB.");
+            handleImageRemove(input, preview, removeBtn);
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(selectedFile);
+        const probe = document.createElement('video');
+        probe.preload = 'metadata';
+
+        probe.onloadedmetadata = () => {
+            URL.revokeObjectURL(objectUrl);
+
+            if (probe.duration > MAX_VIDEO_DURATION) {
+                alert(`Video is too long! Keep it under ${MAX_VIDEO_DURATION} seconds.`);
+                handleImageRemove(input, preview, removeBtn);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                removeBtn.style.display = 'block';
+            };
+            reader.readAsDataURL(selectedFile);
+        };
+
+        probe.src = objectUrl;
+    });
 }
 
 
@@ -861,6 +947,24 @@ async function uploadImagesToFirebase(images, userId) {
 
 }
 
+function collectVideoData() {
+    const src = videoPreview.getAttribute('src');
+    if (src && src.trim() !== '') {
+        return { url: src };
+    }
+    return null;
+}
+
+async function uploadVideoToFirebase(videoData, userId, listingId) {
+    const videoPath = `listings/${userId}/${listingId}/video_${Date.now()}.mp4`;
+    const storageRef = ref(storage, videoPath);
+
+    const uploadResult = await uploadString(storageRef, videoData.url, 'data_url');
+    const downloadURL = await getDownloadURL(uploadResult.ref);
+
+    return { url: downloadURL, path: videoPath };
+}
+
 async function uploadListingToFirebase(data) {
     try {
         const docRef = await addDoc(collection(db, 'listings'), data);
@@ -877,7 +981,7 @@ async function uploadListing() {
     showSavingModal();
     try {
         const images = collectImageData('.image-preview');
-        const { images: uploadedImages, failed } = await uploadImagesToFirebase(images, currentUser.email);
+        const { images: uploadedImages, failed } = await uploadImagesToFirebase(images, currentUser.userId);
 
         if (failed.length > 0) {
             removeSavingModal();
@@ -886,6 +990,12 @@ async function uploadListing() {
         }
 
         listing.images = uploadedImages;
+
+        const videoData = collectVideoData();
+        if (videoData) {
+            listing.video = await uploadVideoToFirebase(videoData, currentUser.userId, listing.listingId);
+        }
+
         await uploadListingToFirebase(listing);
         removeSavingModal();
         showSuccessMessage();
@@ -901,7 +1011,7 @@ async function saveDraft() {
     showLoader(mainEl);
     try {
         const images = collectImageData('.image-preview');
-        const { images: uploadedImages, failed } = await uploadImagesToFirebase(images, currentUser.email);
+        const { images: uploadedImages, failed } = await uploadImagesToFirebase(images, currentUser.userId);
 
         if (failed.length > 0) {
             alert(`${failed.length} of ${images.length} photo(s) failed to upload. Please try again.`);
@@ -909,6 +1019,12 @@ async function saveDraft() {
         }
 
         listing.images = uploadedImages;
+
+        const videoData = collectVideoData();
+        if (videoData) {
+            listing.video = await uploadVideoToFirebase(videoData, currentUser.userId, listing.listingId);
+        }
+
         await uploadListingToFirebase(listing);
         alert("Your listing has been saved as a draft.");
     } catch (e) {

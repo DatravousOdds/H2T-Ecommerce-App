@@ -203,10 +203,11 @@
             <h2 class="header">Price History</h2>
           </div>
          
-          <div class="chart-tooltip">
+          <button type="button" class="chart-tooltip" id="viewAllSalesBtn">
             <p>Last sale</p>
-            <span>$139</span>
-          </div>
+            <span id="lastSalePrice">--</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
         </div>
 
         <!--Chart filters-->
@@ -352,11 +353,11 @@
 
     <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
     </div>
-    
-    
 
-    
-    
+    <div class="cart-drawer" id="salesDrawer" aria-modal="true" role="dialog" aria-label="All sales">
+    </div>
+    <div class="sales-drawer-backdrop" id="salesDrawerBackdrop"></div>
+
     <!-- Drawer backdrop (separate from your modal overlay) -->
     <div class="cart-drawer-backdrop" id="cartBackdrop"></div>
     <!-- ===== END MODALS ===== -->

@@ -92,7 +92,6 @@ const displayProducts = (products, template) => {
   if (products.length === 0) {
     // Invite the user to fill the gap instead of a dead-end message.
     // Reuses .chart-empty-state so this matches the price-history empty state on product.html.
-    productsContainer.style.justifyContent = 'center';
     productsContainer.innerHTML = `
       <div class="chart-empty-state no-results-invite">
         <i class="fa-solid fa-box-open"></i>

@@ -60,3 +60,27 @@ function displayCartItems(items) {
 **Pricing decision:** authentication payments charge the flat tier cost only — no sales tax or marketplace fee. It's a service fee, not a marketplace sale between a buyer and seller, so the product-purchase fee model doesn't apply.
 
 **Known limitation, not yet verified:** `hideShippingSection()` just sets `display: none` on the whole shipping block in `checkout.html`. Haven't checked this rendered in a browser — depends on `.shipping-payment`'s layout rules (flex/grid) whether the remaining "Payment Method" column ends up looking reasonably positioned with its sibling gone, or needs its own layout tweak.
+
+## 2026-07-03 — Listing uploads keyed by email instead of uid, no Storage rule enforced ownership
+
+**Found via:** code review of [seller.js](public/js/pages/seller.js#L996) while adding the draft-save feature, not a runtime bug report.
+
+**Root cause:** `uploadImagesToFirebase()`/`uploadVideoToFirebase()` both take a `userId` param and build the Storage path as `listings/${userId}/${listingId}/...`, but all 4 call sites passed `currentUser.email` instead of `currentUser.userId` — while the Firestore listing doc, right in the same file, correctly used `currentUser.userId`. No Storage Security Rule enforced ownership on this path at all, so the mismatch never surfaced as a permission error; it would have, the moment a rule keyed on `request.auth.uid == userId` (the standard shape, same as the `notifications`/`carts`/`favorites` Firestore rules above) got added.
+
+**Fix:**
+1. Swapped `currentUser.email` → `currentUser.userId` at all 4 call sites (image + video upload, in both the post flow and the draft flow).
+2. Added a Storage rule for `listings/{userId}/{listingId}/{fileName}`:
+```
+match /listings/{userId}/{listingId}/{fileName} {
+  allow read: if true;
+  allow write: if request.auth != null
+               && request.auth.uid == userId
+               && (
+                 (request.resource.contentType in ['image/jpeg', 'image/png'] && request.resource.size < 5 * 1024 * 1024) ||
+                 (request.resource.contentType in ['video/mp4', 'video/quicktime', 'video/webm'] && request.resource.size < 50 * 1024 * 1024)
+               );
+}
+```
+`read: if true` because these are public storefront photos/videos ([product.js](public/js/pages/product.js) renders them to any shopper, no auth gate) — the opposite of the owner-only notifications/carts/favorites rules, which guard private per-user data. `write` mirrors seller.js's own client-side whitelist (`ALLOWED_VIDEO_TYPES`, `MAX_VIDEO_SIZE`, the image type/size check in `handleImageUpload`) so the rule can't be bypassed by calling the Storage SDK directly instead of going through the UI.
+
+**Known limitation, researched not fixed:** Security Rules only see request metadata (size, contentType, path) — never actual pixel data — so this can't enforce image resolution, aspect ratio, or reject low-quality/blurry photos. That needs either a pre-upload client-side check (spoofable, UX-only) or real server-side processing after upload (e.g. a Cloud Storage `onObjectFinalized` trigger decoding the file with something like `sharp` and deleting it if it fails). This app has no Cloud Functions deployed today — `firebase-admin` is only used from the existing Express server in [server.js](server.js) — so "real" quality enforcement would mean either standing up Cloud Functions for the first time, or routing seller image uploads through an Express endpoint instead of direct client-to-Storage writes. Not started; revisit if blurry/low-res listing photos become an actual seller-quality problem worth the infra lift.

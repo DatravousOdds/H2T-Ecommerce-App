@@ -643,6 +643,18 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   color: #878787;
 }
 
+/* When the empty state renders inside a product grid, it lands in the
+   grid's first column instead of centering — span every column and
+   center the content as a flex box regardless of column count. */
+.product-grid .chart-empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+}
+
 .chart-empty-state i {
   font-size: 2.5rem;
   color: #e1e1e1;

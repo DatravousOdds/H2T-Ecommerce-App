@@ -411,6 +411,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
 }
 
 .chart-tooltip p {
@@ -419,6 +425,11 @@
 
 .chart-tooltip span {
     font-weight: 600;
+}
+
+.chart-tooltip i {
+    font-size: 0.75rem;
+    color: #7a7a7a;
 }
 
 .chart-filter-grid {
@@ -716,6 +727,47 @@
 
 .checkout-btn:hover {
     background-color: #b82a1e;
+}
+
+/* sales drawer */
+
+.sale-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+    padding-bottom: 0.75rem;
+}
+
+.sale-row-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sale-price {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.sale-date {
+    font-size: 0.75rem;
+    color: #7a7a7a;
+}
+
+.sales-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 999998;
+}
+
+#salesDrawer.is-open ~ .sales-drawer-backdrop {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* modal close button */

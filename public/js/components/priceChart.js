@@ -1,10 +1,5 @@
-import { collection, query, where, db, getDocs } from '../api/firebase-client.js';
-import { getProductData } from '../pages/product.js';
-
-
 const searchQuery = new URLSearchParams(window.location.search);
 const productId = searchQuery.get('id');
-const productData = await getProductData(productId);
 
 const chartFilterBtns = document.querySelectorAll('.chart-filter-grid .filter');
 
@@ -58,34 +53,26 @@ chartFilterBtns.forEach(btn => {
     btn.addEventListener('click', async () => {
         const filterVal = btn.dataset.filter;
         const { startDate, endDate } = formatFilter(filterVal);
-        console.log(startDate)
         await updateData(startDate, endDate);
-        
     })
 })
 
 function formatFilter(filter) {
-    const amountStr = filter.split(" ")[0];
-    const amount = parseInt(amountStr);
-    console.log(amount)
+    const amount = parseInt(filter.split(" ")[0]);
     const type = filter.split(" ")[1];
 
     const today = new Date();
-    let endDate = new Date(today);
+    const endDate = new Date(today);
     let startDate;
-
-    console.log("amount:", amountStr);
-    console.log("type:", type);
 
     switch (type) {
         case "month":
             startDate = new Date(today.getFullYear(), today.getMonth() - amount, 1);
-            console.log("Start:", startDate, "End:", endDate);
             break;
         case "year":
-        case "ytd":
-            startDate = new Date(today.getFullYear(),0,1);
-            console.log("Start:", startDate, "End:", endDate);
+            // Trailing N years back from today, not "since Jan 1" (that'd be YTD,
+            // which doesn't match what a "1Y" button implies).
+            startDate = new Date(today.getFullYear() - amount, today.getMonth(), today.getDate());
             break;
         default:
           return  { startDate: null, endDate: null }
@@ -100,9 +87,9 @@ async function updateData(start, end) {
     let prices = [];
 
     try {
-        ({ dates, prices } = await fetchSalesPrices(start, end, productData.productName, productData.brand));
+        ({ dates, prices } = await fetchSalesPrices(start, end));
     } catch (error) {
-        // e.g. Firestore permission errors for unauthenticated users — treat like no data
+        // e.g. network/server errors — treat like no data
         console.error("Error fetching sales prices:", error);
     }
 
@@ -121,39 +108,26 @@ async function updateData(start, end) {
     priceHistoryChart.update();
 }
 
-async function fetchSalesPrices(startDate = null, endDate = null, productName, brand) {
-    let q;
-
-    // createdAt is stored as Unix seconds (see server.js webhook handler), not a Firestore Timestamp
+export async function fetchSalesPrices(startDate = null, endDate = null) {
+    // Routed through the server (not a direct Firestore read) because `orders`
+    // docs carry buyer PII — see server.js's /api/products/:id/sales-history
+    // for why this can't just be a public Firestore rule.
+    const params = new URLSearchParams();
     if (startDate && endDate) {
-       q = query(
-        collection(db, "orders"),
-        where("createdAt", ">=", Math.floor(startDate.getTime() / 1000)),
-        where("createdAt", "<=", Math.floor(endDate.getTime() / 1000)),
-        );
-    } else {
-        q = query(collection(db, "orders"))
+        params.set("startDate", Math.floor(startDate.getTime() / 1000));
+        params.set("endDate", Math.floor(endDate.getTime() / 1000));
     }
 
-    const querySnapshot = await getDocs(q);
+    const res = await fetch(`/api/products/${productId}/sales-history?${params}`);
 
-    if (querySnapshot.empty) {
-        return { dates: [], prices: []}
+    if (!res.ok) {
+        throw new Error(`Failed to fetch sales history: ${res.status}`);
     }
 
-    const prices = [];
-    const dates = [];
+    const sales = await res.json();
 
-    querySnapshot.docs.forEach(doc => {
-        const data = doc.data();
-        const item = data.item;
-
-        // orders store a single "item" object (name/brand), not an "items" array
-        if (item && item.name === productName && item.brand === brand) {
-            dates.push(new Date(data.createdAt * 1000));
-            prices.push(parseFloat(data.subtotal));
-        }
-    })
-
-    return { dates, prices }
+    return {
+        dates: sales.map(sale => new Date(sale.createdAt * 1000)),
+        prices: sales.map(sale => sale.subtotal),
+    };
 }

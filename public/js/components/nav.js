@@ -10,7 +10,7 @@ const handleTabs = () => {
 
   if (!tabs.length || !tabBtns.length) {
     console.log("Tab elements not found");
-    return { switchTabs: () => {} };
+    return { switchTabs: () => {}, hasTabs: false };
   }
 
   tabs[0]?.classList.add("active");
@@ -44,7 +44,7 @@ const handleTabs = () => {
     });
   });
 
-  return { switchTabs };
+  return { switchTabs, hasTabs: true };
 };
 
 // ============================================
@@ -351,13 +351,13 @@ const LoggedInNav = (user) => ({
         <i class="fa-solid fa-chevron-right"></i>
       </button>
       <ul class="submenu">
-        <li><a data-section="profile" href="/profile">Profile</a></li>
-        <li><a data-section="payment" href="/profile">Payment Information</a></li>
-        <li><a data-section="selling" href="/profile">Selling</a></li>
-        <li><a data-section="favorites" href="/profile">Favorites</a></li>
-        <li><a data-section="notifications" href="/profile">Notifications</a></li>
-        <li><a data-section="purchases" href="/profile">Purchases</a></li>
-        <li><a data-section="settings" href="/profile">Settings</a></li>
+        <li><a data-section="profile" href="/profile?tab=profile">Profile</a></li>
+        <li><a data-section="payment-information" href="/profile?tab=payment-information">Payment Information</a></li>
+        <li><a data-section="selling" href="/profile?tab=selling">Seller Dashboard</a></li>
+        <li><a data-section="favorites" href="/profile?tab=favorites">Favorites</a></li>
+        <li><a data-section="notification" href="/profile?tab=notification">Notifications</a></li>
+        <li><a data-section="purchases" href="/profile?tab=purchases">Purchases</a></li>
+        <li><a data-section="settings" href="/profile?tab=settings">Settings</a></li>
       </ul>
     </li>
     <li>
@@ -518,12 +518,12 @@ const setupEventListeners = (nav) => {
 
   // Tab navigation
   try {
-    const { switchTabs } = handleTabs();
+    const { switchTabs, hasTabs } = handleTabs();
 
-    // The account dropdown links to /profile?tab=<id> so it works as a
-    // real navigation from any page. On profile.html itself, handleTabs()
-    // finds the tab elements and this activates the requested one; on
-    // every other page it's a harmless no-op (handleTabs found nothing).
+    // The account dropdown/submenu links to /profile?tab=<id> so it works
+    // as a real navigation from any page. On profile.html itself,
+    // handleTabs() finds the tab elements and this activates the
+    // requested one; on every other page it's a harmless no-op.
     const requestedTab = new URLSearchParams(window.location.search).get("tab");
     if (requestedTab) switchTabs(requestedTab);
 
@@ -531,11 +531,18 @@ const setupEventListeners = (nav) => {
 
     submenuLinks.forEach((link) => {
       link.addEventListener("click", (e) => {
-        e.preventDefault();
         const section = link.getAttribute("data-section");
-        if (section) {
+
+        // Only intercept when tabs already exist on this page (i.e. we're
+        // already on profile.html) -- switch instantly instead of forcing
+        // a reload. Everywhere else, don't preventDefault: let the link's
+        // real href (e.g. /profile?tab=selling from another page, or
+        // /mens, /women, etc.) navigate normally.
+        if (section && hasTabs) {
+          e.preventDefault();
           switchTabs(section);
         }
+
         slideMenu.classList.remove("active");
         slideMenuOverlay.classList.remove("active");
       });

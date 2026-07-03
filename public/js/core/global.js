@@ -764,7 +764,6 @@ const displayProducts = (products, containerElement) => {
   if (products.length === 0) {
     // Invite the user to fill the gap instead of a dead-end message.
     // Reuses .chart-empty-state so this matches the price-history empty state on product.html.
-    productsContainer.style.justifyContent = 'center';
     productsContainer.innerHTML = `
       <div class="chart-empty-state no-results-invite">
         <i class="fa-solid fa-box-open"></i>
@@ -780,7 +779,7 @@ const displayProducts = (products, containerElement) => {
     const productElement = document.createElement("div");
     productElement.classList.add("pro");
     productElement.onclick = () => {
-      window.location.href = `shop/product.html?id=${doc.id}`;
+      window.location.href = `/shop/product.html?id=${doc.id}`;
     };
 
     // A discount only exists if the item has a higher original price to compare against.

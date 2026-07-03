@@ -1,8 +1,9 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
 import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, updateResultsCount, handleFavoriteClick } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
-import { initCartDrawer } from '../components/cartDrawer.js';
+import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { fetchSalesPrices } from '../components/priceChart.js';
 
 
 const user = await checkUserStatus();
@@ -38,11 +39,16 @@ const priceHistoryFilters = document.querySelectorAll('.chart-filter-grid .filte
 const proContainer = document.querySelector('.pro-container');
 const statRow = document.querySelector('.stat-row');
 const buyBtn = document.getElementById('buyBtn');
+const salesDrawer = document.getElementById('salesDrawer');
+const salesDrawerBackdrop = document.getElementById('salesDrawerBackdrop');
+const viewAllSalesBtn = document.getElementById('viewAllSalesBtn');
 
 initCartDrawer();
+setAddToCartButtonState();
 setBreadcrumb();
 displayProductDetails();
 displayPricingKpis();
+displaySalesHistory();
 displayReviews();
 showLoader(proContainer);
 try {
@@ -84,8 +90,16 @@ modalCloseBtn.addEventListener('click', () => {
     modalOverlay.classList.remove('show');
     offerModal.classList.remove('active');
     document.body.style.overflow = 'auto';
-    
+
 })
+
+viewAllSalesBtn?.addEventListener('click', () => {
+    salesDrawer.classList.add('is-open');
+});
+
+salesDrawerBackdrop?.addEventListener('click', () => {
+    salesDrawer.classList.remove('is-open');
+});
 
 addToCartBtn.addEventListener('click', () => {
     addToCart(productId,user);
@@ -101,6 +115,23 @@ buyBtn.addEventListener('click', async () => {
 })
 
 /* ==== ASYNC FUNCTIONS ===== */
+
+// The button only greys itself out in the click handler below, so a refresh
+// forgets that state -- this checks the cart (Firestore for logged-in users,
+// localStorage for guests, both via getCartItems()) on load and re-applies it.
+async function setAddToCartButtonState() {
+    try {
+        const cartItems = await getCartItems(user);
+        const alreadyInCart = cartItems.some(item => item.listingId === productId);
+
+        if (alreadyInCart) {
+            addToCartBtn.classList.add('disabled');
+        }
+    } catch (error) {
+        console.error("Error checking cart state for add-to-cart button:", error);
+    }
+}
+
 async function createCartItem() {
   try {
     const profile = await getSellerInfo(productId);
@@ -444,6 +475,29 @@ function setProductDescription(data) {
     productDescription.innerText = data.description;
 }
 
+function toggleTrend(statValueEl, hasData) {
+    const delta = statValueEl.closest('.stat-card')?.querySelector('.stat-delta');
+    if (delta) delta.hidden = !hasData;
+}
+
+// fetchSalesPrices returns two parallel, unsorted arrays (the server route has
+// no orderBy). Zip them into records and sort oldest -> newest so each sale's
+// trend can be measured against the one immediately before it.
+function buildSalesHistory(dates, prices) {
+    const sales = dates
+        .map((date, i) => ({ date, price: prices[i] }))
+        .sort((a, b) => a.date - b.date);
+
+    return sales.map((sale, i) => {
+        const previousPrice = i > 0 ? sales[i - 1].price : null;
+        const percentChange = previousPrice
+            ? ((sale.price - previousPrice) / previousPrice) * 100
+            : null;
+
+        return { ...sale, percentChange };
+    });
+}
+
 function getTotalReviews(reviews) {
     const count = reviews.docs?.length ?? 0;
     const reviewCount = document.getElementById('reviewsCount');
@@ -451,6 +505,68 @@ function getTotalReviews(reviews) {
         reviewCount.innerText = `(${count})`;
     }
     
+}
+
+function saleRowTemplate(sale) {
+    const dateStr = sale.date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+
+    const trendHTML = sale.percentChange === null
+        ? ''
+        : `<span class="stat-delta ${sale.percentChange >= 0 ? 'up' : 'down'}">
+             <i class="fa-solid fa-arrow-trend-${sale.percentChange >= 0 ? 'up' : 'down'}"></i>
+             ${Math.abs(sale.percentChange).toFixed(2)}%
+           </span>`;
+
+    return `
+    <div class="sale-row">
+        <div class="sale-row-info">
+            <span class="sale-price">$${sale.price.toFixed(2)}</span>
+            <span class="sale-date">${dateStr}</span>
+        </div>
+        ${trendHTML}
+    </div>`;
+}
+
+async function displaySalesHistory() {
+    if (!salesDrawer) return;
+
+    let dates = [];
+    let prices = [];
+    try {
+        ({ dates, prices } = await fetchSalesPrices());
+    } catch (error) {
+        console.error("Error fetching sales history:", error);
+    }
+
+    const sales = buildSalesHistory(dates, prices);
+    const mostRecentSale = sales[sales.length - 1];
+
+    const lastSalePriceEl = document.getElementById('lastSalePrice');
+    if (lastSalePriceEl) {
+        lastSalePriceEl.textContent = mostRecentSale ? `$${mostRecentSale.price.toFixed(2)}` : 'N/A';
+    }
+
+    // Most recent sale first, like StockX's sales feed — buildSalesHistory
+    // sorts oldest -> newest so trend math reads correctly, so reverse for display.
+    salesDrawer.innerHTML = `
+      <div class="cart-drawer-header">
+        <h2>All sales</h2>
+        <button type="button" class="modal-close" id="salesDrawerClose" aria-label="Close sales history">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="cart-drawer-body">
+        ${sales.length ? [...sales].reverse().map(saleRowTemplate).join('') : '<p>No sales yet.</p>'}
+      </div>
+    `;
+
+    document.getElementById('salesDrawerClose')?.addEventListener('click', () => {
+        salesDrawer.classList.remove('is-open');
+    });
 }
 
 async function displayPricingKpis() {
@@ -469,6 +585,14 @@ async function displayPricingKpis() {
         lowestOffer.textContent = `$${offers.lowest.toFixed(2) || 0}`;
         averageSalesPrice.textContent = `$${average}`;
         marketPrice.textContent = `$${marketValuePrice || 0}`
+
+        // The trend arrows/percentages are hardcoded markup with no real
+        // computation behind them yet — hide them rather than show a fake
+        // trend next to a $0 placeholder when there's no data for that stat.
+        toggleTrend(highestOffer, offers.highest > 0);
+        toggleTrend(lowestOffer, offers.lowest > 0);
+        toggleTrend(averageSalesPrice, average > 0);
+        toggleTrend(marketPrice, parseFloat(marketValuePrice) > 0);
     } catch (error) {
         console.error("Error fetching pricing KPIs:", error);
     } finally {

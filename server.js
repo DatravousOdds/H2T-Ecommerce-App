@@ -474,6 +474,44 @@ app.get("/api/cart", verifyAuth, async (req, res) => {
 })
 
 
+// Public price-history data for the product page chart. No verifyAuth — this is
+// storefront data any shopper can see. Kept out of Firestore rules on purpose:
+// `orders` docs carry buyerId/buyerEmail/shippingAddress, and Security Rules can
+// only grant/deny a whole document, not individual fields. Routing through the
+// admin SDK here lets us hand back just { date, subtotal } per sale.
+app.get("/api/products/:id/sales-history", async (req, res) => {
+  try {
+    const listingSnap = await db.collection("listings").doc(req.params.id).get();
+
+    if (!listingSnap.exists) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const { productName, brand } = listingSnap.data();
+
+    let ordersQuery = db.collection("orders");
+    const { startDate, endDate } = req.query;
+
+    // Same field, both inequalities -> no composite index required.
+    if (startDate && endDate) {
+      ordersQuery = ordersQuery
+        .where("createdAt", ">=", Number(startDate))
+        .where("createdAt", "<=", Number(endDate));
+    }
+
+    const snapshot = await ordersQuery.get();
+
+    const sales = snapshot.docs
+      .map((doc) => doc.data())
+      .filter((data) => data.item && data.item.name === productName && data.item.brand === brand)
+      .map((data) => ({ createdAt: data.createdAt, subtotal: parseFloat(data.subtotal) }));
+
+    return res.json(sales);
+  } catch (err) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });

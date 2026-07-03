@@ -3,6 +3,7 @@ import { getDocs, where, query, collection, doc, addDoc, updateDoc } from '../ap
 import { db } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { getCartItems, initCartDrawer } from '../components/cartDrawer.js';
+import { removeFromCart, decrementCartCount } from '../core/global.js';
 
 const currentUser = await checkUserStatus();
 let bagItems = await getCartItems(currentUser);
@@ -38,6 +39,7 @@ function displayCartItems(items) {
         const div = document.createElement('div');
         div.classList.add('item-container');
         div.dataset.id = isAuth ? item.authRequestId : item.listingId;
+        div.dataset.cartId = currentUser ? item.id : (isAuth ? item.authRequestId : item.listingId);
         div.innerHTML = isAuth ? authBagItemMarkup(item) : productBagItemMarkup(item);
 
         bagItemGrid.appendChild(div);
@@ -60,6 +62,17 @@ function displayCartItems(items) {
             window.location.href = checkoutUrl;
         })
     })
+
+    const deleteBtns = document.querySelectorAll('.delete-product');
+
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const card = btn.closest('.item-container');
+            const cartId = card.dataset.cartId;
+            await removeFromCart(cartId, currentUser);
+            decrementCartCount();
+        })
+    })
 }
 
 function productBagItemMarkup(item) {
@@ -70,7 +83,7 @@ function productBagItemMarkup(item) {
                     <img src="./images/pexels-erik-mclean-9367504%202.jpg" alt="Seller profile photo">
                     <div class="seller-at">
                       <p>${item.sellerName}</p>
-                      <p>@gioseller</p>
+                      <p>@${item.sellerName}</p>
                     </div>
                   </div>
                   <img src="${item.image}" class="product-img" alt="Nike Air Jordan 1 sneaker">
