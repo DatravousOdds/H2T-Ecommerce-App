@@ -819,7 +819,7 @@ export function resetCartCount() {
 // so swapping real cards in doesn't reflow the grid. Shared by every page
 // that calls loadProducts()/displayProducts() (men/women/accessories/shop/
 // releases), so the shimmer only needs to be defined once.
-export function renderProductSkeletons(containerElement, count = 12) {
+function renderProductSkeletons(containerElement, count = 12) {
   const productsContainer = document.getElementById(`${containerElement}`);
   if (!productsContainer) return;
 
