@@ -31,7 +31,7 @@ const createFooter = () => {
 
     <div class="col">
       <h4>Sell</h4>
-      <a href="/seller">Sell on H2T</a>
+      <a href="/seller">Sell on Hexxo</a>
     </div>
 
 
