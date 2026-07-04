@@ -7293,6 +7293,23 @@ h6 {
   align-items: center;
 }
 
+/* Skeleton loading state -- hidden by default, swapped in for the real
+   .pfp-1 form while loadProfileData() fetches (see profile.js). */
+#profile-data .skeleton-item,
+#shipping-data .skeleton-item {
+  display: none;
+}
+
+#profile-data.is-loading > .skeleton-item,
+#shipping-data.is-loading > .skeleton-item {
+  display: block;
+}
+
+#profile-data.is-loading > .pfp-1:not(.skeleton-item),
+#shipping-data.is-loading > .pfp-1:not(.skeleton-item) {
+  display: none;
+}
+
 .pfp-1 input[type="text"],
 .pfp-1 input[type="email"],
 .pfp-1 input[type="tel"],
@@ -7653,6 +7670,11 @@ details h3 {
 
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
+
+  .order-details-container {
+    max-width: 360px;
+  }
+
   /* dashboards styles */
   .search-wrapper {
     width: 100%;
@@ -7965,8 +7987,35 @@ details h3 {
     width: 100%;
   }
 
+  .nav-wrapper {
+    flex-direction: column;
+  }
+
   #left-navigation {
+    width: 100%;
+  }
+
+  #left-nav-wrapper {
+    width: 100%;
+    height: auto;
+    padding: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #left-nav-wrapper::-webkit-scrollbar {
     display: none;
+  }
+
+  #left-nav-wrapper .tabs {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .lf-wrapper li {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .profile-section {
@@ -9857,8 +9906,35 @@ input:checked + .slider:before {
     padding: 30px 50px;
   }
 
+  .nav-wrapper {
+    flex-direction: column;
+  }
+
   #left-navigation {
+    width: 100%;
+  }
+
+  #left-nav-wrapper {
+    width: 100%;
+    height: auto;
+    padding: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #left-nav-wrapper::-webkit-scrollbar {
     display: none;
+  }
+
+  #left-nav-wrapper .tabs {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .lf-wrapper li {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .profile-section {

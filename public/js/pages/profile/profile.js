@@ -99,7 +99,11 @@ async function loadSellingData(userData) {
 // ---------------------------------------------------------------------------
 
 async function loadProfileData() {
-  // showLoader(document.getElementById(".profile-section"));
+  const profileDataSection = document.getElementById("profile-data");
+  const shippingDataSection = document.getElementById("shipping-data");
+  profileDataSection?.classList.add("is-loading");
+  shippingDataSection?.classList.add("is-loading");
+
   try {
     const userData = await checkUserStatus();
     console.log("Profile Data:", userData)
@@ -108,6 +112,8 @@ async function loadProfileData() {
     if (userData) {
       loadPersonalInfoData(userData);
       loadShippingInfoData(userData);
+      profileDataSection?.classList.remove("is-loading");
+      shippingDataSection?.classList.remove("is-loading");
       loadProfileDisplayData(userData);
       loadReviewData(userData);
       await initFavorites(userData);
@@ -129,7 +135,8 @@ async function loadProfileData() {
     console.error("Error happened when loading userData from auth.js", error);
     throw error;
   } finally {
-    // hideLoader(document.getElementById(".profile-section"));
+    profileDataSection?.classList.remove("is-loading");
+    shippingDataSection?.classList.remove("is-loading");
   }
 }
 

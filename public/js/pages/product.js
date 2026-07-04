@@ -1,5 +1,5 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -27,7 +27,10 @@ const productOriginalPrice = document.querySelector('.original-price');
 const mainImage = document.getElementById('MainImg');
 const smallImagesGroup = document.querySelector('.s-img-group');
 
-const sizes = document.querySelector('.sizes');
+// Scoped past .s_prod_details:not(.skeleton-item) -- the skeleton placeholder
+// reuses the same .sizes class for layout, so a bare '.sizes' selector would
+// grab the (hidden) skeleton's copy instead of the real one.
+const sizes = document.querySelector('.s_prod_details:not(.skeleton-item) .sizes');
 
 const reviewCount = document.getElementById('reviews-count');
 const reviewsContainer = document.querySelector('.comments');
@@ -43,7 +46,6 @@ const cartDrawer = document.getElementById('cartDrawer');
 const addToCartBtn = document.getElementById('addToCartBtn');
 const cartDrawerBody = document.getElementById('cartDrawerBody');
 const priceHistoryFilters = document.querySelectorAll('.chart-filter-grid .filter');
-const proContainer = document.querySelector('.pro-container');
 const statRow = document.querySelector('.stat-row');
 const buyBtn = document.getElementById('buyBtn');
 const salesDrawer = document.getElementById('salesDrawer');
@@ -58,15 +60,12 @@ displayPricingKpis();
 displaySalesHistory();
 displayReviews();
 initOfferPanels();
-showLoader(proContainer);
+renderProductSkeletons('proContainer');
 try {
-    showLoader(proContainer);
     const products = await loadRelateProducts();
     displayProducts(products);
 } catch (error) {
     console.error("Error fetching related products:", error);
-} finally {
-    hideLoader(proContainer);
 }
 const item = await createCartItem();
 
