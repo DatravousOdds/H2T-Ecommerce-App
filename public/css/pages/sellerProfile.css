@@ -117,3 +117,24 @@
 .seller-listings-empty {
   color: #706f6f;
 }
+
+
+@media (max-width: 768px) {
+  .seller-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .seller-header-info {
+    margin-top: 0.5rem;
+  }
+
+  .seller-stats {
+    justify-content: center;
+  }
+
+  .seller-username {
+    font-size: 1.25rem;
+  }
+}

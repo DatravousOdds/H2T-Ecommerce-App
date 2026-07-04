@@ -1024,6 +1024,10 @@
 
 @media (max-width: 768px) {
 
+    .cart-drawer-footer {
+       max-width: 90%; 
+    }
+
     .offer-modal {
         overflow-y: hidden;
         width: 350px;
