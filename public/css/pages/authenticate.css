@@ -1131,6 +1131,11 @@ select {
 }
 
 @media (max-width: 480px) {
+
+  .form-actions {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
   :root {
     --spacing-mid: 0.75rem;
     --spacing-lg: 1rem;

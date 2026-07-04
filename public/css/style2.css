@@ -3207,7 +3207,12 @@ footer .rights {
 
   
 
-  .small-screen-nav-container {
+  /* Notifications and profile already have a path via the hamburger
+     menu's slide-out list, but the cart has no equivalent entry point,
+     so the bag icon stays visible here instead of hiding with the rest
+     of the small-screen-nav row. */
+  .small-screen-nav-container .notification-link,
+  .small-screen-nav-container a[aria-label="User profile"] {
     display: none;
   }
 
@@ -3228,7 +3233,7 @@ footer .rights {
     flex-direction: row;
     gap: 1rem;
     flex: 1;
-    max-width: 280px;
+    max-width: 220px;
   }
 
   /* Search form */

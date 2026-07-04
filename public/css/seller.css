@@ -902,6 +902,15 @@ button {
 /* Responsive */
 
 @media (max-width: 576px) {
+  .success-modal {
+    width: 90%;
+    height: auto;
+  }
+
+  .m-product-info {
+    width: 100%;
+  }
+
   .images-grid-container {
       grid-template-columns: 1fr;
   }
