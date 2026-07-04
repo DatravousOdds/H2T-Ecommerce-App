@@ -1,6 +1,6 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, displayProducts, getCartCount, handleFavoriteClick, renderProductSkeletons } from '../core/global.js';
-import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
+import { loadProducts, displayProducts, getCartCount, handleFavoriteClick, renderProductSkeletons, getCartItems } from '../core/global.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
 import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js';
 import { showPageLoader, hidePageLoader } from '../components/pageLoader.js';
 

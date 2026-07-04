@@ -130,6 +130,22 @@ function orderRow(order) {
   `;
 }
 
+// Mirrors orderRow's 8-column shape so the table doesn't reflow when real
+// rows swap in.
+function orderSkeletonRow() {
+  return `
+    <tr class="product-row skeleton-item">
+      ${Array.from({ length: 8 }, () => `<td><span class="skeleton skeleton-line medium"></span></td>`).join("")}
+    </tr>
+  `;
+}
+
+function renderOrderSkeletons(count = 5) {
+  const tbody = document.querySelector(".order-table tbody");
+  if (!tbody) return;
+  tbody.innerHTML = Array.from({ length: count }, orderSkeletonRow).join("");
+}
+
 function renderOrders(orders) {
   const tbody = document.querySelector(".order-table tbody");
   if (!tbody) return;
@@ -447,6 +463,8 @@ async function loadOrdersTab(userId) {
     console.error("loadOrdersTab: no userId provided");
     return;
   }
+
+  renderOrderSkeletons();
 
   try {
     currentOrders = await fetchSellerOrders(userId);

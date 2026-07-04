@@ -1,6 +1,5 @@
 import { collection, addDoc, getDocs, where, query, limit, getDoc, startAfter } from '../api/firebase-client.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, setDoc, serverTimestamp, db, doc, app } from '../api/firebase-client.js';
-import { getCartItems } from '../components/cartDrawer.js';
 import { checkUserStatus } from '../auth/auth.js';
 
 let currentUser = null;
@@ -13,10 +12,9 @@ let cartCount = Number(localStorage.getItem('cartCount')) || 0;
  */
 let favoritedIds = new Set();
 
-// Deliberately not a top-level await: this module and cartDrawer.js import
-// each other, and a top-level await inside that cycle let other modules
-// (e.g. nav.js) run before currentUser/cartCount finished initializing --
-// the source of the "Cannot access before initialization" crashes.
+// Deliberately not a top-level await: it previously caused a circular-import
+// race with cartDrawer.js that let other modules (e.g. nav.js) run before
+// currentUser/cartCount finished initializing, throwing TDZ ReferenceErrors.
 (async () => {
   currentUser = await checkUserStatus();
   const cartItemCount = await getCartItems(currentUser);
@@ -278,8 +276,36 @@ async function deleteItemFromFirebaseCart(id, userId) {
   const docRef = doc(db, "carts", userId, "items", id);
   const deletedItem = await deleteDoc(docRef);
   return {delete: true, message: deletedItem}
-  
+
 }
+
+export async function getCartItems(user) {
+  if (!user) {
+    return JSON.parse(localStorage.getItem('cart') || '[]');
+
+  } else {
+    const userId = user.idToken;
+
+    try {
+      const request = await fetch('/api/cart', {
+        headers: {
+          'Authorization': `Bearer ${userId}`
+        }
+      })
+
+      if(!request.ok) {
+        throw new Error(`Failed fetching cart: ${request.status}`)
+      }
+
+      const response = await request.json();
+      return response;
+
+    } catch (err) {
+      console.error("Failed fetching to the server", err);
+      return []
+    }
+  }
+};
 
 async function calculateSubtotal(items) {
   console.log("items to calculate:", items)

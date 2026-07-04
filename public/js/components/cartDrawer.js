@@ -1,4 +1,4 @@
-import { removeFromCart, calculateSubtotal, decrementCartCount } from "../core/global.js";
+import { removeFromCart, calculateSubtotal, decrementCartCount, getCartItems } from "../core/global.js";
 import { checkUserStatus } from "../auth/auth.js";
 
 let currentUser = null;
@@ -48,11 +48,55 @@ const authTemplate = (item) =>
         </button>
 </div>`;
 
+// Mirrors cartTemplate/authTemplate's shape (avatar+name, image, brand/name/
+// size/price lines) so the drawer doesn't jump when real items swap in. The
+// close button is wired here too since getCartItems() is async -- without
+// it, clicking close during that gap would do nothing until it resolves.
+function cartSkeletonHTML() {
+  return `
+    <div class="cart-item skeleton-item">
+      <div class="seller-profile">
+        <span class="skeleton" style="width: 20px; height: 20px; border-radius: 50%;"></span>
+        <span class="skeleton skeleton-line short" style="width: 80px;"></span>
+      </div>
+      <div class="product-info-wrapper">
+        <span class="skeleton" style="width: 50px; height: 50px; border-radius: 4px; flex-shrink: 0;"></span>
+        <div class="cart-item-info">
+          <div class="cart-product-info">
+            <span class="skeleton skeleton-line short"></span>
+            <span class="skeleton skeleton-line medium"></span>
+            <span class="skeleton skeleton-line short"></span>
+            <span class="skeleton skeleton-line short" style="width: 30%;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCartSkeleton(cartDrawer, count = 2) {
+  cartDrawer.innerHTML = `
+    <div class="cart-drawer-header">
+      <h2>Your Bag</h2>
+      <button class="modal-close" id="cartDrawerClose" aria-label="Close cart">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="cart-drawer-body" id="cartDrawerBody">
+      ${Array.from({ length: count }, cartSkeletonHTML).join("")}
+    </div>
+  `;
+
+  document.getElementById('cartDrawerClose').addEventListener('click', () => {
+    cartDrawer.classList.remove('is-open');
+  });
+}
+
 async function renderCart(currentUser) {
   const cartDrawer = document.getElementById('cartDrawer');
   if(!cartDrawer) return;
-  cartDrawer.innerHTML = "";
-  
+  renderCartSkeleton(cartDrawer);
+
   const items = await getCartItems(currentUser);
   // console.log("items in cart:", items)
   const subtotal = await calculateSubtotal(items);
@@ -97,37 +141,6 @@ async function renderCart(currentUser) {
       updateSubtotal(currentUser);
     })
   })
-};
-
-export async function getCartItems(user) {
-  // console.log("getCartItems called with user:", user);
-  if (!user) {
-    return JSON.parse(localStorage.getItem('cart') || '[]');
-
-  } else {
-    const userId = user.idToken;
-    // console.log(`userId: ${userId}`)
-
-    try {
-      const request = await fetch('/api/cart', {
-        headers: {
-          'Authorization': `Bearer ${userId}` 
-        }
-      })
-
-      if(!request.ok) {
-        throw new Error(`Failed fetching cart: ${request.status}`)
-      }
-
-      const response = await request.json();
-      return response;
-
-    } catch (err) {
-      console.error("Failed fetching to the server", err);
-      return []
-    }
-  }
-
 };
 
 async function updateSubtotal() {

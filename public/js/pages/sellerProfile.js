@@ -55,11 +55,25 @@ async function fetchActiveListings(sellerId) {
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
 
+// Mirrors listingTile's shape (image + price) so the grid doesn't reflow
+// when real tiles swap in.
+function renderListingSkeletons(containerEl, count = 8) {
+  if (!containerEl) return;
+  containerEl.innerHTML = Array.from({ length: count }, () => `
+    <div class="seller-listing-tile skeleton-item">
+      <div class="skeleton skeleton-image"></div>
+      <span class="skeleton skeleton-line short"></span>
+    </div>
+  `).join("");
+}
+
 async function loadSellerListings(sellerId, containerEl) {
   if (!sellerId) {
     console.error("loadSellerListings: no sellerId provided");
     return;
   }
+
+  renderListingSkeletons(containerEl);
 
   try {
     const listings = await fetchActiveListings(sellerId);

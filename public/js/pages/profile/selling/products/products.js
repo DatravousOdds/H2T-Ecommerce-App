@@ -227,6 +227,25 @@ function formatListedDate(createdAt) {
   });
 }
 
+// All four tables' EMPTY_ROW uses colspan 8, so a single 8-cell skeleton
+// row matches every one of them.
+function productSkeletonRow() {
+  return `
+    <tr class="skeleton-item">
+      ${Array.from({ length: 8 }, () => `<td><span class="skeleton skeleton-line medium"></span></td>`).join("")}
+    </tr>
+  `;
+}
+
+function renderProductTableSkeletons(count = 5) {
+  ["all-products-table", "active-products-table", "out-of-stock-products-table", "draft-products-table"].forEach(
+    (tableId) => {
+      const tbody = document.getElementById(tableId);
+      if (tbody) tbody.innerHTML = Array.from({ length: count }, productSkeletonRow).join("");
+    }
+  );
+}
+
 function populateTable(tableId, items, rowTemplate, emptyMessage) {
   const tbody = document.getElementById(tableId);
   if (!tbody) return;
@@ -430,6 +449,8 @@ async function loadProductsTab(userId) {
     console.error("loadProductsTab: no userId provided");
     return;
   }
+
+  renderProductTableSkeletons();
 
   try {
     const [listings, totalSales] = await Promise.all([

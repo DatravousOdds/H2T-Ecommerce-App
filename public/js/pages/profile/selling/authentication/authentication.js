@@ -65,6 +65,21 @@ function requestRow(id, request) {
   `;
 }
 
+// Mirrors requestRow's 5-column shape.
+function requestSkeletonRow() {
+  return `
+    <tr class="skeleton-item">
+      ${Array.from({ length: 5 }, () => `<td><span class="skeleton skeleton-line medium"></span></td>`).join("")}
+    </tr>
+  `;
+}
+
+function renderRequestSkeletons(count = 5) {
+  const tbody = document.querySelector(".auth-request-table tbody");
+  if (!tbody) return;
+  tbody.innerHTML = Array.from({ length: count }, requestSkeletonRow).join("");
+}
+
 function renderRequests(requests) {
   const tbody = document.querySelector(".auth-request-table tbody");
   if (!tbody) return;
@@ -97,6 +112,8 @@ async function loadAuthenticationTab(userId) {
     console.error("loadAuthenticationTab: no userId provided");
     return;
   }
+
+  renderRequestSkeletons();
 
   try {
     const requests = await fetchAuthRequests(userId);

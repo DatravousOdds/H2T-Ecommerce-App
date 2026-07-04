@@ -1,7 +1,7 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
-import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { fetchSalesPrices } from '../components/priceChart.js';
 

@@ -2,8 +2,8 @@
 import { getDocs, where, query, collection, doc, addDoc, updateDoc } from '../api/firebase-client.js';
 import { db } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
-import { getCartItems, initCartDrawer } from '../components/cartDrawer.js';
-import { removeFromCart, decrementCartCount } from '../core/global.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
+import { removeFromCart, decrementCartCount, getCartItems } from '../core/global.js';
 
 const currentUser = await checkUserStatus();
 let bagItems = await getCartItems(currentUser);
