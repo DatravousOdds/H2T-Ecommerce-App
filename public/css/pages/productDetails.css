@@ -1023,6 +1023,12 @@
 }
 
 @media (max-width: 768px) {
+
+    .offer-modal {
+        overflow-y: hidden;
+        width: 350px;
+        height: 600px;
+    }
     .product-details-wrapper {
         flex-direction: column;
     }
