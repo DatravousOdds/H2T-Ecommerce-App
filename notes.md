@@ -251,3 +251,25 @@ Also updated the caption under that card in [profile.html](public/account/profil
 - `confirm.js` now calls that endpoint via `fetch()` with `Authorization: Bearer ${user.idToken}` instead of the client-side `onSnapshot` listener. Dropped the now-unused `collection`/`query`/`where`/`onSnapshot`/`db` imports.
 
 **Not done:** did not add an `orders` Firestore rule — same reasoning as the Price History chart entry, still applies.
+
+## 2026-07-04 — Checkout redirected to `/login` for an already-logged-in user
+
+**Symptom:** Add an item to the cart, go to the bag page ([cart.js](public/js/commerce/cart.js)), click "Checkout" — bounced straight to `/login` even though the user was already logged in (confirmed logged in on every other page, including the cart page itself right before clicking).
+
+**Root cause:** [checkout.js](public/js/commerce/checkout.js#L10) gated the whole page on `JSON.parse(sessionStorage.getItem('user'))`, a completely different (and stale) signal from `checkUserStatus()` — the single source of truth every other protected flow uses (`cart.js`, `confirm.js`, `product.js`, etc.). That `sessionStorage['user']` key is only ever written in two places in [auth.js](public/js/auth/auth.js#L322,L386): the signup success handler and the login form's submit handler — i.e. only at the exact moment a user types their credentials into the login/signup form in the *current tab*. It is never written on page load, and never re-derived from Firebase's own persisted session.
+
+So the moment a user is logged in via a persisted session instead of having just typed their password in this tab — closed and reopened the browser, opened a new tab, or simply had `browserLocalPersistence` restore their session on load — `sessionStorage['user']` is empty for that tab even though `checkUserStatus()` correctly resolves them as logged in from the real (IndexedDB-backed) Firebase auth state. `checkout.js` checked the wrong flag before ever calling `checkUserStatus()`, so it bounced a genuinely logged-in user to `/login`.
+
+**Fix:** dropped the `sessionStorage['user']` gate entirely. `checkout.js` now calls `checkUserStatus()` first and gates on its return value directly, same as every other page:
+```js
+let currentUser = await checkUserStatus();
+
+if (!currentUser) {
+    window.location.href = '/login';
+} else {
+    ...
+}
+```
+The rest of the file already used `currentUser` (from `checkUserStatus()`) for everything past the gate (`currentUser.userId`, `.email`, `.idToken`) — the stale `user` variable was only ever read at the gate itself, nowhere else, so no other call site needed to change.
+
+**Not touched:** the `sessionStorage.setItem("user", ...)` writes in `auth.js`'s login/signup handlers and the parallel `localStorage.setItem("user", ...)` write — grepped for other readers of `sessionStorage['user']` and found none, so nothing else depends on it today. Worth a later cleanup pass to remove the now-fully-unused writes, but left alone since deleting dead writes wasn't needed to fix this bug.

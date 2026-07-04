@@ -7,20 +7,16 @@ const searchQuery = new URLSearchParams(window.location.search);
 const listingId = searchQuery.get('listingId');
 const authRequestId = searchQuery.get('authRequestId');
 const queryItem = JSON.parse(sessionStorage.getItem('item'));
-const user = JSON.parse(sessionStorage.getItem('user'));
-
-
 
 let checkout;
 let actions;
 let elements;
 let paymentIntentId;
-let currentUser;
+let currentUser = await checkUserStatus();
 
-if(!user) {
+if(!currentUser) {
     window.location.href = '/login';
 } else {
-    currentUser = await checkUserStatus();
     // Authentication requests have no seller/shipping/marketplace-fee
     // concept -- they're a flat service fee, not a product sale.
     const isAuthPayment = queryItem?.itemType === 'authentication';
