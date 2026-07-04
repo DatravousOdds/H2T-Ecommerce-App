@@ -224,8 +224,8 @@ function displayOrderConfirmation(orderData) {
                         
                         <div class="details">
                             <dt>Shipping To:</dt>
-                            <dd id="toAddress">${orderData.shippingAddress.replace(/"/g,'')}</dd> 
-                        </div> 
+                            <dd id="toAddress">${formatBuyerShippingAddress(user)}</dd>
+                        </div>
                         <hr>
                         <div class="details">
                             <dt>Shipping Estimate:</dt>
@@ -313,6 +313,17 @@ function displayOrderConfirmation(orderData) {
             </div>
     `
 };
+
+// order.shippingAddress is the seller's ship-from location (see purchases.js),
+// not the buyer's delivery address -- this page's "Shipping To" needs the
+// buyer's own address instead, the same source checkout.js's shipping section
+// already reads from.
+function formatBuyerShippingAddress(buyer) {
+    if (!buyer?.shipping) return "";
+
+    const { address, city, state, zipCode } = buyer.shipping;
+    return `${buyer.firstName || ''} ${buyer.lastName || ''} -- ${address}, ${city}, ${state} ${zipCode}`.trim();
+}
 
 function formatDate(timestamp) {
     const date = new Date(timestamp * 1000);

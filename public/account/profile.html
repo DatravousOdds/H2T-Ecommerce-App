@@ -97,7 +97,7 @@
               <!-- Profile Picture Section -->
               <div id="pfp-data" class="pfp profile-section">
                 <!-- Profile Background -->
-                <div class="profile-background">
+                <div class="profile-background skeleton">
                   <!--- Background will be set via JS -->
                 </div>
 
@@ -131,7 +131,9 @@
                     src="/images/default-avatar.svg"
                     alt="Default profile picture"
                     id="profile-picture"
+                    class="hidden"
                   />
+                  <div class="skeleton avatar-skeleton"></div>
                 </div>
                 <div id="feedback"></div>
                 <!-- Feedback for file upload -->
@@ -172,12 +174,18 @@
                   <div id="user-stats">
                     <!-- Followers -->
                     <div id="followers" class="spacing-1 center-text">
-                      <div><h5 id="followers-count">12.3k</h5></div>
+                      <div>
+                        <h5 id="followers-count" class="hidden">12.3k</h5>
+                        <span class="skeleton stat-skeleton"></span>
+                      </div>
                       <div id="stats-counter">followers</div>
                     </div>
                     <!-- Following -->
                     <div id="following" class="spacing-1 center-text">
-                      <div><h5 id="following-count">20k</h5></div>
+                      <div>
+                        <h5 id="following-count" class="hidden">20k</h5>
+                        <span class="skeleton stat-skeleton"></span>
+                      </div>
                       <div id="stats-counter">following</div>
                     </div>
                     <!-- Rating -->

@@ -2059,18 +2059,23 @@ button:disabled {
 .payment-method-popup {
   position: fixed;
   width: 100%;
-  display: none;
+  display: flex;
   top: 0;
   left: 0;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0);
   z-index: 1000;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
 }
 
 .payment-method-popup.active {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .select-method-card {
@@ -2739,6 +2744,37 @@ button:disabled {
   position: relative;
   z-index: 2; /* Ensures profile picture appears above background */
   top: 10rem;
+}
+
+/* Profile header skeletons (background/avatar/follower stats) -- shown
+   while loadProfileData() awaits checkUserStatus() (see profile.js).
+   .skeleton (shimmer/color) comes from components/skeleton.css; these two
+   classes are just the sizing/position to match the real elements they
+   stand in for, so swapping them in causes no layout jump. */
+.avatar-skeleton {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  top: 10rem;
+  z-index: 2;
+}
+
+.stat-skeleton {
+  width: 44px;
+  height: 1.5rem;
+  margin: 0.15rem auto 0;
+}
+
+/* .skeleton (components/skeleton.css) sets border-radius: 4px and loads
+   after this file, so it wins over a plain .avatar-skeleton/.profile-background
+   rule at equal specificity -- combined selectors here to guarantee these
+   two win regardless of link order. */
+.avatar-skeleton.skeleton {
+  border-radius: 50%;
+}
+
+.profile-background.skeleton {
+  border-radius: 8px 8px 0 0;
 }
 
 .payment-wrapper {

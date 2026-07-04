@@ -43,12 +43,18 @@ import { initReviews, loadReviewData } from "./reviews.js";
 
 function loadProfileDisplayData(userData) {
   console.log("loading with userdata:", userData)
+  const profileBackground = document.querySelector(".profile-background");
   if (userData.backgroundImage) {
-    const profileBackground = document.querySelector(".profile-background");
     profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
   }
+  // Remove the shimmer regardless of whether a background image exists --
+  // "no background set" is a real end state, not still-loading.
+  profileBackground?.classList.remove("skeleton");
 
   document.querySelector("#profile-picture").src = userData.profileImage;
+  document.querySelector("#profile-picture").classList.remove("hidden");
+  document.querySelector(".avatar-skeleton")?.classList.add("hidden");
+
   document.querySelector("#username").textContent = `@${userData.username}`;
 
   // Existing accounts predate `accountInfo`, so guard against it being
@@ -69,9 +75,14 @@ function loadProfileDisplayData(userData) {
   document.querySelector("#followers-count").textContent = formatFollowers(
     stats.followers || 0
   );
+  document.querySelector("#followers-count").classList.remove("hidden");
+  document.querySelector("#followers .stat-skeleton")?.classList.add("hidden");
+
   document.querySelector("#following-count").textContent = formatFollowers(
     stats.following || 0
   );
+  document.querySelector("#following-count").classList.remove("hidden");
+  document.querySelector("#following .stat-skeleton")?.classList.add("hidden");
 
   // No ratings yet -> hide the "Rating" stat instead of showing a fake 0/5.
   const totalRatings = userData.ratings?.metrics?.totalRatings || 0;
