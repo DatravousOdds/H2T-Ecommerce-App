@@ -417,7 +417,7 @@ function validateForm(formElement) {
   // Get form fields
   const firstname = formElement.querySelector("[name='fname']")?.value.trim();
   const lastname = formElement.querySelector("[name='lname']")?.value.trim();
-  const email = formElement.querySelector("[name='email']")?.value.trim();
+  const email = formElement.querySelector("[name='personal-email']")?.value.trim();
   const phoneNumber = formElement
     .querySelector("[name='phoneNumber']")
     ?.value.trim();
@@ -453,7 +453,7 @@ function validateForm(formElement) {
   if (lnameError)
     clearError(formElement.querySelector("[name='lname']"), lnameError);
   if (emailError)
-    clearError(formElement.querySelector("[name='email']"), emailError);
+    clearError(formElement.querySelector("[name='personal-email']"), emailError);
   if (phoneError)
     clearError(formElement.querySelector("[name='phoneNumber']"), phoneError);
   if (countryError)
@@ -496,13 +496,13 @@ function validateForm(formElement) {
   // Validate Email
   if (email === "") {
     setError(
-      formElement.querySelector("[name='email']"),
+      formElement.querySelector("[name='personal-email']"),
       emailError,
       "Please enter a email address"
     );
   } else if (email && !validateEmail(email)) {
     setError(
-      formElement.querySelector("[name='email']"),
+      formElement.querySelector("[name='personal-email']"),
       emailError,
       "Please enter a valid email address"
     );

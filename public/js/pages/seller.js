@@ -178,6 +178,7 @@ const CATEGORY_FIELDS = {
 initFormListeners();
 wordCounter();
 populateColorOptions();
+syncSelectedShippingContainer();
 
 if (isEditing) {
     postBtn.textContent = 'Update';
@@ -228,6 +229,12 @@ carrierWrapper.addEventListener('click', (e) => {
 
 shippingContainers.forEach(container => {
     container.addEventListener('click', () => {
+        // Clicking the box anywhere (not just the label/radio dot) should
+        // actually select the radio -- otherwise the box can visually look
+        // selected while the checked radio (what postBtn reads) disagrees.
+        const radio = container.querySelector('input[type="radio"]');
+        radio.checked = true;
+
         // remove selected from all first
         shippingContainers.forEach(c => c.classList.remove('selected'));
         // add to clicked one
@@ -493,8 +500,18 @@ function restoreShippingSelection(shipping) {
     if (!radio) return;
 
     radio.checked = true;
+    syncSelectedShippingContainer();
+}
+
+// Applies the `.selected` highlight to whichever shipping box's radio is
+// actually checked -- keeps the visual state and the value postBtn reads
+// in agreement, both on initial page load and after restoreShippingSelection.
+function syncSelectedShippingContainer() {
+    const checkedRadio = document.querySelector('input[name="shipping-method"]:checked');
+    if (!checkedRadio) return;
+
     shippingContainers.forEach(c => c.classList.remove('selected'));
-    radio.closest('.shipping-btn-container')?.classList.add('selected');
+    checkedRadio.closest('.shipping-btn-container')?.classList.add('selected');
 }
 
 function populateExistingImages(images) {
