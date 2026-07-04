@@ -25,8 +25,11 @@ async function getOrderDetails() {
             return;
         }
 
-        const order = await fetchOrderByPaymentIntent(paymentIntent);
-        if (!order) return;
+        const order = await fetchOrderByPaymentIntentWithRetry(paymentIntent);
+        if (!order) {
+            displayOrderPendingFallback();
+            return;
+        }
 
         const cardDetails = await fetchCardDetails(paymentIntent);
         const orderData = {...order, ...cardDetails}
@@ -34,12 +37,29 @@ async function getOrderDetails() {
     }
 }
 
+// checkout.js's /orders/init call is awaited before Stripe ever redirects
+// here, so the order doc should already exist -- but /orders/init is
+// deliberately non-blocking on failure (payment is the critical path, not
+// bookkeeping), and there's no webhook forwarding configured for local dev
+// to fall back on. A couple of short retries bridges any real propagation
+// lag; displayOrderPendingFallback() is what the buyer sees if the doc
+// genuinely never got created.
+async function fetchOrderByPaymentIntentWithRetry(paymentIntent, retries = 2, delayMs = 1000) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        const order = await fetchOrderByPaymentIntent(paymentIntent);
+        if (order) return order;
+        if (attempt < retries) await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+    return null;
+}
+
 // `orders` has no Firestore rule at all (see the Price History chart entry
 // in notes.md) -- reading it straight from the client, the way this used to
 // with an onSnapshot listener, always threw permission-denied. checkout.js's
-// /orders/init call already creates the doc synchronously before Stripe
-// redirects back here, so a single authenticated fetch (no need to wait/
-// listen for it to appear) is enough.
+// /orders/init call is awaited before Stripe redirects back here, so the doc
+// is normally already there; fetchOrderByPaymentIntentWithRetry() covers the
+// rest. A 404 here just means "not there yet/at all" -- not logged as an
+// error since the retry wrapper treats it as an expected, retriable result.
 async function fetchOrderByPaymentIntent(paymentIntent) {
     try {
         const request = await fetch(`/api/orders/by-payment-intent/${paymentIntent}`, {
@@ -47,6 +67,8 @@ async function fetchOrderByPaymentIntent(paymentIntent) {
                 "Authorization": `Bearer ${user.idToken}`
             }
         });
+
+        if (request.status === 404) return null;
 
         if (!request.ok) {
             throw new Error(`${request.status}`);
@@ -148,6 +170,25 @@ function displayAuthConfirmation(item, cardDetails) {
                 </div>
             </div>
     `
+};
+
+// The payment itself already succeeded (redirectStatus === "succeeded") by
+// the time this runs -- the buyer was charged regardless of whether the
+// order doc shows up. Never leave the confirmation page blank over a
+// bookkeeping delay; point them at Purchases instead of a dead end.
+function displayOrderPendingFallback() {
+    const detailsGrid = document.querySelector('.details-grid');
+    detailsGrid.innerHTML = `
+        <div class="confirm-left-content">
+            <div class="order-details">
+                <h2 class="detail-header"><i class="fa-solid fa-circle-check"></i> Payment received!</h2>
+                <div class="details">
+                    <strong><p>We're still finalizing your order details -- this can take a moment.</p></strong>
+                    <p>Check your <a href="/profile?tab=purchases">Purchases</a> tab shortly for the full order summary.</p>
+                </div>
+            </div>
+        </div>
+    `;
 };
 
 function displayOrderConfirmation(orderData) {

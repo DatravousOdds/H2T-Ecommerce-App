@@ -10,11 +10,9 @@ const createFooter = () => {
       <div class="follow">
         <h4>Follow Us</h4>
         <div class="icon">
-          <i class="fab fa-facebook-f"></i>
           <i class="fab fa-twitter"></i>
           <i class="fab fa-instagram"></i>
           <i class="fa-brands fa-tiktok"></i>
-          <i class="fab fa-youtube"></i>
         </div>
       </div>
     </div>
@@ -27,6 +25,7 @@ const createFooter = () => {
     <div class="col">
       <h4>Help</h4>
       <a href="/contact">Contact Us</a>
+      <a href="/public/static/terms-of-service.html">Terms of Service</a>
     </div>
 
     <div class="col">
@@ -44,7 +43,7 @@ const createFooter = () => {
     </div>
 
     <div class="rights">
-      <p>&copy; 2023, Head-To-Toe etc - Ecommerce website. All rights Reserved.</p>
+      <p>&copy; 2026, Hexxo etc - Ecommerce website. All rights Reserved.</p>
     </div>
   `;
 };

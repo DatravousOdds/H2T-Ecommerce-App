@@ -238,6 +238,22 @@ Also updated the caption under that card in [profile.html](public/account/profil
 
 **Verified:** confirmed both were live in production, then drove a fresh (no stored auth) Playwright browser session through the actual home page → click a real product card → product detail page, and confirmed zero console errors plus the seller name/photo (`newSeller420`) rendering correctly from the new endpoint.
 
+## 2026-07-04 — Login page: mobile layout not scaling + email input showing capitalized
+
+**Symptom 1:** On mobile, the login page "doesn't take up the viewport" and looks the same as desktop, just shrunk.
+
+**Root cause:** [login.html](public/auth/login.html) had no `<meta name="viewport">` tag at all — checked every page under `public/auth/` (`login`, `signup`, `forgot`, `mail`, `email-sent`) and none of them have one, though `index.html` does. Without it, mobile browsers render at a virtual desktop-width viewport (~980px) and zoom the whole page out to fit, rather than rendering at the device's actual width. This silently broke an already-written `@media (max-width: 480px)` block in [Loginpg.css](public/css/Loginpg.css#L235-L257) — with no viewport meta, a phone's reported virtual width never drops below 480px, so that block was dead code, not a missing feature.
+
+**Fix:** added `<meta name="viewport" content="width=device-width, initial-scale=1.0" />` to login.html's `<head>`. Only touched the reported page — the same gap exists on `signup.html`/`forgot.html`/`mail.html`/`email-sent.html`, worth the same fix if those are ever reported too.
+
+**Symptom 2:** Typing `test3@example.com` into the email field displayed as `Test3@example.com`.
+
+**Root cause:** display-only CSS, not an input transform — `text-transform: capitalize` on a broad `input:not(.search-box, .checkbox, .s-checkbox, input[type="file"])` selector, duplicated in both [Loginpg.css](public/css/Loginpg.css#L58) and [signup.css](public/css/signup.css#L42) (both load on this page; `signup.css` loads second so its identical rule is what actually wins the cascade). Neither exclusion list carved out email fields.
+
+**Fix:** added `input[type="email"]` to the `:not(...)` exclusion list in both stylesheets. Confirmed both `login.html` and `signup.html`'s email inputs use `type="email"` (not just `id="email"`), so the fix covers signup's email field too without touching it directly.
+
+**Verified:** Playwright — typed the reported string into `#email` on desktop and confirmed `getComputedStyle().textTransform === "none"` and the input's actual value renders lowercase; loaded the page in a 390×844 (iPhone-sized) mobile context and confirmed `window.innerWidth` matches the real device width (not a scaled-down desktop layout) and the email input's rendered width matches the `85vw` mobile rule exactly (331.5px @ 390px viewport), proving the previously-dead media query now fires.
+
 ## 2026-07-04 — Order confirmation page: same `orders` `permission-denied` shape, on a listener this time
 
 **Symptom:** Console showed `FirebaseError: [code=permission-denied]: Missing or insufficient permissions` from an `onSnapshot` listener, right after Stripe redirected back to the confirmation page. The order confirmation UI never rendered for a real (non-authentication) purchase.

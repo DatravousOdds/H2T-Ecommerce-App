@@ -93,7 +93,7 @@ async function handleSubmit(e) {
     const isAuthPayment = queryItem?.itemType === 'authentication';
     if (!isAuthPayment && paymentIntentId) {
         try {
-            await fetch("/orders/init", {
+            const initResponse = await fetch("/orders/init", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -101,6 +101,11 @@ async function handleSubmit(e) {
                 },
                 body: JSON.stringify({ paymentIntentId })
             });
+
+            if (!initResponse.ok) {
+                const body = await initResponse.json().catch(() => ({}));
+                console.error(`Failed to initialize pending order (${initResponse.status}):`, body.message);
+            }
         } catch (error) {
             console.error("Failed to initialize pending order:", error);
         }

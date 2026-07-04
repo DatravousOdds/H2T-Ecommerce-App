@@ -39,7 +39,7 @@ body {
   display: block;
 }
 
-input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
+input:not(.search-box, .checkbox, .s-checkbox, input[type="file"], input[type="email"]),
 textarea {
   display: block;
   width: 300px;

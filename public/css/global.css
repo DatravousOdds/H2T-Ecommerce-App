@@ -205,6 +205,14 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   background-image: url('../images/womens.jpg');
 }
 
+.accessories-header {
+  background-image: url('../images/Accessories.jpg');
+}
+
+.release-header {
+  background-image: url('../images/releases_banner.jpg');
+}
+
 /* .men-header {
   background-image: url('../images/mens_1.jpg');
 } */
