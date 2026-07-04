@@ -9309,7 +9309,7 @@ input:checked + .slider:before {
 }
 
 /* Extra small devices (portrait phones, less than 576px) */
-@media (min-width: 390px) and (max-width: 575.98px) {
+@media (max-width: 575.98px) {
   .favorite-grid {
     grid-template-columns: repeat(1, 1fr);
   }
