@@ -3224,7 +3224,7 @@ footer .rights {
     padding: 8px 8px 8px 40px;
     border-radius: 8px;
     border: none;
-    background:  var(--color-background-primary)fff;
+    background:  var(--color-background-primary);
     font-size: 14px;
   }
 
@@ -3255,7 +3255,7 @@ footer .rights {
     display: flex;
     border: none;
     background: none;
-    color:  var(--color-text-secondary)fff;
+    color:  var(--color-text-secondary);
     font-size: 24px;
     padding: 5px;
     margin-left: 0.5rem;
