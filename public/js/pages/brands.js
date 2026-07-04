@@ -34,10 +34,25 @@ function escapeHtml(value) {
   return div.innerHTML;
 }
 
+// Matches .brand-tile's shape (name + count line) -- only allBrandsGrid gets
+// one since featuredGrid's 4 banners are hardcoded in FEATURED_BRANDS and
+// already render immediately; only their listing count depends on the fetch.
+function renderBrandTileSkeletons(grid, count = 8) {
+  if (!grid) return;
+  grid.innerHTML = Array.from({ length: count }, () => `
+    <div class="brand-tile skeleton-item">
+      <span class="skeleton skeleton-line medium"></span>
+      <span class="skeleton skeleton-line short"></span>
+    </div>
+  `).join("");
+}
+
 async function loadBrands() {
   const featuredGrid = document.getElementById("featuredBrandGrid");
   const allBrandsSection = document.getElementById("all-brands");
   const allBrandsGrid = document.getElementById("allBrandsGrid");
+
+  renderBrandTileSkeletons(allBrandsGrid);
 
   try {
     const q = query(collection(db, "listings"), where("status", "==", "active"));
@@ -93,6 +108,8 @@ function renderOtherBrands(section, grid, brandCounts) {
   const remaining = [...brandCounts.values()].sort(
     (a, b) => b.count - a.count || a.name.localeCompare(b.name)
   );
+
+  grid.innerHTML = "";
 
   if (remaining.length === 0) {
     section.style.display = "none";

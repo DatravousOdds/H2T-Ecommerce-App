@@ -1,6 +1,6 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags, womenRange } from '../core/global.js';
+import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags, womenRange, renderProductSkeletons } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
@@ -55,6 +55,7 @@ const state = {
   filters: new Map(),
 };
 
+renderProductSkeletons("productsContainer");
 let products =  await loadProducts("categoryMeta","women", state);
 
 if (categoryParam) {

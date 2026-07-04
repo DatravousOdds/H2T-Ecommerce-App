@@ -1,7 +1,7 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
-import { loadProducts, handleFavoriteClick, mensRange } from '../core/global.js';
+import { loadProducts, handleFavoriteClick, mensRange, renderProductSkeletons } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
@@ -60,6 +60,7 @@ const state = {
 }
 
 
+renderProductSkeletons("productsContainer");
 let products =  await loadProducts("categoryMeta","men", state);
 
 let filteredProducts = [...products];

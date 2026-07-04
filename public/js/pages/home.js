@@ -1,5 +1,5 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, displayProducts, getCartCount, handleFavoriteClick } from '../core/global.js';
+import { loadProducts, displayProducts, getCartCount, handleFavoriteClick, renderProductSkeletons } from '../core/global.js';
 import { initCartDrawer, getCartItems } from '../components/cartDrawer.js';
 import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js';
 import { showPageLoader, hidePageLoader } from '../components/pageLoader.js';
@@ -86,6 +86,10 @@ const belowRetailPrices = async () => {
   renderProducts(filtered, "belowRetail");
   
 }
+
+["justDropped", "menCollection", "womenCollection", "belowRetail"].forEach(
+  (containerId) => renderProductSkeletons(containerId)
+);
 
 justDropped();
 mensCollection();

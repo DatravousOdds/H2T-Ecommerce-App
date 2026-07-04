@@ -1,7 +1,7 @@
 import { removeFromCart, calculateSubtotal, decrementCartCount } from "../core/global.js";
 import { checkUserStatus } from "../auth/auth.js";
 
-const currentUser = await checkUserStatus();
+let currentUser = null;
 
 const cartTemplate = (item) => 
 `<div class="cart-item" data-id="${currentUser ? item.id : item.listingId}">
@@ -148,7 +148,8 @@ function removeCartItemFromDisplay(element) {
   element.remove();
 }
 
-export function initCartDrawer() {
+export async function initCartDrawer() {
+  currentUser = await checkUserStatus();
   renderCart(currentUser)
   window.addEventListener('cartUpdated', () => renderCart(currentUser))
 }

@@ -115,6 +115,24 @@ const displayProducts = (products, template) => {
   updateResultsCount(products.length);
 }
 
+// Mirrors releasesProductTemplate's shape (image + single name line, no
+// price row) -- this page's card is shorter than the shared .pro card in
+// global.js, so it gets its own skeleton instead of renderProductSkeletons.
+const renderReleaseSkeletons = (count = 12) => {
+  const productsContainer = document.getElementById("productsContainer");
+  productsContainer.innerHTML = Array.from({ length: count }, () => `
+    <div class="pro pro-upcoming skeleton-item">
+      <div class="product-image">
+        <div class="skeleton skeleton-image"></div>
+      </div>
+      <div class="des">
+        <p class="product-name"><span class="skeleton skeleton-line medium"></span></p>
+      </div>
+    </div>
+  `).join("");
+};
+
+renderReleaseSkeletons();
 let products =  await loadProducts("categoryMeta","men", state);
 displayProducts(products, releasesProductTemplate);
 updateLoadMoreVisibility();

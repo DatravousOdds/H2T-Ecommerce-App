@@ -1,6 +1,6 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags } from '../core/global.js';
+import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags, renderProductSkeletons } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
@@ -50,6 +50,7 @@ const state = {
   filters: new Map(),
 };
 
+renderProductSkeletons("productsContainer");
 let products =  await loadProducts("category","accessories", state);
 displayProducts(products, "productsContainer");
 updateLoadMoreVisibility();

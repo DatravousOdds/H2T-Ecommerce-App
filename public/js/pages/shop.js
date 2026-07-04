@@ -1,6 +1,6 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, kidsRange, womenRange, mensRange, displayProducts } from '../core/global.js';
+import { loadProducts, kidsRange, womenRange, mensRange, displayProducts, renderProductSkeletons } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { db, collection, where, query, getDocs, limit, startAfter } from '../api/firebase-client.js';
 
@@ -27,6 +27,7 @@ const state = {
   lastVisible: null,
   filters: new Map(),
 };
+renderProductSkeletons("productsContainer");
 let products = maxPrice
   ? await loadPriceFilteredProducts(maxPrice, state)
   : isBrandFilter

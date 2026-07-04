@@ -3,17 +3,26 @@ import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, setDoc, serve
 import { getCartItems } from '../components/cartDrawer.js';
 import { checkUserStatus } from '../auth/auth.js';
 
-const currentUser = await checkUserStatus();
-const cartItemCount = await getCartItems(currentUser);
+let currentUser = null;
 let cartCount = Number(localStorage.getItem('cartCount')) || 0;
-setCartCount(cartItemCount.length);
 
 /**
  * favorites/{userId}/items/{listingId} -- doc ID is the listingId itself,
  * each doc denormalizes the listing's display fields (mirrors how
  * order.item already does this elsewhere in the app).
  */
-let favoritedIds = await getFavoritedIds(currentUser?.userId);
+let favoritedIds = new Set();
+
+// Deliberately not a top-level await: this module and cartDrawer.js import
+// each other, and a top-level await inside that cycle let other modules
+// (e.g. nav.js) run before currentUser/cartCount finished initializing --
+// the source of the "Cannot access before initialization" crashes.
+(async () => {
+  currentUser = await checkUserStatus();
+  const cartItemCount = await getCartItems(currentUser);
+  setCartCount(cartItemCount.length);
+  favoritedIds = await getFavoritedIds(currentUser?.userId);
+})();
 
 async function getFavoritedIds(userId) {
   if (!userId) return new Set();
@@ -776,6 +785,29 @@ export function resetCartCount() {
 
 
 
+// Mirrors displayProducts's `.pro` card shape (image + name + price lines)
+// so swapping real cards in doesn't reflow the grid. Shared by every page
+// that calls loadProducts()/displayProducts() (men/women/accessories/shop/
+// releases), so the shimmer only needs to be defined once.
+const renderProductSkeletons = (containerElement, count = 12) => {
+  const productsContainer = document.getElementById(`${containerElement}`);
+  if (!productsContainer) return;
+
+  productsContainer.innerHTML = Array.from({ length: count }, () => `
+    <div class="pro skeleton-item">
+      <div class="product-image">
+        <div class="skeleton skeleton-image"></div>
+      </div>
+      <div class="des">
+        <div class="price-description">
+          <p class="product-name"><span class="skeleton skeleton-line medium"></span></p>
+          <div class="pro-price"><span class="skeleton skeleton-line short"></span></div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+};
+
 const displayProducts = (products, containerElement) => {
   const productsContainer = document.getElementById(`${containerElement}`);
   // clear existing products
@@ -1229,6 +1261,7 @@ export {
   deleteMapEntry,
   updateResultsCount,
   displayProducts,
+  renderProductSkeletons,
   resetFilterUI,
   handleFavoriteClick,
   kidsRange,
