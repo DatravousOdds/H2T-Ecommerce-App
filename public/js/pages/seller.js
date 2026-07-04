@@ -107,6 +107,10 @@ let listing = {
 
 };
 
+// Set from the existing doc when editing so collectListingInfo() can tell
+// whether the seller actually changed the price (see price-drop logic there).
+let previousListingPrice = null;
+
 const kidsRange = Array.from({ length: 12 }, (_, i) => {
     if (i < 7) {
       return 10.5 + i * 0.5;
@@ -446,6 +450,7 @@ async function loadListingForEdit(listingId) {
         listing.listingId = existing.id;
         listing.createdAt = existing.createdAt;
         listing.status = existing.status;
+        previousListingPrice = existing.listingPrice ?? null;
 
         populateFormForEdit(existing);
     } catch (error) {
@@ -468,7 +473,7 @@ function populateFormForEdit(existing) {
     productBrand.value = existing.brand || '';
     productColor.value = existing.color || '';
     productCondition.value = existing.condition || '';
-    productPrice.value = existing.originalPrice ?? '';
+    productPrice.value = existing.listingPrice ?? '';
 
     productDescription.value = existing.description || '';
     const words = productDescription.value.trim() ? productDescription.value.trim().split(/\s+/) : [];
@@ -710,7 +715,7 @@ function showSuccessMessage() {
     itemName.textContent = listing.productName;
     itemImage.src = listing.images[0].url; // Assuming the first image is the primary one
     modalProductName.textContent = listing.productName;
-    modalProductMeta.textContent = listing.shipping.courier ? `$${listing.originalPrice} - ${listing.shipping.courier} ${listing.shipping.service_name}` : `$${listing.originalPrice} - Free Shipping`;
+    modalProductMeta.textContent = listing.shipping.courier ? `$${listing.listingPrice} - ${listing.shipping.courier} ${listing.shipping.service_name}` : `$${listing.listingPrice} - Free Shipping`;
     successModal.classList.add('show');
 
     // Add event listener to view listing button
@@ -846,7 +851,18 @@ function collectListingInfo(status = 'active') {
 
     listing.category = category;
     listing.categoryMeta = categoryMeta;
-    listing.originalPrice = parseFloat(productPrice.value);
+    const enteredPrice = parseFloat(productPrice.value);
+
+    // Price drop: if editing and the seller lowered/raised the price, keep
+    // the price it used to be as originalPrice so the UI can strike it
+    // through. Leaving originalPrice unset (rather than clobbering it) when
+    // the price didn't change preserves whatever markdown state was already
+    // saved on the listing.
+    if (isEditing && previousListingPrice !== null && enteredPrice !== previousListingPrice) {
+        listing.originalPrice = previousListingPrice;
+    }
+
+    listing.listingPrice = enteredPrice;
     listing.productName = productTitle.value.trim();
     listing.userId = currentUser.userId;
     listing.status = status;
