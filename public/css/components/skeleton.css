@@ -1,0 +1,43 @@
+/* Generic skeleton-loading primitives, reusable by any profile tab that
+   renders a list while waiting on a Firestore/API fetch. Apply `.skeleton`
+   to any element you want shimmering, and size it with `.skeleton-img` /
+   `.skeleton-line` (or your own inline width/height). */
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: 4px;
+}
+
+.skeleton-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.skeleton-line {
+  display: block;
+  height: 0.875rem;
+  margin: 0.4rem 0;
+}
+
+.skeleton-line.short { width: 35%; }
+.skeleton-line.medium { width: 60%; }
+.skeleton-line.long { width: 85%; }
+
+/* Square-ish product-image placeholder, e.g. for grid cards (favorites,
+   shop listings) where the real image's height is content-driven. */
+.skeleton-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 1rem;
+}

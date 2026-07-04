@@ -231,3 +231,27 @@ input[type="password"] {
 #close {
   display: none;
 }
+
+@media (max-width: 480px) {
+  .login-container .logo {
+    max-width: 160px;
+  }
+
+  .login-form input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]) {
+    width: 85vw;
+    max-width: 340px;
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .login-container .submit-btn {
+    width: 85vw;
+    max-width: 340px;
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .forgot-password-link {
+    font-size: 15px;
+  }
+}

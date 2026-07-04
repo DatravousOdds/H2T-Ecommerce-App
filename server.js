@@ -528,6 +528,35 @@ app.get("/api/cart", verifyAuth, async (req, res) => {
 })
 
 
+// Public seller-profile data for product pages/seller profile pages. Same
+// reasoning as sales-history below: userProfiles docs carry stripeCustomerId
+// and shipping (home address/phone), and Security Rules can only grant/deny
+// the whole document, not individual fields. A Firestore rule permissive
+// enough for an anonymous shopper to read username/profileImage/isVerified
+// would also expose those private fields to them. Routing through the admin
+// SDK here hands back only the fields a storefront view actually needs.
+app.get("/api/sellers/:id/public-profile", async (req, res) => {
+  try {
+    const docSnap = await db.collection("userProfiles").doc(req.params.id).get();
+
+    if (!docSnap.exists) {
+      return res.status(404).json({});
+    }
+
+    const profile = docSnap.data();
+
+    return res.json({
+      username: profile.username || "",
+      profileImage: profile.profileImage || "",
+      isVerified: profile.isVerified || false,
+      ratings: profile.ratings || {},
+      stats: profile.stats || {},
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // Public price-history data for the product page chart. No verifyAuth — this is
 // storefront data any shopper can see. Kept out of Firestore rules on purpose:
 // `orders` docs carry buyerId/buyerEmail/shippingAddress, and Security Rules can

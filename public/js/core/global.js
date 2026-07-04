@@ -172,11 +172,23 @@ function createAuthCartItem(authRequestData) {
   };
 }
 
-// userProfiles/{uid} is the source of truth for public-facing seller info
-// (see profile.js's loadProfileDisplayData, which reads the same fields).
+// Public-facing seller info (username/profileImage/isVerified/ratings/stats),
+// used to render OTHER users' profiles on product/seller pages -- not the
+// current user's own full profile (that's fetchUserProfile in auth.js, a
+// direct Firestore read of one's own doc). Goes through Express/Admin SDK
+// rather than a direct Firestore read of userProfiles because that doc also
+// carries stripeCustomerId and shipping (home address/phone): Firestore
+// Security Rules can only grant/deny the whole document, so a rule loose
+// enough to let anonymous shoppers read this would leak those fields too.
 async function getUserProfile(userId) {
-  const snap = await getDoc(doc(db, "userProfiles", userId));
-  return snap.exists() ? snap.data() : {};
+  try {
+    const response = await fetch(`/api/sellers/${userId}/public-profile`);
+    if (!response.ok) return {};
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to fetch public profile for ${userId}:`, error);
+    return {};
+  }
 }
 
 async function getSellerInfo(productId) {

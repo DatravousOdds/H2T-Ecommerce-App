@@ -119,6 +119,49 @@ function purchaseCardHTML(order) {
   `;
 }
 
+// Mirrors purchaseCardHTML's structure (image + detail lines) so the
+// shimmering placeholder is the same size/shape as the real card -- that's
+// what keeps the swap-in from causing layout jump.
+function purchaseSkeletonHTML() {
+  return `
+    <div class="purchase-item skeleton-item">
+      <div class="mobile-view">
+        <div class="order-header">
+          <span class="skeleton skeleton-line short"></span>
+          <span class="skeleton skeleton-line short" style="width: 70px;"></span>
+        </div>
+        <div class="product-info">
+          <div class="skeleton skeleton-img"></div>
+          <div class="details" style="flex: 1;">
+            <span class="skeleton skeleton-line medium"></span>
+            <span class="skeleton skeleton-line short"></span>
+            <span class="skeleton skeleton-line short"></span>
+          </div>
+        </div>
+      </div>
+      <div class="desktop-view">
+        <div class="product-section">
+          <div class="skeleton skeleton-img"></div>
+          <div class="details" style="flex: 1;">
+            <span class="skeleton skeleton-line medium"></span>
+            <span class="skeleton skeleton-line long"></span>
+          </div>
+        </div>
+        <div class="status-section">
+          <span class="skeleton skeleton-line short" style="width: 70px;"></span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSkeletons(count = 3) {
+  const html = Array.from({ length: count }, purchaseSkeletonHTML).join("");
+  document.querySelectorAll(".purchase-list").forEach((list) => {
+    list.innerHTML = html;
+  });
+}
+
 function renderSection(sectionId, orders) {
   const section = document.getElementById(sectionId);
   console.log("section", section)
@@ -415,6 +458,8 @@ export async function initPurchases(currentUser) {
     console.log("purchases init called!")
 
   if (!currentUser?.userId) return;
+
+  renderSkeletons();
 
   try {
     currentOrders = await fetchBuyerOrders(currentUser.userId);

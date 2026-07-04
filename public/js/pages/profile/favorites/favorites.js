@@ -41,6 +41,35 @@ function favoriteCardHTML(favorite) {
   `;
 }
 
+// Mirrors favoriteCardHTML's structure (image + name/price lines) so the
+// grid doesn't reflow when real cards swap in.
+function favoriteSkeletonHTML() {
+  return `
+    <div class="pro skeleton-item">
+      <div class="product-image">
+        <div class="skeleton skeleton-image"></div>
+      </div>
+      <div class="des">
+        <div class="price-description">
+          <span class="skeleton skeleton-line medium"></span>
+          <span class="skeleton skeleton-line short"></span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSkeletons(count = 8) {
+  const emptyState = document.querySelector("#favorites .empty-state");
+  const grid = document.querySelector("#favorites .favorite-grid");
+
+  if (emptyState) emptyState.hidden = true;
+  if (grid) {
+    grid.hidden = false;
+    grid.innerHTML = Array.from({ length: count }, favoriteSkeletonHTML).join("");
+  }
+}
+
 function showEmptyState() {
   const emptyState = document.querySelector("#favorites .empty-state");
   const grid = document.querySelector("#favorites .favorite-grid");
@@ -108,6 +137,8 @@ function wireRemoveButtons(userId) {
 
 export async function initFavorites(userData) {
   if (!userData?.userId) return;
+
+  renderSkeletons();
 
   try {
     const favorites = await fetchFavorites(userData.userId);
