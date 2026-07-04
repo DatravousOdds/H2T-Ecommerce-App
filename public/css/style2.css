@@ -837,6 +837,19 @@ button.white {
   align-items: center;
 }
 
+/* Each slide sets its own background-image inline, which fully covers
+   #hero's own background -- so #hero's dark gradient above never actually
+   shows behind any slide. Without this, the white headline/CTA text sits
+   directly on raw photos with no guaranteed contrast. Comes before
+   .hero-text in DOM order, so it paints underneath it automatically. */
+.slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
 .slide.active {
   opacity: 1;
 }
