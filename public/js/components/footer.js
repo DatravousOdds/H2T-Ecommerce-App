@@ -5,11 +5,7 @@ const createFooter = () => {
     <div class="col">
       <div class="col">
       <h4>New Releases</h4>
-      <a href="#">AJ1 Retro Low OG SP Travis Scott Canary</a>
-      <a href="#">Nike KD 4 'NERF'</a>
-      <a href="#">Kobe IV Protro 'Gold Medal'</a>
-      <a href="#">Women's Nike Air Max Sunder</a>
-      <a href="#">Women's Nike Shox R4</a>
+      <a href="/releases">New Releases</a>
     </div>
       <div class="follow">
         <h4>Follow Us</h4>
@@ -25,37 +21,26 @@ const createFooter = () => {
     <!-- gird-container-3 -->
     <div class="col">
       <h4>About Us</h4>
-      <a href="#">Head-To-Toe, Inc.</a>
-      <a href="#">Policies</a>
-      <a href="#">Investors</a>
-      <a href="#">Careers</a>
-      <a href="#">Impact</a>
+      <a href="/static/about.html">About Us</a>
     </div>
     <!-- gird-container-4 -->
     <div class="col">
       <h4>Help</h4>
-      <a href="#">Help Center</a>
-      <a href="#">Privacy Settings</a>
       <a href="/contact">Contact Us</a>
-      <a href="/contact">FAQs</a>
-      
     </div>
 
     <div class="col">
       <h4>Sell</h4>
-      <a href="#">Sell on H2T</a>
-      <a href="#">Teams</a>
-      <a href="#">Forums</a>
-      <a href="#">Affiliates & Creators</a>
+      <a href="/seller">Sell on H2T</a>
     </div>
 
 
     <!-- gird-container-5 -->
     <div class="col install">
-      
+
       <p>Secure payment Gateways </p>
       <!-- Find payment Gateways image and paste below -->
-      <img src="images/pay.jpg" alt="">
+      <img src="/images/pay.jpg" alt="">
     </div>
 
     <div class="rights">

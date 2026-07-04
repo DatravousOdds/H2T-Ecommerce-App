@@ -1,0 +1,113 @@
+.offers-conversation-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.offers-conversation-label {
+  color: var(--color-text-muted, #747474);
+  font-size: var(--font-sm, 0.875rem);
+  margin: 0;
+}
+
+.offers-conversation-section {
+  margin-top: 1.5rem;
+}
+
+.offers-conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.offers-conversation-empty {
+  color: var(--color-text-muted, #747474);
+}
+
+.offer-conversation-card {
+  display: flex;
+  gap: 1rem;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.offer-conversation-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 0.25rem;
+}
+
+.offer-conversation-details {
+  flex: 1;
+}
+
+.offer-conversation-product {
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.offer-conversation-amount {
+  font-size: var(--font-lg, 1.125rem);
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.offer-conversation-status {
+  color: var(--color-text-muted, #747474);
+  font-size: var(--font-sm, 0.875rem);
+  margin: 0 0 0.5rem;
+}
+
+.offer-status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.offer-accept-btn,
+.offer-reject-btn,
+.offer-counter-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.offer-accept-btn {
+  background-color: #D13023;
+  color: #fff;
+}
+
+.offer-accept-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px 0 rgba(248, 45, 45, 0.9);
+}
+
+.offer-reject-btn {
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
+  color: #000;
+}
+
+.offer-reject-btn:hover {
+  border-color: #D13023;
+  color: #D13023;
+}
+
+.offer-counter-btn {
+  background-color: #000;
+  color: #fff;
+}
+
+.offer-counter-input {
+  padding: 0.5rem;
+  border-radius: 0.24rem;
+  border: 1px solid rgba(0,0,0,0.12);
+  width: 8rem;
+}

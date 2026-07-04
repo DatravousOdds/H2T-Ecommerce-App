@@ -9376,6 +9376,16 @@ input:checked + .slider:before {
     min-width: 100%;
   }
 
+  .dashboard-nav-container .nav-menu {
+    gap: 1rem;
+    padding: 0 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-button {
+    flex-shrink: 0;
+  }
+
   .products-header .action-buttons,
   .products-header {
     flex-direction: column;

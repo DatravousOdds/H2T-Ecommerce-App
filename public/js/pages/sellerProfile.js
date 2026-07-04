@@ -174,6 +174,7 @@ async function initSellerProfilePage() {
 
   const listingsGrid = document.getElementById("seller-listings-grid");
   const followBtn = document.getElementById("follow-btn");
+  const viewOffersLink = document.getElementById("view-offers-link");
 
   const [sellerProfile, currentUser] = await Promise.all([
     getUserProfile(sellerId),
@@ -184,6 +185,19 @@ async function initSellerProfilePage() {
   await loadSellerListings(sellerId, listingsGrid);
 
   const isOwnProfile = currentUser?.userId === sellerId;
+
+  // Only the seller themselves gets a link into their offers conversation --
+  // a shopper viewing someone else's profile has no reason to see it here
+  // (they land on their own thread via the "View offers" link after making
+  // an offer instead, see product.js).
+  if (viewOffersLink) {
+    if (isOwnProfile) {
+      viewOffersLink.href = `/sellerProfile/offers?id=${sellerId}`;
+      viewOffersLink.style.display = "";
+    } else {
+      viewOffersLink.style.display = "none";
+    }
+  }
 
   if (followBtn) {
     // Following yourself isn't a real action -- hide the button rather than

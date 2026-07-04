@@ -39,8 +39,10 @@ const detailTriggers = document.querySelectorAll('.detail-trigger');
 const writeReviewBtn = document.getElementById("writeReviewBtn");
 const offerBtn = document.getElementById('offerBtn');
 const modalOverlay = document.querySelector('.modal-overlay');
-const modalCloseBtn = document.querySelector('.modal-close')
+const modalCloseBtns = document.querySelectorAll('.modal-close');
 const offerModal = document.getElementById('offerModal');
+const offerSent = document.getElementById('offerSent');
+const viewOffersBtn = document.getElementById('viewOffersBtn');
 const cartDrawerClose = document.getElementById('cartDrawerClose');
 const cartDrawer = document.getElementById('cartDrawer');
 const addToCartBtn = document.getElementById('addToCartBtn');
@@ -93,12 +95,28 @@ offerBtn.addEventListener('click', () => {
     setOfferModalData();
 })
 
-modalCloseBtn.addEventListener('click', () => {
-    modalOverlay.classList.remove('show');
-    offerModal.classList.remove('active');
-    document.body.style.overflow = 'auto';
+// querySelectorAll, not querySelector -- the offer modal and the "offer
+// sent" panel each have their own .modal-close button (plus a third, unused
+// one on the dormant review modal). A single querySelector only ever wired
+// the first one in the DOM, so the offer modal/offer-sent close (X) buttons
+// silently did nothing.
+modalCloseBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+        modalOverlay.classList.remove('show');
+        offerModal.classList.remove('active');
+        offerSent.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    });
+});
 
-})
+viewOffersBtn?.addEventListener('click', async () => {
+    try {
+        const data = await getProductData(productId);
+        window.location.href = `/sellerProfile/offers?id=${data.userId}`;
+    } catch (error) {
+        console.error("Error navigating to offers conversation:", error);
+    }
+});
 
 viewAllSalesBtn?.addEventListener('click', () => {
     salesDrawer.classList.add('is-open');
@@ -347,7 +365,6 @@ async function setBreadcrumb() {
 
 async function setOfferModalData() {
     const offerBody = document.getElementById('offerBody');
-    const offerSent = document.getElementById('offerSent');
 
     showLoader(offerBody);
     let data;
@@ -567,7 +584,7 @@ async function renderBuyerOfferStatus() {
 async function renderSellerOffersPanel(sellerId) {
     const panel = document.getElementById('sellerOffersPanel');
     const list = document.getElementById('sellerOffersList');
-    if (!user || sellerId !== user.uid) return;
+    if (!user || sellerId !== user.userId) return;
 
     let offers;
     try {

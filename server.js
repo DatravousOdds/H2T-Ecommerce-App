@@ -814,6 +814,49 @@ app.post("/api/offers/:offerId/respond", verifyAuth, async (req, res) => {
   }
 });
 
+// Backs the "conversation" page tied to a seller's profile (linked from the
+// buyer's "View offers" confirmation after sending an offer). One query
+// covers both roles: the seller viewing this route on their own profile sees
+// every offer on any of their listings; a buyer viewing another seller's
+// profile only sees their own thread(s) with that seller.
+app.get("/api/sellers/:sellerId/offers", verifyAuth, async (req, res) => {
+  try {
+    const isOwner = req.token.uid === req.params.sellerId;
+
+    const snap = await db.collection("offers").where("sellerId", "==", req.params.sellerId).get();
+
+    const offers = snap.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .filter((data) => isOwner || data.buyerId === req.token.uid);
+
+    const listingIds = [...new Set(offers.map((offer) => offer.productId))];
+    const listingSnaps = await Promise.all(
+      listingIds.map((id) => db.collection("listings").doc(id).get())
+    );
+    const listingsById = {};
+    listingSnaps.forEach((snap, i) => {
+      listingsById[listingIds[i]] = snap.exists ? snap.data() : null;
+    });
+
+    const enriched = offers.map((offer) => {
+      const listing = listingsById[offer.productId];
+      return {
+        ...offer,
+        productName: listing?.productName || "Listing removed",
+        productImage: listing?.images?.find((img) => img.isPrimary)?.url || listing?.images?.[0]?.url || "",
+      };
+    });
+
+    return res.json({ offers: enriched, viewerRole: isOwner ? "seller" : "buyer" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.get("/sellerProfile/offers", (req, res) => {
+  res.sendFile(path.join(staticPth, "sellerProfile/offers.html"));
+});
+
 app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });

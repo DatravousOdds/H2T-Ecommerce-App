@@ -237,3 +237,17 @@ Also updated the caption under that card in [profile.html](public/account/profil
 **Deploy order mattered here:** code and rule had to land together, not rule-first — tightening the rule before the new client code shipped would have temporarily made things *worse* (logged-in users viewing someone else's product page would *also* start getting permission-denied, on top of logged-out visitors already getting it).
 
 **Verified:** confirmed both were live in production, then drove a fresh (no stored auth) Playwright browser session through the actual home page → click a real product card → product detail page, and confirmed zero console errors plus the seller name/photo (`newSeller420`) rendering correctly from the new endpoint.
+
+## 2026-07-04 — Order confirmation page: same `orders` `permission-denied` shape, on a listener this time
+
+**Symptom:** Console showed `FirebaseError: [code=permission-denied]: Missing or insufficient permissions` from an `onSnapshot` listener, right after Stripe redirected back to the confirmation page. The order confirmation UI never rendered for a real (non-authentication) purchase.
+
+**Root cause:** same pre-existing gap as the "Price History chart" entry above — `orders` has no Firestore rule at all (default-deny), because a rule would have to grant/deny the *whole* document, and `orders` docs carry `buyerId`/`sellerId`/`buyerEmail`/`shippingAddress`. [confirm.js](public/js/commerce/confirm.js) queried `orders` directly from the client with `onSnapshot(query(collection(db,"orders"), where("id","==",paymentIntent)), ...)` — every real order hit this, it just hadn't been reported yet.
+
+**Why `onSnapshot` instead of a one-time read in the first place, and why that's no longer needed:** the listener pattern made sense back when the `orders` doc only came into existence from the Stripe webhook, sometime after redirect — a listener could catch it appearing. That's no longer true: per the "Shipping/fulfillment status flow" entry above, `checkout.js`'s `/orders/init` call ([server.js:447](server.js#L447)) now creates the order doc synchronously the moment the buyer clicks "Pay now," before Stripe even runs the payment. By the time the confirmation redirect happens, the doc already exists — so a single fetch is enough, no need to wait/listen.
+
+**Fix**, same pattern as `/api/products/:id/sales-history` and `/api/sellers/:id/public-profile` above:
+- Added `GET /api/orders/by-payment-intent/:paymentIntentId` in [server.js:888](server.js#L888) — `verifyAuth` + the same `buyerId`/`sellerId` ownership check already used by `GET /orders/:id` ([server.js:821](server.js#L821)), just looked up by the Stripe payment intent id (stored as the order doc's own `id` field) instead of the Firestore doc id, since that's all the confirmation page's redirect URL has.
+- `confirm.js` now calls that endpoint via `fetch()` with `Authorization: Bearer ${user.idToken}` instead of the client-side `onSnapshot` listener. Dropped the now-unused `collection`/`query`/`where`/`onSnapshot`/`db` imports.
+
+**Not done:** did not add an `orders` Firestore rule — same reasoning as the Price History chart entry, still applies.
