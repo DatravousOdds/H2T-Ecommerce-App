@@ -2,15 +2,19 @@ import { collection, addDoc, getDocs, where, query, limit, getDoc, startAfter } 
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, setDoc, serverTimestamp, db, doc, app } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 
-let currentUser = null;
-let cartCount = Number(localStorage.getItem('cartCount')) || 0;
+// var, not let: on iOS Safari, Firebase's onAuthStateChanged callback (routed
+// through IndexedDB persistence) can resolve and call back into getCartCount()
+// before this line has synchronously run, per production stack traces. var
+// has no temporal dead zone, so an early read is `undefined`, not a crash.
+var currentUser = null;
+var cartCount = Number(localStorage.getItem('cartCount')) || 0;
 
 /**
  * favorites/{userId}/items/{listingId} -- doc ID is the listingId itself,
  * each doc denormalizes the listing's display fields (mirrors how
  * order.item already does this elsewhere in the app).
  */
-let favoritedIds = new Set();
+var favoritedIds = new Set();
 
 // Deliberately not a top-level await: it previously caused a circular-import
 // race with cartDrawer.js that let other modules (e.g. nav.js) run before
@@ -736,7 +740,7 @@ function handleFavoriteClick(element, listingId, listingData) {
   // Reflect the real current state on render, not always defaulting to
   // outline -- otherwise a user's own favorites would look unfavorited
   // every time they revisit a shop page.
-  if (favoritedIds.has(listingId)) {
+  if (favoritedIds?.has(listingId)) {
     heartIcon.classList.remove("fa-regular");
     heartIcon.classList.add("fa-solid");
     heartIcon.style.color = "red";
@@ -815,7 +819,7 @@ export function resetCartCount() {
 // so swapping real cards in doesn't reflow the grid. Shared by every page
 // that calls loadProducts()/displayProducts() (men/women/accessories/shop/
 // releases), so the shimmer only needs to be defined once.
-const renderProductSkeletons = (containerElement, count = 12) => {
+export function renderProductSkeletons(containerElement, count = 12) {
   const productsContainer = document.getElementById(`${containerElement}`);
   if (!productsContainer) return;
 
@@ -832,7 +836,7 @@ const renderProductSkeletons = (containerElement, count = 12) => {
       </div>
     </div>
   `).join("");
-};
+}
 
 const displayProducts = (products, containerElement) => {
   const productsContainer = document.getElementById(`${containerElement}`);

@@ -1,7 +1,11 @@
 import { removeFromCart, calculateSubtotal, decrementCartCount, getCartItems } from "../core/global.js";
 import { checkUserStatus } from "../auth/auth.js";
 
-let currentUser = null;
+// var, not let: on iOS Safari, Firebase's onAuthStateChanged callback (routed
+// through IndexedDB persistence) can resolve and call back into this module
+// before this line has synchronously run, per production stack traces. var
+// has no temporal dead zone, so an early read is `undefined`, not a crash.
+var currentUser = null;
 
 const cartTemplate = (item) => 
 `<div class="cart-item" data-id="${currentUser ? item.id : item.listingId}">
