@@ -7671,6 +7671,14 @@ details h3 {
 /* Extra small devices (phones, <576px) */
 @media (max-width: 575.98px) {
 
+  .view-all-activity {
+    max-width: 350px;
+  }
+
+  .orders-container {
+    grid-template-columns: 1fr;
+  }
+
   .order-details-container {
     max-width: 360px;
   }
@@ -9995,6 +10003,9 @@ input:checked + .slider:before {
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
+  .favorite-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   /* product filter dropdown */
   .filter-opt .filter-dropdown-content {
     left: 0;
@@ -10262,7 +10273,7 @@ input:checked + .slider:before {
   .payment-wrapper {
     align-items: center;
     width: 100%;
-    display: flex;
+    display: none;
     flex-direction: column;
   }
 

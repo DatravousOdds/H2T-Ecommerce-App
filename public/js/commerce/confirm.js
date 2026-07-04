@@ -1,5 +1,4 @@
 import { checkUserStatus } from "../auth/auth.js";
-import { collection, query, where, onSnapshot, db } from "../api/firebase-client.js";
 import { formatFirebaseDate } from "../core/global.js";
 const sessionParams = new URLSearchParams(window.location.search);
 const paymentIntent =  sessionParams.get("payment_intent");
@@ -26,28 +25,38 @@ async function getOrderDetails() {
             return;
         }
 
-        const orderId = paymentIntent;
+        const order = await fetchOrderByPaymentIntent(paymentIntent);
+        if (!order) return;
 
-        const docRef = collection(db, "orders");
+        const cardDetails = await fetchCardDetails(paymentIntent);
+        const orderData = {...order, ...cardDetails}
+        displayOrderConfirmation(orderData);
+    }
+}
 
-        const q = query(
-            docRef,
-            where("id", "==", orderId)
-        )
-
-
-        const unsub = onSnapshot(q, async (querySnapshot) => {
-            const order = querySnapshot.docs[0].data();
-            console.log(order)
-            const cardDetails = await fetchCardDetails(paymentIntent);
-            const orderData = {...order, ...cardDetails}
-            displayOrderConfirmation(orderData);
-
-            unsub();
-
+// `orders` has no Firestore rule at all (see the Price History chart entry
+// in notes.md) -- reading it straight from the client, the way this used to
+// with an onSnapshot listener, always threw permission-denied. checkout.js's
+// /orders/init call already creates the doc synchronously before Stripe
+// redirects back here, so a single authenticated fetch (no need to wait/
+// listen for it to appear) is enough.
+async function fetchOrderByPaymentIntent(paymentIntent) {
+    try {
+        const request = await fetch(`/api/orders/by-payment-intent/${paymentIntent}`, {
+            headers: {
+                "Authorization": `Bearer ${user.idToken}`
+            }
         });
 
+        if (!request.ok) {
+            throw new Error(`${request.status}`);
+        }
 
+        const result = await request.json();
+        return result.data;
+    } catch (error) {
+        console.error("Error fetching order:", error);
+        return null;
     }
 }
 

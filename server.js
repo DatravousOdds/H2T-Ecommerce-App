@@ -837,6 +837,34 @@ app.get("/orders/:id", verifyAuth, async (req, res) => {
   }
 })
 
+// The order confirmation page only has the Stripe payment intent id (from
+// the redirect URL), not the Firestore doc id `/orders/:id` above expects --
+// and `orders` has no Firestore rule at all (see the Price History chart
+// entry in notes.md), so this can't be a client-side onSnapshot listener
+// like confirm.js used to run. Same buyerId/sellerId check as `/orders/:id`.
+app.get("/api/orders/by-payment-intent/:paymentIntentId", verifyAuth, async (req, res) => {
+  try {
+    const snapshot = await db.collection("orders")
+      .where("id", "==", req.params.paymentIntentId)
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const order = snapshot.docs[0].data();
+
+    if (req.token.uid !== order.buyerId && req.token.uid !== order.sellerId) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    return res.status(200).json({ success: true, data: order });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // 404 route
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPth, "/static/404.html"));
