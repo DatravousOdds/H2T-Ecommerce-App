@@ -3107,6 +3107,11 @@ footer .rights {
 
 @media (max-width: 477px) {
 
+  .category-shop {
+    width: 100%;
+    height: 200px;
+  }
+
   /* Banner Section */
   #banner
   {

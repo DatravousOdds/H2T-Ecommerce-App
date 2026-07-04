@@ -302,7 +302,7 @@ function buildOrderDetailsHTML(order) {
 }
 
 function openOrderDetails(order) {
-  const menu = document.querySelector(".order-details-menu");
+  const menu = document.querySelector("#purchases-order-details-menu");
   if (!menu) return;
 
   const { title, status, statusLabel, orderDate, html } = buildOrderDetailsHTML(order);
@@ -365,7 +365,7 @@ async function refreshPurchases(currentUser) {
 
 function wireEventDelegation(currentUser) {
   const purchasesContent = document.querySelector(".purchases-content");
-  const orderDetailsMenu = document.querySelector(".order-details-menu");
+  const orderDetailsMenu = document.querySelector("#purchases-order-details-menu");
   const closeBtn = document.getElementById("close-order-details-menu");
 
   if (purchasesContent) {

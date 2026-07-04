@@ -57,6 +57,7 @@ displayProductDetails();
 displayPricingKpis();
 displaySalesHistory();
 displayReviews();
+initOfferPanels();
 showLoader(proContainer);
 try {
     showLoader(proContainer);
@@ -264,7 +265,7 @@ async function displayReviews() {
 }
 
 async function displayProductDetails() {
-    showLoader(productDetailsWrapper);
+    productDetailsWrapper.classList.add('is-loading');
     try {
         const data = await getProductData(productId);
 
@@ -321,7 +322,7 @@ async function displayProductDetails() {
     } catch (error) {
         console.error("Error fetching product details:", error);
     } finally {
-        hideLoader(productDetailsWrapper);
+        productDetailsWrapper.classList.remove('is-loading');
     }
 }
 
@@ -414,12 +415,18 @@ async function setOfferModalData() {
         }
     });
 
-    sendOfferBtn.addEventListener('click', () => {
-        console.log("offer sent!");
-        console.log(offerInput.value);
-        offerModal.classList.remove('active')
-        offerSent.classList.add('active');
-        
+    sendOfferBtn.addEventListener('click', async () => {
+        sendOfferBtn.disabled = true;
+
+        try {
+            await submitOffer(Number(offerInput.value));
+            offerModal.classList.remove('active');
+            offerSent.classList.add('active');
+            await renderBuyerOfferStatus();
+        } catch (error) {
+            alert(error.message);
+            sendOfferBtn.disabled = false;
+        }
     });
 
     offerSuggestions.forEach(suggestion => {
@@ -437,6 +444,196 @@ async function setOfferModalData() {
     });
 }
   
+async function submitOffer(offerAmount) {
+    if (!user) {
+        throw new Error("Please log in to make an offer");
+    }
+
+    const res = await fetch(`/api/products/${productId}/offer`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${user.idToken}`,
+        },
+        body: JSON.stringify({ offerAmount }),
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+        throw new Error(result.message || "Failed to send offer");
+    }
+
+    return result;
+}
+
+async function respondToOffer(offerId, action, counterAmount) {
+    const res = await fetch(`/api/offers/${offerId}/respond`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${user.idToken}`,
+        },
+        body: JSON.stringify({ action, counterAmount }),
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+        throw new Error(result.message || "Failed to respond to offer");
+    }
+
+    return result;
+}
+
+function offerStatusLabel(offer) {
+    if (offer.status === "accepted") return "Offer accepted! The seller has 24 hours to complete the sale.";
+    if (offer.status === "rejected") return "Offer declined.";
+    if (offer.turn === "buyer") return `Seller countered with $${offer.offerAmount} — your move`;
+    return `Offer pending — $${offer.offerAmount} sent to seller`;
+}
+
+// Renders the logged-in buyer's own negotiation thread on this listing (if
+// any). Re-rendered after every accept/reject/counter so the panel always
+// reflects whichever side's turn it now is.
+async function renderBuyerOfferStatus() {
+    const panel = document.getElementById('offerStatusPanel');
+    if (!user) return;
+
+    let offer;
+    try {
+        const res = await fetch(`/api/products/${productId}/offers/mine`, {
+            headers: { "Authorization": `Bearer ${user.idToken}` },
+        });
+        ({ offer } = await res.json());
+    } catch (error) {
+        console.error("Error fetching offer status:", error);
+        return;
+    }
+
+    if (!offer) {
+        panel.style.display = 'none';
+        return;
+    }
+
+    const canRespond = offer.status === "active" && offer.turn === "buyer";
+
+    panel.style.display = 'block';
+    panel.innerHTML = `
+        <p class="offer-status-text">${offerStatusLabel(offer)}</p>
+        ${canRespond ? `
+            <div class="offer-status-actions">
+                <button type="button" class="offer-accept-btn" id="buyerAcceptBtn">Accept</button>
+                <button type="button" class="offer-reject-btn" id="buyerRejectBtn">Decline</button>
+                <input type="number" class="offer-counter-input" id="buyerCounterInput" placeholder="Counter amount">
+                <button type="button" class="offer-counter-btn" id="buyerCounterBtn">Counter</button>
+            </div>
+        ` : ''}
+    `;
+
+    if (!canRespond) return;
+
+    document.getElementById('buyerAcceptBtn').addEventListener('click', async () => {
+        try {
+            await respondToOffer(offer.id, "accept");
+            await renderBuyerOfferStatus();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    document.getElementById('buyerRejectBtn').addEventListener('click', async () => {
+        try {
+            await respondToOffer(offer.id, "reject");
+            await renderBuyerOfferStatus();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    document.getElementById('buyerCounterBtn').addEventListener('click', async () => {
+        const counterAmount = document.getElementById('buyerCounterInput').value;
+        try {
+            await respondToOffer(offer.id, "counter", counterAmount);
+            await renderBuyerOfferStatus();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+}
+
+// Only rendered when the current viewer owns this listing -- lets a seller
+// accept/reject/counter offers right from their own product page. A proper
+// Selling > Offers dashboard (mirroring the existing Selling > Orders tab)
+// would be the natural next step, but that's a bigger addition than this
+// page warrants on its own.
+async function renderSellerOffersPanel(sellerId) {
+    const panel = document.getElementById('sellerOffersPanel');
+    const list = document.getElementById('sellerOffersList');
+    if (!user || sellerId !== user.uid) return;
+
+    let offers;
+    try {
+        const res = await fetch(`/api/products/${productId}/offers`, {
+            headers: { "Authorization": `Bearer ${user.idToken}` },
+        });
+        ({ offers } = await res.json());
+    } catch (error) {
+        console.error("Error fetching seller offers:", error);
+        return;
+    }
+
+    if (!offers || !offers.length) {
+        panel.style.display = 'none';
+        return;
+    }
+
+    panel.style.display = 'block';
+    list.innerHTML = offers.map((offer) => `
+        <div class="seller-offer-row" data-offer-id="${offer.id}">
+            <p class="seller-offer-amount">$${offer.offerAmount}</p>
+            <p class="seller-offer-turn">${offer.turn === "seller" ? "Awaiting your response" : "Waiting on buyer"}</p>
+            ${offer.turn === "seller" ? `
+                <div class="offer-status-actions">
+                    <button type="button" class="offer-accept-btn" data-action="accept">Accept</button>
+                    <button type="button" class="offer-reject-btn" data-action="reject">Decline</button>
+                    <input type="number" class="offer-counter-input" data-input="counter" placeholder="Counter amount">
+                    <button type="button" class="offer-counter-btn" data-action="counter">Counter</button>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+
+    list.querySelectorAll('.seller-offer-row').forEach((row) => {
+        const offerId = row.dataset.offerId;
+
+        row.querySelectorAll('button[data-action]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                const action = btn.dataset.action;
+                const counterAmount = row.querySelector('[data-input="counter"]')?.value;
+
+                try {
+                    await respondToOffer(offerId, action, counterAmount);
+                    await renderSellerOffersPanel(sellerId);
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+        });
+    });
+}
+
+async function initOfferPanels() {
+    if (!user) return;
+
+    try {
+        await Promise.all([
+            renderBuyerOfferStatus(),
+            getProductData(productId).then((productData) => renderSellerOffersPanel(productData.userId)),
+        ]);
+    } catch (error) {
+        console.error("Error initializing offer panels:", error);
+    }
+}
+
 async function getMarketValuePrice() {
     const data = await getProductData(productId);
 

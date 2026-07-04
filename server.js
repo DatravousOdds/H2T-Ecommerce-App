@@ -597,8 +597,14 @@ app.get("/api/products/:id/sales-history", async (req, res) => {
 
 // Same reasoning as /sales-history above: rather than open a public Firestore
 // rule on `offers` (whose current fields look harmless but aren't guaranteed
-// to stay that way -- offer creation isn't even implemented client-side yet),
-// compute the summary server-side and hand back just two numbers.
+// to stay that way), compute the summary server-side and hand back just two
+// numbers.
+//
+// Note: offerAmount is whatever's currently on the table for a still-"active"
+// thread, so a seller's counter-down shows up here as if it were a buyer ask.
+// That was true of this route's original design; flagging it now that offer
+// creation actually populates it, in case the highest/lowest semantics need
+// to change (e.g. only count amounts whose last history entry was `by: "buyer"`).
 app.get("/api/products/:id/offer-summary", async (req, res) => {
   try {
     // Filtering on productId alone (no status filter in the query itself)
@@ -617,6 +623,194 @@ app.get("/api/products/:id/offer-summary", async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Buyer submits an offer on a listing. Counters/accepts/rejects below all
+// update this same doc (status stays "active" through a whole negotiation,
+// only offerAmount/turn change) instead of creating new offer docs -- that
+// keeps a single thread per buyer per listing and keeps offer-summary above
+// showing the live number, not a stale first-ask.
+app.post("/api/products/:id/offer", verifyAuth, async (req, res) => {
+  try {
+    const amount = Number(req.body.offerAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return res.status(400).json({ success: false, message: "Enter a valid offer amount" });
+    }
+
+    const listingSnap = await db.collection("listings").doc(req.params.id).get();
+    if (!listingSnap.exists) {
+      return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+
+    const listing = listingSnap.data();
+    const sellerId = listing.userId;
+
+    if (sellerId === req.token.uid) {
+      return res.status(400).json({ success: false, message: "You can't make an offer on your own listing" });
+    }
+
+    // One offer doc per (listing, buyer) pair, at a deterministic ID, rather
+    // than a fresh auto-id per submission. That lets a resolved negotiation
+    // be restarted in place (see history below) instead of accumulating
+    // orphaned docs, and lets the transaction below check-and-set atomically
+    // -- a plain read-then-.add() would let two rapid submits both pass the
+    // "no active offer yet" check before either write lands.
+    const offerRef = db.collection("offers").doc(`${req.params.id}_${req.token.uid}`);
+
+    try {
+      await db.runTransaction(async (tx) => {
+        const existing = await tx.get(offerRef);
+        if (existing.exists && existing.data().status === "active") {
+          throw new Error("DUPLICATE_ACTIVE_OFFER");
+        }
+
+        tx.set(offerRef, {
+          productId: req.params.id,
+          buyerId: req.token.uid,
+          sellerId,
+          offerAmount: amount,
+          status: "active",
+          turn: "seller",
+          history: [{ by: "buyer", action: "offer", amount, at: Date.now() }],
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      });
+    } catch (error) {
+      if (error.message === "DUPLICATE_ACTIVE_OFFER") {
+        return res.status(409).json({ success: false, message: "You already have an active offer on this item" });
+      }
+      throw error;
+    }
+
+    await createNotification(
+      sellerId,
+      "offer",
+      "New offer received",
+      `You received a $${amount} offer on ${listing.productName || "your listing"}.`,
+      `/products/${req.params.id}`
+    );
+
+    return res.status(200).json({ success: true, offerId: offerRef.id });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// The logged-in buyer's own offer thread on this listing (if any) -- not
+// filtered to "active" so an accepted/rejected outcome still shows up here;
+// otherwise the buyer's status panel would go blank the instant the seller
+// responds instead of showing the outcome.
+app.get("/api/products/:id/offers/mine", verifyAuth, async (req, res) => {
+  try {
+    const docSnap = await db.collection("offers").doc(`${req.params.id}_${req.token.uid}`).get();
+    if (!docSnap.exists) return res.json({ offer: null });
+
+    return res.json({ offer: { id: docSnap.id, ...docSnap.data() } });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Seller-only: every active offer on their own listing.
+app.get("/api/products/:id/offers", verifyAuth, async (req, res) => {
+  try {
+    const listingSnap = await db.collection("listings").doc(req.params.id).get();
+    if (!listingSnap.exists) {
+      return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+
+    if (listingSnap.data().userId !== req.token.uid) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    const snap = await db.collection("offers").where("productId", "==", req.params.id).get();
+
+    const offers = snap.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .filter((data) => data.status === "active");
+
+    return res.json({ offers });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Accept/reject/counter an offer. Whichever side's `turn` it is may act;
+// counter-offers update the same doc (offerAmount + flipped turn) so the
+// negotiation stays a single back-and-forth thread rather than branching
+// into new docs.
+app.post("/api/offers/:offerId/respond", verifyAuth, async (req, res) => {
+  try {
+    const { action, counterAmount } = req.body;
+    if (!["accept", "reject", "counter"].includes(action)) {
+      return res.status(400).json({ success: false, message: "Invalid action" });
+    }
+
+    const offerRef = db.collection("offers").doc(req.params.offerId);
+    const offerSnap = await offerRef.get();
+    if (!offerSnap.exists) {
+      return res.status(404).json({ success: false, message: "Offer not found" });
+    }
+
+    const offer = offerSnap.data();
+    const uid = req.token.uid;
+    const role = uid === offer.buyerId ? "buyer" : uid === offer.sellerId ? "seller" : null;
+
+    if (!role) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+    if (offer.status !== "active") {
+      return res.status(400).json({ success: false, message: "This offer is no longer active" });
+    }
+    if (offer.turn !== role) {
+      return res.status(403).json({ success: false, message: "It's not your turn to respond to this offer" });
+    }
+
+    const otherRole = role === "buyer" ? "seller" : "buyer";
+    const otherUid = otherRole === "buyer" ? offer.buyerId : offer.sellerId;
+
+    let update;
+    let notifArgs;
+
+    if (action === "accept") {
+      update = {
+        status: "accepted",
+        respondedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        history: [...offer.history, { by: role, action: "accept", amount: offer.offerAmount, at: Date.now() }],
+      };
+      notifArgs = ["Offer accepted", `Your offer of $${offer.offerAmount} was accepted.`];
+    } else if (action === "reject") {
+      update = {
+        status: "rejected",
+        respondedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        history: [...offer.history, { by: role, action: "reject", amount: offer.offerAmount, at: Date.now() }],
+      };
+      notifArgs = ["Offer declined", `Your offer of $${offer.offerAmount} was declined.`];
+    } else {
+      const amount = Number(counterAmount);
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return res.status(400).json({ success: false, message: "Enter a valid counter amount" });
+      }
+
+      update = {
+        offerAmount: amount,
+        turn: otherRole,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        history: [...offer.history, { by: role, action: "counter", amount, at: Date.now() }],
+      };
+      notifArgs = ["Counter offer received", `Countered with $${amount} on your offer.`];
+    }
+
+    await offerRef.update(update);
+    await createNotification(otherUid, "offer", notifArgs[0], notifArgs[1], `/products/${offer.productId}`);
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 });
 

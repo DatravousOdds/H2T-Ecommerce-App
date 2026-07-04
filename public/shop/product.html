@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../css/components/newsletter.css">
     <link rel="stylesheet" href="../css/pages/productDetails.css">
     <link rel="stylesheet" href="../css/components/pageLoader.css">
+    <link rel="stylesheet" href="../css/components/skeleton.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
@@ -47,7 +48,45 @@
         </ol>
       </nav>
 
-      <div class="product-details-wrapper">
+      <div class="product-details-wrapper" id="productDetailsWrapper">
+
+        <!-- Skeleton placeholders shown while displayProductDetails() fetches -->
+        <div class="single-pro-image skeleton-item" aria-hidden="true">
+          <div class="skeleton skeleton-image"></div>
+          <div class="seller-profile">
+            <span class="skeleton" style="width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;"></span>
+            <div class="seller-profile-info">
+              <div class="seller-name-row">
+                <span class="skeleton skeleton-line short"></span>
+              </div>
+              <div class="seller-stats">
+                <span class="skeleton skeleton-line medium"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="s_prod_details skeleton-item" aria-hidden="true">
+          <span class="skeleton skeleton-line short" style="width: 30%;"></span>
+          <span class="skeleton skeleton-line long" style="height: 2rem; width: 70%; margin-top: 0.5rem;"></span>
+          <div class="prod-prices">
+            <span class="skeleton skeleton-line" style="height: 1.5rem; width: 25%;"></span>
+          </div>
+          <hr/>
+          <div class="sizes">
+            <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
+            <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
+            <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
+          </div>
+          <hr/>
+          <div class="buttons-container">
+            <div class="button-group">
+              <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
+              <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
+            </div>
+            <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
+          </div>
+        </div>
 
         <div class="single-pro-image">
           <img src="" width="100%" id="MainImg" alt="" />
@@ -116,6 +155,13 @@
             <a class="cta-btn stu-btn is-disabled" aria-disabled="true" role="button">
               Sell To Us <span class="coming-soon-badge">Coming Soon</span>
             </a>
+          </div>
+
+          <div class="offer-status-panel" id="offerStatusPanel" style="display: none"></div>
+
+          <div class="seller-offers-panel" id="sellerOffersPanel" style="display: none">
+            <h3>Offers on this listing</h3>
+            <div class="seller-offers-list" id="sellerOffersList"></div>
           </div>
 
           <hr/>

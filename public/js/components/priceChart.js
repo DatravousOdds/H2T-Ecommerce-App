@@ -25,6 +25,8 @@ const priceHistoryChart = new Chart(ctx, {
     type: 'line',
     data: data,
     options: {
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
             y: {
                 ticks: {
