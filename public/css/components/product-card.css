@@ -285,6 +285,6 @@
   
   .pro,
   #product1 .pro {
-    width: 250px;
+    width: 100%;
   }
 }
