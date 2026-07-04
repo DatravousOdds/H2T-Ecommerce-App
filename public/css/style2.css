@@ -2924,11 +2924,16 @@ footer .rights {
 
   #hero .hero-text-container {
     flex-direction: column;
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    text-align: center;
   }
 
-  
-
-  
+  .m-hL {
+    width: 100%;
+    text-align: center;
+  }
 
   #hero .hero-text {
     padding: 9rem 19px;

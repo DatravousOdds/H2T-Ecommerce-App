@@ -10,6 +10,7 @@ import {
   doc,
   getFirestore,
   setDoc,
+  persistenceReady,
 } from "../api/firebase-client.js";
 
 import { showLoader, hideLoader } from "../components/pageLoader.js";
@@ -92,7 +93,7 @@ export function checkUserStatus() {
 
   console.time("Auth check duration");
 
-   authCheckPromise = new Promise((resolve, reject) => {
+   authCheckPromise = persistenceReady.then(() => new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(
       auth,
       async (user) => {
@@ -126,7 +127,7 @@ export function checkUserStatus() {
         reject(error);
       }
     );
-  });
+  }));
 
   return authCheckPromise;
 }

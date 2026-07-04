@@ -50,18 +50,23 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Awaited at module scope (not fire-and-forget) so that any module
-// importing `auth` -- e.g. auth.js's onAuthStateChanged listener in
-// checkUserStatus() -- can't run until persistence is actually configured.
-// Otherwise onAuthStateChanged can fire once with a premature `null` before
-// the persisted session loads, and since that listener unsubscribes after
-// its first callback, it locks in "logged out" for the rest of the page.
-try {
-  await setPersistence(auth, browserLocalPersistence);
-  console.log('Firebase persistence enabled');
-} catch (error) {
-  console.log('Failed to enable persistence', error);
-}
+// Not a top-level await: this file is imported (transitively) by nearly
+// every module in the app, so a literal top-level await here turns the
+// whole import graph into "async modules" and breaks the strict
+// evaluation-order guarantee ES modules normally provide -- which is what
+// was causing TDZ ReferenceErrors on unrelated module-level state elsewhere
+// (auth.js, global.js, cartDrawer.js) even though those files have no
+// circular imports of their own.
+//
+// Callers that need persistence configured before touching `auth` --
+// e.g. auth.js's onAuthStateChanged listener in checkUserStatus() -- should
+// `await persistenceReady` first. Otherwise onAuthStateChanged can fire once
+// with a premature `null` before the persisted session loads, and since that
+// listener unsubscribes after its first callback, it locks in "logged out"
+// for the rest of the page.
+export const persistenceReady = setPersistence(auth, browserLocalPersistence)
+  .then(() => console.log('Firebase persistence enabled'))
+  .catch((error) => console.log('Failed to enable persistence', error));
 
 export {
   deleteDoc,
