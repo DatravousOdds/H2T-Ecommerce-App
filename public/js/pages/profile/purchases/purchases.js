@@ -23,6 +23,11 @@ import { db, collection, getDocs, query, where } from "../../../api/firebase-cli
  * really is instead of presented as something it isn't.
  */
 
+// Populated by initPurchases/refreshPurchases -- read by the click
+// delegation below so re-renders after a cancel don't leave stale closures
+// pointing at the pre-cancel order list.
+let currentOrders = [];
+
 const STATUS_DISPLAY = {
   pending: { icon: "fa-clock", label: "Pending" },
   processing: { icon: "fa-box", label: "Processing" },
@@ -181,6 +186,17 @@ function buildOrderDetailsHTML(order) {
          Not yet shipped
        </button>`;
 
+  // Cancellation only makes sense before the item has shipped -- matches
+  // the same "pending"/"processing" window the backend (DELETE
+  // /orders/:id) actually allows.
+  const isCancellable = status === "pending" || status === "processing";
+  const cancelSection = isCancellable
+    ? `<div class="order-details-cancel">
+         <button type="button" class="order-action-btn danger" id="buyer-cancel-order-btn">Cancel Order</button>
+         <p class="order-action-error"></p>
+       </div>`
+    : "";
+
   return {
     title: `Order #${(order.id || "").slice(-10)}`,
     status,
@@ -237,6 +253,7 @@ function buildOrderDetailsHTML(order) {
           </div>
         </div>
       </div>
+      ${cancelSection}
     `,
   };
 }
@@ -246,6 +263,11 @@ function openOrderDetails(order) {
   if (!menu) return;
 
   const { title, status, statusLabel, orderDate, html } = buildOrderDetailsHTML(order);
+
+  // Read by the delegated cancel-button handler below to know which order
+  // to send the DELETE for -- order.docId is the Firestore doc id, not
+  // order.id (which is the Stripe payment intent id).
+  menu.dataset.docId = order.docId;
 
   const titleEl = document.getElementById("order-details-title");
   const subheaderTitle = menu.querySelector(".order-details-subheader-title");
@@ -274,7 +296,31 @@ function openOrderDetails(order) {
   menu.classList.add("active");
 }
 
-function wireEventDelegation(allOrders) {
+async function cancelOrder(docId, idToken) {
+  const response = await fetch(`/orders/${docId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${idToken}`,
+    },
+    body: JSON.stringify({}),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Cancel failed");
+  return result;
+}
+
+// Re-fetches and re-renders after a cancel, keeping currentOrders (and
+// anything closed over it, like the click delegation below) in sync.
+async function refreshPurchases(currentUser) {
+  currentOrders = await fetchBuyerOrders(currentUser.userId);
+
+  const searchInput = document.querySelector(".purchases-search input");
+  renderAllSections(currentOrders, searchInput ? searchInput.value.trim() : "");
+}
+
+function wireEventDelegation(currentUser) {
   const purchasesContent = document.querySelector(".purchases-content");
   const orderDetailsMenu = document.querySelector(".order-details-menu");
   const closeBtn = document.getElementById("close-order-details-menu");
@@ -286,13 +332,40 @@ function wireEventDelegation(allOrders) {
 
       const card = viewBtn.closest(".purchase-item");
       const orderId = card?.dataset.orderId;
-      const order = allOrders.find((o) => o.id === orderId);
+      const order = currentOrders.find((o) => o.id === orderId);
       if (order) openOrderDetails(order);
     });
   }
 
   if (closeBtn && orderDetailsMenu) {
     closeBtn.addEventListener("click", () => orderDetailsMenu.classList.remove("active"));
+  }
+
+  // Delegated on the modal itself (not the button directly) since the
+  // cancel button is regenerated fresh every time openOrderDetails() runs.
+  if (orderDetailsMenu) {
+    orderDetailsMenu.addEventListener("click", async (e) => {
+      const cancelBtn = e.target.closest("#buyer-cancel-order-btn");
+      if (!cancelBtn) return;
+
+      const docId = orderDetailsMenu.dataset.docId;
+      if (!docId) return;
+
+      if (!window.confirm("Cancel this order? This can't be undone.")) return;
+
+      const errorEl = orderDetailsMenu.querySelector(".order-action-error");
+
+      try {
+        await cancelOrder(docId, currentUser.idToken);
+        orderDetailsMenu.classList.remove("active");
+        await refreshPurchases(currentUser);
+      } catch (error) {
+        if (errorEl) {
+          errorEl.textContent = error.message;
+          errorEl.classList.add("visible");
+        }
+      }
+    });
   }
 }
 
@@ -311,7 +384,7 @@ function wireTabSwitching() {
   });
 }
 
-function wireSearch(allOrders) {
+function wireSearch() {
   const searchInput = document.querySelector(".purchases-search input");
   const form = document.querySelector(".purchases-search");
 
@@ -319,7 +392,7 @@ function wireSearch(allOrders) {
 
   if (searchInput) {
     searchInput.addEventListener("input", () => {
-      renderAllSections(allOrders, searchInput.value.trim());
+      renderAllSections(currentOrders, searchInput.value.trim());
     });
   }
 }
@@ -329,7 +402,10 @@ async function fetchBuyerOrders(userId) {
   const q = query(ordersRef, where("buyerId", "==", userId));
   const snapshot = await getDocs(q);
 
-  const orders = snapshot.docs.map((d) => d.data());
+  // docId is the Firestore document id -- distinct from order.id, which is
+  // the Stripe payment intent id. The cancel action (DELETE /orders/:id)
+  // keys off the Firestore doc, so this has to be captured here.
+  const orders = snapshot.docs.map((d) => ({ ...d.data(), docId: d.id }));
   orders.sort((a, b) => b.createdAt - a.createdAt);
   console.log("orders from purchases", orders)
   return orders;
@@ -337,16 +413,16 @@ async function fetchBuyerOrders(userId) {
 
 export async function initPurchases(currentUser) {
     console.log("purchases init called!")
-  
+
   if (!currentUser?.userId) return;
 
   try {
-    const allOrders = await fetchBuyerOrders(currentUser.userId);
+    currentOrders = await fetchBuyerOrders(currentUser.userId);
 
-    renderAllSections(allOrders);
-    wireEventDelegation(allOrders);
+    renderAllSections(currentOrders);
+    wireEventDelegation(currentUser);
     wireTabSwitching();
-    wireSearch(allOrders);
+    wireSearch();
   } catch (error) {
     console.error("Error loading purchases:", error);
   }

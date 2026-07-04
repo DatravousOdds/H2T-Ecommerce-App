@@ -3,5 +3,4 @@ node_modules/
 CORS.txt
 ecom-website-94d87-firebase-adminsdk-uzg8o-d29f50c77a.json
 *firebase-adminsdk*.json
-public/js/api/firebase-client.js
 public/js/core/config.js

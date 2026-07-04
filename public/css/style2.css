@@ -1327,6 +1327,18 @@ button.white {
   z-index: 1;
 }
 
+/* Full-image overlay -- separate from the edge-blend gradient above (::before
+   is already taken by it), a flat wash across the whole photo so it reads
+   a bit moodier/darker and sits better next to the solid black left panel. */
+.banner-right-content::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 1;
+  pointer-events: none;
+}
+
 #sm-banner .banner-right-content::before {
   background: linear-gradient(to right, #f5f5f5, transparent);
 }
