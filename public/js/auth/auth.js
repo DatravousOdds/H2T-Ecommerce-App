@@ -21,8 +21,12 @@ const db = getFirestore();
 // ================================
 // CACHING - The key to speed!
 // ================================
-let cachedUser = null;
-let authCheckPromise = null;
+// var, not let: auth.js is imported by nearly every page/component, and
+// checkUserStatus() can get called from one of them before this line has
+// synchronously run (same class of race documented in global.js). var has
+// no temporal dead zone, so an early read is `undefined`, not a crash.
+var cachedUser = null;
+var authCheckPromise = null;
 
 // Fetch user profile with caching
 const fetchUserProfile = async (user) => {
@@ -74,7 +78,9 @@ const fetchUserProfile = async (user) => {
 // ============================
 export function checkUserStatus() {
   
-  if (cachedUser !== null) {
+  // != (loose) so an early, pre-initialization `undefined` read falls through
+  // to the real auth check below instead of being treated as "already cached".
+  if (cachedUser != null) {
     console.log('⚡️ Returning cached user (instant)');
     return Promise.resolve(cachedUser);
   }

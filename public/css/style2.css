@@ -3175,7 +3175,9 @@ footer .rights {
 
   /*  Under Retailer Section */
   .category-flex-wrapper {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
     margin: 3rem 1rem;
   }
 
