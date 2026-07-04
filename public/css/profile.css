@@ -2777,6 +2777,17 @@ button:disabled {
   border-radius: 8px 8px 0 0;
 }
 
+/* Same cascade-order problem, different property: .skeleton sets
+   display: inline-block, which also loads after .hidden's display: none
+   (both this file) -- so adding .hidden alone never actually hid these two,
+   confirmed via getComputedStyle while verifying the skeleton->real swap
+   (classList showed "hidden" present, but display stayed inline-block/block).
+   Combined selectors here, same fix as the border-radius one above. */
+.avatar-skeleton.hidden,
+.stat-skeleton.hidden {
+  display: none;
+}
+
 .payment-wrapper {
   display: none;
   max-width: 96%;

@@ -51,7 +51,10 @@ function loadProfileDisplayData(userData) {
   // "no background set" is a real end state, not still-loading.
   profileBackground?.classList.remove("skeleton");
 
-  document.querySelector("#profile-picture").src = userData.profileImage;
+  // Empty profileImage used to set src="" directly, which renders as a
+  // broken image (visible alt text) instead of falling back to the same
+  // default avatar the HTML itself ships with before this ever runs.
+  document.querySelector("#profile-picture").src = userData.profileImage || "/images/default-avatar.svg";
   document.querySelector("#profile-picture").classList.remove("hidden");
   document.querySelector(".avatar-skeleton")?.classList.add("hidden");
 
