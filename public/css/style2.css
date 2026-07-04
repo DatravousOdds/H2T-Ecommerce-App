@@ -570,6 +570,7 @@ button.white {
   font-size: 1rem;
   cursor: pointer;
   padding: 0.5rem;
+  color: var(--color-text-primary);
 }
 
 .close-slide-menu:hover {

@@ -248,6 +248,7 @@
     border: none;
     font-weight: 600;
     background: transparent;
+    color: var(--color-text-primary);
 }
 
 /* CTA buttons */
@@ -987,6 +988,7 @@
 .offer-suggestion span:nth-child(2) {
     font-size: var(--font-lg);
     font-weight: 700;
+    color: var(--color-text-primary);
 }
 
 .offer-suggestion:hover {
