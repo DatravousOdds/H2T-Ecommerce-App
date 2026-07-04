@@ -435,8 +435,57 @@ app.post("/orders", verifyAuth, async (req, res) => {
   } catch (error) {
     return res.status(500).json({success: false, message: error.message})
   }
-  
+
 })
+
+// Writes the order doc as fulfillmentStatus:"pending" at the moment the buyer
+// clicks "Pay now" (checkout.js's handleSubmit), not when the checkout page
+// merely loads -- the PaymentIntent itself is created on page load, so tying
+// order creation to that would leave a pending order behind for every
+// abandoned/reloaded checkout. The webhook below then flips this same doc to
+// "processing" once payment actually captures, instead of creating a new one.
+app.post("/orders/init", verifyAuth, async (req, res) => {
+  const { paymentIntentId } = req.body;
+
+  try {
+    const paymentData = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    // Authentication payments never create an `orders` doc -- see the
+    // item_type branch in handlePaymentIntentSucceeded for why.
+    if (paymentData.metadata.item_type === 'authentication') {
+      return res.status(200).json({ success: true, skipped: true });
+    }
+
+    if (paymentData.metadata.buyer_id !== req.token.uid) {
+      return res.status(403).json({ success: false, message: "Not authorized for this payment intent" });
+    }
+
+    const existingOrder = await db.collection('orders').where('id', '==', paymentIntentId).limit(1).get();
+    if (!existingOrder.empty) {
+      return res.status(200).json({ success: true, message: "Order already initialized" });
+    }
+
+    const data = buildOrderDataFromPaymentIntent(paymentData);
+
+    await db.collection('orders').add({
+      ...data,
+      status: paymentData.status,
+      fulfillmentStatus: 'pending'
+    });
+
+    await createNotification(
+      data.buyerId,
+      "purchase",
+      "Order Confirmed",
+      `Your order for ${data.item?.name || "an item"} has been placed.`,
+      "/profile?tab=purchases"
+    );
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // product page
 app.get("/products/:id", (req, res) => {
@@ -555,7 +604,7 @@ app.get("/orders/:id", verifyAuth, async (req, res) => {
 
     const order = docRef.data();
 
-    if (req.token.uid === order.buyerId || order.items.some(item => item.sellerId === req.token.uid)) {
+    if (req.token.uid === order.buyerId || req.token.uid === order.sellerId) {
       return res.status(200).json({ success: true, data: order });
     } else {
       return res.status(403).json({success: false, message: "Unauthorized"})
@@ -692,6 +741,15 @@ app.put("/userProfiles/:id", verifyAuth, async (req, res) => {
   }
 });
 
+// Which fulfillmentStatus values a seller is allowed to move *from* for
+// each target status -- e.g. you can only mark "shipped" from pending or
+// processing, and only mark "delivered" once it's actually shipped. Keeps
+// the state machine in one place instead of scattered if/else checks.
+const SELLER_FULFILLMENT_TRANSITIONS = {
+  shipped: ["pending", "processing"],
+  delivered: ["shipped"]
+};
+
 app.put("/orders/:id", verifyAuth, async (req, res) => {
   const data = req.body;
 
@@ -704,74 +762,97 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
     const order = docRef.data();
 
     const isBuyer = req.token.uid === order.buyerId;
-    const isSeller = order.items.some(item => item.sellerId === req.token.uid);
+    const isSeller = req.token.uid === order.sellerId;
     const isAdmin = req.token.admin === true;
 
     if (!isBuyer && !isSeller && !isAdmin) {
       return res.status(403).json({ success:false, message: "Role type not found!" })
     }
 
-    const locked = ['fullfilled', 'shipped', 'completed', 'invoiced', 'cancelled', 'returned', 'disputed', 'refunded'];
-    const isLocked = locked.some(val => order.status.includes(val));
+    // Once delivered or cancelled, the order is a closed record -- nothing
+    // below should be able to touch it further.
+    const locked = ['delivered', 'cancelled'];
+    const isLocked = locked.includes(order.fulfillmentStatus);
+
+    if (isLocked) {
+      return res.status(409).json({ success: false, message: "Order is locked!" })
+    }
 
     const updatedData = {};
 
-    if (!isLocked) {
-      if (isBuyer) {  
-        if (data.shipping !== undefined) {
-          updatedData.shipping = {
-            address1: data.shipping.address1,
-            address2: data.shipping.address2,
-            country: data.shipping.country,
-            city: data.shipping.city,
-            state: data.shipping.state,
-            postalCode: data.shipping.postalCode,
-            phone: data.shipping.phone
-          }
+    if (isBuyer) {
+      if (data.shipping !== undefined) {
+        updatedData.shipping = {
+          address1: data.shipping.address1,
+          address2: data.shipping.address2,
+          country: data.shipping.country,
+          city: data.shipping.city,
+          state: data.shipping.state,
+          postalCode: data.shipping.postalCode,
+          phone: data.shipping.phone
         }
       }
-  
-      if (isSeller) {
-        if (data.items.length > 0) {
-          updatedData.items = data.items.map(item => {
-            if (item.sellerId === req.token.uid) {
-              if(data.trackingNumber !== undefined || data.itemStatus !== undefined) {
-                return {
-                  ...item,
-                  trackingNumber:  data.trackingNumber,
-                  shippingCarrier: data.shippingCarrier,
-                  itemStatus: data.itemStatus
-                }
-              }
-              return item;
-            } else {
-              return item;
-            }
-          })
-        }
-      }
-  
-      if(isAdmin) {
-        if (data.status !== undefined) {
-          updatedData.status = data.status
-        }
-      }
-
-      if (Object.keys(updatedData).length === 0) {
-        return res.status(400).json({update: false, message: "No changes made"})
-      }
-
-      await docRef.update({
-        ...updatedData,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      res.status(200).json({ update: true, message: "Update successful"});
-
-    } else {
-      res.status(409).json({ success: false, message: "Order is locked!" })
     }
-    
+
+    if (isSeller && data.fulfillmentStatus !== undefined) {
+      const allowedFrom = SELLER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus];
+
+      if (!allowedFrom) {
+        return res.status(400).json({ success: false, message: `Sellers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
+      }
+      if (!allowedFrom.includes(order.fulfillmentStatus)) {
+        return res.status(409).json({ success: false, message: `Cannot mark "${data.fulfillmentStatus}" from "${order.fulfillmentStatus}"` });
+      }
+      if (data.fulfillmentStatus === "shipped" && !data.trackingNumber) {
+        return res.status(400).json({ success: false, message: "Tracking number is required to mark an order shipped" });
+      }
+
+      updatedData.fulfillmentStatus = data.fulfillmentStatus;
+      if (data.fulfillmentStatus === "shipped") {
+        updatedData.trackingNumber = data.trackingNumber;
+        updatedData.shippingCarrier = data.shippingCarrier;
+      }
+    }
+
+    if(isAdmin) {
+      if (data.status !== undefined) {
+        updatedData.status = data.status
+      }
+    }
+
+    if (Object.keys(updatedData).length === 0) {
+      return res.status(400).json({update: false, message: "No changes made"})
+    }
+
+    await docRef.update({
+      ...updatedData,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const itemName = order.item?.name || "your item";
+
+    if (updatedData.fulfillmentStatus === "shipped") {
+      await createNotification(
+        order.buyerId,
+        "order_status",
+        "Order Shipped",
+        `Your order for ${itemName} has shipped (tracking #${data.trackingNumber}).`,
+        "/profile?tab=purchases"
+      );
+    }
+
+    if (updatedData.fulfillmentStatus === "delivered") {
+      await createNotification(
+        order.buyerId,
+        "order_status",
+        "Order Delivered",
+        `Your order for ${itemName} has been delivered.`,
+        "/profile?tab=purchases"
+      );
+    }
+
+    res.status(200).json({ update: true, message: "Update successful"});
+
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message })
   }
@@ -804,6 +885,7 @@ app.delete("/products/:id", verifyAuth, async (req, res) => {
 app.delete("/orders/:id", verifyAuth, async (req, res) => {
   try {
     const docId = req.params.id;
+    const { reason } = req.body || {};
 
     const docRef = await db.collection("orders").doc(docId).get();
     if (!docRef.exists) {
@@ -813,18 +895,38 @@ app.delete("/orders/:id", verifyAuth, async (req, res) => {
     const order = docRef.data();
 
     const isBuyer = req.token.uid === order.buyerId;
-    const isSeller = order.items.some(item => item.sellerId === req.token.uid);
+    const isSeller = req.token.uid === order.sellerId;
     const isAdmin = req.token.admin === true;
 
     if (isBuyer || isSeller || isAdmin) {
-      const locked = ['fullfilled', 'shipped', 'completed', 'invoiced','disputed'];
-      const isLocked = locked.some(val => order.status.includes(val));
+      // Cancellation is only meaningful before the item has actually shipped
+      // -- once it's shipped/delivered/already cancelled, "cancel" no longer
+      // makes sense as an action.
+      const cancellable = ['pending', 'processing'];
+      const isCancellable = cancellable.includes(order.fulfillmentStatus);
 
-      if (!isLocked) {
+      if (isCancellable) {
+        const cancelledBy = isAdmin ? "admin" : isSeller ? "seller" : "buyer";
+
         await docRef.update({
-          status: "cancelled",
+          fulfillmentStatus: "cancelled",
+          cancelledBy,
+          ...(isAdmin && reason ? { cancellationReason: reason } : {}),
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
         })
+
+        const itemName = order.item?.name || "your item";
+        const message = isAdmin && reason
+          ? `Your order for ${itemName} was cancelled by support: ${reason}`
+          : `Your order for ${itemName} was cancelled.`;
+
+        await createNotification(
+          order.buyerId,
+          "order_status",
+          "Order Cancelled",
+          message,
+          "/profile?tab=purchases"
+        );
 
         return res.status(200).json({ success: true, message: "Order has been cancelled!" })
       }
@@ -1218,13 +1320,10 @@ app.put("/api/authentication-requests/:id", verifyAuth, async (req, res) => {
  * notifications/{userId}/items/{notificationId} -- same subcollection
  * shape already established for favorites/cart in this app.
  *
- * Five types are defined in this system, but only 'purchase' and 'sale'
- * have a real trigger today (both fire right here, from the same
- * successful payment). The other three are intentionally left wired up
- * in name only, with no call site yet:
+ * 'order_status' now has real triggers (fulfillmentStatus transitions in
+ * PUT/DELETE /orders/:id and the webhook above). The remaining two types
+ * are still wired up in name only, with no call site yet:
  *   - 'message': no DM/conversation system exists anywhere in this app
- *   - 'order_status': no real fulfillment-status field exists yet
- *     (orders.status is just Stripe's payment status)
  *   - 'security': no account-security flow exists yet (no password
  *     change, no 2FA -- confirmed when Settings was built)
  * Whenever those features actually ship, calling createNotification()
@@ -1232,10 +1331,11 @@ app.put("/api/authentication-requests/:id", verifyAuth, async (req, res) => {
  */
 // Maps a notification type to the userProfiles.notificationPreferences
 // field that gates it. Types with no entry here (none yet -- 'message',
-// 'order_status', 'security' have no trigger) are always sent.
+// 'security' have no trigger) are always sent.
 const TYPE_TO_PREFERENCE_FIELD = {
   purchase: "orderUpdates",
   sale: "orderUpdates",
+  order_status: "orderUpdates",
 };
 
 // A user who has never saved preferences has no notificationPreferences
@@ -1346,6 +1446,25 @@ async function handleAuthPaymentSucceeded(paymentData) {
   }
 }
 
+// Shared between /orders/init (writes the "pending" doc at checkout submit)
+// and the webhook below (which either flips that doc to "processing" or,
+// if init never ran, builds the doc from scratch off the PaymentIntent's own
+// metadata rather than trusting anything the client sends at capture time).
+function buildOrderDataFromPaymentIntent(paymentData) {
+  return {
+    id: paymentData.id,
+    buyerId: paymentData.metadata.buyer_id,
+    sellerId: paymentData.metadata.seller_id,
+    buyerEmail: paymentData.metadata.buyer_email,
+    listingId: paymentData.metadata.listing_id,
+    createdAt: paymentData.created,
+    subtotal: (paymentData.amount / 100).toFixed(2),
+    shippingCost: paymentData.metadata.shipping_cost,
+    shippingAddress: paymentData.metadata.shipping_from,
+    item: JSON.parse(paymentData.metadata.item)
+  };
+}
+
 async function handlePaymentIntentSucceeded(paymentData){
   console.log(paymentData)
   try {
@@ -1353,32 +1472,41 @@ async function handlePaymentIntentSucceeded(paymentData){
       return await handleAuthPaymentSucceeded(paymentData);
     }
 
-    const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
-    if (!existingOrder.empty) {
-      console.log(`order for payment intent ${paymentData.id} already exists, skipping duplicate webhook delivery`);
-      return;
-    }
-
-    const listingId = paymentData.metadata.listing_id;
     const salePrice = paymentData.amount / 100;
+    const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
 
-    const data = {
-      id: paymentData.id,
-      buyerId: paymentData.metadata.buyer_id,
-      sellerId: paymentData.metadata.seller_id,
-      buyerEmail: paymentData.metadata.buyer_email,
-      listingId,
-      createdAt: paymentData.created,
-      subtotal: salePrice.toFixed(2),
-      status: paymentData.status,
-      shippingCost: paymentData.metadata.shipping_cost,
-      shippingAddress: paymentData.metadata.shipping_from,
-      item: JSON.parse(paymentData.metadata.item)
+    let data;
+
+    if (!existingOrder.empty) {
+      const orderDoc = existingOrder.docs[0];
+      data = orderDoc.data();
+
+      if (data.fulfillmentStatus === 'processing') {
+        console.log(`order for payment intent ${paymentData.id} already processed, skipping duplicate webhook delivery`);
+        return;
+      }
+
+      await orderDoc.ref.update({
+        status: paymentData.status,
+        fulfillmentStatus: 'processing',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } else {
+      // No pending order found -- /orders/init either never fired or
+      // failed. Build the order now off the PaymentIntent's own metadata
+      // rather than silently losing a captured payment.
+      data = buildOrderDataFromPaymentIntent(paymentData);
+
+      await db.collection('orders').add({
+        ...data,
+        status: paymentData.status,
+        fulfillmentStatus: 'processing'
+      });
     }
 
-    const docRef = await db.collection('orders').add(data);
-    console.log(`created a order with the id: ${docRef.id}`);
+    console.log(`order for payment intent ${paymentData.id} now processing`);
 
+    const listingId = data.listingId;
     if (listingId) {
       const listingRef = db.collection('listings').doc(listingId);
       const listingSnap = await listingRef.get();
@@ -1403,23 +1531,18 @@ async function handlePaymentIntentSucceeded(paymentData){
 
     const itemName = data.item?.name || "an item";
 
-    await createNotification(
-      data.buyerId,
-      "purchase",
-      "Order Confirmed",
-      `You bought ${itemName}.`,
-      "/profile?tab=purchases"
-    );
-
+    // Buyer already got "Order Confirmed" from /orders/init at pending --
+    // only the seller gets notified here, since this is the point they
+    // learn about the sale for the first time.
     await createNotification(
       data.sellerId,
       "sale",
-      "Item Sold!",
+      "New Order",
       `You sold ${itemName}.`,
       "/profile?tab=selling"
     );
 
-    return JSON.stringify({status: "order created!"})
+    return JSON.stringify({status: "order processing"})
 
   } catch (err) {
     console.error(err)

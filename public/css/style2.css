@@ -2399,11 +2399,6 @@ footer .rights {
   cursor: pointer;
 }
 
-/* #prodetails .s_prod_details {
-  width: 90%;
-  padding-top: 30px;
-} */
-
 #prodetails .s_prod_details h4 {
   /* padding: 40px 0 20px 0; */
   font-size: 1rem;
@@ -3396,18 +3391,6 @@ footer .rights {
       object-fit: contain;
       width: 100%;
       height: 100%;
-    }
-
-    .liked {
-      position: absolute;
-      top: 0px;
-      left: 4.96rem;
-      z-index: 1;
-      width: 0px;
-    }
-
-    .liked i {
-      font-size: 15px;
     }
 
     #prod-card-container {

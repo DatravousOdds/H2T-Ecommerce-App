@@ -7,19 +7,14 @@ import { db, collection, getDocs, query, where } from "../../../api/firebase-cli
  * Buyer-side view of the same `orders` collection the Selling tab's Orders
  * module reads (there: where sellerId == uid; here: where buyerId == uid).
  *
- * Two fields the static design assumed don't exist on real orders yet --
- * built defensively against them rather than faked, per the decision:
- * build off what's real now, pick up the gaps automatically once added.
+ * fulfillmentStatus is real now: "pending" (checkout submit, before payment
+ * captures) -> "processing" (webhook confirms payment) -> "shipped" (seller
+ * enters tracking) -> "delivered" (seller marks it), or "cancelled" from
+ * pending/processing. order.status stays Stripe's own payment status
+ * ("succeeded"/etc) and is unrelated -- see orders.js for that one.
+ * trackingNumber/carrier are written by PUT /orders/:id when a seller ships.
  *
- *   - fulfillmentStatus: doesn't exist (order.status is just Stripe's
- *     payment status, effectively always "succeeded"). Defaults every
- *     order to "processing" until a real value is ever set -- once orders
- *     start having shipped/delivered/cancelled written to them, the
- *     Shipped/Delivered/Cancelled tabs start working with no code changes.
- *   - trackingNumber / carrier: doesn't exist at all. Track Order shows a
- *     clear "not yet shipped" state until these are populated for real.
- *
- * One field handled deliberately, not just defensively: `shippingAddress`
+ * One field still handled defensively, not just faked: `shippingAddress`
  * on a real order is actually the *seller's* ship-from location (confirmed
  * by reading checkout.js/server.js directly -- it's set from
  * `shippingFrom`), not the buyer's delivery address. Showing it under
@@ -29,6 +24,7 @@ import { db, collection, getDocs, query, where } from "../../../api/firebase-cli
  */
 
 const STATUS_DISPLAY = {
+  pending: { icon: "fa-clock", label: "Pending" },
   processing: { icon: "fa-box", label: "Processing" },
   shipped: { icon: "fa-truck", label: "Shipped" },
   delivered: { icon: "fa-check", label: "Delivered" },
@@ -176,7 +172,7 @@ function buildOrderDetailsHTML(order) {
     : "";
 
   const trackingSection = order.trackingNumber
-    ? `<button class="track-order-btn" data-tracking="${order.trackingNumber}" data-carrier="${order.carrier || ""}">
+    ? `<button class="track-order-btn" data-tracking="${order.trackingNumber}" data-carrier="${order.shippingCarrier || ""}">
          <i class="fa-solid fa-truck"></i>
          Track Order
        </button>`

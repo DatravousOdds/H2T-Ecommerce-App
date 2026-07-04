@@ -11,24 +11,29 @@ import {
 
 const currentUser = await checkUserStatus();
 
+// Populated by loadOrdersTab/refreshOrders -- the click-delegation handler
+// in wireOrderActions() looks orders up here by docId rather than
+// re-querying Firestore on every "View Details" click.
+let currentOrders = [];
+
 /**
- * Real order shape, written by handlePaymentIntentSucceeded() in server.js
- * (the only code path that ever creates an order doc -- triggered by the
- * Stripe payment_intent.succeeded webhook):
+ * Real order shape, first written by POST /orders/init (checkout submit,
+ * fulfillmentStatus: "pending") and then updated in place by the Stripe
+ * webhook (fulfillmentStatus: "processing") and PUT/DELETE /orders/:id
+ * (shipped/delivered/cancelled):
  *   { id, buyerId, sellerId, buyerEmail, createdAt, subtotal, status,
- *     shippingCost, shippingAddress, item: { name, size, brand, image,
- *     salesTax, marketplaceFee } }
+ *     fulfillmentStatus, shippingCost, shippingAddress, item: { name, size,
+ *     brand, image, salesTax, marketplaceFee } }
+ *
+ * order.status is Stripe's own payment status ("succeeded", etc) and is
+ * unrelated to fulfillmentStatus, which is what this file's status badge
+ * and the "Pending Orders" stat below actually track.
  *
  * Two gotchas handled explicitly below, not assumed away:
  *   - subtotal is a STRING (server does .toFixed(2)) -- summing without
  *     Number() does string concatenation, not addition.
  *   - createdAt is a raw Stripe Unix timestamp in SECONDS, not a Firestore
  *     Timestamp -- different shape than listings.createdAt in products.js.
- *
- * Per the decision already made: orders only ever get created already
- * "succeeded" (that's the only webhook event that writes one), so there's
- * no real concept of a "pending" order yet. Pending Orders is correctly 0
- * given the current architecture -- not a bug, a consequence of it.
  */
 
 function toDate(createdAt) {
@@ -77,7 +82,7 @@ function orderRow(order) {
   const isPaid = order.status === "succeeded";
 
   return `
-    <tr class="product-row">
+    <tr class="product-row" data-doc-id="${order.docId}">
       <td>
         <div class="product-info">
           <div class="product-details">
@@ -107,7 +112,7 @@ function orderRow(order) {
       </td>
       <td>
         <div class="status-info">
-          <span class="status-badge ${isPaid ? "active" : "pending"}">${order.status || "unknown"}</span>
+          <span class="status-badge ${isPaid ? "active" : "pending"}">${order.fulfillmentStatus || "pending"}</span>
         </div>
       </td>
       <td>
@@ -144,15 +149,10 @@ function renderOrders(orders) {
  * it actually compares against based on the filter would make that label
  * lie. allOrders (unfiltered) is always used here, not the filtered set.
  *
- * Pending Orders now runs through the same renderTrend() path as the other
- * three cards. It will render "No data last month" today, because pending
- * orders are always 0 by architecture (status is set once, at creation, to
- * Stripe's "succeeded" -- no order is ever created in any other state), so
- * current vs. previous is always 0 vs. 0. That's the honest answer given
- * percentChange()'s null case, not a special case -- once a real
- * fulfillment-status field exists (see purchases.js's fulfillmentStatus
- * handling for the same gap on the buyer side), this starts producing real
- * numbers with no further changes here.
+ * "Pending Orders" here counts by order.status !== "succeeded" (Stripe
+ * payment status), not fulfillmentStatus -- i.e. it's "awaiting payment
+ * capture", a real and normally short-lived state now that orders get
+ * created at checkout submit instead of only after payment succeeds.
  */
 
 function isInCalendarMonth(order, year, month) {
@@ -241,7 +241,11 @@ async function fetchSellerOrders(userId) {
   const q = query(ordersRef, where("sellerId", "==", userId));
   const snapshot = await getDocs(q);
 
-  return snapshot.docs.map((docSnap) => docSnap.data());
+  // docId is the actual Firestore document id -- distinct from order.id,
+  // which is the Stripe payment intent id. PUT/DELETE /orders/:id key off
+  // the Firestore doc, so this has to be captured here or there's no way
+  // to address a specific order for the ship/deliver/cancel actions below.
+  return snapshot.docs.map((docSnap) => ({ ...docSnap.data(), docId: docSnap.id }));
 }
 
 function applyFiltersAndRender(allOrders, range, searchTerm) {
@@ -277,6 +281,167 @@ function wireControls(allOrders) {
   if (searchInput) searchInput.addEventListener("input", rerender);
 }
 
+// Re-fetches and re-renders after a ship/deliver/cancel action, without
+// re-attaching the filter/search listeners wireControls sets up -- those
+// only need wiring once, and doing it again on every action would stack
+// duplicate listeners each time.
+async function refreshOrders(userId) {
+  currentOrders = await fetchSellerOrders(userId);
+
+  const rangeSelect = document.getElementById("orders-filter");
+  const searchInput = document.querySelector("#orders-filters .search-bar input");
+  const range = rangeSelect ? rangeSelect.value : "all";
+  const term = searchInput ? searchInput.value.trim() : "";
+
+  applyFiltersAndRender(currentOrders, range, term);
+  updateTrends(currentOrders);
+}
+
+function getOrderActionState(order) {
+  const status = order.fulfillmentStatus || "pending";
+  return {
+    status,
+    canShip: status === "pending" || status === "processing",
+    canDeliver: status === "shipped",
+    canCancel: status === "pending" || status === "processing",
+  };
+}
+
+function showActionError(message) {
+  const errorEl = document.querySelector("#seller-order-action-menu .order-action-error");
+  if (!errorEl) return;
+  errorEl.textContent = message;
+  errorEl.classList.toggle("visible", Boolean(message));
+}
+
+function openOrderActionMenu(order) {
+  const menu = document.getElementById("seller-order-action-menu");
+  if (!menu) return;
+
+  menu.dataset.docId = order.docId;
+  showActionError("");
+
+  const { status, canShip, canDeliver, canCancel } = getOrderActionState(order);
+
+  menu.querySelector(".seller-order-action-item-name").textContent = order.item?.name || "Item";
+  menu.querySelector(".seller-order-action-status").textContent = `Status: ${status}`;
+  menu.querySelector(".seller-order-action-ship-fields").style.display = canShip ? "flex" : "none";
+  menu.querySelector("#seller-mark-delivered-btn").style.display = canDeliver ? "block" : "none";
+  menu.querySelector("#seller-cancel-order-btn").style.display = canCancel ? "block" : "none";
+
+  document.getElementById("seller-tracking-number").value = order.trackingNumber || "";
+  document.getElementById("seller-shipping-carrier").value = order.shippingCarrier || "";
+
+  menu.classList.add("active");
+}
+
+function closeOrderActionMenu() {
+  document.getElementById("seller-order-action-menu")?.classList.remove("active");
+}
+
+async function patchOrder(docId, body) {
+  const response = await fetch(`/orders/${docId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${currentUser.idToken}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Update failed");
+  return result;
+}
+
+async function cancelOrder(docId) {
+  const response = await fetch(`/orders/${docId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${currentUser.idToken}`,
+    },
+    body: JSON.stringify({}),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Cancel failed");
+  return result;
+}
+
+// Delegated to the table itself (not per-row) so re-rendered rows after
+// every filter/search/refresh stay wired without re-attaching listeners.
+function wireOrderActions(userId) {
+  const table = document.querySelector(".order-table");
+  const menu = document.getElementById("seller-order-action-menu");
+  const closeBtn = document.getElementById("close-seller-order-action-menu");
+  const shipBtn = document.getElementById("seller-mark-shipped-btn");
+  const deliverBtn = document.getElementById("seller-mark-delivered-btn");
+  const cancelBtn = document.getElementById("seller-cancel-order-btn");
+
+  if (table) {
+    table.addEventListener("click", (e) => {
+      const viewBtn = e.target.closest(".action-button.view");
+      if (!viewBtn) return;
+
+      const docId = viewBtn.closest("tr")?.dataset.docId;
+      const order = currentOrders.find((o) => o.docId === docId);
+      if (order) openOrderActionMenu(order);
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener("click", closeOrderActionMenu);
+
+  if (shipBtn) {
+    shipBtn.addEventListener("click", async () => {
+      const docId = menu.dataset.docId;
+      const trackingNumber = document.getElementById("seller-tracking-number").value.trim();
+      const shippingCarrier = document.getElementById("seller-shipping-carrier").value.trim();
+
+      if (!trackingNumber) {
+        showActionError("Tracking number is required.");
+        return;
+      }
+
+      try {
+        await patchOrder(docId, { fulfillmentStatus: "shipped", trackingNumber, shippingCarrier });
+        closeOrderActionMenu();
+        await refreshOrders(userId);
+      } catch (error) {
+        showActionError(error.message);
+      }
+    });
+  }
+
+  if (deliverBtn) {
+    deliverBtn.addEventListener("click", async () => {
+      const docId = menu.dataset.docId;
+
+      try {
+        await patchOrder(docId, { fulfillmentStatus: "delivered" });
+        closeOrderActionMenu();
+        await refreshOrders(userId);
+      } catch (error) {
+        showActionError(error.message);
+      }
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", async () => {
+      const docId = menu.dataset.docId;
+
+      try {
+        await cancelOrder(docId);
+        closeOrderActionMenu();
+        await refreshOrders(userId);
+      } catch (error) {
+        showActionError(error.message);
+      }
+    });
+  }
+}
+
 async function loadOrdersTab(userId) {
   if (!userId) {
     console.error("loadOrdersTab: no userId provided");
@@ -284,11 +449,12 @@ async function loadOrdersTab(userId) {
   }
 
   try {
-    const allOrders = await fetchSellerOrders(userId);
+    currentOrders = await fetchSellerOrders(userId);
 
-    wireControls(allOrders);
-    applyFiltersAndRender(allOrders, "all", "");
-    updateTrends(allOrders);
+    wireControls(currentOrders);
+    wireOrderActions(userId);
+    applyFiltersAndRender(currentOrders, "all", "");
+    updateTrends(currentOrders);
   } catch (error) {
     console.error("Error loading orders tab:", error);
   }

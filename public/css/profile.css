@@ -5751,6 +5751,73 @@ h6 {
   font-size: var(--font-size-lg);
 }
 
+/* Seller Order Action Popup -- reuses .order-details-menu/.order-details-container
+   for modal chrome, these classes are just the inner form/buttons */
+.seller-order-action-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+}
+
+.seller-order-action-item-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.seller-order-action-status {
+  color: var(--color-gray-500);
+  text-transform: capitalize;
+}
+
+.order-action-error {
+  color: #dc2626;
+  display: none;
+}
+
+.order-action-error.visible {
+  display: block;
+}
+
+.seller-order-action-ship-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.seller-order-action-ship-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.seller-order-action-ship-fields input {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-md);
+}
+
+.order-action-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+}
+
+.order-action-btn:hover {
+  opacity: 0.9;
+}
+
+.order-action-btn.danger {
+  background-color: #dc2626;
+}
+
 .order-details-subheader {
   display: flex;
   align-items: center;

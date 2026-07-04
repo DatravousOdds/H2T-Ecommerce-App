@@ -14,11 +14,13 @@ const user = JSON.parse(sessionStorage.getItem('user'));
 let checkout;
 let actions;
 let elements;
+let paymentIntentId;
+let currentUser;
 
 if(!user) {
     window.location.href = '/login';
 } else {
-    const currentUser = await checkUserStatus();
+    currentUser = await checkUserStatus();
     // Authentication requests have no seller/shipping/marketplace-fee
     // concept -- they're a flat service fee, not a product sale.
     const isAuthPayment = queryItem?.itemType === 'authentication';
@@ -63,6 +65,8 @@ async function initializeCheckout() {
 
     const { clientSecret } = await response.json()
 
+    paymentIntentId = clientSecret.split('_secret')[0];
+
     const appearance = {
         theme: 'stripe',
         variables: {
@@ -85,6 +89,26 @@ async function initializeCheckout() {
 async function handleSubmit(e) {
     e.preventDefault()
     console.log("confirming payment...");
+
+    // Writes the order as "pending" now, right as the buyer commits to
+    // paying -- not blocking/aborting checkout if this fails, since the
+    // payment itself is the critical path and the webhook will still
+    // create the order from the PaymentIntent's metadata as a fallback.
+    const isAuthPayment = queryItem?.itemType === 'authentication';
+    if (!isAuthPayment && paymentIntentId) {
+        try {
+            await fetch("/orders/init", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${currentUser.idToken}`
+                },
+                body: JSON.stringify({ paymentIntentId })
+            });
+        } catch (error) {
+            console.error("Failed to initialize pending order:", error);
+        }
+    }
 
     const { error } = await stripe.confirmPayment({
         elements,

@@ -3611,6 +3611,39 @@
               </div>
             </section>
 
+            <!-- Seller Order Action Popup -->
+            <div class="order-details-menu" id="seller-order-action-menu">
+              <div class="order-details-container">
+                <div class="order-details-header">
+                  <h2>Manage Order</h2>
+                  <button type="button" id="close-seller-order-action-menu">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                <div class="order-details-content seller-order-action-content">
+                  <p class="seller-order-action-item-name"></p>
+                  <p class="seller-order-action-status"></p>
+                  <p class="order-action-error"></p>
+
+                  <div class="seller-order-action-ship-fields">
+                    <label>
+                      Tracking Number
+                      <input type="text" id="seller-tracking-number" />
+                    </label>
+                    <label>
+                      Carrier
+                      <input type="text" id="seller-shipping-carrier" placeholder="e.g. USPS, UPS, FedEx" />
+                    </label>
+                    <button type="button" class="order-action-btn" id="seller-mark-shipped-btn">Mark Shipped</button>
+                  </div>
+
+                  <button type="button" class="order-action-btn" id="seller-mark-delivered-btn">Mark Delivered</button>
+
+                  <button type="button" class="order-action-btn danger" id="seller-cancel-order-btn">Cancel Order</button>
+                </div>
+              </div>
+            </div>
+
             <!-- Authentication Requests Section -->
             <section
               id="authentication"
