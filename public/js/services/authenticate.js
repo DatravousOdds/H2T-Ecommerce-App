@@ -403,6 +403,8 @@ cartModal.addEventListener('click', (event) => {
 
 tierContainers.forEach(tier => {
   tier.addEventListener('click', () => {
+    if (tier.classList.contains('disabled-tier')) return;
+
     tierContainers.forEach(t => {
       t.classList.remove('selected');
     })

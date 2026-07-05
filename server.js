@@ -438,6 +438,37 @@ app.post("/orders", verifyAuth, async (req, res) => {
 
 })
 
+// The PaymentIntent (and its shipping_from metadata) is created on checkout
+// page load, before the buyer has a chance to use the "Edit" link on their
+// shipping address -- buildOrderDataFromPaymentIntent later reads
+// shippingAddress straight off that metadata, so an edit that only lives in
+// the page's local state would never actually reach the order. This patches
+// just that one metadata key on the same PaymentIntent (order-only change,
+// nothing written back to the buyer's saved profile).
+app.post("/orders/update-shipping", verifyAuth, async (req, res) => {
+  const { paymentIntentId, shippingFrom } = req.body;
+
+  if (!paymentIntentId || !shippingFrom) {
+    return res.status(400).json({ success: false, message: "Missing paymentIntentId or shippingFrom" });
+  }
+
+  try {
+    const paymentData = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (paymentData.metadata.buyer_id !== req.token.uid) {
+      return res.status(403).json({ success: false, message: "Not authorized for this payment intent" });
+    }
+
+    await stripe.paymentIntents.update(paymentIntentId, {
+      metadata: { shipping_from: shippingFrom }
+    });
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Writes the order doc as fulfillmentStatus:"pending" at the moment the buyer
 // clicks "Pay now" (checkout.js's handleSubmit), not when the checkout page
 // merely loads -- the PaymentIntent itself is created on page load, so tying

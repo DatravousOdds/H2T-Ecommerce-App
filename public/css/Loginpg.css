@@ -55,7 +55,7 @@ body {
   margin: 0 auto 50px;
 }
 
-input:not(.search-box, .checkbox, .s-checkbox, input[type="file"], input[type="email"]),
+input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
 textarea {
   display: block;
   width: 300px;
