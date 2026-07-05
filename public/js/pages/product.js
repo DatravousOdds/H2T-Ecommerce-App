@@ -890,14 +890,42 @@ function displayProducts(products) {
       productElement.onclick = () => {
         window.location.href = `/shop/product.html?id=${doc.id}`;
       };
+
+      // A discount only exists if the item has a higher original price to compare against.
+      const hasDiscount =
+        typeof productData.originalPrice === "number" &&
+        productData.originalPrice > productData.listingPrice;
+      const discountPercent = hasDiscount
+        ? Math.round(
+            ((productData.originalPrice - productData.listingPrice) /
+              productData.originalPrice) *
+              100
+          )
+        : 0;
+
+      const originalPriceHTML = hasDiscount
+        ? `<span class="orgin-price">$${productData.originalPrice.toFixed(2)}</span>`
+        : "";
+      const priceChangeHTML = hasDiscount
+        ? `<div class="price-change">
+            <div class="product-discount">
+              <p>${discountPercent}% OFF</p>
+            </div>
+            <div class="price-trend trend-down">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+              <span>-${discountPercent}%</span>
+            </div>
+          </div>`
+        : "";
+
       productElement.innerHTML = `
-        
+
               <!--- Image container-->
               <div class="product-image">
                 <div class="liked">
                   <i class="fa-regular fa-heart"></i>
                 </div>
-  
+
                 <img
                   src="${productData.images[0].url}"
                   class="image-custom"
@@ -905,28 +933,24 @@ function displayProducts(products) {
                 />
               </div>
               <!--- Image container-->
-  
+
               <!-- product details -->
               <div class="des">
                 <div class="price-description">
                   <p class="product-name">
                     ${productData.productName}
                   </p>
-                  
+
                   <div class="pro-price">
                     <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
-                    <div class="price-change">
-                      <div class="price-trend trend-up">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                        <span>+5%</span>
-                      </div>
-                    </div>
+                    ${originalPriceHTML}
+                    ${priceChangeHTML}
                   </div>
-  
+
                 </div>
-                
+
               </div>
-              <!-- product details -->   
+              <!-- product details -->
       `;
   
       handleFavoriteClick(productElement, doc.id, productData);

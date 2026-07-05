@@ -817,7 +817,7 @@ function showSuccessMessage() {
     // Add event listener to view listing button
     const viewListingBtn = successModal.querySelector('.view-listing-btn');
     viewListingBtn.addEventListener('click', () => {
-        window.location.href = `/shop/product/${listing.listingId}`;
+        window.location.href = `/shop/product.html?id=${listing.listingId}`;
     });
     // Add event listener to list another item button
     const listAnotherBtn = successModal.querySelector('.listing-another-item');
@@ -841,6 +841,8 @@ function resetForm() {
     productDescription.value = '';
     productPrice.value = '';
     productBrand.value = '';
+    productCondition.value = '';
+    productColor.value = '';
     if (productSize) productSize.value = '';
 
 
@@ -857,6 +859,26 @@ function resetForm() {
 
     videoPreview.src = '';
     videoPreview.style.display = 'none';
+
+    // Uncheck shipping selection so postBtn's validation forces a fresh pick.
+    document.querySelectorAll('input[name="shipping-method"]').forEach(radio => radio.checked = false);
+    shippingContainers.forEach(c => c.classList.remove('selected'));
+
+    // listing.listingId carries over from the just-created doc -- without
+    // resetting it, uploadListing()'s `listing.listingId || newId` reuses
+    // that id and overwrites the listing just posted instead of creating
+    // a new one.
+    listing = {
+        listingPrice: 0,
+        userId: currentUser.userId,
+        productName: '',
+        images: [],
+        status: '',
+        listingId: '',
+        shipping: '',
+        description: ''
+    };
+    previousListingPrice = null;
 };
 
 
