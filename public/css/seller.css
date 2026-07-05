@@ -806,6 +806,15 @@ button {
     font-size: 0.875rem;
 }
 
+.carrier-row.carrier-row-skeleton {
+    cursor: default;
+}
+
+.carrier-row.carrier-row-skeleton:hover {
+    border: 1px solid #f0f0f0;
+    background-color: transparent;
+}
+
 /* successful modal */
 
 .success-modal {

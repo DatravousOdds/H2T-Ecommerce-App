@@ -121,6 +121,7 @@ app.use(express.json());
 
 app.post('/seller/api/shipping-rates',  async (req, res) => {
   const { fromAddress , toAddress, parcel } = req.body;
+  console.log("Received shipping rate request:", { fromAddress, toAddress, parcel });
 
   
 
@@ -172,9 +173,13 @@ app.post('/seller/api/shipping-rates',  async (req, res) => {
 
   } catch (err) {
     console.error("Failed to fetch shipping rates", JSON.stringify(err.data?.error?.details, null, 2))
+    res.status(err.status || 500).json({
+      error: "Failed to fetch shipping rates",
+      details: err.data?.error?.details ?? null
+    });
   }
 
-  
+
 })
 
 

@@ -688,12 +688,44 @@ function removeError(elementId) {
     id.classList.remove('error');
 }
 
+function carrierRowSkeletonHTML() {
+    return `
+        <div class="carrier-row carrier-row-skeleton">
+            <div class="carrier-info">
+                <div class="carrier-image-wrapper">
+                    <div class="skeleton" style="width:64px;height:64px;border-radius:8px;"></div>
+                </div>
+                <div class="carrier-title">
+                    <span class="skeleton skeleton-line medium"></span>
+                    <p><span class="skeleton skeleton-line short"></span></p>
+                </div>
+            </div>
+            <div class="carrier-pricing">
+                <div class="carrier-price">
+                    <span class="skeleton skeleton-line short"></span>
+                    <p><span class="skeleton skeleton-line short"></span></p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderCarrierSkeletons(count = 3) {
+    removeError('carrierPanel');
+    carrierWrapper.innerHTML = Array.from({ length: count }, carrierRowSkeletonHTML).join('');
+}
+
 function displayShippingCouriers(couriersArray) {
     const panel = document.getElementById('carrierPanel');
     panel.style.display = 'block';
 
     const carrierRows = document.querySelector('.carrier-rows-wrapper');
     carrierRows.innerHTML = '';
+
+    if (couriersArray.length === 0) {
+        showError('carrierPanel', 'No shipping rates were found for this package. Try adjusting the dimensions or weight.');
+        return;
+    }
 
     couriersArray.forEach(courier => {
         console.log(courier)
@@ -1123,14 +1155,24 @@ function handleVideoUpload(input, preview, removeBtn) {
 
 
 async function fetchShippingRates(parcel) {
+    const shipping = currentUser.shipping;
+    const requiredFields = ['address1', 'city', 'state', 'postalCode', 'country'];
+    const missingShippingInfo = !shipping || requiredFields.some(field => !shipping[field]);
+
+    if (missingShippingInfo) {
+        showError('carrierPanel', 'Add your shipping address in your profile before requesting rates.');
+        return;
+    }
+
+    removeError('carrierPanel');
     showLoader(carrierWrapper);
     const payload = {
         fromAddress: {
-            line_1: currentUser.address1,
-            city: currentUser.city,
-            state: 'TX',
-            postal_code: currentUser.postalCode,
-            country_alpha2: 'US',
+            line_1: shipping.address1,
+            city: shipping.city,
+            state: shipping.state,
+            postal_code: shipping.postalCode,
+            country_alpha2: shipping.country,
         },
         toAddress: PLACEHOLDER_DESTINATION,
         parcel: {
@@ -1139,7 +1181,7 @@ async function fetchShippingRates(parcel) {
             price: parseFloat(productPrice.value)
         }
     };
-    
+
     try {
         const response = await fetch('/seller/api/shipping-rates', {
                 method: 'POST',
@@ -1155,14 +1197,10 @@ async function fetchShippingRates(parcel) {
         displayShippingCouriers(bestShippingCourier);
     } catch (error) {
         console.error("Error fetching data:", error);
-        alert("Error loading data")
+        showError('carrierPanel', 'Could not load shipping rates. Please try again.');
     } finally {
         hideLoader(carrierWrapper);
     }
-    
-
-    
-
 }
 
 async function uploadImagesToFirebase(images, userId) {

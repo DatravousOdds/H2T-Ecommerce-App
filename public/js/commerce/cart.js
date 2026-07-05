@@ -27,7 +27,7 @@ function displayCartItems(items) {
         bagItemGrid.innerHTML = `
             <div class="empty-wrapper">
                 <h3>Cart is empty!</h3>
-                <img src="./images/empty-cart_1.png" alt="Seller profile photo">
+                <img src="./images/empty-cart_1.png" alt="Empty cart image">
             </div>
             
         `;
@@ -80,7 +80,7 @@ function productBagItemMarkup(item) {
             <div class="item-wrapper">
                 <div class="item-info">
                   <div class="seller-info">
-                    <img src="./images/pexels-erik-mclean-9367504%202.jpg" alt="Seller profile photo">
+                    <img src="${item.sellerPicture}" alt="Seller profile photo">
                     <div class="seller-at">
                       <p>${item.sellerName}</p>
                       <p>@${item.sellerName}</p>
