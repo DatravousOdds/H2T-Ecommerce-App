@@ -4,10 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Terms &amp; Agreements — Hexxo</title>
-<link rel="modulepreload" href="js/components/nav.js">
-<link rel="stylesheet" href="css/style2.css" />
-<link rel="stylesheet" href="css/components/newsletter.css" />
-<link rel="stylesheet" href="css/components/cartDrawer.css"/>
+<link rel="modulepreload" href="../js/components/nav.js">
+<link rel="stylesheet" href="../css/style2.css" />
+<link rel="stylesheet" href="../css/components/newsletter.css" />
+<link rel="stylesheet" href="../css/components/cartDrawer.css"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -43,110 +43,6 @@
   a { color: inherit; text-decoration: none; }
   ul { list-style: none; }
   img { display: block; max-width: 100%; }
-
-  /* ============ NAVBAR ============ */
-  .navbar {
-    position: sticky;
-    top: 0;
-    z-index: 200;
-    background: var(--primary-black);
-    border-bottom: 1px solid #1a1a1a;
-    padding: 0 32px;
-  }
-  .navbar-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 72px;
-    gap: 24px;
-  }
-  .search-section { display: flex; align-items: center; gap: 20px; }
-  .logo-text {
-    font-weight: 800;
-    font-size: 1.5rem;
-    letter-spacing: 0.5px;
-    color: var(--primary-white);
-  }
-  .logo-text span { color: var(--primary-red); }
-  .search-form {
-    display: none;
-    align-items: center;
-    background: var(--dark-black);
-    border: 1px solid #2c2c2c;
-    border-radius: 999px;
-    padding: 6px 6px 6px 16px;
-  }
-  @media (min-width: 1024px) { .search-form { display: flex; } }
-  .search-input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--primary-white);
-    font-family: inherit;
-    font-size: 0.85rem;
-    width: 180px;
-  }
-  .search-input::placeholder { color: var(--medium-gray); }
-  .search-button {
-    background: var(--dark-gray);
-    border: none;
-    color: var(--primary-white);
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    cursor: pointer;
-  }
-
-  .nav-list {
-    display: none;
-    align-items: center;
-    gap: 28px;
-  }
-  @media (min-width: 1024px) { .nav-list { display: flex; } }
-  .nav-link {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #cfcfcf;
-    display: flex; align-items: center; gap: 6px;
-    transition: color var(--transition);
-  }
-  .nav-link:hover { color: var(--primary-white); }
-
-  .nav-right { display: flex; align-items: center; gap: 14px; }
-  .icon-btn {
-    background: none; border: none; color: #cfcfcf;
-    font-size: 1.05rem; cursor: pointer; position: relative;
-    width: 36px; height: 36px; display: grid; place-items: center;
-    border-radius: 50%; transition: background var(--transition), color var(--transition);
-  }
-  .icon-btn:hover { color: var(--primary-white); background: #1a1a1a; }
-  .cart-amount {
-    position: absolute; top: -2px; right: -2px;
-    background: var(--primary-red); color: var(--primary-white);
-    font-size: 0.6rem; font-weight: 700;
-    min-width: 16px; height: 16px; border-radius: 50%;
-    display: grid; place-items: center; padding: 0 3px;
-  }
-  .login-button, .signup-button {
-    font-size: 0.85rem; font-weight: 600;
-    padding: 9px 18px; border-radius: var(--radius-sm);
-    cursor: pointer; transition: var(--transition);
-  }
-  .login-button {
-    background: transparent; border: 1px solid #3a3a3a; color: var(--primary-white);
-  }
-  .login-button:hover { border-color: var(--primary-white); }
-  .signup-button {
-    background: var(--primary-red); border: 1px solid var(--primary-red); color: var(--primary-white);
-  }
-  .signup-button:hover { background: #c50b0b; }
-  .menu-toggle {
-    display: grid; background: none; border: none; color: var(--primary-white);
-    font-size: 1.2rem; cursor: pointer;
-  }
-  @media (min-width: 1024px) { .menu-toggle { display: none; } }
 
   /* ============ HERO ============ */
   .hero {
@@ -579,10 +475,10 @@
     backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     </script>
 
-    <script type="module" src="js/components/cartDrawer.js"></script>
-    <script type="module" src="js/components/nav.js"></script>
-    <script src="js/components/footer.js"></script>
-    <script type="module" src="js/pages/home.js"></script>
+    <script type="module" src="../js/components/cartDrawer.js"></script>
+    <script type="module" src="../js/components/nav.js"></script>
+    <script src="../js/components/footer.js"></script>
+    <script type="module" src="../js/pages/home.js"></script>
     <script>
         // sidebar
         $(function () {

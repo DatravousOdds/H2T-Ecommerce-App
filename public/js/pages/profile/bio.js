@@ -137,9 +137,6 @@ export function initBio() {
     currentUrl = url.value.trim();
     currentUrlTitle = title.value.trim();
 
-    webLinks.push({url: currentUrl, title: currentUrlTitle});
-    console.log("webLinks array:",webLinks)
-
     if (currentBio === "") {
       bioTextarea.style.display = "none";
     } else {
@@ -175,6 +172,8 @@ export function initBio() {
     } else {
       websiteFeedback.innerHTML = "";
       titleFeedback.innerHTML = "";
+
+      webLinks.push({ url: currentUrl, title: currentUrlTitle });
 
       if (websiteLinks) websiteLinks.style.display = "block";
 

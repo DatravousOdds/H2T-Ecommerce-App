@@ -402,6 +402,23 @@ function validatePhone(phoneNumber) {
   return phonePattern.test(phoneNumber);
 }
 
+// Normalizes common US phone entry styles ("(682) 555-1234", "6825551234",
+// "1-682-555-1234", "+1 682 555 1234") into the "682-555-1234" shape
+// validatePhone() expects. Strips a leading "1" country code, then only
+// reformats if exactly 10 digits remain -- otherwise returns the input
+// untouched so validatePhone() still reports it as invalid.
+function formatPhoneNumber(phoneNumber) {
+  let digits = phoneNumber.replace(/\D/g, "");
+
+  if (digits.length === 11 && digits.startsWith("1")) {
+    digits = digits.slice(1);
+  }
+
+  if (digits.length !== 10) return phoneNumber.trim();
+
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
 function validateAddress(address) {
   return address.length > 5;
 }
@@ -418,9 +435,8 @@ function validateForm(formElement) {
   const firstname = formElement.querySelector("[name='fname']")?.value.trim();
   const lastname = formElement.querySelector("[name='lname']")?.value.trim();
   const email = formElement.querySelector("[name='personal-email']")?.value.trim();
-  const phoneNumber = formElement
-    .querySelector("[name='phoneNumber']")
-    ?.value.trim();
+  const phoneInput = formElement.querySelector("[name='phoneNumber']");
+  let phoneNumber = phoneInput?.value.trim();
   const username = formElement
     .querySelector("[name='profile-username']")
     ?.value.trim(); // Optional for shipping form
@@ -510,6 +526,11 @@ function validateForm(formElement) {
   }
 
   // Validate Phone Number if the field exists
+
+  if (phoneNumber) {
+    phoneNumber = formatPhoneNumber(phoneNumber);
+    phoneInput.value = phoneNumber;
+  }
 
   if (phoneNumber === "") {
     setError(

@@ -656,6 +656,18 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   min-height: 320px;
 }
 
+/* .pro-container (home page carousels) is a flex row, not a grid — without
+   this the empty state would just be a narrow flex item instead of
+   spanning and centering across the row. */
+.pro-container .chart-empty-state {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+}
+
 .chart-empty-state i {
   font-size: 2.5rem;
   color: #e1e1e1;

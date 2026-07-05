@@ -4,9 +4,10 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/style2.css" />
-    <link rel="stylesheet" href="css/contact.css" />
-    <link rel="icon" type="image/png" href="./images/H2T LogoB Small.png" />
+    <link rel="stylesheet" href="../css/style2.css" />
+    <link rel="stylesheet" href="../css/components/newsletter.css" />
+    <link rel="stylesheet" href="../css/contact.css" />
+    <link rel="icon" type="image/png" href="../images/H2T LogoB Small.png" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
@@ -42,21 +43,16 @@
       <nav></nav>
       <!-- END OF NAVBAR -->
     </section>
-    <div
-      style="
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        padding: 15px 0px;
-      "
-      class="header-title"
-    >
+    <section id="page-header" class="contact-header">
       <h1>Let's Get In Touch</h1>
-      <p style="color: #6e6d7a">
-        Or just reach out manually at officialHeadToToe@gmail
-      </p>
-    </div>
+      <p>Or just reach out manually at officialHeadToToe@gmail.com</p>
+    </section>
+
+    <section id="breadcrumb">
+      <a href="/">Home</a>
+      <span class="breadcrumb-separator">></span>
+      <span class="breadcrumb-current">Contact Us</span>
+    </section>
 
     <section class="section-p1">
       <div id="contact-wrapper" class="contact-wrapper">
@@ -138,23 +134,23 @@
     <section id="info-section" class="">
       <div id="contact-info">
         <div class="info-container">
-          <i class="fa-solid fa-phone"></i>
+          <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
           <h2>Phone</h2>
           <p>Our team is on standby 24/7</p>
-          <p>1+(682) - 560 - 7341</p>
+          <p class="info-detail">1+(682) - 560 - 7341</p>
         </div>
 
         <div class="info-container">
-          <i class="fa-solid fa-map-pin"> </i>
+          <div class="info-icon"><i class="fa-solid fa-map-pin"></i></div>
           <h2>Office</h2>
           <p>Our team is on standby 24/7</p>
-          <p>8314 Medlock Drive Apt 511</p>
+          <p class="info-detail">8314 Medlock Drive Apt 511</p>
         </div>
         <div class="info-container">
-          <i class="fa-regular fa-envelope"></i>
+          <div class="info-icon"><i class="fa-regular fa-envelope"></i></div>
           <h2>Chat with us</h2>
           <p>Our team is on standby 24/7</p>
-          <p>Officialheadtotoe@gmail.com</p>
+          <p class="info-detail">Officialheadtotoe@gmail.com</p>
         </div>
       </div>
     </section>
@@ -174,11 +170,9 @@
       </div>
     </section>
 
-    <footer class="section-p1"></footer>
+    <footer class="section-m1" style="background-color: white"></footer>
 
-    <script type="module" src="js/nav.js"></script>
-    <script src="js/footer.js"></script>
-    <script src="js/home.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="../js/components/nav.js"></script>
+    <script src="../js/components/footer.js"></script>
   </body>
 </html>

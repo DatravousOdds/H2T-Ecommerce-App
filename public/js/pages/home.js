@@ -1,5 +1,5 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, displayProducts, getCartCount, handleFavoriteClick, renderProductSkeletons, getCartItems } from '../core/global.js';
+import { loadProducts, displayProducts, getCartCount, renderProductSkeletons, getCartItems } from '../core/global.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js';
 import { showPageLoader, hidePageLoader } from '../components/pageLoader.js';
@@ -37,7 +37,7 @@ const justDropped = async () => {
   );
 
     const querySnapshot = await getDocs(q);
-    displayProducts(querySnapshot, "justDropped");
+    displayProducts(querySnapshot.docs, "justDropped");
   
   } catch (error) {
     console.error("Error fetching just dropped products:", error);
@@ -56,7 +56,7 @@ const mensCollection = async () => {
   );
 
   const querySnapshot = await getDocs(q);
-  displayProducts(querySnapshot, "menCollection");
+  displayProducts(querySnapshot.docs, "menCollection");
   
 };
 
@@ -69,7 +69,7 @@ const womenCollection = async () => {
   );
 
   const querySnapshot = await getDocs(q);
-  displayProducts(querySnapshot, "womenCollection");
+  displayProducts(querySnapshot.docs, "womenCollection");
   
 };
 
@@ -83,7 +83,7 @@ const belowRetailPrices = async () => {
   const querySnapshot = await getDocs(q);
   const filtered = querySnapshot.docs.filter(doc => doc.data().listingPrice < doc.data().originalPrice);
 
-  renderProducts(filtered, "belowRetail");
+  displayProducts(filtered, "belowRetail");
   
 }
 
@@ -154,63 +154,6 @@ function updatePriceTierCounts(priceTiers, activeListings) {
 }
 
 
-
-const renderProducts = (products, containerElement) => {
-  const productsContainer = document.getElementById(`${containerElement}`);
-  // clear existing products
-  productsContainer.innerHTML = "";
-  // display
-  if (products.length === 0) {
-    productsContainer.innerHTML = `<div class="no-results">No results!</div>`
-  }
-  products.forEach((doc) => {
-    const productData = doc.data();
-    const productElement = document.createElement("div");
-    productElement.classList.add("pro");
-    productElement.onclick = () => {
-      window.location.href = `/shop/product.html?id=${doc.id}`;
-    };
-    productElement.innerHTML = `
-      
-            <!--- Image container-->
-            <div class="product-image">
-              <div class="liked">
-                <i class="fa-regular fa-heart"></i>
-              </div>
-
-              <img
-                src="${productData.images[0].url}"
-                class="image-custom"
-                alt="${productData.productName}"
-              />
-            </div>
-            <!--- Image container-->
-
-            <!-- product details -->
-            <div class="des">
-              <div class="price-description">
-                <p class="product-name">
-                  ${productData.productName}
-                </p>
-                
-                <div class="pro-price">
-                  <div class="price-wrapper">
-                    <span class="listing-price">$${Number(productData.originalPrice || 0).toFixed(2)}</span>
-                  </div>
-                </div>
-
-              </div>
-              
-            </div>
-            <!-- product details -->
-          
-    `;
-    handleFavoriteClick(productElement, doc.id, productData);
-    productsContainer.appendChild(productElement);
-  });
-
-  
-};
 
 const renderCategories = () => {
   categoryCarousel.innerHTML = "";

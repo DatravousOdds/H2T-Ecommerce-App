@@ -1998,8 +1998,7 @@ footer .install img {
 
 footer .follow i:hover,
 footer a:hover {
-  /* change color to red  */
-  color: var(var(--color-text-primary-hover));
+  color: var(--color-text-alert);
 }
 
 footer .rights {

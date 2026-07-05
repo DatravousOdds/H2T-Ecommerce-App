@@ -10,9 +10,9 @@ const createFooter = () => {
       <div class="follow">
         <h4>Follow Us</h4>
         <div class="icon">
-          <i class="fab fa-twitter"></i>
-          <i class="fab fa-instagram"></i>
-          <i class="fa-brands fa-tiktok"></i>
+          <a href="https://x.com/hexxostore?s=11" target="_blank" rel="noopener noreferrer" aria-label="Hexxo on X"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.instagram.com/hexxo.store" target="_blank" rel="noopener noreferrer" aria-label="Hexxo on Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@hexxo.shop" target="_blank" rel="noopener noreferrer" aria-label="Hexxo on TikTok"><i class="fa-brands fa-tiktok"></i></a>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@ const createFooter = () => {
     <div class="col">
       <h4>Help</h4>
       <a href="/contact">Contact Us</a>
-      <a href="/public/static/terms-of-service.html">Terms of Service</a>
+      <a href="/terms">Terms of Service</a>
     </div>
 
     <div class="col">

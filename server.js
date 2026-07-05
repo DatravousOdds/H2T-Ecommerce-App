@@ -202,6 +202,11 @@ app.get("/contact", (req, res) => {
   res.sendFile(path.join(staticPth, "contact.html"));
 });
 
+// terms of service route
+app.get("/terms", (req, res) => {
+  res.sendFile(path.join(staticPth, "static/terms.html"));
+});
+
 //login route
 app.get("/login", (req, res) => {
   res.sendFile(path.join(staticPth, 'auth/login.html'));
@@ -1465,26 +1470,36 @@ app.get('/api/payment-methods', verifyAuth, async (req, res) => {
     const user = docRef.data();
 
     if (user.stripeCustomerId) {
-      const paymentMethod = await stripe.paymentMethods.list({
-        type: 'card',
-        customer: user.stripeCustomerId,
-      })
+      try {
+        const paymentMethod = await stripe.paymentMethods.list({
+          type: 'card',
+          customer: user.stripeCustomerId,
+        })
 
-      const pm = {
-        paymentMethods: paymentMethod.data.map(m => ({
-          id: m.id,
-          brand: m.card.brand,
-          last4: m.card.last4,
-          expMonth:m.card.exp_month,
-          expYear: m.card.exp_year
-        }))
+        const pm = {
+          paymentMethods: paymentMethod.data.map(m => ({
+            id: m.id,
+            brand: m.card.brand,
+            last4: m.card.last4,
+            expMonth:m.card.exp_month,
+            expYear: m.card.exp_year
+          }))
+        }
+
+        return res.json(pm)
+      } catch (stripeError) {
+        // stripeCustomerId points at a customer from a different Stripe mode
+        // (e.g. leftover from test mode after switching to live keys) --
+        // treat it the same as "no customer yet" instead of erroring out.
+        if (stripeError.code === 'resource_missing') {
+          await db.collection('userProfiles').doc(uid).update({ stripeCustomerId: null });
+          return res.json({ paymentMethods: [] });
+        }
+        throw stripeError;
       }
-      
-      return res.json(pm)
-
     } else {
       return res.json({paymentMethods: []})
-    }   
+    }
   } catch (error) {
     return res.status(400).json({ error: error.message})
   }
@@ -1498,12 +1513,18 @@ app.post('/api/payment-methods/setup-intent', verifyAuth, async (req, res) => {
     const user = docRef.data();
 
     if (user.stripeCustomerId) {
-      const setupIntent = await stripe.setupIntents.create({
-        customer: user.stripeCustomerId,
-        automatic_payment_methods: { enabled: true }
-      })
+      try {
+        const setupIntent = await stripe.setupIntents.create({
+          customer: user.stripeCustomerId,
+          automatic_payment_methods: { enabled: true }
+        })
 
-      return res.json({clientSecret: setupIntent.client_secret})
+        return res.json({clientSecret: setupIntent.client_secret})
+      } catch (stripeError) {
+        // Same stale-customer-id case as GET /api/payment-methods above --
+        // fall through to create a fresh customer instead of erroring out.
+        if (stripeError.code !== 'resource_missing') throw stripeError;
+      }
     }
 
     const customer = await stripe.customers.create({
