@@ -1141,12 +1141,16 @@
 
 @media (max-width: 768px) {
 
+    .offer-suggestions {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
     .cart-drawer-footer {
        max-width: 90%; 
     }
 
     .offer-modal {
-        overflow-y: hidden;
+        overflow-y: auto;
         width: 90vw;
         max-height: 70vh;
     }

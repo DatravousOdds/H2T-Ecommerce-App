@@ -135,7 +135,7 @@ async function fetchTotalRevenue(userId) {
         }, 0)
 
         console.log("total revenue",totalRevenue);
-        return totalRevenue;  
+        return totalRevenue.toFixed(2);  
     } catch (error) {
         console.error("Failed to fetch total revenue: ", error)
     }

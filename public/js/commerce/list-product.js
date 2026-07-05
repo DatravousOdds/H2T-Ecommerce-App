@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (file) {
         // Validate file type
-        if (file.size > 5 * 1024 * 1024) {
+        if (file.size > 12 * 1024 * 1024) {
           alert("File too large");
           this.value = "";
           return;
