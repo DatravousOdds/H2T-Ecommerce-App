@@ -32,6 +32,22 @@ const categoryFilter = document.querySelectorAll("#category-filter input[type='c
 const paginationLinks = document.querySelectorAll(".pagination-link-container a");
 const productsContainer = document.getElementById("productsContainer");
 const loadMoreBtn = document.getElementById("loadMoreBtn");
+const brandFilterContainer = document.getElementById("brand-filter");
+const brandLabels = new Map(); // normalized brand slug -> display name, for filter tags
+
+// Popular picks always shown in the brand filter, even with 0 listings so far.
+// Kept in sync with seller.js's BRAND_GROUPS -- same names, flattened.
+const CURATED_BRANDS = [
+  "Supreme", "Bape", "Palace", "Stüssy", "Off-White", "Fear of God", "Chrome Hearts", "Kith", "Vlone", "Essentials",
+  "Nike", "Jordan", "Adidas", "New Balance", "Converse", "Vans", "Puma", "Reebok", "Asics", "Yeezy",
+  "Carhartt", "Champion", "Polo Ralph Lauren", "Levi's", "The North Face", "Nautica",
+];
+
+// brand is free text, so there's no fixed casing/punctuation to match on.
+// Mirrors brands.js's normalizeBrand() -- keep in sync if that one changes.
+function normalizeBrand(brand) {
+  return (brand || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+}
 
 console.log("Pagination Links:", paginationLinks)
 
@@ -297,6 +313,76 @@ mensRange.forEach((size) => {
   sizePicker.appendChild(wrapper);
 });
 
+loadBrandFilterOptions();
+
+// fetches every active men's listing (not just the loaded/paginated page) so the
+// brand filter reflects everything sellers have listed, not only what's on screen
+async function loadBrandFilterOptions() {
+  if (!brandFilterContainer) return;
+
+  try {
+    const q = query(
+      collection(db, "listings"),
+      where("status", "==", "active"),
+      where("categoryMeta", "==", "men")
+    );
+    const snapshot = await getDocs(q);
+
+    // normalizedBrand -> { name: first-seen casing, count }
+    const brandCounts = new Map();
+    snapshot.docs.forEach((doc) => {
+      const rawBrand = (doc.data().brand || "").trim();
+      const key = normalizeBrand(rawBrand);
+      if (!key) return;
+
+      if (!brandCounts.has(key)) brandCounts.set(key, { name: rawBrand, count: 0 });
+      brandCounts.get(key).count += 1;
+    });
+
+    renderBrandFilterOptions(brandCounts);
+  } catch (error) {
+    console.error("Error loading brand filter options:", error);
+  }
+}
+
+function renderBrandFilterOptions(brandCounts) {
+  brandFilterContainer.innerHTML = "";
+
+  const appendBrandCheckbox = (key, name, count) => {
+    const wrapper = document.createElement("div");
+
+    const checkbox = document.createElement("input");
+    checkbox.name = "brand";
+    checkbox.type = "checkbox";
+    checkbox.className = "check";
+    checkbox.id = `brand-${key}`;
+    checkbox.value = key;
+
+    const label = document.createElement("label");
+    label.setAttribute("for", `brand-${key}`);
+    label.textContent = count ? `${name} (${count})` : name;
+
+    wrapper.appendChild(checkbox);
+    wrapper.appendChild(label);
+    brandFilterContainer.appendChild(wrapper);
+
+    // so applied-filter tags can show "New Balance" instead of the raw "newbalance" slug
+    brandLabels.set(key, name);
+  };
+
+  CURATED_BRANDS.forEach((name) => {
+    const key = normalizeBrand(name);
+    const count = brandCounts.get(key)?.count || 0;
+    brandCounts.delete(key);
+    appendBrandCheckbox(key, name, count);
+  });
+
+  // Everything else sellers have actually listed under, most-listed first.
+  [...brandCounts.entries()]
+    .sort((a, b) => b[1].count - a[1].count || a[1].name.localeCompare(b[1].name))
+    .forEach(([key, { name, count }]) => appendBrandCheckbox(key, name, count));
+}
+
 // shows the load more button only while Firestore has more pages left for the active category
 const updateLoadMoreVisibility = () => {
   loadMoreBtn.style.display = state.hasMore ? "" : "none";
@@ -341,7 +427,8 @@ const renderFilterTags = (filterTagsArray) => {
       values.forEach(v => {
         const btn = document.createElement('button');
         btn.className = "filter-button";
-        btn.innerText = `${v.charAt(0).toUpperCase() + v.slice(1)} `;
+        const label = key === "brand" ? (brandLabels.get(v) || v) : `${v.charAt(0).toUpperCase() + v.slice(1)}`;
+        btn.innerText = `${label} `;
         btn.dataset.filterTag = v;
 
         const icon = document.createElement('i');
@@ -391,6 +478,10 @@ const filterProducts = (products, filters) => {
     const data = product.data();
     for (const [key, values] of filters) {
       if (key === "sort") continue;
+      if (key === "brand") {
+        if (!values.includes(normalizeBrand(data.brand))) return false;
+        continue;
+      }
       if(!values.includes(data[key])) {
         return false;
       }

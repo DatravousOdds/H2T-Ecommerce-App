@@ -199,7 +199,7 @@ app.get("/accessories", (req, res) => {
 });
 // accessories page route
 app.get("/contact", (req, res) => {
-  res.sendFile(path.join(staticPth, "contact.html"));
+  res.sendFile(path.join(staticPth, "static/contact.html"));
 });
 
 // terms of service route

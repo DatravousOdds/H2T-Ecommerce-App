@@ -20,6 +20,14 @@ const colors = [
     { name: "Orange", value: "orange" },
 ];
 
+// Curated suggestions for the brand typeahead. Brand itself stays free text --
+// this is just a shortcut for common picks, not a restricted set of values.
+const BRAND_GROUPS = [
+    { label: "Streetwear", brands: ["Supreme", "Bape", "Palace", "Stüssy", "Off-White", "Fear of God", "Chrome Hearts", "Kith", "Vlone", "Essentials"] },
+    { label: "Sneakers", brands: ["Nike", "Jordan", "Adidas", "New Balance", "Converse", "Vans", "Puma", "Reebok", "Asics", "Yeezy"] },
+    { label: "Vintage & Heritage", brands: ["Carhartt", "Champion", "Polo Ralph Lauren", "Levi's", "The North Face", "Nautica"] },
+];
+
 
 
 const imageGridContainer = document.querySelector('.images-grid-container');
@@ -41,6 +49,7 @@ const productSize = document.getElementById("size");
 const sizeInfo = document.getElementById("sizeInfo");
 const productInfo = document.getElementById("product-info");
 const productBrand = document.getElementById("brand");
+const brandOptions = document.getElementById("brandOptions");
 const productCondition = document.getElementById("condition");
 const productColor = document.getElementById("color");
 
@@ -178,6 +187,7 @@ const CATEGORY_FIELDS = {
 initFormListeners();
 wordCounter();
 populateColorOptions();
+initBrandCombobox();
 syncSelectedShippingContainer();
 
 if (isEditing) {
@@ -430,6 +440,75 @@ function populateColorOptions() {
         opt.value = value;
         opt.textContent = name;
         productColor.appendChild(opt);
+    });
+}
+
+function initBrandCombobox() {
+    const renderBrandOptions = (query) => {
+        const search = query.trim().toLowerCase();
+        brandOptions.innerHTML = "";
+
+        BRAND_GROUPS.forEach(({ label, brands }) => {
+            const matches = brands.filter((brand) => brand.toLowerCase().includes(search));
+            if (!matches.length) return;
+
+            const groupLabel = document.createElement("li");
+            groupLabel.className = "brand-group-label";
+            groupLabel.textContent = label;
+            brandOptions.appendChild(groupLabel);
+
+            matches.forEach((brand) => {
+                const item = document.createElement("li");
+                item.setAttribute("role", "option");
+                item.dataset.brand = brand;
+                item.textContent = brand;
+                brandOptions.appendChild(item);
+            });
+        });
+
+        const otherItem = document.createElement("li");
+        otherItem.className = "other-option";
+        otherItem.setAttribute("role", "option");
+        otherItem.textContent = search ? `Other -- use "${query.trim()}"` : "Other (enter your own brand)";
+        brandOptions.appendChild(otherItem);
+    };
+
+    const openBrandOptions = (query) => {
+        renderBrandOptions(query);
+        brandOptions.classList.add("show");
+        productBrand.setAttribute("aria-expanded", "true");
+    };
+
+    const closeBrandOptions = () => {
+        brandOptions.classList.remove("show");
+        productBrand.setAttribute("aria-expanded", "false");
+    };
+
+    productBrand.addEventListener("focus", () => openBrandOptions(productBrand.value));
+    productBrand.addEventListener("input", () => {
+        openBrandOptions(productBrand.value);
+        removeError("brand");
+    });
+
+    brandOptions.addEventListener("click", (e) => {
+        const item = e.target.closest("li[role='option']");
+        if (!item) return;
+
+        if (item.dataset.brand) {
+            productBrand.value = item.dataset.brand;
+            removeError("brand");
+        }
+
+        closeBrandOptions();
+        productBrand.focus();
+    });
+
+    productBrand.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeBrandOptions();
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!e.target.closest(".brand-combobox")) closeBrandOptions();
     });
 }
 

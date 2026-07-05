@@ -162,7 +162,19 @@
 
             <div class="input-container">
                 <label for="brand">Brand</label>
-                <input type="text" id="brand" placeholder="Enter a brand">
+                <div class="brand-combobox">
+                    <input
+                        type="text"
+                        id="brand"
+                        placeholder="Search or enter a brand"
+                        autocomplete="off"
+                        role="combobox"
+                        aria-expanded="false"
+                        aria-autocomplete="list"
+                        aria-controls="brandOptions"
+                    >
+                    <ul class="brand-options" id="brandOptions" role="listbox"></ul>
+                </div>
                 <p class="errorText" id="error-brand"></p>
             </div>
 
