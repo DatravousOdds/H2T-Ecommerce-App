@@ -1030,52 +1030,6 @@ app.put("/users/:id", verifyAuth, async (req, res) => {
   
 });
 
-app.put("/userProfiles/:id", verifyAuth, async (req, res) => {
-  const userId = req.params.id;
-  const data = req.body;
-  
-  try {
-    if (req.token.uid === userId) {
-      const docRef = db.collection("userProfiles").doc(userId);
-      const doc = await docRef.get();
-
-      if (doc.exists) {    
-        const updateData = {
-          ...(data.firstname !== undefined && { firstname: data.firstname }),
-          ...(data.lastname !== undefined && { lastname: data.lastname }),
-          ...(data.backgroundImage !== undefined && { backgroundImage: data.backgroundImage }),
-          ...(data.username !== undefined && { username: data.username }),
-          ...(data.shipping !== undefined && { shipping: {
-            address1: data.shipping.address1,
-            address2: data.shipping.address2,
-            country: data.shipping.country,
-            city: data.shipping.city,
-            state: data.shipping.state,
-            postalCode: data.shipping.postalCode,
-            phone: data.shipping.phone
-          } }),
-        };
-
-        if (Object.keys(updateData).length === 0) return res.status(400).json({ update: false, message: "No changes made"});
-
-        await docRef.update({
-          ...updateData,
-          lastUpdated: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        res.status(200).json({ update: true, message: "Update successful"});
-      } else {
-        res.status(404).json({ success: false, message: "No document found!"})
-      }
-      
-    } else {
-      return res.status(403);
-    }
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message })
-  }
-});
-
 // Which fulfillmentStatus values a seller is allowed to move *from* for
 // each target status -- e.g. you can only mark "shipped" from pending or
 // processing, and only mark "delivered" once it's actually shipped. Keeps
@@ -1114,20 +1068,6 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
     }
 
     const updatedData = {};
-
-    if (isBuyer) {
-      if (data.shipping !== undefined) {
-        updatedData.shipping = {
-          address1: data.shipping.address1,
-          address2: data.shipping.address2,
-          country: data.shipping.country,
-          city: data.shipping.city,
-          state: data.shipping.state,
-          postalCode: data.shipping.postalCode,
-          phone: data.shipping.phone
-        }
-      }
-    }
 
     if (isSeller && data.fulfillmentStatus !== undefined) {
       const allowedFrom = SELLER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus];

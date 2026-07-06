@@ -506,24 +506,33 @@ export function initCountryDropdown() {
 
 }
 
+// Rebuilds the #shipping-state options for the given country code. Shared by
+// the live country-change listener and loadShippingInfoData(), since setting
+// #shipping-country's value via JS (on load) doesn't fire a 'change' event.
+export function populateStatesForCountry(countryCode) {
+  const stateContainer = document.getElementById('shipping-state');
+  if (!stateContainer) return;
+
+  // Clear any previously-appended state options, keeping just the placeholder.
+  stateContainer.innerHTML = '<option value="">Select</option>';
+
+  const stateArray = states.data.filter(state => state.iso2 === countryCode);
+  if (!stateArray[0]) return;
+
+  stateArray[0].states.forEach(state => {
+    const option = document.createElement('option');
+    option.value = state.name;
+    option.textContent = state.state_code;
+    stateContainer.append(option);
+  });
+}
+
 export function initStatesDropdown() {
   const countryContainer = document.getElementById('shipping-country');
-  const stateContainer = document.getElementById('shipping-state');
 
   countryContainer.addEventListener('change', (e) => {
     console.log("country selected:", e.target.value);
-    const selectedCountry = e.target.value;
-    const stateArray = states.data.filter(state => state.iso2 === selectedCountry);
-    stateArray[0].states.forEach(state => {
-      const option = document.createElement('option');
-      option.value = state.name;
-      option.textContent = state.state_code;
-      stateContainer.append(option);
-    })
+    populateStatesForCountry(e.target.value);
   })
-  
-  
-  
-  
 }
 

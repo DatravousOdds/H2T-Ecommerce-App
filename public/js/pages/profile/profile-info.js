@@ -2,7 +2,7 @@
 
 import { validateForm } from "../../core/global.js";
 import { db, doc, updateDoc } from "../../api/firebase-client.js";
-import { notification } from "./ui-helpers.js";
+import { notification, populateStatesForCountry } from "./ui-helpers.js";
 import { checkUserStatus, updateCachedUser } from "../../auth/auth.js";
 
 
@@ -82,6 +82,7 @@ export function loadShippingInfoData(userData) {
   document.querySelector("#shipping-address2").value = shipping.address2 || "";
   document.querySelector("#shipping-city").value = shipping.city || "";
   document.querySelector("#shipping-country").value = shipping.country || "";
+  populateStatesForCountry(shipping.country || "");
   document.querySelector("#shipping-state").value = shipping.state || "";
   document.querySelector("#shipping-postal").value = shipping.zipCode || "";
   document.querySelector("#shipping-phoneNumber").value = shipping.phoneNumber || "";
@@ -222,6 +223,7 @@ function initEditSaveCancel() {
 
         if (validateForm(currentForm) === true) {
           const formInputs = currentForm.querySelectorAll("input");
+          const formSelects = currentForm.querySelectorAll("select");
 
           formInputs.forEach((input) => {
             input.disabled = true;
@@ -229,6 +231,9 @@ function initEditSaveCancel() {
             input.style.border = "none";
             input.style.boxShadow = "none";
             input.style.padding = "0px 0px";
+          });
+          formSelects.forEach((select) => {
+            select.disabled = true;
           });
           allActionButtons.forEach((action) => {
             action.style.display = "none";
