@@ -696,14 +696,14 @@ function carrierRowSkeletonHTML() {
                     <div class="skeleton" style="width:64px;height:64px;border-radius:8px;"></div>
                 </div>
                 <div class="carrier-title">
-                    <span class="skeleton skeleton-line medium"></span>
-                    <p><span class="skeleton skeleton-line short"></span></p>
+                    <span class="skeleton skeleton-line" style="width:140px;"></span>
+                    <p><span class="skeleton skeleton-line" style="width:90px;"></span></p>
                 </div>
             </div>
             <div class="carrier-pricing">
                 <div class="carrier-price">
-                    <span class="skeleton skeleton-line short"></span>
-                    <p><span class="skeleton skeleton-line short"></span></p>
+                    <span class="skeleton skeleton-line" style="width:60px;"></span>
+                    <p><span class="skeleton skeleton-line" style="width:50px;"></span></p>
                 </div>
             </div>
         </div>
@@ -1156,7 +1156,7 @@ function handleVideoUpload(input, preview, removeBtn) {
 
 async function fetchShippingRates(parcel) {
     const shipping = currentUser.shipping;
-    const requiredFields = ['address1', 'city', 'state', 'postalCode', 'country'];
+    const requiredFields = ['address', 'city', 'state', 'zipCode', 'country'];
     const missingShippingInfo = !shipping || requiredFields.some(field => !shipping[field]);
 
     if (missingShippingInfo) {
@@ -1164,14 +1164,13 @@ async function fetchShippingRates(parcel) {
         return;
     }
 
-    removeError('carrierPanel');
-    showLoader(carrierWrapper);
+    renderCarrierSkeletons();
     const payload = {
         fromAddress: {
-            line_1: shipping.address1,
+            line_1: shipping.address,
             city: shipping.city,
             state: shipping.state,
-            postal_code: shipping.postalCode,
+            postal_code: shipping.zipCode,
             country_alpha2: shipping.country,
         },
         toAddress: PLACEHOLDER_DESTINATION,
@@ -1190,16 +1189,16 @@ async function fetchShippingRates(parcel) {
         })
 
         if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`)
+            const errorBody = await response.json().catch(() => ({}));
+            throw new Error(errorBody.error || `Response status: ${response.status}`)
         }
         const result =  await response.json();
         const bestShippingCourier = result.rates ? result.rates.filter(rates => rates.cost_rank <= 5) : [];
         displayShippingCouriers(bestShippingCourier);
     } catch (error) {
         console.error("Error fetching data:", error);
+        carrierWrapper.innerHTML = '';
         showError('carrierPanel', 'Could not load shipping rates. Please try again.');
-    } finally {
-        hideLoader(carrierWrapper);
     }
 }
 
