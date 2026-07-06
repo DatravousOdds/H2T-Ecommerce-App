@@ -317,7 +317,7 @@ function initAuthForm() {
 
           await createUserProfile(user, userData);
 
-          showAlert("Account created successfully!");
+          showAlert("Account created successfully!", "success");
 
           sessionStorage.setItem("user", JSON.stringify({ 
             userId:user.uid,

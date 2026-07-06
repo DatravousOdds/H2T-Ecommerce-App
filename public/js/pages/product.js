@@ -1,5 +1,5 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons, isReleaseLive } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -683,9 +683,10 @@ async function loadRelateProducts() {
     const q = query(productsCollection, ...baseConstraints, limit(20));
 
     const querySnapshot = await getDocs(q);
+    const visibleDocs = querySnapshot.docs.filter((doc) => isReleaseLive(doc.data()));
 
-    if (!querySnapshot.empty) {
-        return querySnapshot.docs;
+    if (visibleDocs.length > 0) {
+        return visibleDocs;
     }
 
     // Tier B: no related products for this brand/category combo — fall back to
@@ -705,7 +706,7 @@ async function loadRelateProducts() {
     const fallbackSnapshot = await getDocs(fallbackQuery);
 
     return fallbackSnapshot.docs
-        .filter((doc) => doc.id !== productId)
+        .filter((doc) => doc.id !== productId && isReleaseLive(doc.data()))
         .slice(0, FALLBACK_LIMIT);
 }
 

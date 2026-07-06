@@ -23,7 +23,7 @@
   --color-border-secondary: #fff;
 
 
-  /* Thumbar variants */
+  /* Thumb variants */
   --color-thumbnail-primary: #f30c1e;
 
   /* Font size variants */
@@ -56,10 +56,6 @@ body {
   text-transform: uppercase;
 }
 
-::-webkit-scrollbar {
-  height: 8px;
-  background: #eceff1;
-}
 
 ::-webkit-scrollbar:hover {
   height: 20px;
@@ -525,8 +521,7 @@ button.white {
 }
 
 .login-button:hover {
-  background: var(--color-background-primary);
-  color: var(--color-text-primary);
+  opacity: 0.8;
   transition: 0.2s ease-in-out;
 }
 
@@ -539,8 +534,7 @@ button.white {
 }
 
 .signup-button:hover {
-  background: var(--color-background-primary);
-  color: var(--color-text-secondary);
+  opacity: 0.8;
   transition: 0.2s ease-in-out;
 }
 
@@ -1879,7 +1873,7 @@ button.white {
 }
 
 .category-flex-wrapper {
-  margin:  3rem 4rem;
+  /* margin:  3rem 4rem; */
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -1934,7 +1928,7 @@ button.white {
 }
 
 footer {
-  padding: 0px 100px;
+  /* padding: 0px 100px; */
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;

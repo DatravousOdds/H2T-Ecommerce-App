@@ -16,9 +16,10 @@ const currentUser = await checkUserStatus();
 /**
  * Real listing shape, as written by seller.js (NOT the nested
  * basicInfo/inventory/pricing shape dashboard.js's old templates assumed):
- *   { userId, productName, originalPrice, status, brand, condition, size,
- *     category, categoryMeta, description, availableForTrade, createdAt,
- *     listingId, images: [{ url, path, isPrimary, index }] }
+ *   { userId, productName, listingPrice, originalPrice, status, brand,
+ *     condition, size, category, categoryMeta, description,
+ *     availableForTrade, createdAt, listingId,
+ *     images: [{ url, path, isPrimary, index }] }
  *
  * Two real gaps in the current schema, handled defensively below rather
  * than assumed away:
@@ -50,8 +51,8 @@ function allProductsRow(listing) {
       <td><span class="listing-badge">${listing.status || "active"}</span></td>
       <td>${listing.condition || "--"}</td>
       <td>--</td>
-      <td>$${Number(listing.originalPrice || 0).toFixed(2)}</td>
-      <td>${listing.availableForTrade ? "$" + Number(listing.originalPrice || 0).toFixed(2) : "--"}</td>
+      <td>$${Number(listing.listingPrice || 0).toFixed(2)}</td>
+      <td>${listing.availableForTrade ? "$" + Number(listing.listingPrice || 0).toFixed(2) : "--"}</td>
       <td>--</td>
       <td>
         <button class="action-button edit" aria-label="Edit Listing">
@@ -90,10 +91,10 @@ function activeProductsRow(listing) {
           <span class="stock-status in-stock">In Stock</span>
         </div>
       </td>
-      <td>$${Number(listing.originalPrice || 0).toFixed(2)}</td>
+      <td>$${Number(listing.listingPrice || 0).toFixed(2)}</td>
       <td>
         <div class="price-info">
-          <span class="current-price">$${Number(listing.originalPrice || 0).toFixed(2)}</span>
+          <span class="current-price">$${Number(listing.listingPrice || 0).toFixed(2)}</span>
         </div>
       </td>
       <td>
@@ -136,7 +137,7 @@ function outOfStockRow(listing) {
       </td>
       <td><span class="category-badge">${listing.category || "--"}</span></td>
       <td><span class="date">${formatListedDate(listing.createdAt)}</span></td>
-      <td><span class="last-price">$${Number(listing.originalPrice || 0).toFixed(2)}</span></td>
+      <td><span class="last-price">$${Number(listing.listingPrice || 0).toFixed(2)}</span></td>
       <td>--</td>
       <td>--</td>
       <td>--</td>
@@ -176,7 +177,7 @@ function draftRow(listing) {
       <td><span class="date">${formatListedDate(listing.createdAt)}</span></td>
       <td><span class="date">${formatListedDate(listing.createdAt)}</span></td>
       <td><span class="category-badge">${listing.category || "--"}</span></td>
-      <td><span class="draft-price">$${Number(listing.originalPrice || 0).toFixed(2)}</span></td>
+      <td><span class="draft-price">$${Number(listing.listingPrice || 0).toFixed(2)}</span></td>
       <td>
         <div class="action-buttons">
           <button class="action-button publish" aria-label="Publish Draft">
@@ -199,7 +200,7 @@ function draftRow(listing) {
 // A draft's "completion" isn't tracked anywhere in the schema yet -- this is
 // a simple stand-in based on which real fields are present, not a stored value.
 function estimateCompletion(listing) {
-  const fields = ["productName", "originalPrice", "brand", "condition", "size", "category", "images"];
+  const fields = ["productName", "listingPrice", "brand", "condition", "size", "category", "images"];
   const filled = fields.filter((f) => {
     if (f === "images") return listing.images && listing.images.length > 0;
     return Boolean(listing[f]);
@@ -351,7 +352,7 @@ function getFilteredListings() {
     if (checkedBrands.length && !checkedBrands.includes(normalizeBrand(listing.brand))) return false;
 
     if (checkedPriceRanges.length) {
-      const price = Number(listing.originalPrice || 0);
+      const price = Number(listing.listingPrice || 0);
       const inRange = checkedPriceRanges.some(([min, max]) => price >= min && price <= max);
       if (!inRange) return false;
     }

@@ -34,7 +34,7 @@ const region = "us-east-1";
 const bucketName = "ecom-websiteh2t";
 const accessKeyId = process.env.aws_access_key_id;
 const secretKeyId = process.env.aws_secret_access_key;
-const MARKETPLACE_FEE_RATE = 0.05
+const MARKETPLACE_FEE_RATE = 0.08
 
 aws.config.update({
   region,

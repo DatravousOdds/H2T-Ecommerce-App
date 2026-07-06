@@ -5,6 +5,8 @@ import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { removeFromCart, decrementCartCount, getCartItems } from '../core/global.js';
 
+renderCartSkeletons();
+
 const currentUser = await checkUserStatus();
 let bagItems = await getCartItems(currentUser);
 console.log("bag items:", bagItems);
@@ -17,6 +19,45 @@ window.addEventListener('cartUpdated', async () => {
     console.log("bag items:", bagItems);
     displayCartItems(bagItems);
 })
+
+// Mirrors productBagItemMarkup's layout (avatar + product image + text
+// lines + cost row) so the skeleton doesn't reflow when real cards swap in.
+function cartSkeletonHTML() {
+    return `
+        <div class="item-container skeleton-item">
+            <div class="item-wrapper">
+                <div class="item-info">
+                  <div class="seller-info">
+                    <div class="skeleton" style="width:50px;height:50px;border-radius:50%;"></div>
+                    <div class="seller-at">
+                      <span class="skeleton skeleton-line short"></span>
+                      <span class="skeleton skeleton-line short"></span>
+                    </div>
+                  </div>
+                  <div class="skeleton" style="width:200px;height:200px;border-radius:8px;margin-top:1rem;"></div>
+                </div>
+                <div class="item-description">
+                  <span class="skeleton skeleton-line long"></span>
+                  <span class="skeleton skeleton-line short"></span>
+                  <span class="skeleton skeleton-line short"></span>
+                </div>
+              </div>
+
+              <div class="item-cost">
+                <div class="cost-row">
+                  <span class="skeleton skeleton-line medium"></span>
+                </div>
+                <div class="skeleton" style="width:100%;height:38px;border-radius:4px;margin-top:0.5rem;"></div>
+              </div>
+        </div>
+    `;
+}
+
+function renderCartSkeletons(count = 2) {
+    const bagItemGrid = document.getElementById('bagItemGrid');
+    if (!bagItemGrid) return;
+    bagItemGrid.innerHTML = Array.from({ length: count }, cartSkeletonHTML).join("");
+}
 
 function displayCartItems(items) {
     const bagItemGrid = document.getElementById('bagItemGrid');

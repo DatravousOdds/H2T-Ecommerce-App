@@ -132,8 +132,16 @@ const renderReleaseSkeletons = (count = 12) => {
   `).join("");
 };
 
+// Only upcoming drops belong on the calendar -- once a release's date has
+// passed it's just a normal listing now (visible on the regular shop pages
+// via loadProducts()'s own releaseDate check), so it drops out of this view.
+const isUpcoming = (docSnap) => docSnap.data().releaseDate.toDate() > new Date();
+const bySoonestFirst = (a, b) => a.data().releaseDate.toDate() - b.data().releaseDate.toDate();
+
 renderReleaseSkeletons();
-let products =  await loadProducts("categoryMeta","men", state);
+let products = (await loadProducts("listingType", "release", state))
+  .filter(isUpcoming)
+  .sort(bySoonestFirst);
 displayProducts(products, releasesProductTemplate);
 updateLoadMoreVisibility();
 
@@ -300,8 +308,8 @@ loadMoreBtn.addEventListener("click", async () => {
   showLoader(productsContainer);
 
   try {
-    const newProducts = await loadProducts("categoryMeta", "men", state);
-    products = [...products, ...newProducts];
+    const newProducts = (await loadProducts("listingType", "release", state)).filter(isUpcoming);
+    products = [...products, ...newProducts].sort(bySoonestFirst);
     filteredProducts = [...products];
     filterProducts(products, state.filters);
   } catch (error) {

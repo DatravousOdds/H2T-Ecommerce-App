@@ -14,6 +14,16 @@
   --bs-breakpoint-lg: 992px;
   --bs-breakpoint-xl: 1200px;
   --bs-breakpoint-xxl: 1400px;
+
+  --margin-sm: 0.5rem;
+  --margin-base: 1rem;
+  --margin-lg: 1.5rem;
+  --margin-xl: 2rem;
+}
+
+/* Utilities */
+.margin-l-r-sm {
+  margin: var(--margin-lg) var(--margin-xl) 0 !important;
 }
 
 p {
@@ -23,7 +33,6 @@ p {
 
 #product1 {
   margin: 21px auto;
-  padding: 0;
 }
 
 /* ── Filter Section ─────────────────────────────── */
@@ -174,7 +183,6 @@ p {
 #page-header {
   position: relative;
   margin: 18px auto;
-  width: 90%;
   height: 40vh;
   background-size: cover;
   background-color: #f4f3f1;
@@ -230,8 +238,6 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 /* ── Product Page Layout ────────────────────────── */
 
 .product-page {
-  margin-right: 5rem !important;
-  margin-left: 5rem !important;
   display: grid;
   grid-template-columns: 250px 1fr 1fr;
   grid-template-rows: auto auto auto; /* changed from fixed 100px — let content size rows */
@@ -499,10 +505,6 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
 #prod-card-container {
   margin: 8px 16px;
-}
-
-.section-p1 {
-  padding: 0 20px;
 }
 
 /* ── Breadcrumbs ────────────────────────────────── */
@@ -849,10 +851,6 @@ hr {
 
   #pagination a {
     padding: 0 0.25rem;
-  }
-
-  .section-p1 {
-    padding: 0;
   }
 
   .filter-container .filter-opt {

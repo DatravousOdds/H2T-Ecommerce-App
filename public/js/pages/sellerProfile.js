@@ -9,9 +9,10 @@ import { isFollowing, toggleFollow } from "../services/follow.js";
 /**
  * Real listing shape (same schema documented in
  * profile/selling/products/products.js, written by seller.js):
- *   { userId, productName, originalPrice, status, brand, condition, size,
- *     category, categoryMeta, description, availableForTrade, createdAt,
- *     listingId, images: [{ url, path, isPrimary, index }] }
+ *   { userId, productName, listingPrice, originalPrice, status, brand,
+ *     condition, size, category, categoryMeta, description,
+ *     availableForTrade, createdAt, listingId,
+ *     images: [{ url, path, isPrimary, index }] }
  */
 
 function firstImageUrl(listing) {
@@ -24,7 +25,7 @@ function listingTile(listing) {
   return `
     <a class="seller-listing-tile" href="/products?id=${listing.id}">
       <img src="${firstImageUrl(listing)}" alt="${listing.productName || "Listing"}" loading="lazy" />
-      <span class="seller-listing-price">$${Number(listing.originalPrice || 0).toFixed(2)}</span>
+      <span class="seller-listing-price">$${Number(listing.listingPrice || 0).toFixed(2)}</span>
     </a>
   `;
 }

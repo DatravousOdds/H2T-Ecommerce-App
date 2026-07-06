@@ -7,9 +7,11 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
     <link rel="modulepreload" href="js/components/nav.js">
+    <link rel="stylesheet" href="css/global.css"/>
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
     <link rel="stylesheet" href="css/components/cartDrawer.css"/>
+    <link rel="stylesheet" href="css/components/skeleton.css"/>
     <link rel="stylesheet" href="css/cart.css">
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
@@ -47,7 +49,7 @@
     </section>
     <!-- End of Navbar-->
     <main>
-      <div class="content-wrapper">
+      <div class="content-wrapper margin-l-r-sm">
         <header>
           <h1>Bag</h1>
           <p class="bag-note">Taxes and fees are calculated at checkout</p>
@@ -59,41 +61,7 @@
                  the contents of #bagItemGrid with real cart data at runtime,
                  so this markup is the template to mirror, not leftover test data. -->
             <div class="item-container">
-              <div class="item-wrapper">
-                <div class="item-info">
-                  <div class="seller-info">
-                    <img src="./images/pexels-erik-mclean-9367504%202.jpg" alt="Seller profile photo">
-                    <div class="seller-at">
-                      <p>Gio</p>
-                      <p>@gioseller</p>
-                    </div>
-                  </div>
-                  <img src="./images/accessories_1.jpeg" class="product-img" alt="Nike Air Jordan 1 sneaker">
-                </div>
-                <div class="item-description">
-                  <p>Nike Jordan 1</p>
-                  <div class="item-price">
-                    <p class="retail-price">$200</p>
-                    <p class="listing-price">$150</p>
-                  </div>
-                  <p>Size M</p>
-                  <p>Brand New</p>
-                  <div class="button-container">
-                    <button class="delete-product" id="deleteProduct">
-                      <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="item-cost">
-                <div class="cost-row">
-                  <p class="item-cost-label">Subtotal:</p>
-                  <p class="item-cost">$150.00</p>
-                </div>
-
-                <button type="button" class="checkout-btn" id="checkoutBtn">Checkout</button>
-              </div>
+              
             </div>
           </div>
         </section>
@@ -118,7 +86,7 @@
     </section>
 
     <!-- footer -->
-    <footer></footer>
+    <footer class="margin-l-r-sm"></footer>
 
     <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
     </div>

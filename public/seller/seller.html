@@ -132,6 +132,22 @@
                 <p class="errorText" id="error-title"></p>
             </div>
 
+            <!-- Admin-only: shown/hidden via JS in seller.js based on currentUser.isAdmin -->
+            <div class="input-container" id="listingTypeSection" style="display:none;">
+                <label for="listingType">Listing Type</label>
+                <select name="listingType" id="listingType">
+                    <option value="standard">Standard</option>
+                    <option value="release">Release Listing</option>
+                </select>
+                <p class="errorText" id="error-listingType"></p>
+            </div>
+
+            <div class="input-container" id="releaseDateSection" style="display:none;">
+                <label for="releaseDate">Release Date</label>
+                <input type="date" id="releaseDate">
+                <p class="errorText" id="error-releaseDate"></p>
+            </div>
+
             <div class="input-container">
                 <label for="category">Category</label>
                 <select name="category" id="category">

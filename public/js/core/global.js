@@ -43,7 +43,7 @@ async function addFavorite(userId, listingId, listingData) {
   await setDoc(doc(db, "favorites", userId, "items", listingId), {
     listingId,
     productName: listingData.productName || "",
-    originalPrice: listingData.originalPrice || 0,
+    listingPrice: listingData.listingPrice || 0,
     brand: listingData.brand || "",
     category: listingData.category || "",
     images: listingData.images || [],
@@ -646,6 +646,16 @@ function closeDropdown(event, dropdownId, headerId = null, iconId = null) {
   }
 }
 
+// A "release" listing (admin-only drop-calendar item, see seller.js) should
+// stay invisible on every normal browsing surface until its releaseDate
+// arrives. Shared by loadProducts() below and by any page that reads raw
+// "listings" docs directly instead of going through loadProducts() (home.js's
+// homepage feeds, product.js's related-products fallback).
+const isReleaseLive = (data) => {
+  if (data.listingType !== "release") return true;
+  return data.releaseDate.toDate() <= new Date();
+};
+
 const loadProducts = async (field,categoryMeta, state = { lastVisible: null, filters: new Map()}) => {
   let q;
   const productsCollection = collection(db, "listings");
@@ -671,10 +681,20 @@ const loadProducts = async (field,categoryMeta, state = { lastVisible: null, fil
   // filter products for men products
   const menProducts = querySnapshot.docs;
 
+  // Pagination cursor/hasMore stay based on the raw Firestore page, not the
+  // filtered count below -- the cursor still has to point at the actual last
+  // fetched doc regardless of what's hidden client-side.
   state.lastVisible = menProducts[menProducts.length - 1];
   state.hasMore = menProducts.length === 48;
   console.log("Last Visible:", state.lastVisible);
-  return menProducts;
+
+  // Release-type listings (admin-only "drop calendar" items, see seller.js)
+  // stay off normal category browsing until their releaseDate arrives -- the
+  // releases page itself queries listingType directly and wants the opposite
+  // (only upcoming ones), so it's exempted here and does its own filtering.
+  if (field === "listingType") return menProducts;
+
+  return menProducts.filter((docSnap) => isReleaseLive(docSnap.data()));
 
 };
 
@@ -875,6 +895,7 @@ const displayProducts = (products, containerElement) => {
         <a href="/seller" class="no-results-cta">List an item</a>
       </div>
     `;
+    updateResultsCount(products.length);
     return;
   }
   products.forEach((doc) => {
@@ -954,10 +975,7 @@ const displayProducts = (products, containerElement) => {
   });
 
   // update results count
-  if (products.length) {
-    updateResultsCount(products.length);
-  }
-  
+  updateResultsCount(products.length);
 };
 
 
@@ -1308,6 +1326,7 @@ export {
   clearError,
   formatFirebaseDate,
   loadProducts,
+  isReleaseLive,
   renderFilterTags,
   deleteMapEntry,
   updateResultsCount,

@@ -12,7 +12,7 @@ import { db, doc, collection, getDocs, deleteDoc } from "../../../api/firebase-c
  *   - each doc denormalizes the listing's display fields, mirroring how
  *     order.item already does this elsewhere in the app, rather than
  *     storing just a bare reference and requiring a second lookup to render:
- *       { listingId, productName, originalPrice, brand, category,
+ *       { listingId, productName, listingPrice, brand, category,
  *         images: [{ url }], addedAt }
  *
  * If the real write-side schema ends up different, only the two small
@@ -34,7 +34,7 @@ function favoriteCardHTML(favorite) {
       <div class="des">
         <div class="price-description">
           <p class="product-name">${favorite.productName || "Untitled listing"}</p>
-          <h5>$${Number(favorite.originalPrice || 0).toFixed(2)}</h5>
+          <h5>$${Number(favorite.listingPrice || 0).toFixed(2)}</h5>
         </div>
       </div>
     </div>

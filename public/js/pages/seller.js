@@ -1,5 +1,5 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app, getDoc, updateDoc } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app, getDoc, updateDoc, Timestamp } from '../api/firebase-client.js';
 import { collection, addDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -42,6 +42,10 @@ const MAX_VIDEO_DURATION = 30; // seconds
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm'];
 
 const productTitle = document.getElementById('title');
+const listingTypeSection = document.getElementById('listingTypeSection');
+const productListingType = document.getElementById('listingType');
+const releaseDateSection = document.getElementById('releaseDateSection');
+const productReleaseDate = document.getElementById('releaseDate');
 const productCategory = document.getElementById('category');
 const productDescription = document.getElementById('description');
 const productPrice = document.getElementById('price');
@@ -79,6 +83,21 @@ const currentUser =  await checkUserStatus();
 if (!currentUser) {
     window.location.replace('/login');
 };
+
+// Release-type listings (StockX-style calendar drops) are an admin-only
+// tool -- regular sellers never see the option. This is UI-only, same as
+// every other client-direct-to-Firestore write in this file (userId,
+// status, etc. are equally spoofable today) -- there's no Firestore rule
+// or server route checked in this repo to enforce it, so a non-admin could
+// still set listingType:"release" via devtools. Flagging rather than fixing
+// here since it'd require a Firestore Security Rules change outside this repo.
+if (currentUser.isAdmin) {
+    listingTypeSection.style.display = '';
+}
+
+productListingType?.addEventListener('change', () => {
+    releaseDateSection.style.display = productListingType.value === 'release' ? '' : 'none';
+});
 
 // Presence of ?listingId= is what turns this page from "create" into "edit" --
 // same form, same submit handlers, just pointed at an existing document.
@@ -565,6 +584,16 @@ function populateFormForEdit(existing) {
     const words = productDescription.value.trim() ? productDescription.value.trim().split(/\s+/) : [];
     descriptionWordCounter.textContent = `${words.length}/100`;
 
+    if (currentUser.isAdmin && existing.listingType === 'release' && existing.releaseDate) {
+        productListingType.value = 'release';
+        releaseDateSection.style.display = '';
+        const d = existing.releaseDate.toDate();
+        // toISOString() would shift back a day in US timezones (UTC-based) --
+        // build the YYYY-MM-DD string from local getters instead.
+        const localIso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        productReleaseDate.value = localIso;
+    }
+
     restoreShippingSelection(existing.shipping);
     populateExistingImages(existing.images || []);
     if (existing.video) populateExistingVideo(existing.video);
@@ -938,11 +967,28 @@ function validateProductInfo() {
         isValid = false;
         return;
     };
-    if (!category) { 
+    if (!category) {
         showError('category', "Please enter a category to continue");
-        isValid = false; 
+        isValid = false;
         return;
     };
+    if (currentUser.isAdmin && productListingType?.value === 'release') {
+        const releaseDateValue = productReleaseDate.value;
+        if (!releaseDateValue) {
+            showError('releaseDate', "Please pick a release date");
+            isValid = false;
+            return;
+        }
+        const [year, month, day] = releaseDateValue.split('-').map(Number);
+        const releaseDate = new Date(year, month - 1, day);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (releaseDate <= today) {
+            showError('releaseDate', "Release date must be in the future");
+            isValid = false;
+            return;
+        }
+    }
     if (!brand) {
         showError('brand', "Please enter a brand");
         isValid = false;
@@ -1021,6 +1067,25 @@ function collectListingInfo(status = 'active') {
     listing.condition = productCondition?.value.trim();
     listing.size = productSize?.value.trim();
     listing.color = productColor?.value.trim() || null;
+
+    // Release-type listings (admin-only, see listingTypeSection) get held off
+    // the normal shop pages until releaseDate -- see loadProducts() in
+    // global.js for the visibility check. releaseMonth/releaseDay are
+    // denormalized here so releasesProductTemplate (releases.js) can render
+    // the calendar tile without a second lookup.
+    if (currentUser.isAdmin && productListingType?.value === 'release') {
+        listing.listingType = 'release';
+        // new Date("YYYY-MM-DD") parses as UTC, which shifts the date back a
+        // day in US timezones once read back with local getters below -- the
+        // multi-arg constructor always builds in local time instead.
+        const [year, month, day] = productReleaseDate.value.split('-').map(Number);
+        const releaseDate = Timestamp.fromDate(new Date(year, month - 1, day));
+        listing.releaseDate = releaseDate;
+        listing.releaseMonth = releaseDate.toDate().toLocaleString('en-US', { month: 'short' }).toUpperCase();
+        listing.releaseDay = String(releaseDate.toDate().getDate());
+    } else {
+        listing.listingType = 'standard';
+    }
 
     // Editing keeps the original createdAt (already carried over in
     // loadListingForEdit) and stamps lastUpdated instead, so listings don't

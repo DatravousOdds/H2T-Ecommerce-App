@@ -4721,10 +4721,15 @@ h6 {
   font-size: 0.9rem;
 }
 
-.addCardHeader .close {
-  font-size: 2rem;
+.payment-method-popup .close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0px 8px;
+  color: #212529;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: bold;
+  transition: all 0.2s ease;
 }
 
 #add-card .input-group {
@@ -8400,6 +8405,7 @@ details h3 {
   padding: 1rem 0.25rem;
   background-color: transparent;
   border: none;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 500;
   color: #6b7280;

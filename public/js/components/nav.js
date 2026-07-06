@@ -94,7 +94,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
                   <div class="service-info">
                     <h4>Authentication</h4>
                     <p>Authenticate your products with our expert team.</p>
-                    <span class="service-price">$30/item</span>
+                    <span class="service-price">From $4.99/item</span>
                   </div>
                 </a>
                 <a class="service-item is-disabled" aria-disabled="true">

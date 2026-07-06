@@ -198,7 +198,6 @@
 
 .content-wrapper {
     width: 1200px;
-    margin: auto;
 }
 
 
@@ -344,7 +343,7 @@ sidebar behavior back.
     .content-wrapper {
         width: 100%;
         padding: 0 1rem;
-        margin: 0 auto;
+        margin: 1rem 0 !important;
         margin-bottom: 1.5rem;
     }
 
@@ -379,6 +378,42 @@ sidebar behavior back.
 
     .footer {
         padding: 0px 25px !important;
+    }
+}
+
+/* Below this width, .item-container's row layout (space-between with a
+   fixed 200px product image) pushes the subtotal/checkout button off the
+   right edge of the viewport instead of wrapping. Stack it into a card
+   layout instead. */
+@media (max-width: 700px) {
+    .item-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .item-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .product-img {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
+    .item-cost {
+        width: 100%;
+    }
+
+    /* Overrides the -12% margin-top the sub-390px block below applies to
+       .checkout-btn generally (tuned for a different, non-cart button) --
+       that negative margin pulls this per-item button up into the
+       subtotal row once the card is stacked. */
+    .item-cost .checkout-btn {
+        margin-top: 0.75rem;
     }
 }
 

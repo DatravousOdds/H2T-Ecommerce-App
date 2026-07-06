@@ -1,5 +1,5 @@
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, displayProducts, getCartCount, renderProductSkeletons, getCartItems } from '../core/global.js';
+import { loadProducts, displayProducts, getCartCount, renderProductSkeletons, getCartItems, isReleaseLive } from '../core/global.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { db, orderBy, limit, getDocs, query, collection, where } from '../api/firebase-client.js';
 import { showPageLoader, hidePageLoader } from '../components/pageLoader.js';
@@ -37,8 +37,8 @@ const justDropped = async () => {
   );
 
     const querySnapshot = await getDocs(q);
-    displayProducts(querySnapshot.docs, "justDropped");
-  
+    displayProducts(querySnapshot.docs.filter(doc => isReleaseLive(doc.data())), "justDropped");
+
   } catch (error) {
     console.error("Error fetching just dropped products:", error);
   } finally { 
@@ -56,8 +56,8 @@ const mensCollection = async () => {
   );
 
   const querySnapshot = await getDocs(q);
-  displayProducts(querySnapshot.docs, "menCollection");
-  
+  displayProducts(querySnapshot.docs.filter(doc => isReleaseLive(doc.data())), "menCollection");
+
 };
 
 const womenCollection = async () => {
@@ -69,8 +69,8 @@ const womenCollection = async () => {
   );
 
   const querySnapshot = await getDocs(q);
-  displayProducts(querySnapshot.docs, "womenCollection");
-  
+  displayProducts(querySnapshot.docs.filter(doc => isReleaseLive(doc.data())), "womenCollection");
+
 };
 
 const belowRetailPrices = async () => {
@@ -81,7 +81,9 @@ const belowRetailPrices = async () => {
   );
 
   const querySnapshot = await getDocs(q);
-  const filtered = querySnapshot.docs.filter(doc => doc.data().listingPrice < doc.data().originalPrice);
+  const filtered = querySnapshot.docs
+    .filter(doc => isReleaseLive(doc.data()))
+    .filter(doc => doc.data().listingPrice < doc.data().originalPrice);
 
   displayProducts(filtered, "belowRetail");
   
