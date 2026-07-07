@@ -24,7 +24,7 @@ function firstImageUrl(listing) {
 
 function listingTile(listing) {
   return `
-    <a class="seller-listing-tile" href="/products?id=${listing.id}">
+    <a class="seller-listing-tile" href="/shop/product.html?id=${listing.id}">
       <img src="${firstImageUrl(listing)}" alt="${listing.productName || "Listing"}" loading="lazy" />
       <span class="seller-listing-price">$${Number(listing.listingPrice || 0).toFixed(2)}</span>
     </a>

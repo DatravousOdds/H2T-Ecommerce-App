@@ -46,7 +46,7 @@
   --color-border-light: var(var(--gray-200));
   --color-bg-hover: var(var(--gray-50));
   --color-text-primary: var(--gray-900);
-  --color-text-secondary: var(--gray-500);
+  --auth-text-secondary: var(--gray-500);
   --color-bg-base: #ffffff;
   --color-bg-subtle: var(--gray-50);
 
@@ -235,7 +235,7 @@ body {
 }
 
 .content-header p {
-  color: var(--color-text-secondary);
+  color: var(--auth-text-secondary);
   font-size: 0.875rem;
   max-width: 600px;
   margin: 0 auto;
@@ -364,7 +364,7 @@ body {
 
 .tier-text p {
   margin: 0;
-  color: var(--color-text-secondary);
+  color: var(--auth-text-secondary);
   font-size: 0.875rem;
 }
 
@@ -1124,7 +1124,7 @@ select {
 }
 
 .item-details .item-label {
-  color: var(--color-text-secondary);
+  color: var(--auth-text-secondary);
 }
 
 .item-details .item-value {
@@ -1154,9 +1154,19 @@ select {
 
 @media (max-width: 480px) {
 
+  .tier-container {
+    flex-direction: column;
+  }
+
   .form-actions {
     flex-direction: column;
     gap: var(--spacing-sm);
+  }
+
+  .form-actions button {
+    width: 100%;
+    white-space: nowrap;
+    padding: 1rem 1.25rem;
   }
   :root {
     --spacing-mid: 0.75rem;

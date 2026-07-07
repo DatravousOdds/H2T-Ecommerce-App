@@ -1873,7 +1873,7 @@ button.white {
 }
 
 .category-flex-wrapper {
-  /* margin:  3rem 4rem; */
+  margin: 0 2rem;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -1928,7 +1928,7 @@ button.white {
 }
 
 footer {
-  /* padding: 0px 100px; */
+  margin: 0 2rem;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -3123,6 +3123,10 @@ footer .rights {
 }
 
 @media (max-width: 477px) {
+
+  .footer {
+    margin: 0 2rem !important;
+  }
 
   .banner-brand-logo {
     width: 100%;
