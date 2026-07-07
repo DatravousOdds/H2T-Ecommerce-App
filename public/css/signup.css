@@ -39,7 +39,7 @@ body {
   display: block;
 }
 
-input:not(.search-box, .checkbox, .s-checkbox, input[type="file"], input[type="email"]),
+input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
 textarea {
   display: block;
   width: 300px;
@@ -56,6 +56,12 @@ textarea {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
   font-family: "roboto", sans-serif;
   background-color: #f5f5f5;
+}
+
+/* Capitalizing an email visually looks wrong, but it should still match the
+   other inputs' box styling above -- so override just the text-transform. */
+input[type="email"] {
+  text-transform: none;
 }
 
 ::placeholder {

@@ -730,7 +730,7 @@ app.post("/api/products/:id/offer", verifyAuth, async (req, res) => {
       "offer",
       "New offer received",
       `You received a $${amount} offer on ${listing.productName || "your listing"}.`,
-      `/products/${req.params.id}`
+      `/sellerProfile/offers?id=${sellerId}`
     );
 
     return res.status(200).json({ success: true, offerId: offerRef.id });
@@ -847,7 +847,7 @@ app.post("/api/offers/:offerId/respond", verifyAuth, async (req, res) => {
     }
 
     await offerRef.update(update);
-    await createNotification(otherUid, "offer", notifArgs[0], notifArgs[1], `/products/${offer.productId}`);
+    await createNotification(otherUid, "offer", notifArgs[0], notifArgs[1], `/sellerProfile/offers?id=${offer.sellerId}`);
 
     return res.status(200).json({ success: true });
   } catch (error) {

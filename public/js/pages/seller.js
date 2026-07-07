@@ -243,8 +243,8 @@ postBtn.addEventListener('click', async () => {
 });
 
 draftBtn.addEventListener('click', async () => {
-    // Drafts intentionally skip validationInformation() -- the entire point
-    // of a draft is to let the user save incomplete work and finish it later.
+    if (!validationInformation()) return;
+
     collectListingInfo('draft');
     await saveDraft();
 });

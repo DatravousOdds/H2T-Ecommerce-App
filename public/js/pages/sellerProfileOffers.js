@@ -42,6 +42,12 @@ function offerStatusText(offer) {
   return offer.turn === "seller" ? "Awaiting seller response" : "Awaiting buyer response";
 }
 
+function offerStatusBadgeClass(offer) {
+  if (offer.status === "accepted") return "offer-status-badge--accepted";
+  if (offer.status === "rejected") return "offer-status-badge--rejected";
+  return "offer-status-badge--pending";
+}
+
 // viewerRole comes from the API: "seller" if this is the seller's own
 // profile (every offer here is theirs to manage), "buyer" if it's someone
 // viewing another seller's profile (every offer here is one of their own
@@ -59,7 +65,7 @@ function offerCardTemplate(offer, viewerRole) {
       <div class="offer-conversation-details">
         <p class="offer-conversation-product">${offer.productName}</p>
         <p class="offer-conversation-amount">$${offer.offerAmount}</p>
-        <p class="offer-conversation-status">${offerStatusText(offer)}</p>
+        <span class="offer-status-badge ${offerStatusBadgeClass(offer)}">${offerStatusText(offer)}</span>
         ${respondable ? `
           <div class="offer-status-actions">
             <button type="button" class="offer-accept-btn" data-action="accept">Accept</button>

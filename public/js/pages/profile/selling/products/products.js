@@ -4,6 +4,7 @@ import { checkUserStatus } from "../../../../auth/auth.js";
 import {
   collection,
   db,
+  deleteDoc,
   doc,
   getDocs,
   query,
@@ -36,6 +37,35 @@ function firstImageUrl(listing) {
     : "/images/HypebeastBG.jpeg";
 }
 
+// Shared across every row template's delete button. Was previously
+// inlined in draftRow as a single <path d="M3 6h18">, which only draws the
+// trash can's top rim -- the body/lid paths below were missing.
+function trashIconSVG() {
+  return `
+    <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 6h18"></path>
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      <line x1="10" x2="10" y1="11" y2="17"></line>
+      <line x1="14" x2="14" y1="11" y2="17"></line>
+    </svg>
+  `;
+}
+
+function deleteButtonHTML(label = "Delete Listing") {
+  return `
+    <button class="action-button delete" aria-label="${label}">
+      ${trashIconSVG()}
+    </button>
+  `;
+}
+
+// listing.status is a raw slug ("out-of-stock") -- reuse it as the modifier
+// class name directly so new statuses don't need a mapping table kept in sync.
+function statusBadgeClass(status) {
+  return status || "active";
+}
+
 function allProductsRow(listing) {
   return `
     <tr class="product-row" data-product-id="${listing.id}">
@@ -48,19 +78,22 @@ function allProductsRow(listing) {
           </div>
         </div>
       </td>
-      <td><span class="listing-badge">${listing.status || "active"}</span></td>
+      <td><span class="listing-badge ${statusBadgeClass(listing.status)}">${listing.status || "active"}</span></td>
       <td>${listing.condition || "--"}</td>
       <td>--</td>
       <td>$${Number(listing.listingPrice || 0).toFixed(2)}</td>
       <td>${listing.availableForTrade ? "$" + Number(listing.listingPrice || 0).toFixed(2) : "--"}</td>
       <td>--</td>
       <td>
-        <button class="action-button edit" aria-label="Edit Listing">
-          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-        </button>
+        <div class="action-buttons">
+          <button class="action-button edit" aria-label="Edit Listing">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+          ${deleteButtonHTML()}
+        </div>
       </td>
     </tr>
   `;
@@ -121,6 +154,7 @@ function activeProductsRow(listing) {
               <rect x="14" y="4" width="4" height="16"></rect>
             </svg>
           </button>
+          ${deleteButtonHTML()}
         </div>
       </td>
     </tr>
@@ -143,11 +177,14 @@ function outOfStockRow(listing) {
       <td>--</td>
       <td>--</td>
       <td>
-        <button class="action-button restock" aria-label="Restock Product">
-          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 3v18h18"></path>
-          </svg>
-        </button>
+        <div class="action-buttons">
+          <button class="action-button restock" aria-label="Restock Product">
+            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18"></path>
+            </svg>
+          </button>
+          ${deleteButtonHTML()}
+        </div>
       </td>
     </tr>
   `;
@@ -186,11 +223,7 @@ function draftRow(listing) {
               <path d="M18 14l-6-6-6 6"></path>
             </svg>
           </button>
-          <button class="action-button delete" aria-label="Delete Draft">
-            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 6h18"></path>
-            </svg>
-          </button>
+          ${deleteButtonHTML("Delete Draft")}
         </div>
       </td>
     </tr>
@@ -399,9 +432,61 @@ async function pauseListing(listingId) {
   refreshProductTables();
 }
 
-// Edit/Pause buttons live inside four separately-rendered tables (all/active/
-// out-of-stock/draft), so one delegated listener on the shared "products"
-// section catches all of them instead of re-binding after every re-render.
+async function deleteListing(listingId) {
+  await deleteDoc(doc(db, "listings", listingId));
+
+  allListings = allListings.filter((l) => l.id !== listingId);
+  refreshProductTables();
+}
+
+// #trashModal already existed in profile.html as static markup (hardcoded
+// to "Jordan 4 Retro") with no JS behind it -- reusing it here instead of
+// building a new confirm dialog, filling in the real listing on open.
+const trashModal = document.getElementById("trashModal");
+let pendingDeleteListingId = null;
+
+function openDeleteModal(listing) {
+  if (!trashModal) return;
+
+  pendingDeleteListingId = listing.id;
+  const message = trashModal.querySelector(".delete-message");
+  const productId = trashModal.querySelector(".product-id");
+  if (message) {
+    message.textContent = `Are you sure you want to delete "${listing.productName || "this listing"}"? This action cannot be undone and will permanently remove the product from your inventory.`;
+  }
+  if (productId) productId.textContent = `Product ID: ${listing.id}`;
+
+  trashModal.classList.add("active");
+}
+
+function closeDeleteModal() {
+  pendingDeleteListingId = null;
+  trashModal?.classList.remove("active");
+}
+
+function initDeleteModalListeners() {
+  trashModal?.querySelector(".cancel-btn")?.addEventListener("click", closeDeleteModal);
+
+  trashModal?.querySelector(".delete-btn")?.addEventListener("click", async (e) => {
+    if (!pendingDeleteListingId) return;
+
+    const confirmBtn = e.currentTarget;
+    confirmBtn.disabled = true;
+    try {
+      await deleteListing(pendingDeleteListingId);
+      closeDeleteModal();
+    } catch (error) {
+      console.error(`Error deleting listing ${pendingDeleteListingId}:`, error);
+    } finally {
+      confirmBtn.disabled = false;
+    }
+  });
+}
+
+// Edit/Pause/Delete buttons live inside four separately-rendered tables
+// (all/active/out-of-stock/draft), so one delegated listener on the shared
+// "products" section catches all of them instead of re-binding after every
+// re-render.
 function initActionButtonListeners() {
   const productsSection = document.getElementById("products");
 
@@ -425,6 +510,14 @@ function initActionButtonListeners() {
         console.error(`Error pausing listing ${listingId}:`, error);
         pauseBtn.disabled = false;
       }
+      return;
+    }
+
+    const deleteBtn = e.target.closest(".action-button.delete");
+    if (deleteBtn) {
+      const listingId = deleteBtn.closest(".product-row")?.dataset.productId;
+      const listing = allListings.find((l) => l.id === listingId);
+      if (listing) openDeleteModal(listing);
     }
   });
 }
@@ -468,5 +561,6 @@ async function loadProductsTab(userId) {
 }
 
 initActionButtonListeners();
+initDeleteModalListeners();
 initSearchAndFilterListeners();
 await loadProductsTab(currentUser.userId);

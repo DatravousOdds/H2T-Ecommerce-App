@@ -3,16 +3,27 @@
   align-items: center;
   gap: 1rem;
   margin-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .offers-conversation-label {
   color: var(--color-text-muted, #747474);
-  font-size: var(--font-sm, 0.875rem);
+  font-size: var(--font-size-sm, 0.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   margin: 0;
+}
+
+.seller-username {
+  margin: 0.15rem 0 0;
 }
 
 .offers-conversation-section {
   margin-top: 1.5rem;
+  background-color: #f7f7f7;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
 }
 
 .offers-conversation-list {
@@ -23,42 +34,75 @@
 
 .offers-conversation-empty {
   color: var(--color-text-muted, #747474);
+  text-align: center;
+  padding: 2rem 0;
 }
 
 .offer-conversation-card {
   display: flex;
   gap: 1rem;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 0.5rem;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.75rem;
   padding: 1rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.offer-conversation-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .offer-conversation-card img {
   width: 80px;
   height: 80px;
   object-fit: contain;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
+  background-color: #f7f7f7;
+  flex-shrink: 0;
 }
 
 .offer-conversation-details {
   flex: 1;
+  min-width: 0;
 }
 
 .offer-conversation-product {
   font-weight: 700;
   margin: 0 0 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .offer-conversation-amount {
-  font-size: var(--font-lg, 1.125rem);
+  font-size: var(--font-size-med, 1.125rem);
   font-weight: 700;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.4rem;
 }
 
-.offer-conversation-status {
+.offer-status-badge {
+  display: inline-block;
+  font-size: var(--font-size-sm, 0.75rem);
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin: 0 0 0.75rem;
+}
+
+.offer-status-badge--pending {
+  color: var(--color-status-pending, #F5A624);
+  background-color: rgba(245, 166, 36, 0.12);
+}
+
+.offer-status-badge--accepted {
+  color: var(--color-status-success, #16803c);
+  background-color: var(--color-status-success-light, #F0FDF4);
+}
+
+.offer-status-badge--rejected {
   color: var(--color-text-muted, #747474);
-  font-size: var(--font-sm, 0.875rem);
-  margin: 0 0 0.5rem;
+  background-color: rgba(0, 0, 0, 0.06);
 }
 
 .offer-status-actions {
@@ -91,7 +135,7 @@
 
 .offer-reject-btn {
   background-color: #fff;
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   color: #000;
 }
 
@@ -108,6 +152,23 @@
 .offer-counter-input {
   padding: 0.5rem;
   border-radius: 0.24rem;
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   width: 8rem;
+}
+
+@media (max-width: 768px) {
+  .offers-conversation-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .offer-conversation-card {
+    flex-direction: column;
+  }
+
+  .offer-conversation-card img {
+    width: 100%;
+    height: 160px;
+  }
 }

@@ -5,6 +5,7 @@ import { checkUserStatus } from "../auth/auth.js";
 import { getUserProfile } from "../core/global.js";
 import { initCartDrawer } from "../components/cartDrawer.js";
 import { isFollowing, toggleFollow } from "../services/follow.js";
+import { formatFollowers } from "./profile/ui-helpers.js";
 
 /**
  * Real listing shape (same schema documented in
@@ -99,6 +100,8 @@ function renderSellerHeader(sellerProfile) {
   const verifiedTagEl = document.getElementById("verified-tag");
   const ratingStatEl = document.getElementById("seller-rating-stat");
   const ratingEl = document.getElementById("seller-rating");
+  const followersCountEl = document.getElementById("seller-followers-count");
+  const followingCountEl = document.getElementById("seller-following-count");
 
   if (avatarEl) {
     avatarEl.src = sellerProfile?.profileImage || "/images/default-avatar.svg";
@@ -121,6 +124,14 @@ function renderSellerHeader(sellerProfile) {
       ratingStatEl.style.display = "none";
     }
   }
+
+  const stats = sellerProfile?.stats || {};
+  if (followersCountEl) {
+    followersCountEl.textContent = formatFollowers(stats.followers || 0);
+  }
+  if (followingCountEl) {
+    followingCountEl.textContent = formatFollowers(stats.following || 0);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -140,8 +151,12 @@ function setFollowButtonState(buttonEl, isFollowingNow) {
   buttonEl.classList.toggle("is-following", isFollowingNow);
 }
 
-function wireFollowButton(buttonEl, currentUserId, sellerId) {
+function wireFollowButton(buttonEl, currentUserId, sellerId, followersCountEl, initialFollowerCount) {
   if (!buttonEl) return;
+
+  // Raw count, tracked separately from followersCountEl's formatted text
+  // ("12.3k" can't be parsed back into a number to increment/decrement).
+  let followerCount = initialFollowerCount;
 
   buttonEl.addEventListener("click", async () => {
     if (!currentUserId) {
@@ -153,6 +168,11 @@ function wireFollowButton(buttonEl, currentUserId, sellerId) {
     try {
       const nowFollowing = await toggleFollow(currentUserId, sellerId);
       setFollowButtonState(buttonEl, nowFollowing);
+
+      followerCount += nowFollowing ? 1 : -1;
+      if (followersCountEl) {
+        followersCountEl.textContent = formatFollowers(followerCount);
+      }
     } catch (error) {
       console.error("Error toggling follow:", error);
     } finally {
@@ -212,7 +232,13 @@ async function initSellerProfilePage() {
       } else {
         setFollowButtonState(followBtn, false);
       }
-      wireFollowButton(followBtn, currentUser?.userId, sellerId);
+      wireFollowButton(
+        followBtn,
+        currentUser?.userId,
+        sellerId,
+        document.getElementById("seller-followers-count"),
+        sellerProfile?.stats?.followers || 0
+      );
     }
   }
 }

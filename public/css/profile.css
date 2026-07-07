@@ -8733,8 +8733,19 @@ details h3 {
   padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
   border-radius: 9999px;
+  text-transform: capitalize;
   background-color: #def7ec;
   color: #03543f;
+}
+
+.listing-badge.out-of-stock {
+  background-color: #fde8e8;
+  color: #9b1c1c;
+}
+
+.listing-badge.draft {
+  background-color: #f3f4f6;
+  color: #374151;
 }
 
 .action-button {

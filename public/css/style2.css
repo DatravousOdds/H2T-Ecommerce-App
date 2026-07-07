@@ -2750,10 +2750,15 @@ footer .rights {
     width: 98%;
   }
 
+  .shop-by-prices {
+    margin: 0 !important;
+  }
+
   #brands {
     flex-direction: column;
     width: 100%;
-    padding: 17px;
+    padding: 1rem;
+    margin: 0 !important;
   }
 
   #sm-banner .banner-box {

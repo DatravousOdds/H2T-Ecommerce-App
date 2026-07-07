@@ -27,7 +27,9 @@ import {
   Timestamp,
   onSnapshot,
   arrayUnion,
-  arrayRemove
+  arrayRemove,
+  increment,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import {
   getAuth,
@@ -99,5 +101,7 @@ export {
   onSnapshot,
   uploadBytes,
   arrayUnion,
-  arrayRemove
+  arrayRemove,
+  increment,
+  writeBatch
 };
