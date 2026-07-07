@@ -264,7 +264,7 @@ async function displayReviews() {
                   </div>
                   <div class="user-pfp" style="display: flex">
                     <div class="user">
-                      <img src=${reviewData.reviewerPhoto} alt="${reviewData.altImage}" />
+                      <img src=${reviewData.reviewerPhoto} alt="${reviewData.altImage}" loading="lazy" />
                     </div>
                     <div class="user-name">
                       <a href="#">${reviewData.reviewerUsername}</a>
@@ -382,7 +382,7 @@ async function setOfferModalData() {
     offerBody.innerHTML = '';
     offerBody.innerHTML = `
         <div class="offer-info">
-          <img src=${productMainImage.url} alt="">
+          <img src=${productMainImage.url} alt="" loading="lazy">
           <div class="product-info">
             <p class="product-brand">${data.productName}</p>
             <p class="product-size">Size: ${data.size}</p>
@@ -931,6 +931,7 @@ function displayProducts(products) {
                   src="${productData.images[0].url}"
                   class="image-custom"
                   alt="${productData.productName}"
+                  loading="lazy"
                 />
               </div>
               <!--- Image container-->

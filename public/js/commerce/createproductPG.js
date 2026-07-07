@@ -3,7 +3,7 @@ const createProduct = (data) => {
     let prodContent = document.querySelector('.product-container');
     prodContent.innerHTML += `
     <div class="pro product-card">
-    <img src="${data.images[0] || 'images/no image.png'}"class="product-thumb" alt="">
+    <img src="${data.images[0] || 'images/no image.png'}" class="product-thumb" alt="" loading="lazy">
     <button class="card-action-btn edit-btn" onclick="location.href = 'add-product/${data.id}'"><img src="images/edit.png" alt=""></button>
     <button class="card-action-btn open-btn" onclick="location.href = '/products/${data.id}'"><img src="images/open.png" alt=""></button>
     <button class="card-action-btn delete-popup-btn" onclick="openDelpPopup('${data.id}')"><img src="images/delete.png" 

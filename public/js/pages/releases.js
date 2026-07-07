@@ -42,6 +42,7 @@ const releasesProductTemplate = (data) => {
         src="${data.images[0].url}"
         class="image-custom"
         alt=""
+        loading="lazy"
       />
     </div>
     <!--- Image container-->

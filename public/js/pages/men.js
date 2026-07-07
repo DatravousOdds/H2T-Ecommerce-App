@@ -590,6 +590,7 @@ const displayProducts = (products) => {
                 src="${productData.images[0].url}"
                 class="image-custom"
                 alt="${productData.productName}"
+                loading="lazy"
               />
             </div>
             <!--- Image container-->

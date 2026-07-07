@@ -10,7 +10,7 @@ import {
 } from '../api/firebase-client.js';
 
 const FOLLOWS_COLLECTION = 'follows';
-const USERS_COLLECTION = 'users';
+const USERS_COLLECTION = 'userProfiles';
 
 export async function isFollowing(followerUid, sellerUid) {
   if (!followerUid || followerUid === sellerUid) return false;

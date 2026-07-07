@@ -61,7 +61,7 @@ function offerCardTemplate(offer, viewerRole) {
 
   return `
     <div class="offer-conversation-card" data-offer-id="${offer.id}">
-      <img src="${offer.productImage || "/images/HypebeastBG.jpeg"}" alt="${offer.productName}" />
+      <img src="${offer.productImage || "/images/HypebeastBG.jpeg"}" alt="${offer.productName}" loading="lazy" />
       <div class="offer-conversation-details">
         <p class="offer-conversation-product">${offer.productName}</p>
         <p class="offer-conversation-amount">$${offer.offerAmount}</p>

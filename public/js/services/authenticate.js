@@ -235,7 +235,7 @@ function skuResultRowHTML(listing) {
 
   return `
     <div class="search-result-item" data-sku="${listing.sku}">
-      <img src="${imageUrl}" alt="${listing.productName || ''}" class="search-result-image" />
+      <img src="${imageUrl}" alt="${listing.productName || ''}" class="search-result-image" loading="lazy" />
       <div class="search-result-info">
         <p class="search-result-name">${listing.productName || 'Untitled listing'}</p>
         <p class="search-result-meta">SKU: ${listing.sku}</p>

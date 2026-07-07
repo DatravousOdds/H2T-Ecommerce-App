@@ -71,7 +71,7 @@ function allProductsRow(listing) {
     <tr class="product-row" data-product-id="${listing.id}">
       <td>
         <div class="product-info">
-          <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" />
+          <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" loading="lazy" />
           <div class="product-details">
             <p class="product-name">${listing.productName || "Untitled listing"}</p>
             <p class="product-type">${listing.category || "--"}</p>
@@ -104,7 +104,7 @@ function activeProductsRow(listing) {
     <tr class="product-row" data-product-id="${listing.id}">
       <td>
         <div class="product-info">
-          <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" />
+          <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" loading="lazy" />
           <div class="product-details">
             <p class="product-name">${listing.productName || "Untitled listing"}</p>
             <p class="product-sku">ID: ${listing.id.slice(0, 8)}</p>
@@ -196,7 +196,7 @@ function draftRow(listing) {
       <td>
         <div class="product-info">
           <div class="product-image-container">
-            <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" />
+            <img src="${firstImageUrl(listing)}" alt="${listing.productName || ""}" class="product-image" loading="lazy" />
             <span class="draft-badge">Draft</span>
           </div>
           <div class="product-details">
