@@ -1539,7 +1539,7 @@ button.white {
 
 
 .brand-banner {
-  width: min(690px, 100%);
+  width: 100%;
   height: 280px;
   display: flex;
   justify-content: space-between;
