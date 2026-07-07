@@ -375,12 +375,6 @@ const LoggedInNav = (user) => ({
     </li>
     ` : ""}
     <li>
-      <a href="/signup" class="menu-item">
-        <i class="fa-solid fa-user-plus"></i>
-        <span>Signup</span>
-      </a>
-    </li>
-    <li>
       <a href="#" class="menu-item" id="mobileLogoutLink">
         <i class="fa-solid fa-sign-in-alt"></i>
         <span>Logout</span>
