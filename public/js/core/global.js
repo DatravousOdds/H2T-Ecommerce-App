@@ -879,6 +879,19 @@ function renderProductSkeletons(containerElement, count = 12) {
   `).join("");
 }
 
+// Renders a 5-star row with `rating` (rounded to the nearest whole star) filled solid and the rest outlined.
+// Shared by product.js and sellerProfile.js so both seller-rating displays stay visually identical.
+function renderRatingStars(rating) {
+  const filledCount = Math.round(rating);
+  let starsHtml = '';
+  for (let i = 1; i <= 5; i++) {
+    starsHtml += i <= filledCount
+      ? '<i class="fa-solid fa-star"></i>'
+      : '<i class="fa-regular fa-star"></i>';
+  }
+  return starsHtml;
+}
+
 const displayProducts = (products, containerElement) => {
   const productsContainer = document.getElementById(`${containerElement}`);
   // clear existing products
@@ -1333,6 +1346,7 @@ export {
   updateResultsCount,
   displayProducts,
   renderProductSkeletons,
+  renderRatingStars,
   resetFilterUI,
   handleFavoriteClick,
   kidsRange,

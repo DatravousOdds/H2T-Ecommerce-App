@@ -3246,14 +3246,13 @@ footer .rights {
 
   
 
-  /* Notifications and profile already have a path via the hamburger
-     menu's slide-out list, but the cart has no equivalent entry point,
-     so the bag icon stays visible here instead of hiding with the rest
-     of the small-screen-nav row. Hiding the <li> (not just the link)
-     matters here -- the <ul> is a flex row with gap, so a hidden link
-     inside a still-visible <li> was leaving a blank gapped slot that
-     starved the search box of width. */
-  .small-screen-nav-container li:has(.notification-link),
+  /* Profile already has a path via the hamburger menu's slide-out list,
+     but the bell and the cart don't have an equally prominent equivalent,
+     so they stay visible here instead of hiding with the rest of the
+     small-screen-nav row. Hiding the <li> (not just the link) matters
+     here -- the <ul> is a flex row with gap, so a hidden link inside a
+     still-visible <li> was leaving a blank gapped slot that starved the
+     search box of width. */
   .small-screen-nav-container li:has(a[aria-label="User profile"]) {
     display: none;
   }

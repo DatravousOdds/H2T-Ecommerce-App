@@ -14,6 +14,9 @@
 
 .seller-header-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .seller-username-row {
@@ -38,22 +41,46 @@
   font-weight: 600;
 }
 
-.seller-stats {
+.seller-rating-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.35rem;
+  gap: 0.35rem;
   color: #706f6f;
 }
 
-.seller-stat {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+.seller-rating-stars {
+  display: inline-flex;
+  gap: 0.1rem;
 }
 
-.seller-stat .fa-star {
+.seller-rating-stars .fa-solid.fa-star {
   color: #f5b400;
+}
+
+.seller-rating-stars .fa-regular.fa-star {
+  color: #d0d0d0;
+}
+
+.seller-follow-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.seller-follow-stat {
+  border: 1px solid #d9d9d9;
+  background-color: #fff;
+  color: #000;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--border-radius-sm, 8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.seller-follow-stat:hover {
+  background-color: #f5f5f5;
 }
 
 .follow-btn {
@@ -128,9 +155,10 @@
 
   .seller-header-info {
     margin-top: 0.5rem;
+    align-items: center;
   }
 
-  .seller-stats {
+  .seller-follow-stats {
     justify-content: center;
   }
 

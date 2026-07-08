@@ -2,7 +2,7 @@
 
 import { collection, db, getDocs, query, where } from "../api/firebase-client.js";
 import { checkUserStatus } from "../auth/auth.js";
-import { getUserProfile } from "../core/global.js";
+import { getUserProfile, renderRatingStars } from "../core/global.js";
 import { initCartDrawer } from "../components/cartDrawer.js";
 import { isFollowing, toggleFollow } from "../services/follow.js";
 import { formatFollowers } from "./profile/ui-helpers.js";
@@ -80,11 +80,6 @@ async function loadSellerListings(sellerId, containerEl) {
   try {
     const listings = await fetchActiveListings(sellerId);
     renderListingsGrid(listings, containerEl);
-
-    const listingsCountEl = document.getElementById("seller-listings-count");
-    if (listingsCountEl) {
-      listingsCountEl.textContent = listings.length;
-    }
   } catch (error) {
     console.error("Error loading seller listings:", error);
   }
@@ -99,6 +94,7 @@ function renderSellerHeader(sellerProfile) {
   const usernameEl = document.getElementById("seller-username");
   const verifiedTagEl = document.getElementById("verified-tag");
   const ratingStatEl = document.getElementById("seller-rating-stat");
+  const ratingStarsEl = document.getElementById("seller-rating-stars");
   const ratingEl = document.getElementById("seller-rating");
   const followersCountEl = document.getElementById("seller-followers-count");
   const followingCountEl = document.getElementById("seller-following-count");
@@ -119,6 +115,9 @@ function renderSellerHeader(sellerProfile) {
   if (ratingStatEl && ratingEl) {
     if (totalRatings > 0) {
       ratingStatEl.style.display = "";
+      if (ratingStarsEl) {
+        ratingStarsEl.innerHTML = renderRatingStars(sellerProfile.stats?.rating || 0);
+      }
       ratingEl.textContent = sellerProfile.stats?.rating;
     } else {
       ratingStatEl.style.display = "none";

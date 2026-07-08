@@ -775,8 +775,17 @@
     gap: 0.25rem;
 }
 
-.seller-stat .fa-star {
+.seller-rating-stars {
+    display: inline-flex;
+    gap: 0.1rem;
+}
+
+.seller-rating-stars .fa-solid.fa-star {
     color: #f5b400;
+}
+
+.seller-rating-stars .fa-regular.fa-star {
+    color: #d0d0d0;
 }
 
 .cart-product-info p {

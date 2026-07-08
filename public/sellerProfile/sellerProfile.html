@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seller Profile - Head-To-Toes</title>
+    <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
+    <title>Hexxo : Seller Profile</title>
     <script
       src="https://kit.fontawesome.com/854f8a6196.js"
       crossorigin="anonymous"
@@ -37,20 +38,18 @@
           </div>
         </div>
 
-        <div class="seller-stats">
-          <div class="seller-stat" id="seller-rating-stat" style="display: none">
-            <i class="fa-solid fa-star"></i>
-            <span id="seller-rating"></span>
-          </div>
-          <div class="seller-stat">
-            <span id="seller-listings-count">0</span> listings
-          </div>
-          <div class="seller-stat">
+        <div class="seller-rating-row" id="seller-rating-stat" style="display: none">
+          <span class="seller-rating-stars" id="seller-rating-stars"></span>
+          <span id="seller-rating"></span>
+        </div>
+
+        <div class="seller-follow-stats">
+          <button type="button" class="seller-follow-stat">
             <span id="seller-followers-count">0</span> followers
-          </div>
-          <div class="seller-stat">
+          </button>
+          <button type="button" class="seller-follow-stat">
             <span id="seller-following-count">0</span> following
-          </div>
+          </button>
         </div>
       </div>
 

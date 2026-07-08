@@ -1,5 +1,5 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons, isReleaseLive } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons, renderRatingStars, isReleaseLive } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -19,6 +19,7 @@ const sellerProfilePicture = document.getElementById('sellerProfilePicture');
 const sellerName = document.getElementById('sellerName');
 const sellerVerifiedTag = document.getElementById('sellerVerifiedTag');
 const sellerRatingStat = document.getElementById('sellerRatingStat');
+const sellerRatingStars = document.getElementById('sellerRatingStars');
 const sellerRating = document.getElementById('sellerRating');
 const sellerListingsCount = document.getElementById('sellerListingsCount');
 const productTitle = document.querySelector('.prod-title');
@@ -299,6 +300,7 @@ async function displayProductDetails() {
         const totalRatings = sellerProfile.ratings?.metrics?.totalRatings || 0;
         if (totalRatings > 0) {
             sellerRatingStat.style.display = '';
+            sellerRatingStars.innerHTML = renderRatingStars(sellerProfile.stats?.rating || 0);
             sellerRating.textContent = sellerProfile.stats?.rating;
         } else {
             sellerRatingStat.style.display = 'none';
