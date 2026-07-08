@@ -96,12 +96,6 @@
   color: #000;
 }
 
-.pro:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-
 /* Image */
 
 .product-image {
@@ -117,6 +111,11 @@
   max-height: 300px;
   object-fit: cover;
   border-radius: 1rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.pro:hover .image-custom {
+  transform: scale(1.08);
 }
 
 
