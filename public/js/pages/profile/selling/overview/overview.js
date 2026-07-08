@@ -130,8 +130,7 @@ async function fetchTotalRevenue(userId) {
 
         const totalRevenue = querySnapshot.docs.reduce((preValue, doc) => {
             const orderData = doc.data();
-            const subtotal = orderData.subtotal;
-            return parseFloat(preValue) + parseFloat(subtotal);
+            return preValue + (Number(orderData.subtotal) || 0);
         }, 0)
 
         console.log("total revenue",totalRevenue);
