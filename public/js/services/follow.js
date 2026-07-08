@@ -14,7 +14,7 @@ const USERS_COLLECTION = 'userProfiles';
 
 export async function isFollowing(followerUid, sellerUid) {
   if (!followerUid || followerUid === sellerUid) return false;
-
+  
   const snap = await getDoc(doc(db, FOLLOWS_COLLECTION, followerUid));
   if (!snap.exists()) return false;
 
