@@ -335,8 +335,7 @@ textarea {
 
 .shipping-btn-container.selected {
     border: 2px solid #dc2626;
-    box-shadow: 0 0 0 4px rgba(136, 0, 0, 0.12), 
-                0 2px 12px rgba(136, 0, 0, 0.15);
+    background-color: #f5c2c229;
 }
 
 .shipping-btn-container.selected .container-header label {

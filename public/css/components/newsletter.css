@@ -3,7 +3,7 @@
 #newsletter {
   min-height: 100px;
   display: flex;
-  /* padding: 2rem 0; */
+  padding: 0 2rem;
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
