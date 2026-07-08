@@ -1148,7 +1148,7 @@ function handleImageUpload(input,preview,removeBtn) {
                 reader.onload = (e) => {
                     preview.src = e.target.result;
                     preview.style.display = 'block';
-                    removeBtn.style.display = 'block'; 
+                    removeBtn.style.display = 'block';
                 }
                 reader.readAsDataURL(selectedFile);
 
@@ -1157,11 +1157,11 @@ function handleImageUpload(input,preview,removeBtn) {
                 handleImageRemove(input,preview,removeBtn);
             }
 
-        }) 
+        })
     } else {
         console.log("File element not found!");
     }
-    
+
 }
 
 function handleImageRemove(input, preview, removeBtn) {
