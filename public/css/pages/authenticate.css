@@ -314,7 +314,7 @@ body {
   box-shadow: none;
 }
 
-.coming-soon-badge {
+.disabled-tier .coming-soon-badge {
   display: flex;
   align-items: center;
   background-color: var(--gray-600);

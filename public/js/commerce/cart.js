@@ -67,7 +67,7 @@ function displayCartItems(items) {
     if (items.length <= 0) {
         bagItemGrid.innerHTML = `
             <div class="empty-wrapper">
-                <h3>Cart is empty!</h3>
+                <h3>Bag is empty!</h3>
                 <img src="./images/empty-cart_1.png" alt="Empty cart image">
             </div>
             
