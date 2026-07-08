@@ -213,7 +213,22 @@ function initAuthForm() {
   // Force email to lowercase as the user types (preserve cursor position)
   if (email) {
     email.addEventListener("input", () => {
-      email.value = email.value.toLowerCase(); 
+      email.value = email.value.toLowerCase();
+    });
+  }
+
+  // Let Enter submit the form from any text input, since these are plain
+  // divs (not <form> elements) and get none of the native Enter-to-submit
+  // behavior for free.
+  if (submitBtn) {
+    [name, email, password, number].forEach((input) => {
+      if (!input) return;
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          submitBtn.click();
+        }
+      });
     });
   }
 

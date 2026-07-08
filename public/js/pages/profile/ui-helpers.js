@@ -494,12 +494,10 @@ export function initProductFilterDropdown() {
 export function initCountryDropdown() {
   const countryContainer = document.getElementById('shipping-country');
 
-  console.log("countries", countries)
-  countries.data.objects.forEach(country => {
-    const name = country.names.common;
+  countries.data.forEach(country => {
     const option = document.createElement('option');
-    option.value = country.codes.alpha_2;
-    option.textContent = name;
+    option.value = country.iso2;
+    option.textContent = country.country;
 
     countryContainer.append(option)
   });

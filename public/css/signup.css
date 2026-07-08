@@ -230,7 +230,7 @@ label a {
     border: none;
     outline: none;
     margin: 20px 0;
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
     color: #383838;
     font-size: 14px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
