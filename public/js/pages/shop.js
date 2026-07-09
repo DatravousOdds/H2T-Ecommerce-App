@@ -2,7 +2,7 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, kidsRange, womenRange, mensRange, displayProducts, renderProductSkeletons } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
-import { db, collection, where, query, getDocs, limit, startAfter } from '../api/firebase-client.js';
+import { db, collection, where, query, getDocs, limit, startAfter, orderBy } from '../api/firebase-client.js';
 
 
 const params = new URLSearchParams(window.location.search);
@@ -18,6 +18,10 @@ const isBrandFilter = !categoryParam && !!brandParam;
 // category/brand -- it's a range query, not an equality one, so it can't
 // go through loadProducts() and gets its own query function below.
 const maxPrice = params.has("maxPrice") ? parseFloat(params.get("maxPrice")) : null;
+// Home page's "Just Dropped" / "Below Retail Prices" Shop Now links land
+// here with these instead of a category/brand -- same reasoning as maxPrice.
+const isNewestFilter = params.get("sort") === "newest";
+const isOnSaleFilter = params.get("onSale") === "true";
 console.log(activeFilter)
 
 
@@ -32,6 +36,10 @@ let products = maxPrice
   ? await loadPriceFilteredProducts(maxPrice, state)
   : isBrandFilter
   ? await loadBrandFilteredProducts(activeFilter, state)
+  : isOnSaleFilter
+  ? await loadOnSaleProducts(state)
+  : isNewestFilter
+  ? await loadNewestProducts(state)
   : await loadProducts("category", `${activeFilter}`, state);
 
 const pageHeader = document.getElementById("page-header");
@@ -168,6 +176,10 @@ loadMoreBtn.addEventListener("click", async () => {
       ? await loadPriceFilteredProducts(maxPrice, state)
       : isBrandFilter
       ? await loadBrandFilteredProducts(activeFilter, state)
+      : isOnSaleFilter
+      ? await loadOnSaleProducts(state)
+      : isNewestFilter
+      ? await loadNewestProducts(state)
       : await loadProducts("category", activeFilter, state);
     products = [...products, ...newProducts];
     filteredProducts = [...products];
@@ -501,6 +513,51 @@ async function loadPriceFilteredProducts(maxPrice, state) {
     return docs;
 }
 
+// Mirrors loadPriceFilteredProducts()'s pagination shape but orders by
+// createdAt instead -- "Just Dropped" isn't a range on a fixed threshold,
+// it's a sort, so it gets its own query rather than reusing loadProducts().
+async function loadNewestProducts(state) {
+    const productsCollection = collection(db, "listings");
+    const constraints = [where("status", "==", "active"), orderBy("createdAt", "desc")];
+    if (state.lastVisible) constraints.push(startAfter(state.lastVisible));
+
+    const q = query(productsCollection, ...constraints, limit(48));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        state.hasMore = false;
+        return [];
+    }
+
+    const docs = querySnapshot.docs;
+    state.lastVisible = docs[docs.length - 1];
+    state.hasMore = docs.length === 48;
+    return docs;
+}
+
+// Mirrors loadBrandFilteredProducts()'s pagination shape -- "on sale" isn't
+// a stored field (it's derived from listingPrice vs. originalPrice), so it
+// gets matched client-side the same way brand does.
+async function loadOnSaleProducts(state) {
+    const productsCollection = collection(db, "listings");
+    const constraints = [where("status", "==", "active")];
+    if (state.lastVisible) constraints.push(startAfter(state.lastVisible));
+
+    const q = query(productsCollection, ...constraints, limit(48));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        state.hasMore = false;
+        return [];
+    }
+
+    const docs = querySnapshot.docs;
+    state.lastVisible = docs[docs.length - 1];
+    state.hasMore = docs.length === 48;
+
+    return docs.filter((doc) => doc.data().listingPrice < doc.data().originalPrice);
+}
+
 // Mirrors men.js's normalizeBrand() -- brand is free text with no fixed
 // casing/punctuation, so this is how brand values get compared everywhere.
 function normalizeBrand(brand) {
@@ -556,6 +613,48 @@ function setPriceHeader(maxPrice) {
         </ol>
     `;
 };
+
+function setNewestHeader() {
+    pageHeader.innerHTML = "";
+    pageHeader.innerHTML = `
+    <h2>Just Dropped</h2>
+
+    <p>
+        The newest listings on Head-To-Toe, freshest drops first.
+    </p>
+
+    `;
+
+    breadcrumbs.innerHTML = "";
+    breadcrumbs.innerHTML = `
+        <ol class="breadcrumbs-routes">
+            <li><a href="/">Home</a></li>
+            <li><span>></span></li>
+            <li id="curr-page" class="curr-pg">Just Dropped</li>
+        </ol>
+    `;
+};
+
+function setOnSaleHeader() {
+    pageHeader.innerHTML = "";
+    pageHeader.innerHTML = `
+    <h2>Below Retail Prices</h2>
+
+    <p>
+        Listings currently priced below their original retail price.
+    </p>
+
+    `;
+
+    breadcrumbs.innerHTML = "";
+    breadcrumbs.innerHTML = `
+        <ol class="breadcrumbs-routes">
+            <li><a href="/">Home</a></li>
+            <li><span>></span></li>
+            <li id="curr-page" class="curr-pg">Below Retail Prices</li>
+        </ol>
+    `;
+};
 // reusable function to delete map entry based on value, moves to global later
 function deleteMapEntry(entry) {
     for (let [key, value] of state.filters.entries()) {
@@ -575,6 +674,10 @@ function deleteMapEntry(entry) {
 
 if (maxPrice) {
     setPriceHeader(maxPrice);
+} else if (isOnSaleFilter) {
+    setOnSaleHeader();
+} else if (isNewestFilter) {
+    setNewestHeader();
 } else {
     setHeader();
     // setState()/setCateogryFilter() seed and check the *category* checkbox

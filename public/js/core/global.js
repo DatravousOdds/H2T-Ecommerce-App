@@ -919,32 +919,45 @@ const displayProducts = (products, containerElement) => {
       window.location.href = `/shop/product.html?id=${doc.id}`;
     };
 
-    // A discount only exists if the item has a higher original price to compare against.
-    const hasDiscount =
-      typeof productData.originalPrice === "number" &&
-      productData.originalPrice > productData.listingPrice;
-    const discountPercent = hasDiscount
-      ? Math.round(
-          ((productData.originalPrice - productData.listingPrice) /
-            productData.originalPrice) *
-            100
-        )
-      : 0;
+    // originalPrice only gets set when a seller edits listingPrice on an
+    // existing listing (see seller.js collectListingInfo()) -- it's the
+    // price right before that edit, not a fixed retail/MSRP value. That
+    // makes it exactly "previousPrice" for a momentum calculation.
+    const previousPrice = productData.originalPrice;
+    const currentPrice = productData.listingPrice;
+    const hasPriceHistory =
+      typeof previousPrice === "number" &&
+      previousPrice > 0 &&
+      previousPrice !== currentPrice;
 
-    const originalPriceHTML = hasDiscount
-      ? `<span class="orgin-price">$${productData.originalPrice.toFixed(2)}</span>`
+    // momentum = (currentPrice - previousPrice) / previousPrice
+    const priceMomentum = hasPriceHistory
+      ? (currentPrice - previousPrice) / previousPrice
+      : 0;
+    const momentumPercent = Math.round(Math.abs(priceMomentum) * 100);
+    const priceDropped = hasPriceHistory && priceMomentum < 0;
+
+    const originalPriceHTML = priceDropped
+      ? `<span class="orgin-price">$${previousPrice.toFixed(2)}</span>`
       : "";
-    const priceChangeHTML = hasDiscount
+    // "% OFF" and the trend arrow would show the identical number here --
+    // both come from the same single previousPrice data point -- so only
+    // one renders: "% OFF" for a drop (familiar shopper language), the
+    // trend-up arrow for an increase (no "% OFF" equivalent applies there).
+    const priceChangeHTML = !hasPriceHistory
+      ? ""
+      : priceDropped
       ? `<div class="price-change">
           <div class="product-discount">
-            <p>${discountPercent}% OFF</p>
-          </div>
-          <div class="price-trend trend-down">
-            <i class="fa-solid fa-arrow-trend-down"></i>
-            <span>-${discountPercent}%</span>
+            <p>${momentumPercent}% OFF</p>
           </div>
         </div>`
-      : "";
+      : `<div class="price-change">
+          <div class="price-trend trend-up">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+            <span>+${momentumPercent}%</span>
+          </div>
+        </div>`;
 
     productElement.innerHTML = `
 
@@ -971,8 +984,10 @@ const displayProducts = (products, containerElement) => {
                 </p>
 
                 <div class="pro-price">
-                  <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
-                  ${originalPriceHTML}
+                  <div class="price-list">
+                    <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
+                    ${originalPriceHTML}
+                  </div>
                   ${priceChangeHTML}
                 </div>
 

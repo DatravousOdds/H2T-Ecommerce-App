@@ -35,6 +35,29 @@ p {
   margin: 21px auto;
 }
 
+.pro-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pro-header-row .pro-header {
+  margin: 0;
+}
+
+.shop-now-link {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: #E63946;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.shop-now-link:hover {
+  text-decoration: underline;
+}
+
 /* ── Filter Section ─────────────────────────────── */
 
 /* Merged duplicate .filter rules */

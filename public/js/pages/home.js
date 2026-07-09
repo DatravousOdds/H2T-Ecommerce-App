@@ -33,7 +33,7 @@ const justDropped = async () => {
     collection(db, "listings"),
     where("status", "==", "active"),
     orderBy("createdAt", "desc"),
-    limit(16)
+    limit(7)
   );
 
     const querySnapshot = await getDocs(q);
@@ -52,7 +52,7 @@ const mensCollection = async () => {
     collection(db, "listings"),
     where("status", "==", "active"),
     where("categoryMeta","==","men"),
-    limit(16)
+    limit(7)
   );
 
   const querySnapshot = await getDocs(q);
@@ -65,7 +65,7 @@ const womenCollection = async () => {
     collection(db, "listings"),
     where("status", "==", "active"),
     where("categoryMeta","==","women"),
-    limit(16)
+    limit(7)
   );
 
   const querySnapshot = await getDocs(q);
@@ -77,7 +77,7 @@ const belowRetailPrices = async () => {
   const q = query(
     collection(db, "listings"),
     where("status", "==", "active"),
-    limit(16)
+    limit(7)
   );
 
   const querySnapshot = await getDocs(q);

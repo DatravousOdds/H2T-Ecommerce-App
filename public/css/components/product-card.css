@@ -45,7 +45,9 @@
 }
 
 .price-change .product-discount {
-  background-color: var(--color-red);
+  font-weight: 600;
+  color: white;
+  background-color: #f30c1e;
   padding: 0.0625rem 0.25rem;
   border-radius: 0.25rem;
   display: flex;
