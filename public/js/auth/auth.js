@@ -35,14 +35,14 @@ const fetchUserProfile = async (user) => {
     // Check sessionStorage first
     const cachedProfile = sessionStorage.getItem(`profile_${user.uid}`);
     if (cachedProfile) {
-      console.log("✅ Using cached profile from sessionStorage");
-      console.log(cachedProfile);
+      // console.log("✅ Using cached profile from sessionStorage");
+      // console.log(cachedProfile);
       const idToken = await user.getIdToken()
       const parsed = JSON.parse(cachedProfile);
       return {...parsed, idToken}
     }
 
-    console.log("Fetching user profile for email:", user.email);
+    // console.log("Fetching user profile for email:", user.email);
     const docRef = doc(db, "userProfiles", user.uid);
     const docSnap = await getDoc(docRef);
     const idToken = await user.getIdToken();
@@ -58,8 +58,8 @@ const fetchUserProfile = async (user) => {
 
       // Cache profile
       sessionStorage.setItem(`profile_${user.uid}`, JSON.stringify(userData));
-      console.log('✅ Profile cached in sessionStorage');
-      console.log(userData)
+      // console.log('✅ Profile cached in sessionStorage');
+      // console.log(userData)
       
       return userData;
     } else {
@@ -82,12 +82,12 @@ export function checkUserStatus() {
   // != (loose) so an early, pre-initialization `undefined` read falls through
   // to the real auth check below instead of being treated as "already cached".
   if (cachedUser != null) {
-    console.log('⚡️ Returning cached user (instant)');
+    // console.log('⚡️ Returning cached user (instant)');
     return Promise.resolve(cachedUser);
   }
 
   if (authCheckPromise) {
-    console.log('Auth check in progress, waiting...')
+    // console.log('Auth check in progress, waiting...')
     return authCheckPromise;
   }
 
@@ -113,7 +113,7 @@ export function checkUserStatus() {
             reject(error);
           }
         } else {
-          console.log("No user authenticated");
+          // console.log("No user authenticated");
           cachedUser = false;
           resolve(null);
         }
@@ -167,7 +167,7 @@ const createUserDocument = async (user, additionalData) => {
       tac: additionalData.tac
 
     });
-    console.log("User profile created for:", user.email);
+    // console.log("User profile created for:", user.email);
   } catch (error) {
     console.error("Error creating user profile:", error);
     throw error; // Throw error to be caught by caller
@@ -182,7 +182,7 @@ const createUserProfile = async (user, additionalData) => {
       // profile data
       ...additionalData
     });
-    console.log("User profile created for:", user.email);
+    // console.log("User profile created for:", user.email);
   } catch (error) {
     console.error("Error creating user profile:", error);
     throw error; // Throw error to be caught by caller
@@ -234,7 +234,7 @@ function initAuthForm() {
 
   if (submitBtn) {
     submitBtn.addEventListener("click", async () => {
-      console.log("Submit button clicked");
+      // console.log("Submit button clicked");
       if (name != null) {
         // ====== SIGNUP PAGE ======
 
@@ -255,10 +255,15 @@ function initAuthForm() {
           showAlert("enter your phone number");
           return;
         }
-         if (!Number(number.value) || number.value.length < 10) {
+        // Accept formatted input like "+1 (682) 470-2126" or "(682) 470-2126" --
+        // strip everything but digits, then drop a leading "1" country code
+        // (only when it's followed by exactly 10 more digits, so a genuine
+        // 10-digit number is never mistaken for one with a country code).
+        const phoneDigits = number.value.replace(/\D/g, "").replace(/^1(?=\d{10}$)/, "");
+        if (phoneDigits.length !== 10) {
           showAlert("invalid number, please enter valid one");
           return;
-         }
+        }
          if (!tac.checked) {
           showAlert("you must agree to our terms and conditions");
           return;
@@ -271,19 +276,19 @@ function initAuthForm() {
             const userCredential  = await createUserWithEmailAndPassword(auth, email.value, password.value);
           
            const user = userCredential.user;
-           console.log("User created:", user.uid);
+          //  console.log("User created:", user.uid);
 
            // Update user profile with display name
            await updateProfile(user, { displayName: name.value });
 
-           console.log("User profile updated with name:", name.value);
+          //  console.log("User profile updated with name:", name.value);
 
            const userData = {
             "userId": user.uid,
             "email": email.value,
             "firstName": name.value,
             "lastName": "",
-            "phoneNumber": number.value,
+            "phoneNumber": phoneDigits,
             "username": "",
             "backgroundImage": "",
             "profileImage": "",
@@ -300,7 +305,7 @@ function initAuthForm() {
               "state": "",
               "zipCode": "",
               "country": "",
-              "phoneNumber": number.value
+              "phoneNumber": phoneDigits
             },
             // Defaults so the profile page has real fields to read instead of
             // crashing on userData.stats.followers / userData.ratings.metrics.
@@ -323,7 +328,7 @@ function initAuthForm() {
             createdAt: new Date(),
             userId: user.uid,
             name: name.value,
-            phoneNumber: number.value,
+            phoneNumber: phoneDigits,
             tac: tac.checked,
             notification: noti.checked,
             email: email.value,
@@ -390,7 +395,7 @@ function initAuthForm() {
             const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
             // Signed in
             const user = userCredential.user;
-            console.log("User signed in:", user.email);
+            // console.log("User signed in:", user.email);
 
             const userData = await fetchUserProfile(user);
             if (!userData) {
@@ -413,7 +418,7 @@ function initAuthForm() {
                 seller: userData.seller
               }));
 
-            console.log("Login successful, redirecting to home page");
+            // console.log("Login successful, redirecting to home page");
             location.replace("/");
 
           } catch (error) {
@@ -455,7 +460,7 @@ if (document.readyState === "loading") {
 export const logout = () => {
   signOut(auth)
     .then(() => {
-      console.log("User was signout successfully");
+      // console.log("User was signout successfully");
       // Clear storage and redirect only after successful signout
 
       // Clear All caches
@@ -469,7 +474,7 @@ export const logout = () => {
     })
     .catch((error) => {
       // Display error message
-      console.log("Error occured during signout: ", error);
+      console.log("Error occurred during signout: ", error);
       showAlert("Error signing out. Please try again.");
     });
 };

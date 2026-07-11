@@ -265,7 +265,7 @@ async function displayReviews() {
                   </div>
                   <div class="user-pfp" style="display: flex">
                     <div class="user">
-                      <img src=${reviewData.reviewerPhoto} alt="${reviewData.altImage}" loading="lazy" />
+                      <img src=${reviewData.reviewerPhoto || '/images/default-avatar.svg' } alt="${reviewData.altImage}" loading="lazy" />
                     </div>
                     <div class="user-name">
                       <a href="#">${reviewData.reviewerUsername}</a>
@@ -290,7 +290,7 @@ async function displayProductDetails() {
         productCategory.textContent = data.category;
 
         const sellerProfile = await getUserProfile(data.userId);
-        sellerProfilePicture.src = sellerProfile.profileImage || '';
+        sellerProfilePicture.src = sellerProfile.profileImage || '/images/default-avatar.svg';
         sellerName.textContent = sellerProfile.username || 'Unknown Seller';
         sellerProfileLink.href = `/sellerProfile?id=${data.userId}`;
 

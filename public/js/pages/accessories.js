@@ -80,7 +80,7 @@ filterDisplay.addEventListener('click', (e) => {
   if(!datasetFilterTag) return;
 
   if (datasetFilterTag !== "clear-all") {
-    deleteMapEntry(datasetFilterTag);
+    deleteMapEntry(state.filters, datasetFilterTag);
     resetFilterUI(datasetFilterTag);
     btn.remove();
     

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <link rel="stylesheet" href="/css/style2.css" />
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/components/pageLoader.css">
+    <link rel="stylesheet" href="/css/components/skeleton.css" />
+    <link rel="stylesheet" href="/css/components/newsletter.css" />
+    <link rel="stylesheet" href="/css/components/cartDrawer.css"/>
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+   
+    <script
+      src="https://kit.fontawesome.com/854f8a6196.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
+    <title>Hexxo : Home</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    />
+  </head>
+
+  <body>
+   
+    <!-- newsletter -->
+    <section id="newsletter" class="section-p1 section-m1">
+      <div class="newstext">
+        <!-- change later, look at planning sheet -->
+        <h4>Sign Up for Newsletter</h4>
+        <!-- change later, look at planning sheet -->
+        <p>
+          Get E-mail updates about latest shop and <span>special offers</span>
+        </p>
+      </div>
+      <div id="newsletter-form" class="form">
+        <input id="newsletter-email" type="email" placeholder="Your email address" />
+        <button type="submit" id="newsletter-submit" class="normal">Sign Up</button>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer></footer >
+    <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+      integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module" src="/js/components/cartDrawer.js"></script>
+    <script type="module" src="/js/components/nav.js"></script>
+    <script type="module" src="/js/components/newsletter.js"></script>
+    <script src="/js/components/footer.js"></script>
+    <script type="module" src="/js/pages/search.js"></script>
+    <script type="module" src="/js/services/authenticationResults.js"></script>
+    
+  </body>
+</html>

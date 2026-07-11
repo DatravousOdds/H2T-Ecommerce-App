@@ -34,7 +34,7 @@ const region = "us-east-1";
 const bucketName = "ecom-websiteh2t";
 const accessKeyId = process.env.aws_access_key_id;
 const secretKeyId = process.env.aws_secret_access_key;
-const MARKETPLACE_FEE_RATE = 0.08
+const MARKETPLACE_FEE_RATE = 0.07
 
 aws.config.update({
   region,
@@ -257,6 +257,10 @@ app.get("/releases", (req, res) => {
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));
+});
+// authentication results route
+app.get("/authenticate/results", (req, res) => {
+  res.sendFile(path.join(staticPth, "authenticator/authenticate-results.html"));
 });
 // authentication reviewer route -- first admin surface in the app; access
 // is gated client-side by checking the admin custom claim (UX only, see
@@ -1099,7 +1103,7 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       return res.status(400).json({update: false, message: "No changes made"})
     }
 
-    await docRef.update({
+    await docRef.ref.update({
       ...updatedData,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
@@ -1183,7 +1187,7 @@ app.delete("/orders/:id", verifyAuth, async (req, res) => {
       if (isCancellable) {
         const cancelledBy = isAdmin ? "admin" : isSeller ? "seller" : "buyer";
 
-        await docRef.update({
+        await docRef.ref.update({
           fulfillmentStatus: "cancelled",
           cancelledBy,
           ...(isAdmin && reason ? { cancellationReason: reason } : {}),

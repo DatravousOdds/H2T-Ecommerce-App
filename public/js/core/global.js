@@ -699,11 +699,14 @@ const loadProducts = async (field,categoryMeta, state = { lastVisible: null, fil
 };
 
 const renderFilterTags = (filterTagsArray) => {
+  const filterDisplay = document.getElementById("filterDisplay");
+  const appliedFilters = document.getElementById("appliedFilters");
+
   // if there is not active filters remove filterTags
   if (filterTagsArray.size === 0) {
     filterDisplay.classList.remove('active');
   } else {
-    // show filterTags 
+    // show filterTags
     filterDisplay.classList.add("active");
     appliedFilters.innerHTML = "";
 
@@ -730,8 +733,9 @@ const renderFilterTags = (filterTagsArray) => {
 };
 
 function resetFilterUI(targetValue) {
+  const sortSelect = document.getElementById("sort-select");
   const sortOptions = document.querySelectorAll("#sort-container .sort-content a");
-  
+
   sortOptions.forEach(option => {
     if (option.textContent === targetValue) {
       sortSelect.textContent = "Featured";
@@ -760,18 +764,18 @@ function resetFilterUI(targetValue) {
   
 };
 
-function deleteMapEntry(entry) {
-  for (let [key, value] of state.filters.entries()) {
+function deleteMapEntry(filters, entry) {
+  for (let [key, value] of filters.entries()) {
       const index = value.indexOf(entry);
 
       if (index !== -1) {
         value.splice(index, 1)
         if (value.length === 0) {
-          state.filters.delete(key);
+          filters.delete(key);
         }
         break;
       }
-      
+
     }
 };
 

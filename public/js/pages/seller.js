@@ -1,6 +1,6 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app, getDoc, updateDoc, Timestamp } from '../api/firebase-client.js';
-import { collection, addDoc } from '../api/firebase-client.js';
+import { collection, setDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 
@@ -875,6 +875,7 @@ function showSuccessMessage() {
     modalProductMeta.textContent = listing.shipping.courier ? `$${listing.listingPrice} - ${listing.shipping.courier} ${listing.shipping.service_name}` : `$${listing.listingPrice} - Free Shipping`;
     successModal.classList.add('show');
 
+    console.log("listing:",listing)
     // Add event listener to view listing button
     const viewListingBtn = successModal.querySelector('.view-listing-btn');
     viewListingBtn.addEventListener('click', () => {
@@ -1349,13 +1350,13 @@ async function saveListingToFirebase(data) {
     try {
         if (isEditing) {
             await updateDoc(doc(db, 'listings', listing.listingId), data);
-            console.log("Document updated with the ID: ", listing.listingId);
+            // console.log("Document updated with the ID: ", listing.listingId);
             return listing.listingId;
         }
 
-        const docRef = await addDoc(collection(db, 'listings'), data);
-        console.log("Document written with the ID: ", docRef.id);
-        return docRef.id;
+        await setDoc(doc(db, 'listings', listing.listingId), data);
+        // console.log("Document written with the ID: ", listing.listingId);
+        return listing.listingId;
     } catch(e) {
         console.error("Error saving document:", e);
         throw e;
