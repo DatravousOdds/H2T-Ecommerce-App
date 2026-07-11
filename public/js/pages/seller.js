@@ -31,6 +31,10 @@ const BRAND_GROUPS = [
 
 
 const imageGridContainer = document.querySelector('.images-grid-container');
+const imagesErrorText = document.getElementById('errorText');
+
+const TOTAL_IMAGE_SLOTS = [...imageGridContainer.querySelectorAll('.image-container')]
+    .filter(c => c.id !== 'videoContainer').length;
 
 const videoContainer = document.getElementById('videoContainer');
 const videoInput = document.getElementById('video');
@@ -296,7 +300,9 @@ imageGridContainer.addEventListener('click', (e) => {
             return;
         }
 
-        handleImageUpload(imageInput, imagePreview, removeImageBtn);
+        // Any container can be clicked to open the picker -- selected files
+        // fill whichever containers are still empty, not just this one.
+        handleImageUpload(imageInput);
 
 })
 
@@ -1124,45 +1130,77 @@ function proceedWithShipping(parcel) {
     fetchShippingRates(parcel);
 }
 
-function handleImageUpload(input,preview,removeBtn) {
-    if (typeof input !== "object") {
-        console.error('type error!');
-    }
+function getEmptyImageContainers() {
+    return [...document.querySelectorAll('.images-grid-container .image-container')]
+        .filter(c => c !== videoContainer)
+        .filter(c => c.querySelector('.image-preview').style.display === 'none');
+}
 
-    if (input) {
-        input.click();
+function showImagesError(message) {
+    imagesErrorText.textContent = message;
+    imageGridContainer.classList.add('error');
+}
 
-        input.addEventListener('change', (e) => {
-            const MAX_SIZE = 5 * 1025 * 1025;
-            const allowedFileTypes = ['image/jpeg', 'image/png'];
+function removeImagesError() {
+    imagesErrorText.textContent = '';
+    imageGridContainer.classList.remove('error');
+}
 
-            const selectedFile = e.target.files[0];
-            const selectFileType = selectedFile.type;
-
-            if (!allowedFileTypes.includes(selectFileType)) {
-                alert(`Invalid file type: ${selectFileType} is not a valid type.`);
-                handleImageRemove(input,preview,removeBtn);
-            }
-
-            if (selectedFile && selectedFile.size < MAX_SIZE  ) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    removeBtn.style.display = 'block';
-                }
-                reader.readAsDataURL(selectedFile);
-
-            } else {
-                alert("File is too large!");
-                handleImageRemove(input,preview,removeBtn);
-            }
-
-        })
-    } else {
+function handleImageUpload(input) {
+    if (!input) {
         console.log("File element not found!");
+        return;
     }
 
+    input.click();
+
+    // { once: true } so re-clicking to open the picker again doesn't stack
+    // duplicate change listeners on the same input.
+    input.addEventListener('change', (e) => {
+        const MAX_SIZE = 10 * 1024 * 1024;
+        const allowedFileTypes = ['image/jpeg', 'image/png'];
+        const files = [...e.target.files];
+        input.value = '';
+
+        if (!files.length) return;
+
+        const emptyContainers = getEmptyImageContainers();
+
+        if (files.length > emptyContainers.length) {
+            showImagesError(emptyContainers.length === 0
+                ? `You've reached the ${TOTAL_IMAGE_SLOTS} photo limit.`
+                : `You selected ${files.length} photos, but only ${emptyContainers.length} slot${emptyContainers.length === 1 ? '' : 's'} left.`);
+            return;
+        }
+
+        const invalidFile = files.find(f => !allowedFileTypes.includes(f.type));
+        if (invalidFile) {
+            showImagesError(`Invalid file type: ${invalidFile.type || 'unknown'} is not a valid type.`);
+            return;
+        }
+
+        const oversizedFile = files.find(f => f.size >= MAX_SIZE);
+        if (oversizedFile) {
+            showImagesError(`"${oversizedFile.name}" is too large.`);
+            return;
+        }
+
+        removeImagesError();
+
+        files.forEach((file, i) => {
+            const container = emptyContainers[i];
+            const preview = container.querySelector('.image-preview');
+            const removeBtn = container.querySelector('.remove-image-btn');
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                removeBtn.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        });
+    }, { once: true })
 }
 
 function handleImageRemove(input, preview, removeBtn) {
