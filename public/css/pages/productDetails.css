@@ -1178,4 +1178,8 @@
     .canvas-container {
         height: 220px;
     }
+
+    .product-breadcrumb {
+        margin: 1rem 0;
+    }
 }

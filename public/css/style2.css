@@ -182,6 +182,7 @@ button.white {
 
 .navbar {
   display: flex !important;
+  flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: space-between !important;
   padding: 0.75rem 2rem !important;
@@ -1830,7 +1831,7 @@ button.white {
 }
 
 .category img {
-  width: 100%;
+  width: 200px;
   height: 100%;
   object-fit: cover;
   transition: all 0.3s ease;
@@ -2598,8 +2599,10 @@ footer .rights {
   }
 }
 
-/* Tablet (1040px and above) */
-@media (max-width: 1040px) {
+/* Nav breakpoint (1360px and below) — matches the min width the full
+   desktop nav-list + search bar + logo actually need before switching
+   to the hamburger menu; anything narrower was overflowing/wrapping. */
+@media (max-width: 1360px) {
   .search-section {
     flex: 1;
     justify-content: flex-start;
@@ -2617,7 +2620,10 @@ footer .rights {
   .nav-list {
     display: none !important;
   }
+}
 
+/* Tablet (1040px and above) */
+@media (max-width: 1040px) {
   .image-custom {
     width: 70%;
   }
@@ -2681,8 +2687,8 @@ footer .rights {
 
   .search-section {
     flex: 1;
-    justify-content: flex-end;
-    flex-direction: row-reverse;
+    justify-content: flex-start;
+    flex-direction: row;
   }
 
   .search-form {
@@ -2919,7 +2925,7 @@ footer .rights {
 
   .search-section {
     flex: 1;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   .nav-list {
@@ -3237,6 +3243,9 @@ footer .rights {
     margin: 3rem 1rem;
   }
 
+  #prodetails {
+    padding: 0 1rem;
+  }
 
   /* Product Details Page */
   #prodetails .s_prod_details {

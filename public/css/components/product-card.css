@@ -279,8 +279,13 @@
 
 /* Mobile */
 @media (max-width: 480px) {
-  .pro-container {
+
+  #product1 {
     margin: 0 1rem;
+    width: 90%;
+  }
+  .pro-container {
+    margin: 0;
     gap: 1rem;
   }
   

@@ -7,7 +7,6 @@
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1.5rem;
   background-image: url(/images/nsl.png);
   background-repeat: no-repeat;
   background-position: 20% 30%;
@@ -100,7 +99,7 @@
 
   #newsletter {
     margin-bottom: 1rem;
-    height: auto;
+    min-height: 200px;
   }
 
   #newsletter .form {
@@ -109,5 +108,13 @@
 
   #newsletter input {
     padding: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #newsletter {
+    height: 100%;
+    min-height: 200px;
+    gap: 0;
   }
 }

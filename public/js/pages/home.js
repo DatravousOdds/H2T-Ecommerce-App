@@ -14,10 +14,10 @@ initCartDrawer();
 
 
 const categories = [
-  {category: "sneakers", title: "Sneakers", image: "./images/download.jpg"},
-  {category: "accessories", title: "Accessories", image: "./images/KAWS-Tokyo-First-Flayed-Companion-Keychain-Gray-2021.jpg-2+copy.jpg"},
-  {category: "apparel", title: "Apparel", image: "./images/UCC2261886011T.jpg"},
-  {category: "shoes", title: "Shoes", image: "./images/new-balance-Whitewithblackandraincloud-low-top-sneakers-1_800x1000.jpg.jpg"}
+  {category: "sneakers", title: "Sneakers", image: "./images/sneakers_banner_2.png"},
+  {category: "accessories", title: "Accessories", image: "./images/accessories_banner_2.png"},
+  {category: "apparel", title: "Apparel", image: "./images/UCC2261886011T-removebg-preview.png"},
+  {category: "shoes", title: "Shoes", image: "./images/new-balance-Whitewithblackandraincloud-low-top-sneakers-1_800x1000.jpg-removebg-preview.png"}
 
 ];
 

@@ -32,7 +32,7 @@ p {
 }
 
 #product1 {
-  margin: 21px auto;
+  margin: 0 2rem;
 }
 
 .pro-header-row {
@@ -839,6 +839,18 @@ hr {
 }
 
 @media (max-width: 575.98px) {
+
+  .breadcrumbs .breadcrumbs-routes {
+    margin: 1rem 0;
+  }
+
+  #page-header {
+    margin: 1rem;
+  }
+
+  .page-results {
+    width: 100%;
+  }
 
   .product-page {
     grid-template-columns: 1fr;
