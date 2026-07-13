@@ -15,6 +15,7 @@ const REVIEWABLE_STATUSES = ["submitted", "pending_review", "needs_manual_review
 
 const listEl = document.getElementById("review-list");
 const guardEl = document.getElementById("not-authorized");
+const approvedBtn = document.getElementById()
 
 // requestId -> that request's images array, so the carousel can page through
 // all of them without re-embedding the array into every <img> tag.

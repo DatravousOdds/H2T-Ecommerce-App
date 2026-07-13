@@ -69,6 +69,7 @@ const modalOverlay = document.querySelector('.modal-overlay');
 const packageDimensions = document.getElementById('packageDimensions');
 const courierRatesModal = document.getElementById('courierRatesModal');
 const savingModal = document.getElementById('savingModal');
+const draftModal = document.getElementById('draftModal');
 
 const shippingContainers = document.querySelectorAll('.shipping-btn-container');
 const shippingGroupContainer = document.querySelector('.input-grid-wrapper');
@@ -903,6 +904,16 @@ function removeSavingModal() {
     savingModal.classList.remove('show');
 }
 
+function showDraftSavedModal() {
+    modalOverlay.classList.add('show');
+    draftModal.classList.add('show');
+
+    setTimeout(() => {
+        draftModal.classList.remove('show');
+        modalOverlay.classList.remove('show');
+    }, 2500);
+}
+
 function resetForm() {
     productTitle.value = '';
     productCategory.value = '';
@@ -1451,7 +1462,8 @@ async function saveDraft() {
         }
 
         await saveListingToFirebase(listing);
-        alert("Your listing has been saved as a draft.");
+        showDraftSavedModal();
+        resetForm();
     } catch (e) {
         console.error("Error occurred when saving draft: ", e);
         alert("Something went wrong while saving your draft. Please try again.");

@@ -40,12 +40,18 @@ function itemLabel(productDetails) {
   return [productDetails?.category, descriptor].filter(Boolean).join(" - ") || "--";
 }
 
+// "Under Review" requests have no pass/fail/needs-info outcome yet, so
+// there's nothing on authenticate-results.html for View Details to show.
+function isReviewComplete(status) {
+  return status !== "submitted" && status !== "pending_review" && status !== "needs_manual_review";
+}
+
 function requestRow(id, request) {
   const submittedDate = toDate(request.createdAt);
   const display = STATUS_DISPLAY[request.status] || STATUS_DISPLAY.submitted;
 
   return `
-    <tr>
+    <tr data-doc-id="${id}">
       <td>
         <p class="product-id" title="${id}">#${id.slice(-8)}</p>
       </td>
@@ -61,15 +67,20 @@ function requestRow(id, request) {
       <td>
         <span class="status-badge ${display.badge}">${display.label}</span>
       </td>
+      <td>
+        <div class="action-buttons">
+          ${isReviewComplete(request.status) ? `<button type="button" class="action-button view">View Details</button>` : ""}
+        </div>
+      </td>
     </tr>
   `;
 }
 
-// Mirrors requestRow's 5-column shape.
+// Mirrors requestRow's 6-column shape.
 function requestSkeletonRow() {
   return `
     <tr class="skeleton-item">
-      ${Array.from({ length: 5 }, () => `<td><span class="skeleton skeleton-line medium"></span></td>`).join("")}
+      ${Array.from({ length: 6 }, () => `<td><span class="skeleton skeleton-line medium"></span></td>`).join("")}
     </tr>
   `;
 }
@@ -85,7 +96,7 @@ function renderRequests(requests) {
   if (!tbody) return;
 
   if (requests.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="default-paragraph" style="text-align:center; padding: 24px;">No authentication requests yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="default-paragraph" style="text-align:center; padding: 24px;">No authentication requests yet.</td></tr>`;
     return;
   }
 
@@ -107,6 +118,24 @@ async function fetchAuthRequests(userId) {
     .sort((a, b) => (toDate(b.data.createdAt) || 0) - (toDate(a.data.createdAt) || 0));
 }
 
+// Delegated to the table itself (not per-row) so re-rendered rows after
+// every refresh stay wired without re-attaching listeners -- same pattern
+// as wireOrderActions() in orders.js.
+function wireAuthenticationActions() {
+  const table = document.querySelector(".auth-request-table");
+  if (!table) return;
+
+  table.addEventListener("click", (e) => {
+    const viewBtn = e.target.closest(".action-button.view");
+    if (!viewBtn) return;
+
+    const requestId = viewBtn.closest("tr")?.dataset.docId;
+    if (requestId) {
+      window.location.href = `/authenticator/authenticate-results.html?authRequestId=${requestId}`;
+    }
+  });
+}
+
 async function loadAuthenticationTab(userId) {
   if (!userId) {
     console.error("loadAuthenticationTab: no userId provided");
@@ -118,6 +147,7 @@ async function loadAuthenticationTab(userId) {
   try {
     const requests = await fetchAuthRequests(userId);
     renderRequests(requests);
+    wireAuthenticationActions();
   } catch (error) {
     console.error("Error loading authentication requests tab:", error);
   }

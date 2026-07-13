@@ -273,7 +273,7 @@ function displayOrderDetails(item) {
                    <p class="cart-item-brand">${item.brand}</p>
                    <p class="cart-item-name">${item.productName}</p>
                    <p class="cart-item-size">Size: ${item.size}</p>
-                   <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+                   <p class="cart-item-price">$${item.listingPrice.toFixed(2)}</p>
                  </div>
                  
                </div> 

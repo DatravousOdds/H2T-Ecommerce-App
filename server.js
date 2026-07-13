@@ -1564,6 +1564,30 @@ app.post("/api/authentication-requests/:id/analyze", verifyAuth, async (req, res
   }
 });
 
+// Mirrors itemLabel() in the seller-facing authentication.js -- kept as a
+// separate copy here since that file is an ES module and this one is
+// CommonJS, so it can't just be imported.
+function authRequestItemLabel(productDetails) {
+  const details = productDetails?.details || {};
+  const descriptor = details.Brand || details.Model || details["Card Name"] || "";
+  return [productDetails?.category, descriptor].filter(Boolean).join(" - ") || "your item";
+}
+
+const REVIEW_RESULT_NOTIFICATION = {
+  approved: (label) => ({
+    title: "Authentication Approved",
+    message: `${label} passed authentication and is ready to list.`,
+  }),
+  rejected: (label) => ({
+    title: "Authentication Rejected",
+    message: `${label} did not pass authentication.`,
+  }),
+  needs_info: (label) => ({
+    title: "More Information Needed",
+    message: `We need more information about ${label} before authentication can continue.`,
+  }),
+};
+
 // Reviewer action: approve / reject / request more info on an
 // authentication request. isAdmin-gated the same way PUT /orders/:id
 // gates its status field to admins only. NOTE: still inert until a
@@ -1599,6 +1623,18 @@ app.put("/api/authentication-requests/:id", verifyAuth, async (req, res) => {
       reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
+    const requestData = docSnap.data();
+    const label = authRequestItemLabel(requestData.productDetails);
+    const { title, message } = REVIEW_RESULT_NOTIFICATION[status](label);
+
+    await createNotification(
+      requestData.userId,
+      "authentication",
+      title,
+      message,
+      `/authenticator/authenticate-results.html?authRequestId=${requestId}`
+    );
+
     res.status(200).json({ success: true });
   } catch (error) {
     console.error("❌ Error updating authentication request:", error);
@@ -1628,6 +1664,7 @@ const TYPE_TO_PREFERENCE_FIELD = {
   purchase: "orderUpdates",
   sale: "orderUpdates",
   order_status: "orderUpdates",
+  
 };
 
 // A user who has never saved preferences has no notificationPreferences

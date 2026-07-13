@@ -88,6 +88,10 @@ main {
     color: var(--color-text-secondary);
 }
 
+.auth-cta .btn-secondary:hover {
+    outline: none;
+}
+
 .auth-cta button {
     color: #E7E7E7;
     padding: 1rem;
@@ -102,11 +106,20 @@ main {
 }
 
 #productRemarks {
-    min-height: 650px;
+    height: 100%;
+    max-height: 980px;
     background-color: #F4F3F1;
     border-radius: 4px;
     padding: 1rem;
     flex: 1 1 320px;
+}
+
+.submit-number {
+    font-weight: 600;
+}
+
+.submitted-by, .auth-tier, .turnaround-time {
+    padding: 0.25rem 0;
 }
 
 .auth-wrapper {
@@ -138,7 +151,8 @@ main {
 }
 
 .fake-badge {
-
+    color: #f30c1e;
+    background-color: #f30c1e14;
 }
 
 /* ============================================
