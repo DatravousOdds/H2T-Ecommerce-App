@@ -109,6 +109,11 @@ productListingType?.addEventListener('change', () => {
 const editListingId = new URLSearchParams(window.location.search).get('listingId');
 const isEditing = Boolean(editListingId);
 
+// Presence of ?authRequestId= is the hand-off from an approved authentication
+// result's "List item for sale" button -- pre-fills a *new* listing from the
+// auth intake data, it doesn't touch the authenticationRequests doc itself.
+const authRequestId = new URLSearchParams(window.location.search).get('authRequestId');
+
 const storage = getStorage(app, 'gs://ecom-website-94d87');
 
 const PLACEHOLDER_DESTINATION = {
@@ -143,6 +148,25 @@ let listing = {
 // Set from the existing doc when editing so collectListingInfo() can tell
 // whether the seller actually changed the price (see price-drop logic there).
 let previousListingPrice = null;
+
+// Set by populateFormFromAuthRequest() when the auth intake category was
+// gendered (Sneakers/Shoes/Apparel) and so couldn't be auto-selected -- the
+// productCategory 'change' listener below applies it once the seller picks
+// a category and the matching size options exist to select from.
+let pendingAuthSize = null;
+
+// Listing docs (seller.js) only ever save brand/condition/size/description,
+// so those are the only auth intake fields worth mapping across. Auth
+// condition values (from authenticator/templates/*-form.html) don't line up
+// 1:1 with the listing form's options -- only remap the ones that do.
+const CONDITION_FROM_AUTH = {
+    'new': 'new',
+    'new-no-box': 'new',
+    'like-new': 'like new',
+    'good': 'good',
+    'fair': 'fair',
+    'worn': 'poor'
+};
 
 const kidsRange = Array.from({ length: 12 }, (_, i) => {
     if (i < 7) {
@@ -220,6 +244,8 @@ if (isEditing) {
     if (headerTitle) headerTitle.textContent = 'Edit listing';
 
     await loadListingForEdit(editListingId);
+} else if (authRequestId) {
+    await prefillFromAuthRequest(authRequestId);
 }
 
 postBtn.addEventListener('click', async () => {
@@ -308,8 +334,16 @@ imageGridContainer.addEventListener('click', (e) => {
 })
 
 productCategory.addEventListener("change", () => {
-    if (!category) return;
-    getCategoryFields(category.value.trim());
+    if (!productCategory.value) return;
+    getCategoryFields(productCategory.value.trim());
+})
+
+productCategory.addEventListener("change", () => {
+    if (!pendingAuthSize) return;
+    // Runs after the listener above, so renderSizeOptions() has already
+    // populated productSize's options by the time trySelectSize checks them.
+    trySelectSize(pendingAuthSize);
+    pendingAuthSize = null;
 })
 
 
@@ -604,6 +638,86 @@ function populateFormForEdit(existing) {
     restoreShippingSelection(existing.shipping);
     populateExistingImages(existing.images || []);
     if (existing.video) populateExistingVideo(existing.video);
+}
+
+async function prefillFromAuthRequest(requestId) {
+    try {
+        const snap = await getDoc(doc(db, 'authenticationRequests', requestId));
+
+        if (!snap.exists()) {
+            alert('Authentication request not found.');
+            return;
+        }
+
+        const authData = snap.data();
+
+        if (authData.userId !== currentUser.userId) {
+            alert('You do not have permission to list this item.');
+            return;
+        }
+
+        if (authData.status !== 'approved') {
+            alert('This item has not passed authentication yet.');
+            return;
+        }
+
+        populateFormFromAuthRequest(authData);
+    } catch (error) {
+        console.error('Error loading authentication request:', error);
+        alert('Something went wrong loading your authenticated item.');
+    }
+}
+
+function populateFormFromAuthRequest(authData) {
+    const details = authData.productDetails?.details || {};
+    const authCategory = authData.productDetails?.category;
+
+    productBrand.value = details.Brand || '';
+
+    const conditionKey = (details.Condition || '').toLowerCase();
+    if (CONDITION_FROM_AUTH[conditionKey]) {
+        productCondition.value = CONDITION_FROM_AUTH[conditionKey];
+    }
+
+    if (details.Color) {
+        const matchedColor = colors.find(c => c.name.toLowerCase() === details.Color.toLowerCase());
+        if (matchedColor) productColor.value = matchedColor.value;
+    }
+
+    const title = [details.Brand, details.Model || details['Item Type'] || details['Card Name']]
+        .filter(Boolean)
+        .join(' ')
+        .slice(0, 80);
+    if (title) {
+        productTitle.value = title;
+        titleCharCounter.textContent = `${title.length}/80`;
+    }
+
+    if (details['Additional Details']) {
+        productDescription.value = details['Additional Details'];
+        const words = productDescription.value.trim().split(/\s+/).filter(Boolean);
+        descriptionWordCounter.textContent = `${words.length}/100`;
+    }
+
+    // "Accessories" is the one auth category that maps to a seller category
+    // without needing a gender. Sneakers/Shoes/Apparel split into men-/women-
+    // options that the auth intake form never captured, so those are left
+    // for the seller to pick by hand -- the size gets applied once they do
+    // (see the productCategory 'change' listener using pendingAuthSize).
+    if (authCategory === 'Accessories') {
+        productCategory.value = 'unisex-accessories';
+        getCategoryFields(productCategory.value);
+        if (details.Size) trySelectSize(details.Size);
+    } else if (details.Size) {
+        pendingAuthSize = details.Size;
+    }
+
+    populateExistingImages(authData.images || []);
+}
+
+function trySelectSize(size) {
+    const hasOption = [...productSize.options].some(opt => opt.value === String(size));
+    if (hasOption) productSize.value = String(size);
 }
 
 function restoreShippingSelection(shipping) {

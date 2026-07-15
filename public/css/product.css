@@ -180,6 +180,8 @@
 .pro-container {
   overflow-y: hidden !important;
 }
+
+
 .pagination-btns:hover {
   background-color: #000000;
   color: #fff;

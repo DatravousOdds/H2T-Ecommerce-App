@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Every page here is also reachable at its raw file path (e.g. /shop/mens.html
+# in addition to /mens) because express.static serves the whole public/
+# folder directly -- block the raw path so it isn't indexed as duplicate
+# content alongside the clean route. Each page's rel=canonical points at the
+# clean route as the backup signal.
+Disallow: /*.html$
+
+Sitemap: https://hexxo.store/sitemap.xml

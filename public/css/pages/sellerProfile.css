@@ -139,6 +139,14 @@
   border-radius: var(--border-radius-sm, 8px);
   font-weight: 600;
   font-size: 0.875rem;
+  text-align: right;
+}
+
+.seller-listing-shipping {
+  display: block;
+  font-weight: 400;
+  font-size: 0.6875rem;
+  color: #d1d5db;
 }
 
 .seller-listings-empty {

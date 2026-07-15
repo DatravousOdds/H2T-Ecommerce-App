@@ -10,7 +10,7 @@ var currentUser = null;
 const cartTemplate = (item) => 
 `<div class="cart-item" data-id="${currentUser ? item.id : item.listingId}">
         <div class="seller-profile">
-          <img src="${item.sellerPicture}" alt="" class="seller-profile-picture">
+          <img src="${item.sellerPicture || '/images/default-avatar.svg'}" alt="" class="seller-profile-picture">
           <a href="#" class="seller-name">
             <span>${item.sellerName}</span>
           </a>

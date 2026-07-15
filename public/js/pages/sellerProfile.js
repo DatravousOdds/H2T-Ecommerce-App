@@ -23,10 +23,21 @@ function firstImageUrl(listing) {
 }
 
 function listingTile(listing) {
+  // listing.shipping only gets set when the seller picked a carrier rate
+  // (seller.js's courier-rates modal); the "I'll handle my own shipping"
+  // path never writes it, which the checkout modal already treats as free
+  // (seller.js:996) -- mirrored here and on the shop/product-detail cards.
+  const shippingText = listing.shipping?.courier
+    ? `+ $${Number(listing.shipping.estimateRate || 0).toFixed(2)} shipping`
+    : "+ Free shipping";
+
   return `
     <a class="seller-listing-tile" href="/shop/product.html?id=${listing.id}">
       <img src="${firstImageUrl(listing)}" alt="${listing.productName || "Listing"}" loading="lazy" />
-      <span class="seller-listing-price">$${Number(listing.listingPrice || 0).toFixed(2)}</span>
+      <span class="seller-listing-price">
+        $${Number(listing.listingPrice || 0).toFixed(2)}
+        <span class="seller-listing-shipping">${shippingText}</span>
+      </span>
     </a>
   `;
 }

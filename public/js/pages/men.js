@@ -1,7 +1,7 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
-import { loadProducts, handleFavoriteClick, mensRange, renderProductSkeletons } from '../core/global.js';
+import { loadProducts, handleFavoriteClick, mensRange, renderProductSkeletons, displayProducts, updateResultsCount } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
@@ -131,7 +131,7 @@ filterDisplay.addEventListener('click', (e) => {
     appliedFilters.innerHTML = "";
     filterDisplay.classList.remove("active");
     state.filters = new Map();
-    displayProducts(products)
+    displayProducts(products, "productsContainer")
     
   }
 
@@ -460,20 +460,9 @@ function deleteMapEntry(entry) {
       
     }
 }
-// reusable function to update results count, moves to global later
-const updateResultsCount = (count) => {
-  if (count === 1) {
-    pageResults.textContent = `${count} result`;
-    return;
-  }
-  pageResults.textContent = `${count} results`;
-
-};
-
-
 // reusable function to filter products based on active filters, moves to global later
 const filterProducts = (products, filters) => {
-  if (!filters.size) return displayProducts(products)
+  if (!filters.size) return displayProducts(products, "productsContainer")
   const filtered = products.filter(product => {
     const data = product.data();
     for (const [key, values] of filters) {
@@ -495,7 +484,7 @@ const filterProducts = (products, filters) => {
     sortProducts(filters.get("sort")[0]);
     return;
   }
-  displayProducts(filtered)
+  displayProducts(filtered, "productsContainer")
 };
 
 
@@ -518,124 +507,11 @@ const sortProducts = (sortType) => {
     // TODO: Implement logic for featured
   }
   
-  displayProducts(sortedProducts)
+  displayProducts(sortedProducts, "productsContainer")
 
-  
+
 }
 
-// reusable function to display products, moves to global later
-const displayProducts = (products) => {
-  const productsContainer = document.getElementById("productsContainer");
-  // clear existing products
-  productsContainer.innerHTML = "";
-  // display
-  if (products.length === 0) {
-    // Invite the user to fill the gap instead of a dead-end message.
-    // Reuses .chart-empty-state so this matches the price-history empty state on product.html.
-    productsContainer.innerHTML = `
-      <div class="chart-empty-state no-results-invite">
-        <i class="fa-solid fa-box-open"></i>
-        <h3>Nothing here yet</h3>
-        <p>Be the first to list an item like this.</p>
-        <a href="/seller" class="no-results-cta">List an item</a>
-      </div>
-    `;
-    updateResultsCount(products.length);
-    return;
-  }
-  products.forEach((doc) => {
-    const productData = doc.data();
-    const productElement = document.createElement("div");
-    productElement.classList.add("pro");
-    productElement.onclick = () => {
-      window.location.href = `/shop/product.html?id=${doc.id}`;
-    };
-
-    // originalPrice only gets set when a seller edits listingPrice on an
-    // existing listing (see seller.js collectListingInfo()) -- it's the
-    // price right before that edit, not a fixed retail/MSRP value. That
-    // makes it exactly "previousPrice" for a momentum calculation.
-    const previousPrice = productData.originalPrice;
-    const currentPrice = productData.listingPrice;
-    const hasPriceHistory =
-      typeof previousPrice === "number" &&
-      previousPrice > 0 &&
-      previousPrice !== currentPrice;
-
-    // momentum = (currentPrice - previousPrice) / previousPrice
-    const priceMomentum = hasPriceHistory
-      ? (currentPrice - previousPrice) / previousPrice
-      : 0;
-    const momentumPercent = Math.round(Math.abs(priceMomentum) * 100);
-    const priceDropped = hasPriceHistory && priceMomentum < 0;
-
-    const originalPriceHTML = priceDropped
-      ? `<span class="orgin-price">$${previousPrice.toFixed(2)}</span>`
-      : "";
-    // "% OFF" and the trend arrow would show the identical number here --
-    // both come from the same single previousPrice data point -- so only
-    // one renders: "% OFF" for a drop (familiar shopper language), the
-    // trend-up arrow for an increase (no "% OFF" equivalent applies there).
-    const priceChangeHTML = !hasPriceHistory
-      ? ""
-      : priceDropped
-      ? `<div class="price-change">
-          <div class="product-discount">
-            <p>${momentumPercent}% OFF</p>
-          </div>
-        </div>`
-      : `<div class="price-change">
-          <div class="price-trend trend-up">
-            <i class="fa-solid fa-arrow-trend-up"></i>
-            <span>+${momentumPercent}%</span>
-          </div>
-        </div>`;
-
-    productElement.innerHTML = `
-
-            <!--- Image container-->
-            <div class="product-image">
-              <div class="liked">
-                <i class="fa-regular fa-heart"></i>
-              </div>
-
-              <img
-                src="${productData.images[0].url}"
-                class="image-custom"
-                alt="${productData.productName}"
-                loading="lazy"
-              />
-            </div>
-            <!--- Image container-->
-
-            <!-- product details -->
-            <div class="des">
-              <div class="price-description">
-                <p class="product-name">
-                  ${productData.productName}
-                </p>
-
-                <div class="pro-price">
-                  <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
-                  ${originalPriceHTML}
-                  ${priceChangeHTML}
-                </div>
-
-              </div>
-
-            </div>
-            <!-- product details -->
-
-    `;
-
-    handleFavoriteClick(productElement, doc.id, productData);
-    
-    productsContainer.appendChild(productElement);
-  });
-
-  // update results count
-  updateResultsCount(products.length);
-}
 /** Filter by functions **/
 document
   .querySelectorAll(".filter-option .expand-details")

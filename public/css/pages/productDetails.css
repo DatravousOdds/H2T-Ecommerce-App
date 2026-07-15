@@ -265,6 +265,12 @@
     text-decoration: line-through;
 }
 
+.prod-meta {
+    font-size: 0.875rem;
+    color: #7a7a7a;
+    margin-top: 0.5rem;
+}
+
 .make-offer-btn {
     border: 2px solid #00AA6D;
     color: #00AA6D;

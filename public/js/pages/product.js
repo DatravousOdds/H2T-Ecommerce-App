@@ -25,6 +25,8 @@ const sellerListingsCount = document.getElementById('sellerListingsCount');
 const productTitle = document.querySelector('.prod-title');
 const productPrice = document.querySelector('.prod-price')
 const productOriginalPrice = document.querySelector('.original-price');
+const shippingNote = document.getElementById('shippingNote');
+const prodMeta = document.getElementById('prodMeta');
 const mainImage = document.getElementById('MainImg');
 const smallImagesGroup = document.querySelector('.s-img-group');
 
@@ -313,6 +315,15 @@ async function displayProductDetails() {
         productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
         productOriginalPrice.textContent = data.originalPrice ? `$${data.originalPrice.toFixed(2)}` : '';
 
+        // listing.shipping only gets set when the seller picked a carrier
+        // rate (seller.js's courier-rates modal) -- "I'll handle my own
+        // shipping" never writes it, which the checkout modal already reads
+        // as free (seller.js:996) -- mirrored here and on the product cards
+        // (global.js's displayProducts()) for the same "no rate = free" read.
+        shippingNote.textContent = data.shipping?.courier
+            ? `+ $${data.shipping.estimateRate.toFixed(2)} shipping`
+            : '+ Free shipping';
+
         const productMainImage = data.images.find(image => image.isPrimary === true) || data.images[0];
 
         mainImage.src = productMainImage.url;
@@ -336,6 +347,16 @@ async function displayProductDetails() {
         });
 
         sizes.innerHTML = `<button class="size-btn">${data.size}</button>`;
+
+        // categoryMeta only carries 'men'/'women' for gendered categories
+        // (Sneakers/Shoes/Apparel) -- see seller.js's category dropdown
+        // split -- ungendered categories like Accessories have no letter.
+        const genderLetter = data.categoryMeta === 'men'
+            ? 'M'
+            : data.categoryMeta === 'women'
+            ? 'W'
+            : '';
+        prodMeta.textContent = [genderLetter, data.condition].filter(Boolean).join(' | ');
 
         setProductDescription(data);
     } catch (error) {
@@ -668,6 +689,7 @@ async function getOfferKpis() {
     // Routed through the server (not a direct Firestore read) -- see
     // server.js's /api/products/:id/offer-summary for why.
     const res = await fetch(`/api/products/${productId}/offer-summary`);
+    
 
     if (!res.ok) {
         throw new Error(`Failed to fetch offer summary: ${res.status}`);
@@ -934,6 +956,30 @@ function displayProducts(products) {
             </div>
           </div>`;
 
+      // categoryMeta only carries 'men'/'women' for gendered categories
+      // (Sneakers/Shoes/Apparel) -- see seller.js's category dropdown
+      // split; ungendered categories like Accessories have no letter.
+      const genderLetter = productData.categoryMeta === 'men'
+        ? 'M'
+        : productData.categoryMeta === 'women'
+        ? 'W'
+        : '';
+
+      const sizeConditionHTML = productData.size
+        ? `<p class="pro-meta">
+            Size ${productData.size}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | ${productData.condition}` : ''}
+          </p>`
+        : '';
+
+      // listing.shipping only gets set when the seller picked a carrier
+      // rate (seller.js's courier-rates modal); the "I'll handle my own
+      // shipping" path never writes it, which the checkout modal already
+      // treats as free (seller.js:996) -- mirrored here and on the shared
+      // product cards (global.js's displayProducts()).
+      const shippingHTML = productData.shipping?.courier
+        ? `<span class="shipping-note">+ $${productData.shipping.estimateRate.toFixed(2)} shipping</span>`
+        : `<span class="shipping-note">+ Free shipping</span>`;
+
       productElement.innerHTML = `
 
               <!--- Image container-->
@@ -958,9 +1004,14 @@ function displayProducts(products) {
                     ${productData.productName}
                   </p>
 
+                  ${sizeConditionHTML}
+
                   <div class="pro-price">
-                    <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
-                    ${originalPriceHTML}
+                    <div class="price-list">
+                      <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
+                      ${originalPriceHTML}
+                      ${shippingHTML}
+                    </div>
                     ${priceChangeHTML}
                   </div>
 

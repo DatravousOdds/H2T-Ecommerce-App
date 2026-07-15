@@ -162,8 +162,8 @@ imageInputs.forEach((input) => {
         return;
       }
 
-      if (!file.type.match("image/*")) {
-        alert("Invalid file type");
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        alert("Invalid file type. Please upload a JPEG or PNG image.");
         input.value = "";
         return;
       }

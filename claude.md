@@ -1,7 +1,11 @@
 # Project Overview
 An ecommerce platform for streetwear clothing supporting buying, selling, trading, and a three-tier authentication (verification) system for listings.
 
-**MVP scope:** Buy, Sell, and Authentication Tier 1 only. (Trade and Tiers 2–3 are post-MVP.)
+**Post-MVP scope:** Buy, Sell, and Authentication Tier 1 only. (Trade and Tiers 2–3 are post-MVP.)
+- Ensure that website responsive on mobile devices
+- User flow works as expected
+- Optimize for catering to our target audience
+- SEO Optimization
 
 **Target users:**
 - Trend-conscious Gen Z
@@ -11,15 +15,6 @@ An ecommerce platform for streetwear clothing supporting buying, selling, tradin
 - Collector-sellers
 
 ## Missing / In-Progress Features
-- [ ] Profile backend functionality, including tabs:
-  - [ ] Payment information
-  - [ ] Selling
-  - [ ] Favorites
-  - [ ] Notifications
-  - [ ] Settings
-  - [ ] Purchases
-  - [ ] Logout
-- [ ] Home bar search
 - [ ] Products page filter functionality
 - [ ] Authentication Tier 1 functionality
 - [ ] Notifications system (app-wide, not just the profile tab)

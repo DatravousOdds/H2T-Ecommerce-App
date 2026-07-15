@@ -7,6 +7,7 @@
 .pro-price {
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   
 }
 
@@ -69,6 +70,17 @@
   color: #747474;
 }
 
+.pro-meta {
+  font-size: 0.8125rem;
+  color: #747474;
+  margin-bottom: 4px;
+}
+
+.shipping-note {
+  font-size: 0.8125rem;
+  color: #747474;
+}
+
 
 .pro-container {
   display: flex;
@@ -80,9 +92,7 @@
   overflow-x: auto;
 }
 
-.pro-container .pro {
-  border: 2px solid red;
-}
+
 
 /* Card */
 .pro,
@@ -128,6 +138,10 @@
   flex-direction: column;
   width: 100%;
   padding-top: 10px;
+}
+
+.product-grid .pro {
+  width: 100% !important;
 }
 
 

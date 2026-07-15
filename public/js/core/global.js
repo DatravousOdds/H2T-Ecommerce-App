@@ -212,7 +212,7 @@ async function getSellerInfo(productId) {
   return {
       id: sellerId,
       username: sellerProfile.username || "",
-      profilePicture: sellerProfile.profileImage || "",
+      profilePicture: sellerProfile.profileImage || "/images/default-avatar.svg",
       listingId: productId,
       listingPrice: data.listingPrice,
       listingSize: data.size,
@@ -374,8 +374,8 @@ const generateRegions = (countriesData) => {
 function formatFirebaseDate(timestamp) {
   const date = timestamp.toDate();
   return date.toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
+    month: "short",
+    day: "numeric",
     year: "numeric",
   });
 }
@@ -876,6 +876,7 @@ function renderProductSkeletons(containerElement, count = 12) {
       <div class="des">
         <div class="price-description">
           <p class="product-name"><span class="skeleton skeleton-line medium"></span></p>
+          <p class="pro-meta"><span class="skeleton skeleton-line short"></span></p>
           <div class="pro-price"><span class="skeleton skeleton-line short"></span></div>
         </div>
       </div>
@@ -963,6 +964,29 @@ const displayProducts = (products, containerElement) => {
           </div>
         </div>`;
 
+    // categoryMeta only carries 'men'/'women' for gendered categories
+    // (Sneakers/Shoes/Apparel -- see seller.js's category dropdown split);
+    // ungendered categories like Accessories have no letter to show.
+    const genderLetter = productData.categoryMeta === 'men'
+      ? 'M'
+      : productData.categoryMeta === 'women'
+      ? 'W'
+      : '';
+
+    const sizeConditionHTML = productData.size
+      ? `<p class="pro-meta">
+          Size ${productData.size}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | ${productData.condition}` : ''}
+        </p>`
+      : '';
+
+    // listing.shipping only gets set when the seller picked a carrier rate
+    // (seller.js's courier-rates modal); the "I'll handle my own shipping"
+    // path never writes it, which the checkout modal already treats as free
+    // (seller.js:996) -- mirrored here for the same "no rate = free" read.
+    const shippingHTML = productData.shipping?.courier
+      ? `<span class="shipping-note">+ $${productData.shipping.estimateRate.toFixed(2)} shipping</span>`
+      : `<span class="shipping-note">+ Free shipping</span>`;
+
     productElement.innerHTML = `
 
             <!--- Image container-->
@@ -987,10 +1011,13 @@ const displayProducts = (products, containerElement) => {
                   ${productData.productName}
                 </p>
 
+                ${sizeConditionHTML}
+
                 <div class="pro-price">
                   <div class="price-list">
                     <span class="listing-price">$${productData.listingPrice.toFixed(2)}</span>
                     ${originalPriceHTML}
+                    ${shippingHTML}
                   </div>
                   ${priceChangeHTML}
                 </div>

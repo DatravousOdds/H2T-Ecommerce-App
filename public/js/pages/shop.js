@@ -482,6 +482,10 @@ function resetFilterUI(targetValue) {
 };
 
 function setState() {
+    // No category/brand in the URL (the plain "browse everything" page) --
+    // nothing to seed into the checkbox filter state.
+    if (!activeFilter) return;
+
     let value = activeFilter.toString();
     state.filters.set("category", [value]);
 };

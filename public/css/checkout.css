@@ -89,7 +89,25 @@ p {
 .place-order-btn:hover {
     background-color: rgba(216, 72, 72, 0.9);
     transform: translateY(-4px);
-    
+
+}
+
+.place-order-btn:disabled {
+    background-color: #9ca3af;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.place-order-btn:disabled:hover {
+    background-color: #9ca3af;
+    transform: none;
+}
+
+#payment-message {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-align: center;
+    margin-top: 0.75rem;
 }
 
 .form-col {

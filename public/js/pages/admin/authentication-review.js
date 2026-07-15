@@ -11,11 +11,13 @@ import {
 } from "../../api/firebase-client.js";
 import { getUserProfile } from "../../core/global.js";
 
+
 const REVIEWABLE_STATUSES = ["submitted", "pending_review", "needs_manual_review"];
+
 
 const listEl = document.getElementById("review-list");
 const guardEl = document.getElementById("not-authorized");
-const approvedBtn = document.getElementById()
+
 
 // requestId -> that request's images array, so the carousel can page through
 // all of them without re-embedding the array into every <img> tag.
@@ -157,10 +159,15 @@ async function handleAction(card, action) {
     await authorizedFetch(`/api/authentication-requests/${requestId}/analyze`, { method: "POST" });
   } else {
     const notes = card.querySelector(".review-notes").value.trim();
-    await authorizedFetch(`/api/authentication-requests/${requestId}`, {
-      method: "PUT",
-      body: JSON.stringify({ status: action, reviewerNotes: notes || null }),
-    });
+    if(notes !== "" && notes !== null) {
+      await authorizedFetch(`/api/authentication-requests/${requestId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: action, reviewerNotes: notes || null }),
+      }); 
+    } else {
+      alert("Please submit a reason for the action!");
+      return;
+    }
   }
 
   await loadReviewScreen();

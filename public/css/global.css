@@ -205,7 +205,7 @@ p {
 
 #page-header {
   position: relative;
-  margin: 18px auto;
+  margin: 18px 2rem;
   height: 40vh;
   background-size: cover;
   background-color: #f4f3f1;
@@ -534,7 +534,7 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
 .breadcrumbs {
   width: 90%;
-  margin: auto;
+  margin: 0 2rem;
 }
 
 .breadcrumbs .breadcrumbs-routes {

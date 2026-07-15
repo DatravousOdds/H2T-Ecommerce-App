@@ -243,18 +243,20 @@ function displayOrderSummary(data, isAuthPayment = false) {
               <dt>Total</dt>
               <dd class="total-cost">$${data.total.toFixed(2)} USD</dd>
             </div>
-            <button id="submit" class="place-order-btn">
+            <button id="submit" class="place-order-btn" disabled>
               <div class="spinner hidden" id="spinner"></div>
-              <span id="button-text">Pay now</span>
+              <span id="button-text">Checkout Unavailable</span>
             </button>
-            <div id="payment-message" class="hidden"></div>
+            <div id="payment-message">Checkout is temporarily disabled while we finish getting our sales permit -- check back soon.</div>
     `;
 
 
     section.append(checkoutBox);
 
-    document.getElementById("submit").addEventListener('click', handleSubmit)
-    
+    // Checkout is disabled site-wide until the sales permit is in place --
+    // see the #submit button's disabled state above. Not wiring handleSubmit
+    // at all (rather than relying on the disabled attribute alone) so this
+    // stays inert even if something else re-enables the button.
 
 }
 
@@ -279,7 +281,7 @@ function displayOrderDetails(item) {
                </div> 
                </div>
               <div class="seller-profile" data-id="${item.sellerId}">
-                <img src=${item.sellerPicture} alt="" class="seller-profile-picture">
+                <img src="${item.sellerPicture || '/images/default-avatar.svg'}" alt="" class="seller-profile-picture">
                 <a href="#" class="seller-name">
                   <span>${item.sellerName}</span>
                 </a>

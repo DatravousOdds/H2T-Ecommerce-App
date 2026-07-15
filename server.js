@@ -254,6 +254,18 @@ app.get("/sell-to-us", (req, res) => {
 app.get("/releases", (req, res) => {
   res.sendFile(path.join(staticPth, "shop/releases.html"));
 });
+// shop landing route
+app.get("/shop", (req, res) => {
+  res.sendFile(path.join(staticPth, "shop/shop.html"));
+});
+// brands route
+app.get("/brands", (req, res) => {
+  res.sendFile(path.join(staticPth, "shop/brands.html"));
+});
+// about route
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(staticPth, "static/about.html"));
+});
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));
@@ -1642,6 +1654,72 @@ app.put("/api/authentication-requests/:id", verifyAuth, async (req, res) => {
   }
 });
 
+// Seller action: respond to a "needs_info" request by adding photos (and an
+// optional note) to the SAME ticket, then send it back into the review
+// queue. Owner-gated (not admin-gated like the PUT above) since this is the
+// seller acting on their own request -- mirrors the isOwner check in
+// POST .../analyze. Images are uploaded to Storage client-side first (same
+// division of labor as the initial submission in authenticate.js); this
+// route only persists the resulting metadata.
+const MAX_AUTH_REQUEST_IMAGES = 8;
+
+app.post("/api/authentication-requests/:id/resubmit", verifyAuth, async (req, res) => {
+  const requestId = req.params.id;
+  const { images, note } = req.body;
+
+  if (!Array.isArray(images) || images.length === 0) {
+    return res.status(400).json({ success: false, message: "At least one new image is required" });
+  }
+
+  try {
+    const docRef = db.collection("authenticationRequests").doc(requestId);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      return res.status(404).json({ success: false, message: "Request not found" });
+    }
+
+    const requestData = docSnap.data();
+
+    if (req.token.uid !== requestData.userId) {
+      return res.status(403).json({ success: false, message: "Not authorized for this request" });
+    }
+
+    if (requestData.status !== "needs_info") {
+      return res.status(400).json({ success: false, message: "Only requests marked needs_info can be resubmitted" });
+    }
+
+    const existingImages = requestData.images || [];
+
+    if (existingImages.length + images.length > MAX_AUTH_REQUEST_IMAGES) {
+      return res.status(400).json({
+        success: false,
+        message: `A request can have at most ${MAX_AUTH_REQUEST_IMAGES} photos (${existingImages.length} already submitted)`,
+      });
+    }
+
+    await docRef.update({
+      images: admin.firestore.FieldValue.arrayUnion(...images),
+      statusHistory: admin.firestore.FieldValue.arrayUnion({
+        status: requestData.status,
+        reviewerNotes: requestData.reviewerNotes || null,
+        reviewerId: requestData.reviewerId || null,
+        reviewedAt: requestData.reviewedAt || null,
+      }),
+      status: "submitted",
+      sellerNote: note || null,
+      reviewerNotes: null,
+      reviewerId: null,
+      reviewedAt: null,
+      resubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("❌ Error resubmitting authentication request:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 
 /**
