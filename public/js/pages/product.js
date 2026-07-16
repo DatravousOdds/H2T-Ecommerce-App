@@ -314,6 +314,7 @@ async function displayProductDetails() {
         productTitle.textContent = data.productName;
         productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
         productOriginalPrice.textContent = data.originalPrice ? `$${data.originalPrice.toFixed(2)}` : '';
+        
 
         // listing.shipping only gets set when the seller picked a carrier
         // rate (seller.js's courier-rates modal) -- "I'll handle my own
@@ -350,7 +351,7 @@ async function displayProductDetails() {
 
         // categoryMeta only carries 'men'/'women' for gendered categories
         // (Sneakers/Shoes/Apparel) -- see seller.js's category dropdown
-        // split -- ungendered categories like Accessories have no letter.
+        // split -- unrendered categories like Accessories have no letter.
         const genderLetter = data.categoryMeta === 'men'
             ? 'M'
             : data.categoryMeta === 'women'
@@ -689,7 +690,7 @@ async function getOfferKpis() {
     // Routed through the server (not a direct Firestore read) -- see
     // server.js's /api/products/:id/offer-summary for why.
     const res = await fetch(`/api/products/${productId}/offer-summary`);
-    
+
 
     if (!res.ok) {
         throw new Error(`Failed to fetch offer summary: ${res.status}`);
@@ -759,11 +760,6 @@ function calculateDiscountPrice(discountAmount, price) {
 function setProductDescription(data) {
     const productDescription = document.getElementById('detail-product');
     productDescription.innerText = data.description;
-}
-
-function toggleTrend(statValueEl, hasData) {
-    const delta = statValueEl.closest('.stat-card')?.querySelector('.stat-delta');
-    if (delta) delta.hidden = !hasData;
 }
 
 // fetchSalesPrices returns two parallel, unsorted arrays (the server route has
@@ -862,23 +858,10 @@ async function displayPricingKpis() {
         const average = await getAverageSalePrice();
         const marketValuePrice = await getMarketValuePrice();
 
-        const highestOffer = document.getElementById('highestOffer');
-        const lowestOffer = document.getElementById('lowestOffer');
-        const averageSalesPrice = document.getElementById('averageSalesPrice');
-        const marketPrice = document.getElementById('marketValue');
-
-        highestOffer.textContent = `$${offers.highest.toFixed(2) || 0}`;
-        lowestOffer.textContent = `$${offers.lowest.toFixed(2) || 0}`;
-        averageSalesPrice.textContent = `$${average}`;
-        marketPrice.textContent = `$${marketValuePrice || 0}`
-
-        // The trend arrows/percentages are hardcoded markup with no real
-        // computation behind them yet — hide them rather than show a fake
-        // trend next to a $0 placeholder when there's no data for that stat.
-        toggleTrend(highestOffer, offers.highest > 0);
-        toggleTrend(lowestOffer, offers.lowest > 0);
-        toggleTrend(averageSalesPrice, average > 0);
-        toggleTrend(marketPrice, parseFloat(marketValuePrice) > 0);
+        document.getElementById('highestOffer').textContent = `$${offers.highest.toFixed(2) || 0}`;
+        document.getElementById('lowestOffer').textContent = `$${offers.lowest.toFixed(2) || 0}`;
+        document.getElementById('averageSalesPrice').textContent = `$${average}`;
+        document.getElementById('marketValue').textContent = `$${marketValuePrice || 0}`;
     } catch (error) {
         console.error("Error fetching pricing KPIs:", error);
     } finally {

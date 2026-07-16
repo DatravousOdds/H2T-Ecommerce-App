@@ -928,7 +928,7 @@ async function handleAddToCartSubmission() {
   }
 
   setTimeout(() => {
-    authSubmitBtn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> Add to Cart`;
+    authSubmitBtn.innerHTML = `<i class="fa-solid fa-cart-plus"></i> Add to Bag`;
     authSubmitBtn.disabled = false;
     payNowBtn.disabled = false;
     },

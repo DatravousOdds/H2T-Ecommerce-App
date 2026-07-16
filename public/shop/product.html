@@ -145,8 +145,8 @@
             <div class="button-group">
               <a class="cta-btn make-offer-btn" id="offerBtn" href="#" role="button">Make Offer</a>
               <a class="cta-btn atc-btn" id="addToCartBtn" href="#" role="button">
-                <i class="fa-solid fa-bag-shopping"></i>
-                Add To Cart
+
+                Add To Bag
               </a>
             </div>
             <a class="cta-btn buy-btn" id="buyBtn" role="button">Buy It Now</a>
@@ -267,12 +267,32 @@
     </section>
     <!-- Sales Chart-->
      <section class="section-p1">
+        <!-- Statical Data-->
+         <div class="stat-row">
+          <div class="stat-card">
+            <p class="stat-label">Highest Offer</p>
+            <p class="stat-val" id="highestOffer">$0.00</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Lowest Offer</p>
+            <p class="stat-val" id="lowestOffer">$0.00</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Average Sale Price</p>
+            <p class="stat-val" id="averageSalesPrice">$0.00</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">ValueAt</p>
+            <p class="stat-val" id="marketValue">$0.00</p>
+          </div>
+         </div>
+
         <div class="header-wrapper">
           <div class="chart-header">
             <p class="subheader">Sales Chart</p>
             <h2 class="header">Price History</h2>
           </div>
-         
+
           <button type="button" class="chart-tooltip" id="viewAllSalesBtn">
             <p>Last sale</p>
             <span id="lastSalePrice">--</span>
@@ -302,10 +322,6 @@
             <p>All</p>
           </div>
         </div>
-        <!-- Statical Data-->
-         <div class="stat-row">
-          <!-- Rendered dynamically -->
-         </div>
         <!--Chart Canvas-->
         <div class="canvas-container">
           <canvas id="priceChart" width="1120" height="300"></canvas>

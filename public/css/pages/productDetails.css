@@ -256,7 +256,7 @@
 .prod-prices {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .original-price {
@@ -549,6 +549,9 @@
 }
 
 .stat-delta {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
     font-size: 0.75rem;
     font-weight: 500;
     margin-top: 2px;
