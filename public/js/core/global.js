@@ -897,6 +897,28 @@ function renderRatingStars(rating) {
   return starsHtml;
 }
 
+// originalPrice only gets set when a seller edits listingPrice on an
+// existing listing (see seller.js collectListingInfo()) -- it's the price
+// right before that edit, not a fixed retail/MSRP value. That makes it
+// exactly "previousPrice" for a momentum calculation. Shared by the shop
+// grid cards (displayProducts) and the product detail page so both apply
+// the same "is this actually a drop" rule.
+function getPriceMomentum(currentPrice, previousPrice) {
+  const hasPriceHistory =
+    typeof previousPrice === "number" &&
+    previousPrice > 0 &&
+    previousPrice !== currentPrice;
+
+  // momentum = (currentPrice - previousPrice) / previousPrice
+  const priceMomentum = hasPriceHistory
+    ? (currentPrice - previousPrice) / previousPrice
+    : 0;
+  const momentumPercent = Math.round(Math.abs(priceMomentum) * 100);
+  const priceDropped = hasPriceHistory && priceMomentum < 0;
+
+  return { hasPriceHistory, priceDropped, momentumPercent };
+}
+
 const displayProducts = (products, containerElement) => {
   const productsContainer = document.getElementById(`${containerElement}`);
   // clear existing products
@@ -924,23 +946,9 @@ const displayProducts = (products, containerElement) => {
       window.location.href = `/shop/product.html?id=${doc.id}`;
     };
 
-    // originalPrice only gets set when a seller edits listingPrice on an
-    // existing listing (see seller.js collectListingInfo()) -- it's the
-    // price right before that edit, not a fixed retail/MSRP value. That
-    // makes it exactly "previousPrice" for a momentum calculation.
     const previousPrice = productData.originalPrice;
     const currentPrice = productData.listingPrice;
-    const hasPriceHistory =
-      typeof previousPrice === "number" &&
-      previousPrice > 0 &&
-      previousPrice !== currentPrice;
-
-    // momentum = (currentPrice - previousPrice) / previousPrice
-    const priceMomentum = hasPriceHistory
-      ? (currentPrice - previousPrice) / previousPrice
-      : 0;
-    const momentumPercent = Math.round(Math.abs(priceMomentum) * 100);
-    const priceDropped = hasPriceHistory && priceMomentum < 0;
+    const { hasPriceHistory, priceDropped, momentumPercent } = getPriceMomentum(currentPrice, previousPrice);
 
     const originalPriceHTML = priceDropped
       ? `<span class="orgin-price">$${previousPrice.toFixed(2)}</span>`
@@ -987,6 +995,15 @@ const displayProducts = (products, containerElement) => {
       ? `<span class="shipping-note">+ $${productData.shipping.estimateRate.toFixed(2)} shipping</span>`
       : `<span class="shipping-note">+ Free shipping</span>`;
 
+    // Set on the listing by seller.js when it's created from an approved
+    // authenticationRequests doc -- see prefillFromAuthRequest().
+    const authBadgeHTML = productData.authenticated
+      ? `<div class="auth-badge auth-badge--card">
+          <img src="/images/hexxo_auth_badge.png" alt="">
+          <span>Authenticity Guarantee</span>
+        </div>`
+      : '';
+
     productElement.innerHTML = `
 
             <!--- Image container-->
@@ -1021,6 +1038,8 @@ const displayProducts = (products, containerElement) => {
                   </div>
                   ${priceChangeHTML}
                 </div>
+
+                ${authBadgeHTML}
 
               </div>
 
@@ -1391,6 +1410,7 @@ export {
   deleteMapEntry,
   updateResultsCount,
   displayProducts,
+  getPriceMomentum,
   renderProductSkeletons,
   renderRatingStars,
   resetFilterUI,

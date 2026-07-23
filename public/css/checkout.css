@@ -265,6 +265,18 @@ p {
 }
 
 /* Media Queries */
+@media (max-width: 920px) {
+    .cart-section {
+        max-width: 100%;
+        flex-direction: column;
+    }
+
+    .container-wrapper {
+        flex-direction: column;
+    }
+
+}
+
 @media (max-width: 768px) {
     .cart-section {
         max-width: 100%;

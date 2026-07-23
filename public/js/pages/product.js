@@ -1,5 +1,5 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons, renderRatingStars, isReleaseLive } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons, renderRatingStars, isReleaseLive, getPriceMomentum } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -9,8 +9,6 @@ import { fetchSalesPrices } from '../components/priceChart.js';
 const user = await checkUserStatus();
 const searchQuery = new URLSearchParams(window.location.search);
 const productId = searchQuery.get('id');
-
-
 
 const productDetailsWrapper = document.querySelector('.product-details-wrapper');
 const productCategory = document.querySelector('.prod-category');
@@ -22,9 +20,11 @@ const sellerRatingStat = document.getElementById('sellerRatingStat');
 const sellerRatingStars = document.getElementById('sellerRatingStars');
 const sellerRating = document.getElementById('sellerRating');
 const sellerListingsCount = document.getElementById('sellerListingsCount');
+const authBadge = document.getElementById('authBadge');
 const productTitle = document.querySelector('.prod-title');
 const productPrice = document.querySelector('.prod-price')
 const productOriginalPrice = document.querySelector('.original-price');
+const priceChange = document.getElementById('priceChange');
 const shippingNote = document.getElementById('shippingNote');
 const prodMeta = document.getElementById('prodMeta');
 const mainImage = document.getElementById('MainImg');
@@ -290,13 +290,14 @@ async function displayProductDetails() {
         const data = await getProductData(productId);
 
         productCategory.textContent = data.category;
+        authBadge.style.display = data.authenticated ? '' : 'none';
 
         const sellerProfile = await getUserProfile(data.userId);
         sellerProfilePicture.src = sellerProfile.profileImage || '/images/default-avatar.svg';
         sellerName.textContent = sellerProfile.username || 'Unknown Seller';
         sellerProfileLink.href = `/sellerProfile?id=${data.userId}`;
 
-        sellerVerifiedTag.style.display = sellerProfile.isVerified ? '' : 'none';
+        sellerVerifiedTag.style.display = sellerProfile.isVerified ? '' : '/images/hexxo_auth_badge.png';
 
         // Same "hide instead of showing a fake 0/5" gate as sellerProfile.js/profile.js.
         const totalRatings = sellerProfile.ratings?.metrics?.totalRatings || 0;
@@ -313,8 +314,21 @@ async function displayProductDetails() {
 
         productTitle.textContent = data.productName;
         productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
-        productOriginalPrice.textContent = data.originalPrice ? `$${data.originalPrice.toFixed(2)}` : '';
-        
+
+        // Same momentum rule as the shop-grid cards (global.js's
+        // displayProducts): only strike through the old price on an actual
+        // drop, and show the matching % OFF / trend-up badge either way.
+        const { hasPriceHistory, priceDropped, momentumPercent } = getPriceMomentum(data.listingPrice, data.originalPrice);
+
+        productOriginalPrice.textContent = priceDropped ? `$${data.originalPrice.toFixed(2)}` : '';
+
+        priceChange.style.display = hasPriceHistory ? '' : 'none';
+        priceChange.innerHTML = !hasPriceHistory
+            ? ''
+            : priceDropped
+            ? `<div class="product-discount"><p>${momentumPercent}% OFF</p></div>`
+            : `<div class="price-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i><span>+${momentumPercent}%</span></div>`;
+
 
         // listing.shipping only gets set when the seller picked a carrier
         // rate (seller.js's courier-rates modal) -- "I'll handle my own
@@ -524,13 +538,6 @@ async function respondToOffer(offerId, action, counterAmount) {
     return result;
 }
 
-function offerStatusLabel(offer) {
-    if (offer.status === "accepted") return "Offer accepted! The seller has 24 hours to complete the sale.";
-    if (offer.status === "rejected") return "Offer declined.";
-    if (offer.turn === "buyer") return `Seller countered with $${offer.offerAmount} — your move`;
-    return `Offer pending — $${offer.offerAmount} sent to seller`;
-}
-
 // Renders the logged-in buyer's own negotiation thread on this listing (if
 // any). Re-rendered after every accept/reject/counter so the panel always
 // reflects whichever side's turn it now is.
@@ -735,6 +742,62 @@ async function loadRelateProducts() {
         .slice(0, FALLBACK_LIMIT);
 }
 
+async function displaySalesHistory() {
+    if (!salesDrawer) return;
+
+    let dates = [];
+    let prices = [];
+    try {
+        ({ dates, prices } = await fetchSalesPrices());
+    } catch (error) {
+        console.error("Error fetching sales history:", error);
+    }
+
+    const sales = buildSalesHistory(dates, prices);
+    const mostRecentSale = sales[sales.length - 1];
+
+    const lastSalePriceEl = document.getElementById('lastSalePrice');
+    if (lastSalePriceEl) {
+        lastSalePriceEl.textContent = mostRecentSale ? `$${mostRecentSale.price.toFixed(2)}` : 'N/A';
+    }
+
+    // Most recent sale first, like StockX's sales feed — buildSalesHistory
+    // sorts oldest -> newest so trend math reads correctly, so reverse for display.
+    salesDrawer.innerHTML = `
+      <div class="cart-drawer-header">
+        <h2>All sales</h2>
+        <button type="button" class="modal-close" id="salesDrawerClose" aria-label="Close sales history">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="cart-drawer-body">
+        ${sales.length ? [...sales].reverse().map(saleRowTemplate).join('') : '<p>No sales yet.</p>'}
+      </div>
+    `;
+
+    document.getElementById('salesDrawerClose')?.addEventListener('click', () => {
+        salesDrawer.classList.remove('is-open');
+    });
+}
+
+async function displayPricingKpis() {
+    showLoader(statRow);
+    try {
+        const offers = await getOfferKpis();
+        const average = await getAverageSalePrice();
+        const marketValuePrice = await getMarketValuePrice();
+
+        document.getElementById('highestOffer').textContent = `$${offers.highest.toFixed(2) || 0}`;
+        document.getElementById('lowestOffer').textContent = `$${offers.lowest.toFixed(2) || 0}`;
+        document.getElementById('averageSalesPrice').textContent = `$${average}`;
+        document.getElementById('marketValue').textContent = `$${marketValuePrice || 0}`;
+    } catch (error) {
+        console.error("Error fetching pricing KPIs:", error);
+    } finally {
+        hideLoader(statRow);
+    }
+}
+
 /* ==== HELPER FUNCTIONS ===== */
 
 function ratingStars(maxRatings = 5) {
@@ -811,62 +874,6 @@ function saleRowTemplate(sale) {
         </div>
         ${trendHTML}
     </div>`;
-}
-
-async function displaySalesHistory() {
-    if (!salesDrawer) return;
-
-    let dates = [];
-    let prices = [];
-    try {
-        ({ dates, prices } = await fetchSalesPrices());
-    } catch (error) {
-        console.error("Error fetching sales history:", error);
-    }
-
-    const sales = buildSalesHistory(dates, prices);
-    const mostRecentSale = sales[sales.length - 1];
-
-    const lastSalePriceEl = document.getElementById('lastSalePrice');
-    if (lastSalePriceEl) {
-        lastSalePriceEl.textContent = mostRecentSale ? `$${mostRecentSale.price.toFixed(2)}` : 'N/A';
-    }
-
-    // Most recent sale first, like StockX's sales feed — buildSalesHistory
-    // sorts oldest -> newest so trend math reads correctly, so reverse for display.
-    salesDrawer.innerHTML = `
-      <div class="cart-drawer-header">
-        <h2>All sales</h2>
-        <button type="button" class="modal-close" id="salesDrawerClose" aria-label="Close sales history">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <div class="cart-drawer-body">
-        ${sales.length ? [...sales].reverse().map(saleRowTemplate).join('') : '<p>No sales yet.</p>'}
-      </div>
-    `;
-
-    document.getElementById('salesDrawerClose')?.addEventListener('click', () => {
-        salesDrawer.classList.remove('is-open');
-    });
-}
-
-async function displayPricingKpis() {
-    showLoader(statRow);
-    try {
-        const offers = await getOfferKpis();
-        const average = await getAverageSalePrice();
-        const marketValuePrice = await getMarketValuePrice();
-
-        document.getElementById('highestOffer').textContent = `$${offers.highest.toFixed(2) || 0}`;
-        document.getElementById('lowestOffer').textContent = `$${offers.lowest.toFixed(2) || 0}`;
-        document.getElementById('averageSalesPrice').textContent = `$${average}`;
-        document.getElementById('marketValue').textContent = `$${marketValuePrice || 0}`;
-    } catch (error) {
-        console.error("Error fetching pricing KPIs:", error);
-    } finally {
-        hideLoader(statRow);
-    }
 }
 
 function displayProducts(products) {
@@ -1012,7 +1019,12 @@ function displayProducts(products) {
   
 };
 
-
+function offerStatusLabel(offer) {
+    if (offer.status === "accepted") return "Offer accepted! The seller has 24 hours to complete the sale.";
+    if (offer.status === "rejected") return "Offer declined.";
+    if (offer.turn === "buyer") return `Seller countered with $${offer.offerAmount} — your move`;
+    return `Offer pending — $${offer.offerAmount} sent to seller`;
+}
 
 
 export {

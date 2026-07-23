@@ -116,20 +116,23 @@
         </div>
 
         <div class="s_prod_details">
-          <!-- Auth Badge-->
-          <!-- <div class="auth-badge">
-            <i class="fa-solid fa-check"></i>
+          <!-- Auth Badge: hidden by default, shown by product.js only when the listing's authenticated field is true -->
+           <div class="auth-badge" id="authBadge" style="display: none">
+            <img src="../images/hexxo_auth_badge.png" alt="">
             <span>Authenticity Guarantee</span>
-          </div> -->
+          </div>
 
           <p class="prod-category"></p>
 
           <h1 class="prod-title"></h1>
 
           <div class="prod-prices">
-            <p class="prod-price" aria-label="Price"></p>
-            <p class="original-price"></p>
-            <span class="shipping-note" id="shippingNote"></span>
+            <div class="price-row">
+              <p class="prod-price" aria-label="Price"></p>
+              <p class="original-price"></p>
+              <span class="shipping-note" id="shippingNote"></span>
+            </div>
+            <div class="price-change" id="priceChange" style="display: none"></div>
           </div>
 
 

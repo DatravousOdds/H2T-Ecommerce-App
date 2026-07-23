@@ -9,12 +9,8 @@ const storage = getStorage();
 
 initCartDrawer();
 
-
-
 let currentUser = null;
 currentUser = await checkUserStatus();
-console.log("current User:", currentUser);
-
 
 // Image upload functionality
 const imageInputs = document.querySelectorAll(".file-input");
@@ -34,6 +30,70 @@ const SKU_DEBOUNCE_MS = 250;
 const SKU_MAX_RESULTS = 8;
 let cachedActiveListings = null;
 let skuDebounceTimer = null;
+
+const uploadSlotByCategory = {
+  "trading cards" : {
+    angles: [
+      { id: "front", label: "Front View", type: "required", icon:'fa-solid fa-camera' },
+      { id: "label", label: "Front of Label", type: "required" },
+      { id: "sticker", label: "Laser Sticker Front (Straight On)", type: "required" },
+      { id: "upper-left-corners", label: "Front Corners of Card (Upper Left)", type: "required" },
+      { id: "upper-right-corners", label: "Front Corners of Card (Upper Right)", type: "required" },
+      { id: "lower-left-corners", label: "Front Corners of Card (Lower Left)", type: "required" },
+      { id: "lower-right-corners", label: "Front Corners of Card (Lower Right)", type: "required" },
+      { id: "back", label: "Back View", type: "required" }
+    ]
+  },
+  "apparel": {
+    angles: [
+      { id: "front", label: "Front View (Laid Flat or On Hanger)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "back", label: "Back View", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "brand-tag", label: "Brand / Main Label Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "care-label", label: "Care Label / Size Tag Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "stitching", label: "Stitching Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "fabric", label: "Fabric / Material Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "hardware", label: "Hardware Close-Up (Buttons, Zippers, or Drawstrings)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "rn-tag", label: "Manufacturer / RN Number Tag", type: "required", icon: 'fa-solid fa-camera' }
+    ]
+  },
+  "sneakers": {
+    angles: [
+      { id: "pair-front", label: "Front View (Both Shoes)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "pair-side", label: "Side Profile View (Both Shoes)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "outsole-left", label: "Outsole / Bottom (Left Shoe)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "outsole-right", label: "Outsole / Bottom (Right Shoe)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "size-tag", label: "Size Tag (Inside Tongue)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "box-label", label: "Box Label / UPC Sticker", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "stitching", label: "Stitching Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "logo", label: "Brand Logo Close-Up", type: "required", icon: 'fa-solid fa-camera' }
+    ]
+  },
+  "shoes": {
+    angles: [
+      { id: "front", label: "Front View", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "side", label: "Side Profile View", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "sole-stamp", label: "Sole Stamp / Engraving Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "insole", label: "Insole Logo / Branding", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "heel", label: "Heel View", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "stitching", label: "Stitching / Seam Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "material", label: "Material / Leather Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "size-stamp", label: "Size Stamp Close-Up", type: "required", icon: 'fa-solid fa-camera' }
+    ]
+  },
+  "accessories": {
+    angles: [
+      { id: "front", label: "Front View", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "back", label: "Back View", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "brand-mark", label: "Brand Logo / Engraving Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "serial-code", label: "Serial Number / Date Code", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "hardware", label: "Hardware Close-Up (Zippers, Clasps, or Buckles)", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "stitching", label: "Stitching Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "material", label: "Material / Craftsmanship Close-Up", type: "required", icon: 'fa-solid fa-camera' },
+      { id: "interior-lining", label: "Interior Lining / Stamp", type: "required", icon: 'fa-solid fa-camera' }
+    ]
+  },
+}
+
 // cart modal actions
 const cartModal = document.getElementById('addedToCartModal');
 const cartItemCount = document.getElementById('cartItemCount');
@@ -135,6 +195,58 @@ let formData = {
   productDetails: {},
   productSku: '',
   tierSelection: ''
+}
+
+function rebuildUploadCards(category) {
+  const currentListing = [category].angles.map(angle => ({
+    ...angle,
+    status: "not-uploaded",
+    file: null
+  }))
+
+  return currentListing;
+}
+
+function renderUploadCards(arrayOfAngles) {
+  arrayOfAngles.forEach((index, angles) => {
+    const div = document.createElement('div');
+    div.classList.add('image-item');
+    div.dataset.dataIndex = index;
+    div.innerHTML = `
+      <input
+        data-index="0"
+        type="file"
+        id="mainImage"
+        name="mainImage"
+        accept="image/png, image/jpeg"
+        class="file-input"
+        required
+        aria-required="true"
+        aria-describedby="mainImageHelp"
+      />
+      <label for="mainImage" class="file-label">
+        <div class="preview-container">
+          <i class="fas fa-plus upload-icon"></i>
+          <span class="upload-text"> Upload Main Image </span>
+          <img
+            src=""
+            alt="Preview"
+            class="image-preview"
+            style="display: none"
+          />
+        </div>
+      </label>
+
+      <button
+        class="remove-image-btn"
+        style="display: none"
+        aria-label="Remove image"
+      >
+        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+      </button>
+    `
+
+  })
 }
 
 // Draft persistence -- sessionStorage (not localStorage) because this

@@ -255,6 +255,13 @@
 
 .prod-prices {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+}
+
+.price-row {
+    display: flex;
     align-items: center;
     gap: 0.25rem;
 }
@@ -768,6 +775,23 @@
     font-size: 0.7rem;
     font-weight: 600;
     text-decoration: none;
+}
+
+.auth-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #1a1a1a;
+    font-size: 0.85rem;
+    font-weight: 700;
+    width: fit-content;
+    margin-bottom: 0.75rem;
+}
+
+.auth-badge img {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
 }
 
 .seller-stats {

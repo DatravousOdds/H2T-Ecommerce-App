@@ -179,7 +179,7 @@ const kidsRange = Array.from({ length: 12 }, (_, i) => {
 const mensRange = Array.from({length:17 }, (_,i) => {
     if (i > 12) {
       return i;
-  }
+    }
     return 6 + i * 0.5;
 })
   
@@ -321,6 +321,15 @@ imageGridContainer.addEventListener('click', (e) => {
         const imagePreview = imageContainer.querySelector('.image-preview');
         const removeImageBtn = imageContainer.querySelector('.remove-image-btn');
 
+        imagePreview.addEventListener('dragstart', (e) => {
+            console.log(e);
+            // e.dataTransfer.setData(imageContainer.dataset.id);
+        })
+
+        imageContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        })
+
         if (e.target.closest('.remove-image-btn')) {
             e.stopPropagation();
             handleImageRemove(imageInput, imagePreview, removeImageBtn);
@@ -332,6 +341,37 @@ imageGridContainer.addEventListener('click', (e) => {
         handleImageUpload(imageInput);
 
 })
+
+let draggedBox = null;
+
+imageGridContainer.addEventListener('dragstart', (e) => {
+    const imageContainer = e.target.closest('.image-container');
+    const imagePreview = imageContainer.querySelector('.image-preview');
+    console.log(imageContainer);
+    
+    const emptyContainer = getEmptyImageContainers();
+
+    if (imageContainer === videoContainer || emptyContainer.includes(imageContainer)) {
+        console.log("Images cannot be draggable!");
+        return;
+    }
+
+    draggedBox = imageContainer;
+    console.log(draggedBox);
+})
+
+imageGridContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+
+    const imageContainer = e.target.closest('.image-container');
+    console.log(imageContainer);
+})
+
+imageGridContainer.addEventListener('drop', (e) => {
+    
+})
+
+
 
 productCategory.addEventListener("change", () => {
     if (!productCategory.value) return;
@@ -596,6 +636,10 @@ async function loadListingForEdit(listingId) {
         listing.listingId = existing.id;
         listing.createdAt = existing.createdAt;
         listing.status = existing.status;
+        if (existing.authenticated) {
+            listing.authenticated = true;
+            listing.authRequestId = existing.authRequestId;
+        }
         previousListingPrice = existing.listingPrice ?? null;
 
         populateFormForEdit(existing);
@@ -660,6 +704,12 @@ async function prefillFromAuthRequest(requestId) {
             alert('This item has not passed authentication yet.');
             return;
         }
+
+        // Marks the resulting listing as authenticated so product.js /
+        // global.js can show the auth badge -- authRequestId kept for
+        // traceability back to the approved request.
+        listing.authenticated = true;
+        listing.authRequestId = requestId;
 
         populateFormFromAuthRequest(authData);
     } catch (error) {
@@ -761,6 +811,7 @@ function populateExistingImages(images) {
         preview.dataset.storagePath = img.path || '';
         preview.style.display = 'block';
         removeBtn.style.display = 'block';
+        container.draggable = true;
     });
 }
 
@@ -1322,6 +1373,7 @@ function handleImageUpload(input) {
                 preview.src = e.target.result;
                 preview.style.display = 'block';
                 removeBtn.style.display = 'block';
+                container.draggable = true;
             }
             reader.readAsDataURL(file);
         });
@@ -1334,6 +1386,10 @@ function handleImageRemove(input, preview, removeBtn) {
     delete preview.dataset.storagePath;
     preview.style.display = 'none';
     removeBtn.style.display = 'none';
+
+    const container = preview.closest('.image-container');
+    if (container) container.draggable = false;
+
     return;
 }
 
