@@ -38,6 +38,7 @@
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
     />
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   </head>
 
   <body>
@@ -48,86 +49,83 @@
     </section>
     <!-- End of Navbar-->
 
-    <main>
-        <div class="content-header">
+    <main class="results-wrapper is-loading">
+        <!-- Skeleton state: shown only while authenticationResults.js fetches the
+             request, then swapped out for the real content below. -->
+        <div class="content-header skeleton-item" aria-hidden="true">
             <div class="content-title">
-                <h1>Authentication Results</h1>
-                <p>Submission <span class="submit-number" id="submitNumber">#122345</span> - Reviewed Jul, 8, 2026</p>
+                <span class="skeleton skeleton-line" style="width: 260px; height: 1.75rem;"></span>
+                <span class="skeleton skeleton-line short" style="margin-top: 0.5rem;"></span>
             </div>
-            <div class="authenticate-result fake-badge">
-                <i class="fa-solid fa-circle-check"></i>
-                <span >PASS - AUTHENTIC</span>
-            </div>
+            <span class="skeleton" style="width: 160px; height: 2.5rem; border-radius: 8px;"></span>
         </div>
-        <div class="flex-wrapper">
-           <section id="details" class="details">
-                <div class="image-wrapper">
-                    <img src="/images/Oversized-Graphic-Tee-650x810.jpg" class="prod-image" alt="Vlone Friends Graphic Tee">
-                </div>
-                <div class="prod-details">
-                    <p class="details-title">ITEM</p>
-                    <div class="prod-specs">
-                        <p>Vlone Friends Graphic Tee</p>
-                        <div>
-                            <p class="prod-size">Size L</p>
-                            <p class="color">Black/Yellow</p>
-                        </div>
-                    </div>
-                    <div class="auth-info">
-                        <div class="submitted-by">
-                            <div class="auth-label">Submitted by</div>
-                            <div class="auth-value">@marcussells</div>
-                        </div>
-                        <div class="auth-tier">
-                            <div class="auth-label">Authenticator</div>
-                            <div class="auth-value">Tier 1</div>
-                        </div>
-                        <div class="turnaround-time">
-                            <div class="auth-label">Turnaround</div>
-                            <div class="auth-value">18h 42m</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="auth-cta">
-                    <button type="button" class="btn-primary">List item for sale ➡</button>
-                    <button type="button" class="btn-secondary">Download certificate</button>
+        <div class="flex-wrapper skeleton-item" aria-hidden="true">
+            <section class="details">
+                <span class="skeleton skeleton-image" style="height: 500px; margin-bottom: 1rem;"></span>
+                <span class="skeleton" style="display: block; width: 100%; height: 140px; border-radius: 8px; margin-bottom: 2rem;"></span>
+                <div style="display: flex; gap: 1rem;">
+                    <span class="skeleton" style="flex: 1; height: 3rem; border-radius: 4px;"></span>
+                    <span class="skeleton" style="flex: 1; height: 3rem; border-radius: 4px;"></span>
                 </div>
             </section>
-            <section id="productRemarks">
-                <div class="auth-wrapper" id="authRemarks">
-                   <h2 class="auth-header">Authentication Remarks</h2>
-                   <p>
-                        Stitching, tag placement, and print registration all match verified retail samples. UV wash on the woven label confirms an authentic production run. No inconsistencies found across any checkpoint.
-                   </p>
-                </div>
-                <div class="auth-wrapper" id="authComments">
-                    <h2 class="auth-header">Comments</h2>
-                    <p>
-                        Light shelf wear noted on the lower hem — cosmetic only, does not affect authenticity grade. Flagged for the listing photos.
-                    </p>
-                </div>
-                <div class="auth-photos">
-                    <div class="auth-header">
-                        <h2>Submitted Photos</h2>
-                    </div>
-                    <div class="flex-wrapper">
-                        <div class="img-wrapper">
-                            <img src="/images/Oversized-Graphic-Tee-650x810.jpg" alt="Submitted photo 1 of Vlone Friends Graphic Tee">
-                        </div>
-                        <div class="img-wrapper">
-                            <img src="/images/Japanese_Streetwear_T-Shirt_800x800.jpg" alt="Submitted photo 2 of Vlone Friends Graphic Tee">
-                        </div>
-                        <div class="img-wrapper">
-                            <img src="/images/shirt-bg.jpg" alt="Submitted photo 3 of Vlone Friends Graphic Tee">
-                        </div>
-                        <div class="img-wrapper">
-                            <img src="/images/streetwear.jpg" alt="Submitted photo 4 of Vlone Friends Graphic Tee">
-                        </div>
-                    </div>
-                </div>
-            </section> 
+            <section>
+                <span class="skeleton skeleton-line long"></span>
+                <span class="skeleton skeleton-line long"></span>
+                <span class="skeleton skeleton-line medium" style="margin-bottom: 2rem;"></span>
+                <span class="skeleton skeleton-line long"></span>
+                <span class="skeleton skeleton-line medium"></span>
+            </section>
+        </div>
+
+        <!-- Real content: populated entirely by authenticationResults.js's
+             renderAuthResults(), so nothing static belongs here. -->
+        <div class="content-header" id="contentHeader"></div>
+        <div class="flex-wrapper">
+            <section id="details" class="details"></section>
+            <section id="productRemarks"></section>
         </div>
     </main>
+
+    <!-- Certificate of Authenticity: rendered off-screen (not display:none, so
+         html2canvas can still lay it out) and only populated/used when the
+         request is approved. downloadCertBtn snapshots this node to a PNG. -->
+    <div class="certificate" id="certificate" aria-hidden="true">
+        <div class="certificate-watermark"></div>
+        <div class="certificate-inner">
+            <img src="/images/Hexxo_Bg_Removed.png" class="certificate-logo" alt="">
+            <h2 class="certificate-title">Certificate of Authenticity</h2>
+            <p class="certificate-subtitle">Provided by Hexxo</p>
+            <hr class="certificate-divider">
+            <div class="certificate-row">
+                <div>
+                    <p class="certificate-label">Brand</p>
+                    <p class="certificate-value" id="certBrand"></p>
+                </div>
+                <div>
+                    <p class="certificate-label">Authenticate Type</p>
+                    <p class="certificate-value" id="certTier"></p>
+                </div>
+            </div>
+            <div class="certificate-row">
+                <div>
+                    <p class="certificate-label">Submission Date</p>
+                    <p class="certificate-value" id="certDate"></p>
+                </div>
+                <div>
+                    <p class="certificate-label">Certificate Owner</p>
+                    <p class="certificate-value" id="certOwner"></p>
+                </div>
+            </div>
+            <div class="certificate-passed">
+                <img src="/images/hexxo_auth_badge.png" alt="">
+                <span>Passed Authentication</span>
+            </div>
+            <div class="certificate-qr">
+                <i class="bi bi-qr-code"></i>
+            </div>
+            <div class="certificate-photos" id="certPhotos"></div>
+        </div>
+    </div>
 
     <!-- newsletter -->
     <section id="newsletter" class="section-p1 section-m1">

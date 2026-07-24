@@ -83,6 +83,43 @@
   background-color: #f5f5f5;
 }
 
+.seller-website-links {
+  display: none;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.seller-website-links .website-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #000;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.seller-website-links .website-link:hover {
+  color: #706f6f;
+}
+
+.seller-website-links .shopify {
+  color: #95bf46;
+}
+
+.seller-website-links .facebook {
+  color: #0765ff;
+}
+
+.seller-website-links .instagram {
+  color: #db0c7a;
+}
+
+.seller-website-links .amazon {
+  color: #f59400;
+}
+
 .follow-btn {
   border: 2px solid #000;
   background-color: #000;
@@ -167,6 +204,10 @@
   }
 
   .seller-follow-stats {
+    justify-content: center;
+  }
+
+  .seller-website-links {
     justify-content: center;
   }
 

@@ -4,6 +4,25 @@ main {
     margin: 1rem auto;
 }
 
+/* Skeleton loading state -- hidden by default, swapped in for the real
+   content-header/flex-wrapper while renderAuthResults() waits on Firestore. */
+.results-wrapper .skeleton-item {
+    display: none;
+}
+
+.results-wrapper.is-loading > .content-header.skeleton-item {
+    display: flex;
+}
+
+.results-wrapper.is-loading > .flex-wrapper.skeleton-item {
+    display: grid;
+}
+
+.results-wrapper.is-loading > .content-header:not(.skeleton-item),
+.results-wrapper.is-loading > .flex-wrapper:not(.skeleton-item) {
+    display: none;
+}
+
 .content-header {
     display: flex;
     align-items: center;
@@ -16,8 +35,17 @@ main {
 }
 
 .authenticate-result {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.5rem 1rem;
     border-radius: 8px;
+}
+
+.authenticate-result img {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
 }
 
 .authenticate-result span {
@@ -90,10 +118,18 @@ main {
     /* style2.css's .btn-secondary sets a black background but never sets
        text color, and body has no color either, so text renders invisible */
     color: var(--color-text-secondary);
+
+}
+
+.auth-cta .btn-primary:hover {
+    background-color: #d02424;
+
 }
 
 .auth-cta .btn-secondary:hover {
-    outline: none;
+    outline: none !important;
+    background-color: #1a1a1a;
+    border-color: #070707;
 }
 
 .auth-cta button {
@@ -105,9 +141,9 @@ main {
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.auth-cta button:focus-visible {
+/* .auth-cta button:focus-visible {
     outline-offset: 2px;
-}
+} */
 
 #productRemarks {
     height: 100%;
@@ -270,4 +306,126 @@ main {
         height: auto;
         aspect-ratio: 1 / 1;
     }
+}
+
+/* ============================================
+    CERTIFICATE OF AUTHENTICITY
+   ============================================ */
+
+/* Positioned off-screen rather than display:none -- html2canvas needs the
+   node actually laid out to snapshot it, just not visible to the user. */
+.certificate {
+    position: fixed;
+    top: 0;
+    left: -10000px;
+    width: 700px;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.certificate-watermark {
+    position: absolute;
+    inset: 0;
+    background-image: url('/images/Hexxo_Bg_Removed.png');
+    background-repeat: repeat;
+    background-size: 90px 90px;
+    opacity: 0.06;
+    transform: rotate(-15deg) scale(1.4);
+    pointer-events: none;
+}
+
+.certificate-inner {
+    position: relative;
+    padding: 2.5rem 3rem 3rem;
+    text-align: center;
+}
+
+.certificate-logo {
+    width: 150px;
+    margin-bottom: 1rem;
+}
+
+.certificate-title {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.certificate-subtitle {
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.certificate-divider {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin-bottom: 1.5rem;
+}
+
+.certificate-row {
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.certificate-label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.25rem;
+}
+
+.certificate-value {
+    color: var(--color-text-muted);
+}
+
+.certificate-passed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+}
+
+.certificate-passed img {
+    width: 56px;
+}
+
+.certificate-passed span {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.certificate-qr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 1.5rem;
+    background-color: #f4f3f1;
+    border-radius: 8px;
+}
+
+.certificate-qr i {
+    font-size: 2.5rem;
+    color: #a3a3a3;
+}
+
+.certificate-photos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.certificate-photos img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 4px;
 }

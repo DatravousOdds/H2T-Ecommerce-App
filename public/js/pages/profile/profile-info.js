@@ -245,6 +245,16 @@ function initEditSaveCancel() {
     // Handle edit button click | Profile
     edit.forEach((btn) => {
       btn.addEventListener("click", () => {
+        // Snapshot values before unlocking the form so Cancel can restore
+        // them exactly -- including reverting back to blank/placeholder if
+        // the field was empty before editing started.
+        inputs.forEach((input) => {
+          input.dataset.originalValue = input.value;
+        });
+        select.forEach((element) => {
+          element.dataset.originalValue = element.value;
+        });
+
         select.forEach((element) => {
           element.disabled = false;
         });
@@ -267,17 +277,23 @@ function initEditSaveCancel() {
       btn.addEventListener("click", () => {
         if (btn.id === "cancel-personal-info") {
           const personalFormIds = [
-            "fname",
-            "lname",
-            "email",
-            "phoneNumber",
+            "personal-fname",
+            "personal-lname",
+            "personal-email",
+            "personal-phoneNumber",
             "profile-username"
           ];
 
           personalFormIds.forEach((id) => {
             const input = document.getElementById(id);
+            console.log("cancel input:", input)
             if (input) {
               input.classList.remove("input-error");
+              if(input.dataset.originalValue !== undefined) {
+                input.placeholder = dataset.originalValue;
+              } else {
+                return;
+              }
             }
           });
 
@@ -331,11 +347,21 @@ function initEditSaveCancel() {
           });
         }
 
-        // Disable select elements
-        select.forEach((ele) => (ele.disabled = true));
+        // Restore the value each field had before Edit was clicked, then
+        // disable. Discards unsaved typing instead of leaving it visible --
+        // an empty original value restores to "" so the placeholder shows.
+        select.forEach((ele) => {
+          if (ele.dataset.originalValue !== undefined) {
+            ele.value = ele.dataset.originalValue;
+          }
+          ele.disabled = true;
+        });
 
-        // Reset input fields (remove custom styles, etc.)
         inputs.forEach((input) => {
+          if (input.dataset.originalValue !== undefined) {
+            input.value = input.dataset.originalValue;
+
+          }
           input.disabled = true;
           input.style.backgroundColor = "transparent";
           input.style.border = "none";

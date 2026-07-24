@@ -14,6 +14,15 @@ import {
 
 const currentUser = await checkUserStatus();
 
+const listBtn = document.getElementById('list-products-btn').addEventListener('click', () => {
+  if (!currentUser || currentUser === null) {
+    window.href.location = '/login';
+  } else {
+    window.href.location = '/seller';
+  }
+})
+
+
 /**
  * Real listing shape, as written by seller.js (NOT the nested
  * basicInfo/inventory/pricing shape dashboard.js's old templates assumed):

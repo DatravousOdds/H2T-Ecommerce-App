@@ -5,7 +5,7 @@ import { checkUserStatus } from "../auth/auth.js";
 import { getUserProfile, renderRatingStars } from "../core/global.js";
 import { initCartDrawer } from "../components/cartDrawer.js";
 import { isFollowing, toggleFollow } from "../services/follow.js";
-import { formatFollowers } from "./profile/ui-helpers.js";
+import { formatFollowers, createWebsiteLinkAnchor } from "./profile/ui-helpers.js";
 
 /**
  * Real listing shape (same schema documented in
@@ -144,6 +144,23 @@ function renderSellerHeader(sellerProfile) {
   }
 }
 
+function renderSellerWebsiteLinks(sellerProfile) {
+  const containerEl = document.getElementById("seller-website-links");
+  if (!containerEl) return;
+
+  const links = sellerProfile?.websiteLinks || [];
+  if (links.length === 0) {
+    containerEl.style.display = "none";
+    return;
+  }
+
+  containerEl.innerHTML = "";
+  links.forEach(({ url, title }) => {
+    containerEl.appendChild(createWebsiteLinkAnchor(url, title));
+  });
+  containerEl.style.display = "flex";
+}
+
 // ---------------------------------------------------------------------------
 // Follow button
 //
@@ -213,6 +230,7 @@ async function initSellerProfilePage() {
   ]);
 
   renderSellerHeader(sellerProfile);
+  renderSellerWebsiteLinks(sellerProfile);
   await loadSellerListings(sellerId, listingsGrid);
 
   const isOwnProfile = currentUser?.userId === sellerId;

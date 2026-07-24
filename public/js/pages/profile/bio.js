@@ -1,6 +1,7 @@
 "use strict";
 import { checkUserStatus } from "../../auth/auth.js";
 import { db, doc, updateDoc } from '../../api/firebase-client.js';
+import { createWebsiteLinkAnchor } from "./ui-helpers.js";
 
 const currentUser = await checkUserStatus();
 
@@ -34,7 +35,6 @@ export function initBio() {
   const titleFeedback = document.getElementById("title-feedback");
   const websiteUrlDisplay = document.getElementById("website-link-display");
   const webLinks = [];
-  
 
   if (!bioTextarea || !updateBioBtn || !saveBioBtn || !url || !title) return;
 
@@ -44,6 +44,40 @@ export function initBio() {
   let currentBio = bioTextarea.value || "";
   let currentUrl = url.value || "";
   let currentUrlTitle = title.value || "";
+
+  // Builds one saved-link row (icon + title + remove-in-edit-mode "x") and
+  // appends it to the display list. Shared by the initial render below and
+  // by the save handler, so a link looks identical whether it's freshly
+  // added or was already on the profile from a previous visit.
+  function renderWebsiteLink(linkUrl, linkTitle) {
+    const div = document.createElement("div");
+    div.classList.add("website-link-div");
+
+    div.appendChild(createWebsiteLinkAnchor(linkUrl, linkTitle));
+
+    const closeIcon = document.createElement("i");
+    closeIcon.classList.add("fa-solid", "fa-xmark", "close-icon");
+    closeIcon.style.display = "none";
+
+    closeIcon.addEventListener("click", (e) => {
+      e.preventDefault();
+      div.remove();
+    });
+
+    div.append(closeIcon);
+    websiteUrlDisplay.appendChild(div);
+  }
+
+  // Restore links saved on a previous visit -- currentUser (fetched at
+  // module load, top of this file) already has them, so this doesn't need
+  // a second round trip.
+  (currentUser?.websiteLinks || []).forEach(({ url: linkUrl, title: linkTitle }) => {
+    webLinks.push({ url: linkUrl, title: linkTitle });
+    renderWebsiteLink(linkUrl, linkTitle);
+  });
+  if (webLinks.length > 0) {
+    websiteUrlDisplay.style.display = "flex";
+  }
 
   bioTextarea.addEventListener("input", () => {
     const text = bioTextarea.value;
@@ -177,55 +211,8 @@ export function initBio() {
 
       if (websiteLinks) websiteLinks.style.display = "block";
 
-      const div = document.createElement("div");
-      div.classList.add("website-link-div");
+      renderWebsiteLink(currentUrl, currentUrlTitle);
 
-      const anchor = document.createElement("a");
-      anchor.href = currentUrl;
-      anchor.target = "_blank";
-      anchor.classList.add("website-link");
-      anchor.type = "text";
-
-      const linkIcon = document.createElement("i");
-      const linkText = document.createElement("p");
-
-      linkText.textContent = currentUrlTitle;
-
-      const domain = new URL(currentUrl).hostname;
-
-      if (domain.includes("amazon")) {
-        linkIcon.classList.add("fa-brands", "fa-amazon", "amazon");
-      } else if (domain.includes("shopify")) {
-        linkIcon.classList.add("fa-brands", "fa-shopify", "shopify");
-      } else if (domain.includes("ebay")) {
-        linkIcon.classList.add("fa-brands", "fa-ebay", "ebay");
-      } else if (domain.includes("facebook")) {
-        linkIcon.classList.add("fa-brands", "fa-facebook", "facebook");
-      } else if (domain.includes("instagram")) {
-        linkIcon.classList.add("fa-brands", "fa-instagram", "instagram");
-      } else if (domain.includes("etsy")) {
-        linkIcon.classList.add("fa-brands", "fa-etsy");
-      } else {
-        linkIcon.classList.add("fa-solid", "fa-link");
-      }
-
-      anchor.appendChild(linkIcon);
-      anchor.appendChild(linkText);
-      div.appendChild(anchor);
-
-      // Close Icon
-      const closeIcon = document.createElement("i");
-      closeIcon.classList.add("fa-solid", "fa-xmark", "close-icon");
-      closeIcon.style.display = "none";
-
-      closeIcon.addEventListener("click", (e) => {
-        e.preventDefault();
-        div.remove();
-      });
-
-      div.append(closeIcon);
-
-      websiteUrlDisplay.appendChild(div);
       websiteUrlDisplay.style.display = "flex";
       websiteLinks.style.display = "none";
     }
@@ -234,7 +221,6 @@ export function initBio() {
     url.value = "";
     title.value = "";
 
-    /* TODO: Save user data to firebase  */
     await updateBio({
       bio: currentBio,
       websiteLinks: webLinks

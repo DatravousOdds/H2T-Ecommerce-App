@@ -608,6 +608,7 @@ app.get("/api/sellers/:id/public-profile", async (req, res) => {
       isVerified: profile.isVerified || false,
       ratings: profile.ratings || {},
       stats: profile.stats || {},
+      websiteLinks: profile.websiteLinks || [],
     });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });

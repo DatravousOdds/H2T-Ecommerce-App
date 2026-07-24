@@ -14,10 +14,12 @@ const authData = await fetchAuthInfo(requestId);
 const submitterProfile = authData ? await getUserProfile(authData.userId) : null;
 
 // Same three outcomes as STATUS_DISPLAY in the seller dashboard's
-// authentication.js / server.js's REVIEW_RESULT_NOTIFICATION.
+// authentication.js / server.js's REVIEW_RESULT_NOTIFICATION. approved/rejected
+// use the actual Hexxo badge logos; needs_info has no logo asset so it keeps
+// the fa-circle-info icon.
 const RESULT_BADGE = {
-    approved: { badgeClass: "authentic-badge", icon: "fa-circle-check", label: "PASS - AUTHENTIC" },
-    rejected: { badgeClass: "fake-badge", icon: "fa-circle-xmark", label: "FAILED - FAKE" },
+    approved: { badgeClass: "authentic-badge", image: "/images/hexxo_auth_badge.png", label: "PASSED AUTHENTICATION" },
+    rejected: { badgeClass: "fake-badge", image: "/images/hexxo_auth_badge_failed.png", label: "FAILED AUTHENTICATION" },
     needs_info: { badgeClass: "needs-info-badge", icon: "fa-circle-info", label: "MORE INFO NEEDED" },
 };
 
@@ -25,8 +27,12 @@ const resultHTML = status => {
     const result = RESULT_BADGE[status];
     if (!result) return "";
 
+    const iconHTML = result.image
+        ? `<img src="${result.image}" alt="">`
+        : `<i class="fa-solid ${result.icon}"></i>`;
+
     return `<div class="authenticate-result ${result.badgeClass}">
-            <i class="fa-solid ${result.icon}"></i>
+            ${iconHTML}
             <span>${result.label}</span>
         </div>`;
 }
@@ -73,7 +79,7 @@ const authTemplates = {
         ${data.status === 'approved'
             ? `<div class="auth-cta">
                 <button type="button" class="btn-primary" id="listForSaleBtn">List item for sale ➡</button>
-                <button type="button" class="btn-secondary">Download certificate</button>
+                <button type="button" class="btn-secondary" id="downloadCertBtn">Download certificate</button>
             </div>`
             : ''}`;
     },
@@ -119,12 +125,17 @@ const authTemplates = {
 }
 
 function renderAuthResults(authData, sellerProfile) {
+    const resultsWrapper = document.querySelector('.results-wrapper');
+
     if (!authData) {
         console.error("renderAuthResults: no authData to render");
+        resultsWrapper?.classList.remove('is-loading');
+        const details = document.querySelector('#details');
+        if (details) details.innerHTML = '<p>This authentication request could not be found.</p>';
         return;
     }
 
-    const contentHeader = document.querySelector('.content-header');
+    const contentHeader = document.getElementById('contentHeader');
     const details = document.querySelector('#details');
     const productRemarks = document.querySelector('#productRemarks');
 
@@ -132,14 +143,72 @@ function renderAuthResults(authData, sellerProfile) {
     if (details) details.innerHTML = authTemplates.details(authData, sellerProfile);
     if (productRemarks) productRemarks.innerHTML = authTemplates.remarks(authData);
 
-    // #listForSaleBtn is rebuilt by the innerHTML assignment above, so bind
-    // via delegation on the (stable) details container rather than the button.
+    resultsWrapper?.classList.remove('is-loading');
+
+    // #listForSaleBtn/#downloadCertBtn are rebuilt by the innerHTML assignment
+    // above, so bind via delegation on the (stable) details container rather
+    // than the buttons themselves.
     details?.addEventListener('click', (e) => {
-        if (!e.target.closest('#listForSaleBtn')) return;
-        window.location.href = `/seller/seller.html?authRequestId=${requestId}`;
+        if (e.target.closest('#listForSaleBtn')) {
+            window.location.href = `/seller/seller.html?authRequestId=${requestId}`;
+            return;
+        }
+        if (e.target.closest('#downloadCertBtn')) {
+            downloadCertificate();
+        }
     });
 
+    if (authData.status === 'approved') {
+        populateCertificate(authData, sellerProfile);
+    }
+
     wireResubmitPanel(authData, productRemarks);
+}
+
+function formatCertificateDate(timestamp) {
+    if (!timestamp) return '--';
+    return timestamp.toDate().toLocaleString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+    }).replace(',', ' @');
+}
+
+function populateCertificate(data, sellerProfile) {
+    const details = data.productDetails?.details || {};
+
+    document.getElementById('certBrand').textContent = details.Brand || '--';
+    document.getElementById('certDate').textContent = formatCertificateDate(data.createdAt);
+    document.getElementById('certTier').textContent = data.tierSelection?.type || '--';
+    document.getElementById('certOwner').textContent = sellerProfile?.username ? `@${sellerProfile.username}` : 'Unknown';
+
+    const certPhotos = document.getElementById('certPhotos');
+    certPhotos.innerHTML = (data.images || [])
+        .map((image, i) => `<img src="${image.url}" alt="Item photo ${i + 1}">`)
+        .join('');
+}
+
+async function downloadCertificate() {
+    const certificate = document.getElementById('certificate');
+    const downloadBtn = document.getElementById('downloadCertBtn');
+
+    try {
+        if (downloadBtn) downloadBtn.disabled = true;
+
+        const canvas = await html2canvas(certificate, { backgroundColor: '#ffffff', scale: 2, useCORS: true });
+
+        const link = document.createElement('a');
+        link.download = `hexxo-certificate-${requestId}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch (error) {
+        console.error('❌ Error generating certificate:', error);
+        alert('Something went wrong generating your certificate. Please try again.');
+    } finally {
+        if (downloadBtn) downloadBtn.disabled = false;
+    }
 }
 
 function readFileAsDataURL(file) {

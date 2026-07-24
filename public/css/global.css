@@ -262,13 +262,13 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
 .product-page {
   display: grid;
-  grid-template-columns: 250px 1fr 1fr;
-  grid-template-rows: auto auto auto; /* changed from fixed 100px — let content size rows */
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto auto;
   grid-template-areas:
-    "filter-section results-sort results-sort"
-    "filter-section products-section products-section"
-    "pagination-section pagination-section pagination-section";
-  gap: 1rem 1.5rem; /* row-gap column-gap — was missing row-gap */
+    "filter-section main-content"
+    "pagination-section pagination-section";
+  align-items: start; /* prevent a taller filter-section from stretching main-content's row */
+  gap: 1rem 1.5rem; /* row-gap column-gap */
   padding: 1rem 0;
 }
 
@@ -283,12 +283,21 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   margin-bottom: 2rem;
 }
 
+/* Wraps results-sort + products-section so they stack via normal flex flow,
+   independent of the filter sidebar's height (see grid-area above). */
+.main-content {
+  grid-area: main-content;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0; /* allow the product grid to shrink below its content's intrinsic width */
+}
+
 .results-sort {
   display: flex;
   flex-direction: column;
   /* align-items: flex-start; */
   /* justify-content: space-between; */
-  grid-area: results-sort;
 }
 
 .results-sort .pg-results {
@@ -298,10 +307,6 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 }
 
 
-
-.products-section {
-  grid-area: products-section;
-}
 
 .pagination-section {
   grid-area: pagination-section;
@@ -761,8 +766,7 @@ hr {
     grid-template-columns: 1fr;
     grid-template-areas:
       "filter-section"
-      "results-sort"
-      "products-section"
+      "main-content"
       "pagination-section";
   }
 

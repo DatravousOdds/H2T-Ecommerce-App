@@ -281,6 +281,53 @@ export function getStatusClass(status) {
 }
 
 // ---------------------------------------------------------------------------
+// Website / social link icons
+//
+// Shared by bio.js (owner's edit view) and sellerProfile.js (public view) so
+// a link saved on the profile page renders with the same brand icon
+// everywhere it shows up.
+// ---------------------------------------------------------------------------
+
+const LINK_BRAND_ICONS = [
+  { match: "amazon", classes: ["fa-brands", "fa-amazon", "amazon"] },
+  { match: "shopify", classes: ["fa-brands", "fa-shopify", "shopify"] },
+  { match: "ebay", classes: ["fa-brands", "fa-ebay", "ebay"] },
+  { match: "facebook", classes: ["fa-brands", "fa-facebook", "facebook"] },
+  { match: "instagram", classes: ["fa-brands", "fa-instagram", "instagram"] },
+  { match: "etsy", classes: ["fa-brands", "fa-etsy"] },
+];
+
+export function createWebsiteLinkAnchor(url, title) {
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.target = "_blank";
+  anchor.rel = "noopener noreferrer";
+  anchor.classList.add("website-link");
+
+  const linkIcon = document.createElement("i");
+
+  // Links saved before URL validation was in place (or entered without a
+  // scheme, e.g. "instagram.com/handle") aren't valid absolute URLs, and
+  // `new URL()` throws rather than returning something empty -- fall back
+  // to the generic link icon instead of crashing the whole render.
+  let brand = null;
+  try {
+    const domain = new URL(url).hostname;
+    brand = LINK_BRAND_ICONS.find(({ match }) => domain.includes(match));
+  } catch {
+    brand = null;
+  }
+  linkIcon.classList.add(...(brand ? brand.classes : ["fa-solid", "fa-link"]));
+
+  const linkText = document.createElement("p");
+  linkText.textContent = title;
+
+  anchor.appendChild(linkIcon);
+  anchor.appendChild(linkText);
+  return anchor;
+}
+
+// ---------------------------------------------------------------------------
 // File download helper
 // ---------------------------------------------------------------------------
 
