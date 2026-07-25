@@ -1379,22 +1379,117 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
       const listing = docRef.data();
       // console.log("listingData:", listing)
 
+      // Same guard as /listings/:id/offers -- a buyer can't purchase their
+      // own listing.
+      if (listing.userId === req.token.uid) {
+        return res.status(400).json({ success: false, message: "You can't purchase your own listing" });
+      }
+
       const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice;
-      const tax = 0.20; // just for testing
       const delivery = listing.shipping === "" ? 0 : listing.shipping.estimateRate;
 
+      // Real tax depends on the buyer's destination address, which isn't
+      // known yet at this point in the flow -- /tax/calculate fills it in
+      // once the buyer enters a shipping address on the checkout page.
       return res.status(200).json({
         marketplaceFee: marketplaceFee.toFixed(2),
         price: listing.listingPrice,
-        tax: tax.toFixed(2),
+        tax: "0.00",
+        taxPending: true,
         delivery: delivery,
-        total: parseFloat((marketplaceFee + delivery + tax + listing.listingPrice).toFixed(2))
+        total: parseFloat((marketplaceFee + delivery + listing.listingPrice).toFixed(2))
       })
 
     } catch (error) {
       res.status(500).json({success: false, message: `Internal server error: ${error.message}`})
     }
 })
+
+// Called once the buyer completes the shipping AddressElement on checkout.
+// Recomputes tax off the item price only (never shipping/marketplace fee,
+// per policy) and pushes the corrected amount onto the PaymentIntent that
+// /create-checkout-session already made, so the mounted Payment Element can
+// pick it up via elements.fetchUpdates() before the buyer submits payment.
+app.post("/tax/calculate", verifyAuth, async (req, res) => {
+  const { paymentIntentId, listingId, address } = req.body;
+
+  if (!paymentIntentId || !listingId || !address) {
+    return res.status(400).json({ success: false, message: "paymentIntentId, listingId, and address are required" });
+  }
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (paymentIntent.metadata.buyer_id !== req.token.uid) {
+      return res.status(403).json({ success: false, message: "Not authorized for this payment" });
+    }
+
+    // Recomputed server-side from the listing doc -- never trust a
+    // client-supplied price for the tax base.
+    const docRef = await db.collection("listings").doc(listingId).get();
+    const listing = docRef.data();
+
+    if (!listing) {
+      return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+
+    // Same guard as /order-summary -- belt-and-suspenders in case this ever
+    // gets reached without going through the summary step first.
+    if (listing.userId === req.token.uid) {
+      return res.status(400).json({ success: false, message: "You can't purchase your own listing" });
+    }
+
+    const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice;
+    const delivery = listing.shipping === "" ? 0 : listing.shipping.estimateRate;
+
+    const calculation = await stripe.tax.calculations.create({
+      currency: 'usd',
+      line_items: [{
+        amount: Math.round(listing.listingPrice * 100),
+        reference: listingId,
+        tax_behavior: 'exclusive',
+        tax_code: 'txcd_99999999'
+      }],
+      customer_details: {
+        address: {
+          line1: address.line1,
+          line2: address.line2 || undefined,
+          city: address.city,
+          state: address.state,
+          postal_code: address.postal_code,
+          country: address.country
+        },
+        address_source: 'shipping'
+      }
+    });
+
+    const tax = calculation.tax_amount_exclusive / 100;
+    const total = parseFloat((marketplaceFee + delivery + tax + listing.listingPrice).toFixed(2));
+
+    const currentItem = JSON.parse(paymentIntent.metadata.item);
+    currentItem.salesTax = parseFloat(tax.toFixed(2));
+
+    await stripe.paymentIntents.update(paymentIntentId, {
+      amount: Math.round(total * 100),
+      metadata: {
+        tax_calculation_id: calculation.id,
+        shipping_to: JSON.stringify(address),
+        item: JSON.stringify(currentItem)
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      tax: tax.toFixed(2),
+      total: total.toFixed(2),
+      calculationId: calculation.id
+    });
+
+  } catch (error) {
+    console.error("Tax calculation failed:", error.message);
+    return res.status(502).json({ success: false, message: "We couldn't calculate tax for that address right now. Please try again shortly." });
+  }
+});
 
 // payment
 app.get('/payment/card-details', async (req, res) => {
@@ -1869,7 +1964,9 @@ function buildOrderDataFromPaymentIntent(paymentData) {
     subtotal: (paymentData.amount / 100).toFixed(2),
     shippingCost: paymentData.metadata.shipping_cost,
     shippingAddress: paymentData.metadata.shipping_from,
-    item: JSON.parse(paymentData.metadata.item)
+    item: JSON.parse(paymentData.metadata.item),
+    taxCalculationId: paymentData.metadata.tax_calculation_id || null,
+    buyerShippingAddress: paymentData.metadata.shipping_to ? JSON.parse(paymentData.metadata.shipping_to) : null
   };
 }
 
@@ -1884,17 +1981,19 @@ async function handlePaymentIntentSucceeded(paymentData){
     const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
 
     let data;
+    let orderRef;
 
     if (!existingOrder.empty) {
       const orderDoc = existingOrder.docs[0];
       data = orderDoc.data();
+      orderRef = orderDoc.ref;
 
       if (data.fulfillmentStatus === 'processing') {
         console.log(`order for payment intent ${paymentData.id} already processed, skipping duplicate webhook delivery`);
         return;
       }
 
-      await orderDoc.ref.update({
+      await orderRef.update({
         status: paymentData.status,
         fulfillmentStatus: 'processing',
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
@@ -1905,7 +2004,7 @@ async function handlePaymentIntentSucceeded(paymentData){
       // rather than silently losing a captured payment.
       data = buildOrderDataFromPaymentIntent(paymentData);
 
-      await db.collection('orders').add({
+      orderRef = await db.collection('orders').add({
         ...data,
         status: paymentData.status,
         fulfillmentStatus: 'processing'
@@ -1913,6 +2012,22 @@ async function handlePaymentIntentSucceeded(paymentData){
     }
 
     console.log(`order for payment intent ${paymentData.id} now processing`);
+
+    // Records the calculation against Stripe's own tax reporting/filing
+    // records. Never blocks order processing or notifications on this --
+    // a failed filing record shouldn't stop the buyer/seller from seeing
+    // their order go through.
+    if (data.taxCalculationId) {
+      try {
+        const taxTransaction = await stripe.tax.transactions.createFromCalculation({
+          calculation: data.taxCalculationId,
+          reference: paymentData.id
+        });
+        await orderRef.update({ taxTransactionId: taxTransaction.id });
+      } catch (err) {
+        console.error(`Failed to record tax transaction for ${paymentData.id}:`, err.message);
+      }
+    }
 
     const listingId = data.listingId;
     if (listingId) {

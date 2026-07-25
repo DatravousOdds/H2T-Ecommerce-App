@@ -1,6 +1,6 @@
 import { collection, getDocs, db } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
-const stripe = Stripe("pk_live_51TfzCeClJc0GzijRcUvKdnm7dCkWSNuBzQMI3hgeoJsQ97IXaDCQtrLZCyuVVXiPZOWpyfGD2jfj13IpIJeQwy3X00GHsIsrzz");
+const stripe = Stripe("pk_test_51Tfwj9PHPIWBS1BJqszOAwKKlL5xCJGBsfTJhcbyWndXlUBiLbDsGhlmLCf7XGxdiFtamED8mlZxZbVKJDBu1tao004NMblLug");
 
 
 const searchQuery = new URLSearchParams(window.location.search);
@@ -14,37 +14,69 @@ let elements;
 let paymentIntentId;
 let currentUser = await checkUserStatus();
 
+// Authentication payments skip the address/tax step entirely (flat service
+// fee, server.js's /order-summary already returns tax: 0 for them), so
+// isTaxReady starts true for that flow and false otherwise until the buyer
+// completes the shipping AddressElement below.
+let isAuthPayment = false;
+let isTaxReady = false;
+let taxRequestSeq = 0;
+
 if(!currentUser) {
     window.location.href = '/login';
 } else {
     // Authentication requests have no seller/shipping/marketplace-fee
     // concept -- they're a flat service fee, not a product sale.
-    const isAuthPayment = queryItem?.itemType === 'authentication';
+    isAuthPayment = queryItem?.itemType === 'authentication';
+    isTaxReady = isAuthPayment;
 
-    const data = isAuthPayment
-        ? await getAuthOrderSummary(authRequestId, currentUser)
-        : await getOrderSummary(listingId, currentUser);
+    let data;
+    try {
+        data = isAuthPayment
+            ? await getAuthOrderSummary(authRequestId, currentUser)
+            : await getOrderSummary(listingId, currentUser);
+    } catch (error) {
+        displayCheckoutError(error.message);
+        data = null;
+    }
     // console.log("order summary:", data)
 
-    queryItem.price = data.total;
-    queryItem.buyerId = currentUser.userId;
-    queryItem.buyerEmail = currentUser.email;
+    if (data) {
+        queryItem.price = data.total;
+        queryItem.buyerId = currentUser.userId;
+        queryItem.buyerEmail = currentUser.email;
 
-    if (isAuthPayment) {
-        queryItem.authRequestId = authRequestId;
-        hideShippingSection();
-        displayAuthOrderDetails(queryItem);
-    } else {
-        queryItem.salesTax = data.tax;
-        queryItem.marketplaceFee = data.marketplaceFee;
-        displayShipping(currentUser);
-        displayOrderDetails(queryItem);
+        if (isAuthPayment) {
+            queryItem.authRequestId = authRequestId;
+            hideShippingSection();
+            displayAuthOrderDetails(queryItem);
+        } else {
+            queryItem.salesTax = data.tax;
+            queryItem.marketplaceFee = data.marketplaceFee;
+            displayShipping(currentUser);
+            displayOrderDetails(queryItem);
+        }
+
+        console.log("item to pay",queryItem)
+        displayOrderSummary(data, isAuthPayment);
+
+        await initializeCheckout(data);
     }
+}
 
-    console.log("item to pay",queryItem)
-    displayOrderSummary(data, isAuthPayment);
-
-    await initializeCheckout(data);
+// Stops checkout cold instead of letting downstream code crash on a missing
+// `data` object -- e.g. /order-summary rejects a buyer trying to purchase
+// their own listing with a 400 + message, and that message needs to reach
+// the buyer rather than just being console.error'd away.
+function displayCheckoutError(message) {
+    const wrapper = document.querySelector('.container-wrapper');
+    if (!wrapper) return;
+    wrapper.innerHTML = `
+        <div class="checkout-error">
+            <p>${message || "We couldn't load this checkout. Please try again."}</p>
+            <a href="/products">Back to shopping</a>
+        </div>
+    `;
 }
 
 async function initializeCheckout() {
@@ -80,10 +112,94 @@ async function initializeCheckout() {
     });
     billingAddressElement.mount("#billing-address-element");
 
+    // Tax is destination-based, so this is what actually drives
+    // calculateTax() below -- distinct from the billing address and from
+    // the legacy #shippingInfo block (which is the seller's ship-from
+    // location, not where the buyer receives the item).
+    if (isAuthPayment) {
+        const shippingToSection = document.querySelector('#shipping-to-section');
+        if (shippingToSection) shippingToSection.style.display = 'none';
+    } else {
+        const shippingAddressElement = elements.create("address", {
+            mode: "shipping",
+            allowedCountries: ["US"]
+        });
+        shippingAddressElement.mount("#shipping-address-element");
+        shippingAddressElement.on("change", handleShippingAddressChange);
+    }
 };
+
+function handleShippingAddressChange(event) {
+    if (!event.complete) {
+        isTaxReady = false;
+        updateSubmitState();
+        return;
+    }
+    calculateTax(event.value.address);
+}
+
+// Recomputes tax server-side (server.js's /tax/calculate) whenever the
+// buyer finishes entering a shipping address, and pushes the corrected
+// amount onto the already-created PaymentIntent. requestId guards against a
+// slower, earlier calculation overwriting a newer one if the buyer edits
+// the address again before the first call resolves.
+async function calculateTax(address) {
+    const requestId = ++taxRequestSeq;
+    isTaxReady = false;
+    updateSubmitState();
+
+    try {
+        const response = await fetch("/tax/calculate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${currentUser.idToken}`
+            },
+            body: JSON.stringify({ paymentIntentId, listingId, address })
+        });
+
+        const result = await response.json();
+
+        if (requestId !== taxRequestSeq) return; // superseded by a newer address change
+
+        if (!response.ok) {
+            showMessage(result.message || "We couldn't calculate tax for that address. Please double-check it and try again.");
+            return;
+        }
+
+        queryItem.salesTax = parseFloat(result.tax);
+        queryItem.price = parseFloat(result.total);
+
+        document.querySelector('#summary-tax').textContent = `$${result.tax}`;
+        document.querySelector('#summary-total').textContent = `$${result.total} USD`;
+
+        isTaxReady = true;
+        await elements.fetchUpdates();
+    } catch (error) {
+        if (requestId !== taxRequestSeq) return;
+        console.error("Tax calculation failed:", error);
+        showMessage("We couldn't calculate tax for that address. Please double-check it and try again.");
+    } finally {
+        if (requestId === taxRequestSeq) updateSubmitState();
+    }
+}
+
+function updateSubmitState() {
+    const submitBtn = document.querySelector('#submit');
+    const buttonText = document.querySelector('#button-text');
+    if (!submitBtn) return;
+    submitBtn.disabled = !isTaxReady;
+    if (buttonText) buttonText.textContent = isTaxReady ? "Pay now" : "Enter shipping address to continue";
+}
 
 async function handleSubmit(e) {
     e.preventDefault()
+
+    if (!isTaxReady) {
+        showMessage("Please enter a valid shipping address before continuing.");
+        return;
+    }
+
     console.log("confirming payment...");
 
     // Writes the order as "pending" now, right as the buyer commits to
@@ -151,53 +267,42 @@ async function getCartItems(userId) {
 
 async function getOrderSummary(listingId, currentUser) {
     console.log("Getting summary for listing:", listingId);
-    try {
-        const response = await fetch('/order-summary', {
-            method: 'POST',
-            headers: { 
-                "Content-Type": 'application/json',
-                "Authorization": `Bearer ${currentUser.idToken}`
-                
-            
-            },
-            body: JSON.stringify({listingId})
-        });
+    const response = await fetch('/order-summary', {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json',
+            "Authorization": `Bearer ${currentUser.idToken}`
+        },
+        body: JSON.stringify({listingId})
+    });
 
-        if (!response.ok) {
-            throw new Error("fetch failed", response.status)
-        }
+    const result = await response.json();
 
-        const result = await response.json();
-        return result;
-
-
-    } catch (err) {
-        console.error(err)
-
+    if (!response.ok) {
+        throw new Error(result.message || "We couldn't load this order.");
     }
+
+    return result;
 }
 
 async function getAuthOrderSummary(authRequestId, currentUser) {
     console.log("Getting summary for authentication request:", authRequestId);
-    try {
-        const response = await fetch('/order-summary', {
-            method: 'POST',
-            headers: {
-                "Content-Type": 'application/json',
-                "Authorization": `Bearer ${currentUser.idToken}`
-            },
-            body: JSON.stringify({ authRequestId })
-        });
+    const response = await fetch('/order-summary', {
+        method: 'POST',
+        headers: {
+            "Content-Type": 'application/json',
+            "Authorization": `Bearer ${currentUser.idToken}`
+        },
+        body: JSON.stringify({ authRequestId })
+    });
 
-        if (!response.ok) {
-            throw new Error("fetch failed", response.status)
-        }
+    const result = await response.json();
 
-        return await response.json();
-
-    } catch (err) {
-        console.error(err)
+    if (!response.ok) {
+        throw new Error(result.message || "We couldn't load this order.");
     }
+
+    return result;
 }
 
 function displayOrderSummary(data, isAuthPayment = false) {
@@ -231,7 +336,7 @@ function displayOrderSummary(data, isAuthPayment = false) {
             </div>
             <div class="line-item-container">
               <dd>Sales Tax:</dd>
-              <dt>$${data.tax}</dt>
+              <dt id="summary-tax">$${data.tax}</dt>
             </div>
         `;
 
@@ -241,23 +346,24 @@ function displayOrderSummary(data, isAuthPayment = false) {
             <hr>
             <div class="line-item-container">
               <dt>Total</dt>
-              <dd class="total-cost">$${data.total.toFixed(2)} USD</dd>
+              <dd class="total-cost" id="summary-total">$${data.total.toFixed(2)} USD</dd>
             </div>
             <button id="submit" class="place-order-btn" disabled>
               <div class="spinner hidden" id="spinner"></div>
-              <span id="button-text">Checkout Unavailable</span>
+              <span id="button-text">${isAuthPayment ? "Pay now" : "Enter shipping address to continue"}</span>
             </button>
-            <div id="payment-message">Checkout is temporarily disabled while we finish getting our sales permit -- check back soon.</div>
+            <div id="payment-message" class="hidden"></div>
     `;
 
 
     section.append(checkoutBox);
 
-    // Checkout is disabled site-wide until the sales permit is in place --
-    // see the #submit button's disabled state above. Not wiring handleSubmit
-    // at all (rather than relying on the disabled attribute alone) so this
-    // stays inert even if something else re-enables the button.
-
+    // Submission is gated on isTaxReady (set once /tax/calculate succeeds,
+    // or immediately for auth payments which skip tax entirely) rather than
+    // the disabled attribute alone -- see handleSubmit's guard and
+    // updateSubmitState().
+    document.querySelector('#submit').addEventListener('click', handleSubmit);
+    updateSubmitState();
 }
 
 function displayOrderDetails(item) {

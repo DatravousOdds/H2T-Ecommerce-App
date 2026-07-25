@@ -64,6 +64,12 @@
             <div id="contact-details-element">
               <!--Stripe.js injects the Contact Details Element-->
             </div>
+            <div id="shipping-to-section">
+              <h4>Shipping To</h4>
+              <div id="shipping-address-element">
+                <!--Stripe.js injects the destination Address Element-->
+              </div>
+            </div>
             <h4>Billing Address</h4>
             <div id="billing-address-element">
               <!--Stripe.js injects the Address Element-->
@@ -129,9 +135,9 @@
             </div>
             <button id="submit" class="place-order-btn" disabled>
               <div class="spinner hidden" id="spinner"></div>
-              <span id="button-text">Checkout Unavailable</span>
+              <span id="button-text">Enter shipping address to continue</span>
             </button>
-            <div id="payment-message">Checkout is temporarily disabled while we finish getting our sales permit -- check back soon.</div>
+            <div id="payment-message" class="hidden"></div>
           </div>
         </div>
       </div>
