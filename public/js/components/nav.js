@@ -128,7 +128,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
         <li><a href="/seller" class="nav-link">Sell</a></li>
         <li>
           <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
-            <i class="fa-regular fa-bell"></i>
+            <i class="fa-solid fa-bell"></i>
             <span class="notification-badge" aria-label="Unread notifications">0</span>
           </a>
         </li>
@@ -225,13 +225,13 @@ const LoggedOutNav = () => ({
       <ul class="small-screen-nav">
         <li>
           <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
-            <i class="fa-regular fa-bell"></i>
+            <i class="fa-solid fa-bell"></i>
             <span class="notification-badge" aria-label="Unread notifications">0</span>
           </a>
         </li>
         <li>
           <a href="/profile" class="nav-link" aria-label="User profile">
-            <i class="fa-regular fa-user"></i>
+            <i class="fa-solid fa-user"></i>
           </a>
         </li>
         <li>
@@ -276,7 +276,7 @@ const LoggedInNav = (user) => ({
       <ul class="small-screen-nav">
         <li>
           <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
-            <i class="fa-regular fa-bell"></i>
+            <i class="fa-solid fa-bell"></i>
             <span class="notification-badge" aria-label="Unread notifications">0</span>
           </a>
         </li>
@@ -309,7 +309,7 @@ const LoggedInNav = (user) => ({
           <h3>Account</h3>
         </div>
         <a href="/profile?tab=profile" class="dropdown-item">
-          <i class="fa-regular fa-user"></i>
+          <i class="fa-solid fa-user"></i>
           <span>Profile</span>
         </a>
         <a href="/profile?tab=payment-information" class="dropdown-item">
@@ -352,7 +352,7 @@ const LoggedInNav = (user) => ({
   mobile: `
     <li class="menu-dropdown">
       <button class="menu-item dropdown-trigger">
-        <i class="fa-regular fa-user"></i>
+        <i class="fa-solid fa-user"></i>
         <span>Profile</span>
         <i class="fa-solid fa-chevron-right"></i>
       </button>
