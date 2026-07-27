@@ -1154,6 +1154,14 @@ select {
 
 @media (max-width: 480px) {
 
+  .tier-text {
+    text-align: center;
+  }
+
+  .tier-type-badge, .tier-time {
+    justify-content: center;
+  }
+
   .tier-container {
     flex-direction: column;
   }

@@ -2,6 +2,7 @@
 
 import { checkUserStatus } from "../../../../auth/auth.js";
 import {
+  auth,
   collection,
   db,
   getDocs,
@@ -356,11 +357,20 @@ function closeOrderActionMenu() {
 }
 
 async function patchOrder(docId, body) {
+  // currentUser.idToken is a snapshot from page load, via checkUserStatus()'s
+  // permanent-for-the-session cache -- on a tab left open longer than the
+  // ~1hr token lifetime, that string is expired even though the user is
+  // still genuinely logged in, and every request using it 401s. getIdToken()
+  // (no force flag) returns the cached token if it's still valid or
+  // transparently refreshes it if not, so it's always safe/cheap to call
+  // fresh right before a request instead of trusting the old snapshot.
+  const idToken = await auth.currentUser.getIdToken();
+
   const response = await fetch(`/orders/${docId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${currentUser.idToken}`,
+      "Authorization": `Bearer ${idToken}`,
     },
     body: JSON.stringify(body),
   });
@@ -371,11 +381,13 @@ async function patchOrder(docId, body) {
 }
 
 async function cancelOrder(docId) {
+  const idToken = await auth.currentUser.getIdToken();
+
   const response = await fetch(`/orders/${docId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${currentUser.idToken}`,
+      "Authorization": `Bearer ${idToken}`,
     },
     body: JSON.stringify({}),
   });

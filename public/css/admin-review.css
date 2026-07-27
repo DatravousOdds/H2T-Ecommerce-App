@@ -64,6 +64,16 @@
   color: #9a3412;
 }
 
+.status-badge.status-failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.status-disputed {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
 .review-seller {
   display: flex;
   align-items: center;
@@ -87,6 +97,19 @@
   gap: 8px;
   overflow-x: auto;
   margin-bottom: 12px;
+}
+
+.delivery-confirmation-rating {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.delivery-confirmation-rating .fa-solid {
+  color: #f5b400;
+}
+
+.delivery-confirmation-rating .fa-regular {
+  color: #d0d0d0;
 }
 
 .review-images img {
@@ -217,6 +240,26 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.dispute-return-shipping-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 12px;
+}
+
+.dispute-return-shipping-field label {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.return-shipping-cost-input {
+  width: 120px;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-family: inherit;
 }
 
 .review-actions button {

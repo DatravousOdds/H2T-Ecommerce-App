@@ -58,11 +58,7 @@ Requires Node.js installed locally.
 - **File naming:** camelCase
 
 # Current Priorities
-**Deadline: July 4** — given today's date, that's a tight runway for the remaining scope below, so it's worth confirming which of the missing features are truly must-have for launch vs. can ship right after.
-
-1. Finish Profile functionality (all tabs listed above)
-2. Then move to Authentication Tier 1
-
+- Ensure runtime efficiently and scalability
 Work one task at a time — don't jump ahead to later items unless explicitly asked.
 
 # Working Style

@@ -341,6 +341,10 @@ const LoggedInNav = (user) => ({
           <i class="fa-solid fa-user-shield"></i>
           <span>Authentication Review</span>
         </a>
+        <a href="/admin/delivery-confirmation-review.html" class="dropdown-item">
+          <i class="fa-solid fa-truck-ramp-box"></i>
+          <span>Delivery Confirmation Review</span>
+        </a>
         ` : ""}
         <a href="#" class="dropdown-item" id="logoutBtn">
           <i class="fa-solid fa-right-from-bracket"></i>
@@ -371,6 +375,12 @@ const LoggedInNav = (user) => ({
       <a href="/admin/authentication-review.html" class="menu-item">
         <i class="fa-solid fa-user-shield"></i>
         <span>Authentication Review</span>
+      </a>
+    </li>
+    <li>
+      <a href="/admin/delivery-confirmation-review.html" class="menu-item">
+        <i class="fa-solid fa-truck-ramp-box"></i>
+        <span>Delivery Confirmation Review</span>
       </a>
     </li>
     ` : ""}

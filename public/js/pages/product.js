@@ -415,7 +415,7 @@ async function setOfferModalData() {
         hideLoader(offerBody);
     }
 
-    const productMainImage = data.images.find(image => image.isPrimary === true);
+    const productMainImage = data.images.find(image => image.isPrimary === true) || data.images[0];
 
     offerBody.innerHTML = '';
     offerBody.innerHTML = `

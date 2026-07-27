@@ -207,7 +207,7 @@ async function getSellerInfo(productId) {
 
   const sellerId = data.userId;
   const sellerProfile = await getUserProfile(sellerId);
-  const productMainImage = data.images.find(image => image.isPrimary === true);
+  const productMainImage = data.images.find(image => image.isPrimary === true) || data.images[0];
 
   return {
       id: sellerId,

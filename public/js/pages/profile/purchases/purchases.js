@@ -1,7 +1,15 @@
 "use strict";
 
 
-import { db, collection, getDocs, query, where } from "../../../api/firebase-client.js";
+import { auth, db, collection, getDocs, query, where, getStorage, ref, uploadString, getDownloadURL } from "../../../api/firebase-client.js";
+
+const storage = getStorage();
+const MAX_DELIVERY_CONFIRMATION_PHOTOS = 5;
+
+// Reset every time openOrderDetails() builds a fresh confirmation section --
+// holds { url } objects for photos already uploaded to Storage for the
+// order currently open in the modal, in upload order.
+let deliveryConfirmationPhotos = [];
 
 /**
  * Buyer-side view of the same `orders` collection the Selling tab's Orders
@@ -240,6 +248,43 @@ function buildOrderDetailsHTML(order) {
        </div>`
     : "";
 
+  // "delivered" is a locked terminal fulfillmentStatus, but the separate
+  // deliveryConfirmationStatus field tracks the buyer's own review/dispute
+  // progress on top of it -- "required" means delivered and still
+  // untouched, matching what PUT /orders/:id sets the moment a seller marks
+  // an order delivered.
+  const needsDeliveryConfirmation = status === "delivered" && order.deliveryConfirmationStatus === "required";
+  if (needsDeliveryConfirmation) deliveryConfirmationPhotos = [];
+
+  const confirmationSection = needsDeliveryConfirmation
+    ? `<div class="order-delivery-confirmation">
+         <div class="delivery-confirmation-header">
+           <h3>Confirm Delivery</h3>
+           <p class="delivery-confirmation-subtext">Leave a review and upload a photo to confirm delivery or report a problem.</p>
+         </div>
+         <div class="delivery-confirmation-rating" data-rating="0">
+           ${[1, 2, 3, 4, 5].map((n) => `<i class="fa-regular fa-star" data-value="${n}"></i>`).join("")}
+         </div>
+         <div class="delivery-confirmation-comment">
+           <label for="delivery-confirmation-comment-input">Leave a comment (optional)</label>
+           <textarea id="delivery-confirmation-comment-input" placeholder="Leave a comment (optional)"></textarea>
+         </div>
+         <div class="delivery-confirmation-photos">
+           <input type="file" id="delivery-confirmation-photo-input" accept="image/jpeg,image/png" multiple hidden />
+           <button type="button" class="delivery-confirmation-upload-btn" id="delivery-confirmation-upload-trigger">
+             <i class="fa-solid fa-camera"></i> Upload Photo
+           </button>
+           <div class="delivery-confirmation-photo-previews"></div>
+         </div>
+         <p class="order-action-error delivery-confirmation-error"></p>
+         <p class="delivery-confirmation-success"></p>
+         <div class="delivery-confirmation-actions">
+           <button type="button" class="order-action-btn" id="submit-review-btn">Submit review</button>
+           <button type="button" class="order-action-btn secondary" id="report-problem-btn">Report a problem</button>
+         </div>
+       </div>`
+    : "";
+
   return {
     title: `Order #${(order.id || "").slice(-10)}`,
     status,
@@ -297,6 +342,7 @@ function buildOrderDetailsHTML(order) {
         </div>
       </div>
       ${cancelSection}
+      ${confirmationSection}
     `,
   };
 }
@@ -339,7 +385,12 @@ function openOrderDetails(order) {
   menu.classList.add("active");
 }
 
-async function cancelOrder(docId, idToken) {
+async function cancelOrder(docId) {
+  // Fresh every call rather than a page-load snapshot -- see the identical
+  // fix and its writeup in orders.js/notes.md; a tab left open past the
+  // token's ~1hr lifetime would otherwise 401 here too.
+  const idToken = await auth.currentUser.getIdToken();
+
   const response = await fetch(`/orders/${docId}`, {
     method: "DELETE",
     headers: {
@@ -351,6 +402,62 @@ async function cancelOrder(docId, idToken) {
 
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || "Cancel failed");
+  return result;
+}
+
+// Mirrors uploadImagesToFirebase() in authenticate.js -- same technique
+// (FileReader to a data URL, then uploadString/getDownloadURL), different
+// Storage path. Returns the download URL string.
+function uploadDeliveryConfirmationPhoto(file, uid, orderId, index) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read the selected file"));
+    reader.onload = async () => {
+      try {
+        const path = `deliveryConfirmations/${uid}/${orderId}/image_${index}_${Date.now()}.jpg`;
+        const storageRef = ref(storage, path);
+        const uploadResult = await uploadString(storageRef, reader.result, "data_url");
+        const url = await getDownloadURL(uploadResult.ref);
+        resolve(url);
+      } catch (error) {
+        reject(error);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitDeliveryConfirmation(docId, { rating, comment, photoUrls }) {
+  const idToken = await auth.currentUser.getIdToken();
+
+  const response = await fetch(`/api/orders/${docId}/delivery-confirmation`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${idToken}`,
+    },
+    body: JSON.stringify({ rating, comment, photoUrls }),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Submission failed");
+  return result;
+}
+
+async function submitDispute(docId, { comment, photoUrls }) {
+  const idToken = await auth.currentUser.getIdToken();
+
+  const response = await fetch(`/api/orders/${docId}/dispute`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${idToken}`,
+    },
+    body: JSON.stringify({ comment, photoUrls }),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Submission failed");
   return result;
 }
 
@@ -399,10 +506,159 @@ function wireEventDelegation(currentUser) {
       const errorEl = orderDetailsMenu.querySelector(".order-action-error");
 
       try {
-        await cancelOrder(docId, currentUser.idToken);
+        await cancelOrder(docId);
         orderDetailsMenu.classList.remove("active");
         await refreshPurchases(currentUser);
       } catch (error) {
+        if (errorEl) {
+          errorEl.textContent = error.message;
+          errorEl.classList.add("visible");
+        }
+      }
+    });
+
+    // Star rating -- click sets the rating to that star's value and toggles
+    // fa-regular/fa-solid up to it, reusing the same icon convention the
+    // read-only rating displays elsewhere in the app already use.
+    orderDetailsMenu.addEventListener("click", (e) => {
+      const star = e.target.closest(".delivery-confirmation-rating i");
+      if (!star) return;
+
+      const value = Number(star.dataset.value);
+      const ratingContainer = star.closest(".delivery-confirmation-rating");
+      ratingContainer.dataset.rating = String(value);
+
+      ratingContainer.querySelectorAll("i").forEach((icon) => {
+        const isFilled = Number(icon.dataset.value) <= value;
+        icon.classList.toggle("fa-solid", isFilled);
+        icon.classList.toggle("fa-regular", !isFilled);
+      });
+    });
+
+    orderDetailsMenu.addEventListener("click", (e) => {
+      const uploadTrigger = e.target.closest("#delivery-confirmation-upload-trigger");
+      if (!uploadTrigger) return;
+      document.getElementById("delivery-confirmation-photo-input")?.click();
+    });
+
+    orderDetailsMenu.addEventListener("change", async (e) => {
+      const fileInput = e.target.closest("#delivery-confirmation-photo-input");
+      if (!fileInput || !fileInput.files.length) return;
+
+      const errorEl = orderDetailsMenu.querySelector(".delivery-confirmation-error");
+      const previewsEl = orderDetailsMenu.querySelector(".delivery-confirmation-photo-previews");
+      const uploadTrigger = document.getElementById("delivery-confirmation-upload-trigger");
+      if (errorEl) errorEl.classList.remove("visible");
+
+      const remainingSlots = MAX_DELIVERY_CONFIRMATION_PHOTOS - deliveryConfirmationPhotos.length;
+      const files = Array.from(fileInput.files).slice(0, remainingSlots);
+      fileInput.value = "";
+
+      if (uploadTrigger) uploadTrigger.disabled = true;
+
+      try {
+        for (const file of files) {
+          const url = await uploadDeliveryConfirmationPhoto(
+            file,
+            currentUser.userId,
+            orderDetailsMenu.dataset.docId,
+            deliveryConfirmationPhotos.length
+          );
+          deliveryConfirmationPhotos.push({ url });
+
+          if (previewsEl) {
+            const thumb = document.createElement("div");
+            thumb.className = "delivery-confirmation-photo-thumb";
+            thumb.innerHTML = `<img src="${url}" alt="Uploaded photo" /><button type="button" class="delivery-confirmation-photo-remove" data-url="${url}"><i class="fa-solid fa-xmark"></i></button>`;
+            previewsEl.appendChild(thumb);
+          }
+        }
+      } catch (error) {
+        if (errorEl) {
+          errorEl.textContent = "Photo upload failed, please try again.";
+          errorEl.classList.add("visible");
+        }
+      } finally {
+        if (uploadTrigger) uploadTrigger.disabled = false;
+      }
+    });
+
+    orderDetailsMenu.addEventListener("click", (e) => {
+      const removeBtn = e.target.closest(".delivery-confirmation-photo-remove");
+      if (!removeBtn) return;
+
+      const url = removeBtn.dataset.url;
+      deliveryConfirmationPhotos = deliveryConfirmationPhotos.filter((p) => p.url !== url);
+      removeBtn.closest(".delivery-confirmation-photo-thumb")?.remove();
+    });
+
+    orderDetailsMenu.addEventListener("click", async (e) => {
+      const isSubmit = Boolean(e.target.closest("#submit-review-btn"));
+      const isDispute = Boolean(e.target.closest("#report-problem-btn"));
+      if (!isSubmit && !isDispute) return;
+
+      const docId = orderDetailsMenu.dataset.docId;
+      if (!docId) return;
+
+      const section = orderDetailsMenu.querySelector(".order-delivery-confirmation");
+      // Both buttons, regardless of which one was actually clicked -- both
+      // need to be disabled/re-enabled together either way.
+      const submitBtn = section?.querySelector("#submit-review-btn");
+      const disputeBtn = section?.querySelector("#report-problem-btn");
+      const errorEl = section?.querySelector(".delivery-confirmation-error");
+      const successEl = section?.querySelector(".delivery-confirmation-success");
+      const comment = section?.querySelector("#delivery-confirmation-comment-input")?.value.trim() || "";
+      const rating = Number(section?.querySelector(".delivery-confirmation-rating")?.dataset.rating || 0);
+      const photoUrls = deliveryConfirmationPhotos.map((p) => p.url);
+
+      if (errorEl) errorEl.classList.remove("visible");
+
+      if (photoUrls.length === 0) {
+        if (errorEl) {
+          errorEl.textContent = "Upload at least one photo to continue.";
+          errorEl.classList.add("visible");
+        }
+        return;
+      }
+
+      if (isSubmit && (rating < 1 || rating > 5)) {
+        if (errorEl) {
+          errorEl.textContent = "Select a star rating to continue.";
+          errorEl.classList.add("visible");
+        }
+        return;
+      }
+
+      if (isDispute && !comment) {
+        if (errorEl) {
+          errorEl.textContent = "Describe the problem to continue.";
+          errorEl.classList.add("visible");
+        }
+        return;
+      }
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (disputeBtn) disputeBtn.disabled = true;
+
+      try {
+        if (isSubmit) {
+          await submitDeliveryConfirmation(docId, { rating, comment, photoUrls });
+          if (successEl) successEl.textContent = "Thank you for your review!";
+        } else {
+          await submitDispute(docId, { comment, photoUrls });
+          if (successEl) successEl.textContent = "Thank you! Our support team will review the problem and email you on the next step.";
+        }
+
+        if (section) section.querySelectorAll("button, textarea").forEach((el) => (el.disabled = true));
+
+        setTimeout(async () => {
+          orderDetailsMenu.classList.remove("active");
+          await refreshPurchases(currentUser);
+        }, 1800);
+
+      } catch (error) {
+        if (submitBtn) submitBtn.disabled = false;
+        if (disputeBtn) disputeBtn.disabled = false;
         if (errorEl) {
           errorEl.textContent = error.message;
           errorEl.classList.add("visible");

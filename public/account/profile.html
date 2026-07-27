@@ -60,7 +60,7 @@
           <div id="left-nav-wrapper" class="lf-wrapper">
             <ul class="tabs">
               <li class="tab-btn" data-tab="profile">
-                <a href="#"><i class="fa-regular fa-user"></i></a>Profile
+                <a href="#"><i class="fa-solid fa-user"></i></a>Profile
               </li>
               <li class="tab-btn" data-tab="payment-information">
                 <a href="#"><i class="fa-solid fa-wallet"></i></a>Payment
@@ -1269,6 +1269,16 @@
             <!-- Overview Section -->
             <section class="content-section active" id="overview">
               <!-- Overview Section -->
+              <!-- Hidden by default -- shown by overview.js only when
+                   GET /api/connect/status reports the seller hasn't finished
+                   (or hasn't started) Stripe Connect onboarding. -->
+              <section class="payout-setup-card" id="payout-setup-card" style="display: none">
+                <div class="payout-setup-content">
+                  <h3>Set Up Payouts</h3>
+                  <p id="payout-setup-status">Checking your payout account status...</p>
+                </div>
+                <button type="button" class="order-action-btn" id="payout-setup-btn">Set Up Payouts</button>
+              </section>
               <section class="stat-grid" aria-label="Performance Metrics">
                 <article class="stat-card">
                   <header class="card-header">

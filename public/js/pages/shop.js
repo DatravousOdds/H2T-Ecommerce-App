@@ -2,9 +2,11 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, kidsRange, womenRange, mensRange, displayProducts, renderProductSkeletons } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { initCartDrawer } from '../components/cartDrawer.js';
 import { db, collection, where, query, getDocs, limit, startAfter, orderBy } from '../api/firebase-client.js';
 
 
+initCartDrawer();
 const params = new URLSearchParams(window.location.search);
 const categoryParam = params.get("category");
 const brandParam = params.get("brand");

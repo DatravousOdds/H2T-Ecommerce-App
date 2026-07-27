@@ -1,7 +1,104 @@
 "use strict";
 
 import { checkUserStatus } from "../../../../auth/auth.js";
-import { collection, doc, db, getDocs, query, where } from "../../../../api/firebase-client.js";
+import { auth, collection, doc, db, getDocs, query, where } from "../../../../api/firebase-client.js";
+
+const PAYOUT_SETUP_COPY = {
+  not_started: {
+    status: "You haven't set up a payout account yet. Complete setup to receive payments for your sales.",
+    button: "Set Up Payouts"
+  },
+  pending: {
+    status: "Your payout account setup is in progress. Finish onboarding to start receiving payments.",
+    button: "Continue Setup"
+  },
+  restricted: {
+    status: "There's an issue with your payout account that needs attention.",
+    button: "Fix Payout Account"
+  }
+};
+
+async function authorizedFetch(url, options = {}) {
+  const idToken = await auth.currentUser.getIdToken();
+  return fetch(url, {
+    ...options,
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}`, ...options.headers }
+  });
+}
+
+async function fetchConnectStatus() {
+  const response = await authorizedFetch("/api/connect/status");
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Could not check payout status");
+  return result;
+}
+
+async function loadPayoutSetupCard() {
+  const card = document.getElementById("payout-setup-card");
+  const statusEl = document.getElementById("payout-setup-status");
+  const btn = document.getElementById("payout-setup-btn");
+  if (!card || !statusEl || !btn) return;
+
+  try {
+    let result = await fetchConnectStatus();
+
+    // Stripe doesn't flip the capability to active the instant the hosted
+    // flow redirects back -- there's a brief propagation delay. Without
+    // this, a seller landing back here right after finishing onboarding
+    // gets told to "Continue Setup" again for a timing gap, not a real
+    // one, and clicking through re-runs the whole hosted flow a second
+    // time. Scoped to connect_return=1 (set on both refresh_url/return_url
+    // in /api/connect/onboard) so a seller who's genuinely just mid-
+    // onboarding, visiting on a normal page load, doesn't eat this delay
+    // on every single visit -- only right after actually coming back from
+    // Stripe. Only worth retrying for "pending" -- "not_started"/
+    // "restricted" need real seller action and won't resolve on a timer.
+    const url = new URL(window.location.href);
+    const justReturnedFromStripe = url.searchParams.get("connect_return") === "1";
+
+    if (justReturnedFromStripe) {
+      // Strip it so a later manual refresh of this same URL doesn't keep
+      // re-triggering the retry-wait below.
+      url.searchParams.delete("connect_return");
+      window.history.replaceState({}, "", url);
+    }
+
+    let attempts = 0;
+    while (justReturnedFromStripe && result.connectOnboardingStatus === "pending" && attempts < 3) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      result = await fetchConnectStatus();
+      attempts++;
+    }
+
+    // complete -> nothing to do, keep the card hidden.
+    const copy = PAYOUT_SETUP_COPY[result.connectOnboardingStatus];
+    if (!copy) return;
+
+    statusEl.textContent = copy.status;
+    btn.textContent = copy.button;
+    card.style.display = "flex";
+  } catch (error) {
+    console.error("Failed to load payout setup status:", error);
+  }
+}
+
+function wirePayoutSetupButton() {
+  const btn = document.getElementById("payout-setup-btn");
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    try {
+      const response = await authorizedFetch("/api/connect/onboard", { method: "POST" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Could not start payout setup");
+      window.location.href = result.url;
+    } catch (error) {
+      alert("Could not start payout setup: " + error.message);
+      btn.disabled = false;
+    }
+  });
+}
 
 const currentUser = await checkUserStatus();
 
@@ -188,6 +285,9 @@ async function loadOverviewTab(userId) {
     if (!userId) {
         throw new Error("No uid provided!");
     }
+
+    wirePayoutSetupButton();
+    await loadPayoutSetupCard();
 
     const totalRevenue = await fetchTotalRevenue(userId);
     const activeListings = await fetchActiveListings(userId);

@@ -35,6 +35,7 @@ const bucketName = "ecom-websiteh2t";
 const accessKeyId = process.env.aws_access_key_id;
 const secretKeyId = process.env.aws_secret_access_key;
 const MARKETPLACE_FEE_RATE = 0.07
+const DELIVERY_CONFIRMATION_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
 
 aws.config.update({
   region,
@@ -107,6 +108,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
       console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
       // Then define and call a method to handle the successful payment intent.
       handlePaymentIntentSucceeded(paymentIntent);
+      break;
     default:
       // Unexpected event type
       console.log(`Unhandled event type ${event.type}.`);
@@ -279,6 +281,13 @@ app.get("/authenticate/results", (req, res) => {
 // authentication-review.js) and server-side by the PUT route's isAdmin check
 app.get("/admin/authentication-review", (req, res) => {
   res.sendFile(path.join(staticPth, "admin/authentication-review.html"));
+});
+
+// Same UX-only client-side gate pattern as authentication-review above.
+// Real enforcement is GET /api/admin/delivery-confirmations' and
+// POST /api/orders/:id/delivery-confirmation/approve's isAdmin checks.
+app.get("/admin/delivery-confirmation-review", (req, res) => {
+  res.sendFile(path.join(staticPth, "admin/delivery-confirmation-review.html"));
 });
 
 // login route
@@ -1075,9 +1084,13 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       return res.status(403).json({ success:false, message: "Role type not found!" })
     }
 
-    // Once delivered or cancelled, the order is a closed record -- nothing
-    // below should be able to touch it further.
-    const locked = ['delivered', 'cancelled'];
+    // Once delivered, cancelled, or refunded, the order is a closed record
+    // -- nothing below should be able to touch it further. "refunded" is
+    // set by /api/orders/:id/dispute/uphold, a separate dedicated route
+    // that bypasses this lock the same way the delivery-confirmation
+    // endpoints already do -- this array just has to know the state exists
+    // so a later PUT on the same order can't un-refund it.
+    const locked = ['delivered', 'cancelled', 'refunded'];
     const isLocked = locked.includes(order.fulfillmentStatus);
 
     if (isLocked) {
@@ -1103,6 +1116,15 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       if (data.fulfillmentStatus === "shipped") {
         updatedData.trackingNumber = data.trackingNumber;
         updatedData.shippingCarrier = data.shippingCarrier;
+      }
+      if (data.fulfillmentStatus === "delivered") {
+        // Plain Dates, not FieldValue.serverTimestamp() -- the deadline has
+        // to be computed from deliveredAt in the same write, and a
+        // serverTimestamp sentinel can't be used for arithmetic client-side.
+        const deliveredAt = new Date();
+        updatedData.deliveredAt = deliveredAt;
+        updatedData.deliveryConfirmationDeadlineAt = new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS);
+        updatedData.deliveryConfirmationStatus = "required";
       }
     }
 
@@ -1149,7 +1171,766 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
     return res.status(500).json({ success: false, message: err.message })
   }
 })
-// delete entire product 
+
+// Shared by both delivery-confirmation routes below -- loads the order,
+// confirms the caller is its buyer, and confirms it's actually waiting on
+// them (delivered, and nobody's submitted a confirmation or dispute yet).
+// Returns { order, docRef } on success, or null after already sending an
+// error response.
+async function loadOrderForBuyerConfirmation(req, res) {
+  const docRef = db.collection("orders").doc(req.params.id);
+  const docSnap = await docRef.get();
+
+  if (!docSnap.exists) {
+    res.status(404).json({ success: false, message: "Order not found" });
+    return null;
+  }
+
+  const order = docSnap.data();
+
+  if (req.token.uid !== order.buyerId) {
+    res.status(403).json({ success: false, message: "Only the buyer can do this" });
+    return null;
+  }
+
+  if (order.fulfillmentStatus !== "delivered") {
+    res.status(409).json({ success: false, message: "Order must be marked delivered first" });
+    return null;
+  }
+
+  if (order.deliveryConfirmationStatus !== "required") {
+    res.status(409).json({ success: false, message: `A response has already been submitted for this order (status: ${order.deliveryConfirmationStatus})` });
+    return null;
+  }
+
+  return { order, docRef };
+}
+
+// Buyer confirms the order matches what they received -- rating + at least
+// one photo, comment optional. Photos are uploaded client-side straight to
+// Firebase Storage first (same pattern as authenticationRequests' proof
+// photos); this route only ever receives the resulting URLs, never raw
+// file bytes.
+app.post("/api/orders/:id/delivery-confirmation", verifyAuth, async (req, res) => {
+  try {
+    const { rating, comment, photoUrls } = req.body;
+
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: "Rating must be an integer between 1 and 5" });
+    }
+    if (!Array.isArray(photoUrls) || photoUrls.length === 0) {
+      return res.status(400).json({ success: false, message: "Upload at least one photo to continue" });
+    }
+
+    const loaded = await loadOrderForBuyerConfirmation(req, res);
+    if (!loaded) return;
+    const { order, docRef } = loaded;
+
+    const orderId = req.params.id;
+
+    // doc id = orderId, same idempotency reasoning as everywhere else in
+    // this feature -- a retry after a partial failure overwrites the same
+    // doc instead of risking a second one.
+    await db.collection("deliveryConfirmations").doc(orderId).set({
+      buyerId: order.buyerId,
+      rating,
+      comment: comment || null,
+      photoUrls,
+      status: "submitted",
+      reviewedByUserId: null,
+      reviewedAt: null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    await docRef.update({
+      deliveryConfirmationStatus: "submitted",
+      deliveryConfirmedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const itemName = order.item?.name || "your order";
+    await createNotification(
+      order.sellerId,
+      "order_status",
+      "Delivery Confirmed",
+      `The buyer confirmed delivery for ${itemName}. Payout is pending review.`,
+      "/profile?tab=selling"
+    );
+
+    return res.status(200).json({ success: true, message: "Thank you for your review!" });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// order.subtotal is the buyer's FULL total (listing price + shipping + tax
+// + marketplace fee combined -- see buildOrderDataFromPaymentIntent), not
+// the seller's cut. There's no listingPrice field stored directly, so it
+// has to be derived: subtract shipping/tax/fee back out to recover the
+// listing price, then subtract the fee once more for the platform's cut.
+// Computed in cents throughout to avoid float drift on currency math.
+function calculateSellerPayoutCents(order) {
+  const toCents = (v) => Math.round(parseFloat(v || 0) * 100);
+
+  const subtotalCents = toCents(order.subtotal);
+  const shippingCents = toCents(order.shippingCost);
+  const salesTaxCents = toCents(order.item?.salesTax);
+  const marketplaceFeeCents = toCents(order.item?.marketplaceFee);
+
+  const listingPriceCents = subtotalCents - shippingCents - salesTaxCents - marketplaceFeeCents;
+  return listingPriceCents - marketplaceFeeCents;
+}
+
+// Reads a seller's outstanding debts (e.g. return-shipping costs charged
+// from an upheld dispute -- see /api/orders/:id/dispute/uphold) without
+// writing anything yet. No orderBy in the query -- would need a composite
+// index alongside the status equality filter, and at the volume a single
+// seller could realistically have outstanding, sorting client-side is fine
+// (same reasoning already used elsewhere in this codebase for order lists).
+async function getOutstandingSellerDebts(sellerId) {
+  const debtsSnap = await db.collection("sellerDebts")
+    .where("sellerId", "==", sellerId)
+    .where("status", "==", "outstanding")
+    .get();
+
+  const debts = debtsSnap.docs
+    .map((d) => ({ ref: d.ref, ...d.data() }))
+    .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
+
+  const totalCents = debts.reduce((sum, d) => sum + Math.round(parseFloat(d.remainingAmount) * 100), 0);
+  return { debts, totalCents };
+}
+
+// Applies `amountCents` across the given debts, oldest first, partially
+// settling one if it doesn't divide evenly. Only ever called once the
+// corresponding money movement (or debt-absorption) is confirmed -- never
+// speculatively, so a failed transfer never settles debt for money that
+// didn't actually move.
+async function settleSellerDebts(debts, amountCents) {
+  let remaining = amountCents;
+  const batch = db.batch();
+
+  for (const debt of debts) {
+    if (remaining <= 0) break;
+
+    const debtRemainingCents = Math.round(parseFloat(debt.remainingAmount) * 100);
+    const applyCents = Math.min(remaining, debtRemainingCents);
+    remaining -= applyCents;
+
+    const newRemainingCents = debtRemainingCents - applyCents;
+    batch.update(debt.ref, {
+      remainingAmount: (newRemainingCents / 100).toFixed(2),
+      status: newRemainingCents === 0 ? "settled" : "outstanding",
+      settledAt: newRemainingCents === 0 ? admin.firestore.FieldValue.serverTimestamp() : null
+    });
+  }
+
+  await batch.commit();
+}
+
+// Attempts the actual transfer to the seller's Connect account and records
+// the outcome on a payouts/{orderId} doc. Created lazily here, at the
+// moment a release is actually attempted -- not eagerly when the order is
+// delivered -- since before this point "held" is fully expressed by
+// Orders.deliveryConfirmationStatus alone. Failure here doesn't throw: a
+// seller with an unfinished Connect account is an expected, retriable
+// case, not a 500.
+async function releasePayoutToSeller(order, orderId) {
+  const payoutRef = db.collection("payouts").doc(orderId);
+  const grossAmountCents = calculateSellerPayoutCents(order);
+
+  const { debts, totalCents: outstandingDebtCents } = await getOutstandingSellerDebts(order.sellerId);
+  const debtAppliedCents = Math.min(grossAmountCents, outstandingDebtCents);
+  const netAmountCents = grossAmountCents - debtAppliedCents;
+  const debtApplied = (debtAppliedCents / 100).toFixed(2);
+
+  // Outstanding debt covers the whole payout -- nothing left to actually
+  // send, so there's no Stripe call to make and no failure mode to retry.
+  // Safe to settle immediately since this doesn't depend on an external
+  // system succeeding.
+  if (netAmountCents === 0) {
+    await settleSellerDebts(debts, debtAppliedCents);
+    const absorbed = {
+      orderId,
+      sellerId: order.sellerId,
+      amount: "0.00",
+      debtApplied,
+      status: "absorbed_by_debt",
+      stripeTransferId: null,
+      payoutHoldReason: null,
+      lastError: null,
+      attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+      transferredAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+    await payoutRef.set(absorbed);
+    return absorbed;
+  }
+
+  const sellerSnap = await db.collection("userProfiles").doc(order.sellerId).get();
+  const seller = sellerSnap.data() || {};
+
+  if (!seller.stripeConnectAccountId || !seller.connectPayoutsEnabled) {
+    const failure = {
+      orderId,
+      sellerId: order.sellerId,
+      amount: (netAmountCents / 100).toFixed(2),
+      debtApplied,
+      status: "failed",
+      stripeTransferId: null,
+      payoutHoldReason: "connect_account_not_ready",
+      lastError: null,
+      attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+      transferredAt: null
+    };
+    await payoutRef.set(failure);
+    return failure;
+  }
+
+  try {
+    const transfer = await stripe.transfers.create({
+      amount: netAmountCents,
+      currency: "usd",
+      destination: seller.stripeConnectAccountId
+    });
+
+    // Only settle once the transfer is confirmed -- if this had thrown
+    // instead, the debt has to stay outstanding for the next attempt.
+    await settleSellerDebts(debts, debtAppliedCents);
+
+    const success = {
+      orderId,
+      sellerId: order.sellerId,
+      amount: (netAmountCents / 100).toFixed(2),
+      debtApplied,
+      status: "transferred",
+      stripeTransferId: transfer.id,
+      payoutHoldReason: null,
+      lastError: null,
+      attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+      transferredAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+    await payoutRef.set(success);
+    return success;
+
+  } catch (stripeError) {
+    const failure = {
+      orderId,
+      sellerId: order.sellerId,
+      amount: (netAmountCents / 100).toFixed(2),
+      debtApplied,
+      status: "failed",
+      stripeTransferId: null,
+      payoutHoldReason: "stripe_error",
+      lastError: stripeError.message,
+      attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+      transferredAt: null
+    };
+    await payoutRef.set(failure);
+    return failure;
+  }
+}
+
+// Server-mediated on purpose, not a direct client Firestore query like
+// authentication-review.js uses for its own list -- `orders` deliberately
+// has no Firestore rule at all (default-deny) because it carries buyer PII
+// (email, shipping address), the same reasoning behind every
+// /api/*-history, *-summary, and by-payment-intent endpoint elsewhere in
+// this file. Joins the matching deliveryConfirmations doc per order (same
+// doc id, so it's a direct get() rather than a second query) to attach
+// rating/comment/photoUrls without exposing the rest of the order.
+app.get("/api/admin/delivery-confirmations", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const ordersSnap = await db.collection("orders")
+      .where("deliveryConfirmationStatus", "==", "submitted")
+      .get();
+
+    const items = await Promise.all(ordersSnap.docs.map(async (orderDoc) => {
+      const order = orderDoc.data();
+      const confirmationSnap = await db.collection("deliveryConfirmations").doc(orderDoc.id).get();
+      const confirmation = confirmationSnap.data() || {};
+
+      return {
+        orderId: orderDoc.id,
+        itemName: order.item?.name || "Item",
+        buyerId: order.buyerId,
+        buyerEmail: order.buyerEmail || null,
+        rating: confirmation.rating,
+        comment: confirmation.comment,
+        photoUrls: confirmation.photoUrls || [],
+        // Plain millis, not the raw Firestore Timestamp -- res.json() doesn't
+        // serialize that back into something toDate()-able on the other end.
+        submittedAt: confirmation.updatedAt?.toDate?.().getTime() || null
+      };
+    }));
+
+    return res.status(200).json({ success: true, items });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Same server-mediated reasoning as the confirmations list above -- joins
+// orders + disputes (same doc id) instead of a direct client Firestore
+// query, since orders carries PII.
+app.get("/api/admin/disputes", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const ordersSnap = await db.collection("orders")
+      .where("deliveryConfirmationStatus", "==", "disputed")
+      .get();
+
+    const items = await Promise.all(ordersSnap.docs.map(async (orderDoc) => {
+      const order = orderDoc.data();
+      const disputeSnap = await db.collection("disputes").doc(orderDoc.id).get();
+      const dispute = disputeSnap.data() || {};
+
+      // Only surface disputes still actually waiting on a decision -- an
+      // order can sit at deliveryConfirmationStatus "disputed" forever
+      // (it's not advanced by resolution, unlike the confirmation path),
+      // so the dispute doc's own status is what tells submitted apart from
+      // already-resolved.
+      if (dispute.status !== "submitted") return null;
+
+      return {
+        orderId: orderDoc.id,
+        itemName: order.item?.name || "Item",
+        buyerId: order.buyerId,
+        buyerEmail: order.buyerEmail || null,
+        saleAmount: dispute.saleAmount,
+        comment: dispute.comment,
+        photoUrls: dispute.photoUrls || [],
+        submittedAt: dispute.createdAt?.toDate?.().getTime() || null
+      };
+    }));
+
+    return res.status(200).json({ success: true, items: items.filter(Boolean) });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Shared by every successful-payout-outcome call site (initial release,
+// dispute-reject, and the retry endpoint) -- "succeeded" covers both an
+// actual transfer and a payout fully absorbed by outstanding debt, since
+// neither needs the retriable-failure handling each caller does
+// differently for its own "first attempt" vs "retry" framing.
+async function notifySellerPayoutSucceeded(order, payout) {
+  const itemName = order.item?.name || "your order";
+
+  if (payout.status === "absorbed_by_debt") {
+    await createNotification(
+      order.sellerId,
+      "order_status",
+      "Payout Applied to Balance Owed",
+      `Your $${payout.debtApplied} payout for ${itemName} was fully applied to an outstanding return-shipping charge. No funds were transferred this time.`,
+      "/profile?tab=selling"
+    );
+    return;
+  }
+
+  const debtNote = Number(payout.debtApplied) > 0 ? ` ($${payout.debtApplied} was deducted for a prior return-shipping charge)` : "";
+  await createNotification(
+    order.sellerId,
+    "order_status",
+    "Payout Released",
+    `Your payout of $${payout.amount} for ${itemName} has been sent.${debtNote}`,
+    "/profile?tab=selling"
+  );
+}
+
+// Shared by the approve endpoint below and the dispute-reject endpoint --
+// both end the same way: deliveryConfirmationStatus -> "approved", attempt
+// the payout, notify the seller either way. Advances regardless of whether
+// the payout itself succeeds; a stalled transfer is a retriable ops
+// problem (see the retry endpoints), not a reason to leave the record
+// stuck mid-review.
+async function approveDeliveryAndReleasePayout(order, orderId, docRef) {
+  await docRef.update({
+    deliveryConfirmationStatus: "approved",
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  const payout = await releasePayoutToSeller(order, orderId);
+  const itemName = order.item?.name || "your order";
+
+  if (payout.status === "transferred" || payout.status === "absorbed_by_debt") {
+    await notifySellerPayoutSucceeded(order, payout);
+  } else {
+    console.error(`payout for order ${orderId} failed to release: ${payout.payoutHoldReason}${payout.lastError ? ` (${payout.lastError})` : ""}`);
+
+    // connect_account_not_ready is actionable by the seller (finish
+    // onboarding and it'll resolve itself on retry); stripe_error is not
+    // -- an insufficient-balance or API failure is an ops problem, not
+    // something telling the seller to "fix their account" would help.
+    const notification = payout.payoutHoldReason === "connect_account_not_ready"
+      ? {
+          title: "Payout Setup Needed",
+          message: `Complete your seller payout setup to receive your $${payout.amount} payment for ${itemName}.`
+        }
+      : {
+          title: "Payout Delayed",
+          message: `Your $${payout.amount} payout for ${itemName} is delayed. Our team has been notified and is looking into it.`
+        };
+
+    await createNotification(
+      order.sellerId,
+      "order_status",
+      notification.title,
+      notification.message,
+      "/profile?tab=selling"
+    );
+  }
+
+  return payout;
+}
+
+// Admin/support approves a buyer's submitted delivery confirmation. This is
+// deliberately separate from resolving a dispute (disputed -> upheld/
+// rejected below) -- that's a different review queue with a refund path
+// as one of its two outcomes, not just a payout.
+app.post("/api/orders/:id/delivery-confirmation/approve", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const orderId = req.params.id;
+    const docRef = db.collection("orders").doc(orderId);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const order = docSnap.data();
+
+    if (order.deliveryConfirmationStatus !== "submitted") {
+      return res.status(409).json({ success: false, message: `Cannot approve from status "${order.deliveryConfirmationStatus}"` });
+    }
+
+    await db.collection("deliveryConfirmations").doc(orderId).update({
+      status: "approved",
+      reviewedByUserId: req.token.uid,
+      reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const payout = await approveDeliveryAndReleasePayout(order, orderId, docRef);
+
+    return res.status(200).json({ success: true, payout });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Once deliveryConfirmationStatus reaches "approved" it's terminal for the
+// approve endpoint above -- it can't be called again to try the transfer a
+// second time. This is the only way a failed payout (e.g. seller finished
+// Connect onboarding after the first attempt) gets moving again. Server-
+// mediated for the same PII reason as the list endpoint below.
+app.get("/api/admin/failed-payouts", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const payoutsSnap = await db.collection("payouts")
+      .where("status", "==", "failed")
+      .get();
+
+    const items = await Promise.all(payoutsSnap.docs.map(async (payoutDoc) => {
+      const payout = payoutDoc.data();
+      const orderSnap = await db.collection("orders").doc(payoutDoc.id).get();
+      const order = orderSnap.data() || {};
+
+      return {
+        orderId: payoutDoc.id,
+        itemName: order.item?.name || "Item",
+        buyerId: order.buyerId,
+        sellerId: payout.sellerId,
+        amount: payout.amount,
+        payoutHoldReason: payout.payoutHoldReason,
+        lastError: payout.lastError,
+        attemptedAt: payout.attemptedAt?.toDate?.().getTime() || null
+      };
+    }));
+
+    return res.status(200).json({ success: true, items });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Re-runs releasePayoutToSeller for an order whose payout previously failed
+// -- same function the approve endpoint calls, just callable again without
+// needing deliveryConfirmationStatus to still be "submitted".
+app.post("/api/orders/:id/payout/retry", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const orderId = req.params.id;
+    const [orderSnap, payoutSnap] = await Promise.all([
+      db.collection("orders").doc(orderId).get(),
+      db.collection("payouts").doc(orderId).get()
+    ]);
+
+    if (!orderSnap.exists) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+    if (!payoutSnap.exists || payoutSnap.data().status !== "failed") {
+      return res.status(409).json({ success: false, message: "No failed payout to retry for this order" });
+    }
+
+    const order = orderSnap.data();
+    const payout = await releasePayoutToSeller(order, orderId);
+
+    if (payout.status === "transferred" || payout.status === "absorbed_by_debt") {
+      await notifySellerPayoutSucceeded(order, payout);
+    } else {
+      // Already notified once on the original failure -- avoid re-notifying
+      // the seller on every retry attempt that still fails, just log it.
+      console.error(`payout retry for order ${orderId} failed again: ${payout.payoutHoldReason}${payout.lastError ? ` (${payout.lastError})` : ""}`);
+    }
+
+    return res.status(200).json({ success: true, payout });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Buyer reports a problem instead of confirming -- separate from the review
+// path above (no rating; the comment carries the signal since there isn't
+// one), goes to admin review with the payout still on hold rather than a
+// star rating being auto-approved.
+app.post("/api/orders/:id/dispute", verifyAuth, async (req, res) => {
+  try {
+    const { comment, photoUrls } = req.body;
+
+    if (!comment || typeof comment !== "string" || !comment.trim()) {
+      return res.status(400).json({ success: false, message: "Describe the problem to continue" });
+    }
+    if (!Array.isArray(photoUrls) || photoUrls.length === 0) {
+      return res.status(400).json({ success: false, message: "Upload at least one photo to continue" });
+    }
+
+    const loaded = await loadOrderForBuyerConfirmation(req, res);
+    if (!loaded) return;
+    const { order, docRef } = loaded;
+
+    const orderId = req.params.id;
+
+    // Snapshotted at report time -- this is meant to stand on its own as a
+    // support/audit record even if the order itself changes state later.
+    await db.collection("disputes").doc(orderId).set({
+      orderId,
+      buyerId: order.buyerId,
+      sellerId: order.sellerId,
+      listingId: order.listingId || null,
+      saleAmount: order.subtotal || null,
+      comment: comment.trim(),
+      photoUrls,
+      status: "submitted",
+      reviewedByUserId: null,
+      reviewedAt: null,
+      refundId: null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    await docRef.update({
+      deliveryConfirmationStatus: "disputed",
+      deliveryConfirmedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const itemName = order.item?.name || "your order";
+    await createNotification(
+      order.sellerId,
+      "order_status",
+      "Problem Reported",
+      `The buyer reported a problem with ${itemName}. Our team will review it.`,
+      "/profile?tab=selling"
+    );
+
+    return res.status(200).json({ success: true, message: "Thank you! Our support team will review the problem and email you on the next step." });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Shared by both dispute-resolution endpoints below -- loads the order and
+// its dispute doc, confirms the caller is admin, and confirms there's
+// actually a submitted dispute waiting on a decision.
+async function loadDisputeForResolution(req, res) {
+  const orderId = req.params.id;
+
+  if (req.token.admin !== true) {
+    res.status(403).json({ success: false, message: "Admin only" });
+    return null;
+  }
+
+  const docRef = db.collection("orders").doc(orderId);
+  const docSnap = await docRef.get();
+
+  if (!docSnap.exists) {
+    res.status(404).json({ success: false, message: "Order not found" });
+    return null;
+  }
+
+  const order = docSnap.data();
+
+  if (order.deliveryConfirmationStatus !== "disputed") {
+    res.status(409).json({ success: false, message: `Cannot resolve a dispute from status "${order.deliveryConfirmationStatus}"` });
+    return null;
+  }
+
+  const disputeRef = db.collection("disputes").doc(orderId);
+  const disputeSnap = await disputeRef.get();
+
+  if (!disputeSnap.exists || disputeSnap.data().status !== "submitted") {
+    res.status(409).json({ success: false, message: "No submitted dispute to resolve for this order" });
+    return null;
+  }
+
+  return { order, orderId, docRef, disputeRef };
+}
+
+// Admin sides with the buyer -- refunds the full original charge and closes
+// the order out with no payout. Safe to refund the whole PaymentIntent:
+// separate charges & transfers means nothing has been sent to the seller
+// for a disputed order yet, the full amount is still sitting in Hexxo's own
+// Stripe balance.
+app.post("/api/orders/:id/dispute/uphold", verifyAuth, async (req, res) => {
+  try {
+    const { returnShippingCost } = req.body;
+
+    if (typeof returnShippingCost !== "number" || !Number.isFinite(returnShippingCost) || returnShippingCost < 0) {
+      return res.status(400).json({ success: false, message: "returnShippingCost must be a non-negative number" });
+    }
+
+    const loaded = await loadDisputeForResolution(req, res);
+    if (!loaded) return;
+    const { order, orderId, docRef, disputeRef } = loaded;
+
+    const refund = await stripe.refunds.create({ payment_intent: order.id });
+
+    await disputeRef.update({
+      status: "upheld",
+      reviewedByUserId: req.token.uid,
+      reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
+      refundId: refund.id,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // deliveryConfirmationStatus stays "disputed" -- it marks which path
+    // this order took, not the money outcome. fulfillmentStatus carries the
+    // outcome instead, so the two concerns don't get overloaded onto one
+    // field (same reasoning as keeping payoutHoldReason off Orders entirely
+    // back when the data model was designed).
+    await docRef.update({
+      fulfillmentStatus: "refunded",
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // No real courier-rate integration for return shipping yet (would need
+    // parcel dimensions this app doesn't capture anywhere at listing
+    // creation) -- admin enters the cost manually here instead. Only
+    // recorded as debt if actually > 0, so a dispute upheld with no return
+    // shipment involved doesn't leave a pointless $0 ledger entry.
+    if (returnShippingCost > 0) {
+      await db.collection("sellerDebts").doc(orderId).set({
+        sellerId: order.sellerId,
+        orderId,
+        reason: "return_shipping",
+        amount: returnShippingCost.toFixed(2),
+        remainingAmount: returnShippingCost.toFixed(2),
+        status: "outstanding",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        settledAt: null
+      });
+    }
+
+    const itemName = order.item?.name || "your order";
+
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Refund Processed",
+      `Your refund for ${itemName} is being processed and should appear in 5-10 business days.`,
+      "/profile?tab=purchases"
+    );
+
+    const sellerMessage = returnShippingCost > 0
+      ? `${itemName} was found not as described. The item will be shipped back to you at your cost -- $${returnShippingCost.toFixed(2)} for return shipping will be deducted from your next payout.`
+      : `A reported problem with ${itemName} was upheld. The buyer has been refunded and no payout will be issued for this order.`;
+
+    await createNotification(
+      order.sellerId,
+      "order_status",
+      "Dispute Upheld",
+      sellerMessage,
+      "/profile?tab=selling"
+    );
+
+    return res.status(200).json({ success: true, refund: { id: refund.id, status: refund.status } });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Admin sides with the seller -- releases the payout exactly as if the
+// buyer had approved a normal delivery confirmation, via the same shared
+// helper the approve endpoint uses.
+app.post("/api/orders/:id/dispute/reject", verifyAuth, async (req, res) => {
+  try {
+    const loaded = await loadDisputeForResolution(req, res);
+    if (!loaded) return;
+    const { order, orderId, docRef, disputeRef } = loaded;
+
+    await disputeRef.update({
+      status: "rejected",
+      reviewedByUserId: req.token.uid,
+      reviewedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const payout = await approveDeliveryAndReleasePayout(order, orderId, docRef);
+
+    const itemName = order.item?.name || "your order";
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Dispute Reviewed",
+      `Your reported issue for ${itemName} was reviewed. The seller's payout has been released.`,
+      "/profile?tab=purchases"
+    );
+
+    return res.status(200).json({ success: true, payout });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// delete entire product
 app.delete("/products/:id", verifyAuth, async (req, res) => {
     const docId = req.params.id;
 
@@ -1602,6 +2383,162 @@ app.post('/api/payment-methods/setup-intent', verifyAuth, async (req, res) => {
     return res.status(400).json({ error: error.message})
   }
 })
+
+// Maps a v2 Core Account's recipient-transfer capability status onto our
+// four-value connectOnboardingStatus enum. Verified against a real sandbox
+// account: a brand-new, untouched account already reports status:
+// "restricted" with status_details.code "requirements_past_due" -- Stripe
+// uses "restricted" for both "never started" and "actively blocked," so
+// status alone can't tell those apart. status_details[].resolution can:
+// "provide_info" means it's on the seller to finish onboarding (harmless),
+// "contact_stripe" means something's actually wrong.
+function deriveConnectStatus(account) {
+  const transfers = account.configuration?.recipient?.capabilities?.stripe_balance?.stripe_transfers;
+  const status = transfers?.status;
+
+  if (status === 'active') {
+    return { connectOnboardingStatus: 'complete', connectPayoutsEnabled: true };
+  }
+
+  const needsStripe = transfers?.status_details?.some(d => d.resolution === 'contact_stripe');
+  if (needsStripe) {
+    return { connectOnboardingStatus: 'restricted', connectPayoutsEnabled: false };
+  }
+  if (status === 'restricted' || status === 'pending') {
+    return { connectOnboardingStatus: 'pending', connectPayoutsEnabled: false };
+  }
+  return { connectOnboardingStatus: 'not_started', connectPayoutsEnabled: false };
+}
+
+// Kicks off (or resumes) Stripe Express-style onboarding for a seller via the
+// Accounts v2 API -- v1 accounts.create is blocked for new Connect
+// integrations on this account. Returns a one-time Account Link URL for the
+// frontend to redirect to. No webhook pushes status updates here: v2
+// accounts fire "thin events" that need a separate Event Destination setup
+// we're deferring, so GET /api/connect/status below polls for status instead.
+app.post('/api/connect/onboard', verifyAuth, async (req, res) => {
+  const uid = req.token.uid;
+
+  try {
+    const docRef = db.collection('userProfiles').doc(uid);
+    const docSnap = await docRef.get();
+    const user = docSnap.data();
+
+    let accountId = user.stripeConnectAccountId;
+
+    if (accountId) {
+      try {
+        await stripe.v2.core.accounts.retrieve(accountId);
+      } catch (stripeError) {
+        // Same stale-id pattern as stripeCustomerId in /api/payment-methods
+        // above -- a leftover account id from a different Stripe mode/key
+        // should be treated as "no account yet" instead of erroring out.
+        if (stripeError.code === 'resource_missing') {
+          accountId = null;
+        } else {
+          throw stripeError;
+        }
+      }
+    }
+
+    if (!accountId) {
+      const account = await stripe.v2.core.accounts.create({
+        contact_email: user.email,
+        dashboard: 'express',
+        // Hardcoded to match the rest of the codebase's US-only assumptions
+        // (tax calc and pricing are both hardcoded to 'usd' elsewhere) --
+        // Stripe's hosted onboarding link collects the seller's actual
+        // address/identity details directly, this is just the required hint.
+        identity: {
+          country: 'us'
+        },
+        configuration: {
+          recipient: {
+            capabilities: {
+              stripe_balance: {
+                stripe_transfers: { requested: true }
+              }
+            }
+          }
+        },
+        defaults: {
+          currency: 'usd',
+          // Matches the "Marketplace" business model chosen in the Connect
+          // dashboard: Hexxo collects payment and only transfers out once
+          // approved, so Hexxo (the platform) is the one on the hook for
+          // Stripe fees and any refund/dispute losses, not the seller.
+          responsibilities: {
+            fees_collector: 'application',
+            losses_collector: 'application'
+          }
+        },
+        // For support/debugging lookups in the Stripe dashboard -- actual
+        // status comes from polling below, not from this metadata.
+        metadata: { firebaseUid: uid }
+      });
+
+      accountId = account.id;
+
+      await docRef.update({
+        stripeConnectAccountId: accountId,
+        connectOnboardingStatus: 'pending',
+        connectPayoutsEnabled: false
+      });
+    }
+
+    const origin = `${req.protocol}://${req.get('host')}`;
+
+    const accountLink = await stripe.accountLinks.create({
+      account: accountId,
+      // Stripe sends the seller back here if the link expires before they
+      // finish -- same destination as return_url since either way the next
+      // step is "reload the seller profile and let it re-check status."
+      // connect_return=1 lets the client tell "just came back from Stripe"
+      // apart from a normal page visit, so it only pays the extra status-
+      // recheck delay when it's actually likely to be needed.
+      refresh_url: `${origin}/profile?tab=selling&connect_return=1`,
+      return_url: `${origin}/profile?tab=selling&connect_return=1`,
+      type: 'account_onboarding'
+    });
+
+    return res.json({ url: accountLink.url });
+
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+// Stands in for the account.updated webhook we're not wiring up yet (see
+// the onboarding endpoint above) -- polls Stripe directly for this seller's
+// current Connect status and syncs it onto userProfiles. Call this whenever
+// the seller profile page needs a fresh read, e.g. right after they return
+// from onboarding.
+app.get('/api/connect/status', verifyAuth, async (req, res) => {
+  const uid = req.token.uid;
+
+  try {
+    const docRef = db.collection('userProfiles').doc(uid);
+    const docSnap = await docRef.get();
+    const user = docSnap.data();
+
+    if (!user.stripeConnectAccountId) {
+      return res.json({ connectOnboardingStatus: 'not_started', connectPayoutsEnabled: false });
+    }
+
+    const account = await stripe.v2.core.accounts.retrieve(user.stripeConnectAccountId, {
+      include: ['configuration.recipient']
+    });
+
+    const status = deriveConnectStatus(account);
+
+    await docRef.update(status);
+
+    return res.json(status);
+
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
 
 app.delete('/api/payment-methods/:id', verifyAuth, async (req, res) => {
   const paymentMethodId  = req.params.id;
