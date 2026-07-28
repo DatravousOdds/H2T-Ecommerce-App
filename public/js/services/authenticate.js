@@ -1311,7 +1311,6 @@ nextBtn.forEach((btn) => {
 
   });
 });
-
 backBtn.forEach((btn) => {
   btn.addEventListener("click", prevStep);
 });
