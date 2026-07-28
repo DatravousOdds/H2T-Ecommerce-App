@@ -88,6 +88,7 @@
 .single-pro-image > img {
     width: 100%;
     height: auto;
+    aspect-ratio: 1 / 1;
     border-radius: var(--radius-md);
     object-fit: cover;
 }
@@ -219,7 +220,7 @@
 
 .detail-container {
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid grey;
+    border-bottom: 1px solid #e5e5e5;
 }
 
 .details-container {

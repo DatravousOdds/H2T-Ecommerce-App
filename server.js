@@ -10,6 +10,23 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 easyship.auth(process.env.EASYSHIP_KEY);
 
+// Hexxo only lists clothing/accessories, so USPS's restricted-content rate
+// classes (media mail and its close relatives) are never legitimate for a
+// listing and should never reach the seller's courier picker. EasyShip's
+// display name truncates these to a single word (observed: "USPS - Media",
+// not "USPS - Media Mail"), so we match on the single word with a boundary
+// check rather than the full USPS product name.
+const RESTRICTED_COURIER_KEYWORD_PATTERNS = [/\bmedia\b/, /\blibrary\b/, /\bbound printed matter\b/];
+
+function isRestrictedCourierRate(rate) {
+  const name = rate.courier_service?.name ?? "";
+  const umbrellaName = rate.courier_service?.umbrella_name ?? "";
+  // Normalize hyphens/underscores to spaces so "USPS - Media" and
+  // EasyShip's snake_case slug style ("media_mail") both match the same way.
+  const haystack = `${name} ${umbrellaName}`.toLowerCase().replace(/[-_]/g, " ").replace(/\s+/g, " ");
+  return RESTRICTED_COURIER_KEYWORD_PATTERNS.some((pattern) => pattern.test(haystack));
+}
+
 
 
 // Import Firebase configuration
@@ -36,6 +53,50 @@ const accessKeyId = process.env.aws_access_key_id;
 const secretKeyId = process.env.aws_secret_access_key;
 const MARKETPLACE_FEE_RATE = 0.07
 const DELIVERY_CONFIRMATION_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
+
+// Buyer-initiated item authentication (distinct from the seller listing-
+// authentication flow / authenticationRequests collection). Two independent
+// qualifying paths -- see isAuthenticationEligible() below: price alone
+// (>= AUTHENTICATION_MIN_PRICE) qualifies any category, including ones with
+// no entry in AUTHENTICATION_CATALOG at all (hats/accessories/women-bags/
+// other can still qualify this way); separately, an approved category+brand
+// combo qualifies regardless of price. Brand approval is scoped per
+// category, not a global list -- e.g. adidas is approved for sneakers but
+// says nothing about apparel. Brand values below must stay lowercase since
+// isAuthenticationEligible() lowercases listing.brand before comparing --
+// brand is free text on the listing form, not a fixed dropdown.
+const AUTHENTICATION_MIN_PRICE = 150;
+const SNEAKER_FOOTWEAR_BRANDS = [
+  "nike", "jordan", "adidas", "yeezy", "new balance", "asics", "vans",
+  "converse", "reebok", "hoka", "on", "saucony", "salomon", "veja",
+  "alexander mcqueen", "gucci", "balenciaga", "christian louboutin",
+  "off-white", "dior", "louis vuitton"
+];
+const STREETWEAR_APPAREL_BRANDS = [
+  "supreme", "bape", "stussy", "palace", "travis scott", "denim tears",
+  "fear of god essentials", "eric emanuel", "hellstar", "moncler",
+  "the north face", "polo ralph lauren", "mcm", "canada goose"
+];
+const AUTHENTICATION_CATALOG = {
+  "men-sneakers": SNEAKER_FOOTWEAR_BRANDS,
+  "women-sneakers": SNEAKER_FOOTWEAR_BRANDS,
+  "kids-sneakers": SNEAKER_FOOTWEAR_BRANDS,
+  "men-shoes": SNEAKER_FOOTWEAR_BRANDS,
+  "women-shoes": SNEAKER_FOOTWEAR_BRANDS,
+  "apparel": STREETWEAR_APPAREL_BRANDS
+};
+
+// Two independent qualifying paths, not one combined AND: price alone
+// qualifies any listing regardless of category (including the categories
+// with no entry in AUTHENTICATION_CATALOG at all -- a $200 hat still
+// qualifies here), and separately, an approved category+brand combo
+// qualifies regardless of price.
+function isAuthenticationEligible(listing) {
+  if (listing.listingPrice >= AUTHENTICATION_MIN_PRICE) return true;
+
+  const approvedBrands = AUTHENTICATION_CATALOG[listing.category];
+  return !!approvedBrands && approvedBrands.includes(listing.brand?.toLowerCase());
+}
 
 aws.config.update({
   region,
@@ -109,6 +170,13 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
       // Then define and call a method to handle the successful payment intent.
       handlePaymentIntentSucceeded(paymentIntent);
       break;
+    case 'payment_intent.amount_capturable_updated':
+      // Only fires for capture_method: 'manual' PaymentIntents (i.e.
+      // authentication-opted orders) -- this is the authorization moment,
+      // distinct from and prior to the actual capture that later fires
+      // payment_intent.succeeded above.
+      handlePaymentIntentAuthorized(event.data.object);
+      break;
     default:
       // Unexpected event type
       console.log(`Unhandled event type ${event.type}.`);
@@ -171,7 +239,8 @@ app.post('/seller/api/shipping-rates',  async (req, res) => {
 
     console.log("Returned shipping data:", data);
 
-    res.json(data)
+    const filteredRates = (data.rates ?? []).filter((rate) => !isRestrictedCourierRate(rate));
+    res.json({ ...data, rates: filteredRates });
 
   } catch (err) {
     console.error("Failed to fetch shipping rates", JSON.stringify(err.data?.error?.details, null, 2))
@@ -290,6 +359,13 @@ app.get("/admin/delivery-confirmation-review", (req, res) => {
   res.sendFile(path.join(staticPth, "admin/delivery-confirmation-review.html"));
 });
 
+// Same UX-only client-side gate pattern as authentication-review above.
+// Real enforcement is GET /api/admin/order-authentications' and
+// POST /api/admin/order-authentications/:orderId/decision's isAdmin checks.
+app.get("/admin/order-authentication-review", (req, res) => {
+  res.sendFile(path.join(staticPth, "admin/order-authentication-review.html"));
+});
+
 // login route
 app.get("/login", (req, res) => {
   res.sendFile(path.join(staticPth, "login.html"));
@@ -321,103 +397,6 @@ app.get("/s3url", (req, res) => {
   generateUrl().then((url) => res.json(url));
 });
 
-// add product
-app.post("/add-product", (req, res) => {
-  let {
-    name,
-    shortDes,
-    des,
-    images,
-    sizes,
-    actualPrice,
-    discount,
-    sellerPrice,
-    stock,
-    tags,
-    tac,
-    email,
-    draft,
-    id
-  } = req.body;
-
-  // validation
-  if (!draft) {
-    if (!name.length) {
-      return res.json({ alert: "enter product name" });
-    } else if (shortDes.length > 100 || shortDes.length < 10) {
-      return res.json({
-        alert: "short description must be between 10 or 100 characters long"
-      });
-    } else if (!des.length) {
-      return res.json({ alert: "enter details description about the product" });
-    } else if (!images.length) {
-      //img link array
-      return res.json({ alert: "upload atleast one product image" });
-    } else if (!sizes.length) {
-      // size array
-      return res.json({ alert: "select at least one size" });
-    } else if (!actualPrice.length || !discount.length || !sellerPrice.length) {
-      return res.json({ alert: "you must add pricings" });
-    } else if (stock < 20) {
-      return res.json({ alert: "you should have at least 20 items in stock" });
-    } else if (!tags.length) {
-      return res.json({
-        alert: "enter few tags to help ranking your prodcut in search"
-      });
-    } else if (!tac) {
-      return res.json({ alert: "you must agree to term and conditions" });
-    }
-  }
-
-  // add product
-  let docName =
-    id == undefined
-      ? `${name.toLowerCase()}-${Math.floor(Math.random() * 5000)}`
-      : id;
-  db.collection("products")
-    .doc(docName)
-    .set(req.body)
-    .then((data) => {
-      res.json({ product: name });
-    })
-    .catch((err) => {
-      return res.json({ alert: "some error occured. Try again" });
-    });
-});
-
-// get prod
-app.post("/get-products", (req, res) => {
-  let { email, id, tag } = req.body;
-  let docRf = id
-    ? db.collection("products").doc(id)
-    : db.collection("products").where("email", "==", email);
-
-  if (id) {
-    docRf = db.collection("products").doc(id);
-    db.collection("products").doc(id);
-  } else if (tag) {
-    docRf = db.collection("products").where("tags", "array-contains", tag);
-  } else {
-    db.collection("products").where("email", "==", email);
-  }
-
-  docRf.get().then((products) => {
-    if (products.empty) {
-      return res.json("no products");
-    }
-    let productArr = [];
-    if (id) {
-      return res.json(products.data());
-    } else {
-      products.forEach((item) => {
-        let data = item.data();
-        data.id = item.id;
-        productArr.push(data);
-      });
-      res.json(productArr);
-    }
-  });
-});
 
 app.post("/delete-product", (req, res) => {
   let { id } = req.body;
@@ -947,11 +926,6 @@ app.get("/orders/:id", verifyAuth, async (req, res) => {
   }
 })
 
-// The order confirmation page only has the Stripe payment intent id (from
-// the redirect URL), not the Firestore doc id `/orders/:id` above expects --
-// and `orders` has no Firestore rule at all (see the Price History chart
-// entry in notes.md), so this can't be a client-side onSnapshot listener
-// like confirm.js used to run. Same buyerId/sellerId check as `/orders/:id`.
 app.get("/api/orders/by-payment-intent/:paymentIntentId", verifyAuth, async (req, res) => {
   try {
     const snapshot = await db.collection("orders")
@@ -970,6 +944,50 @@ app.get("/api/orders/by-payment-intent/:paymentIntentId", verifyAuth, async (req
     }
 
     return res.status(200).json({ success: true, data: order });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Server-mediated for the same PII/ownership reasoning as the route above --
+// joins orders + orderAuthenticationPhotos (for the reviewed timestamp)
+// rather than exposing either collection directly to the client. Only ever
+// returns data for an order that actually passed; a cancelled/still-pending
+// order has nothing to certify.
+app.get("/api/orders/:id/authentication-certificate", verifyAuth, async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const orderSnap = await db.collection("orders").doc(orderId).get();
+
+    if (!orderSnap.exists) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const order = orderSnap.data();
+
+    if (req.token.uid !== order.buyerId && req.token.uid !== order.sellerId) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    if (order.authenticationStatus !== "passed") {
+      return res.status(409).json({ success: false, message: "This order does not have a passed authentication certificate" });
+    }
+
+    const photosSnap = await db.collection("orderAuthenticationPhotos").doc(orderId).get();
+    const photos = photosSnap.data() || {};
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        orderId,
+        itemName: order.item?.name || "Item",
+        itemBrand: order.item?.brand || null,
+        subtotal: order.subtotal,
+        authenticatedAt: order.authenticationDecidedAt?.toDate?.().getTime()
+          || photos.reviewedAt?.toDate?.().getTime()
+          || null
+      }
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -1265,6 +1283,66 @@ app.post("/api/orders/:id/delivery-confirmation", verifyAuth, async (req, res) =
   }
 });
 
+// Seller confirms an order at pending_authentication is ready for review by
+// uploading photos -- at least one, same minimal bar as
+// /delivery-confirmation above rather than the per-angle checklist the
+// seller-listing authentication wizard uses, since this is a single
+// already-known item, not a fresh listing certification (revisit if this
+// turns out not to be enough evidence for admin to review against). Photos
+// are uploaded client-side straight to Storage first, same pattern as
+// everywhere else in this codebase -- this route only ever receives the
+// resulting URLs. No admin notification yet -- that's step 6 of this
+// feature's build order; step 4's review page queries submitted photos
+// directly, same as the existing authentication-review.js does today.
+const AUTHENTICATION_MIN_PHOTOS = 8;
+
+app.post("/api/orders/:id/authentication-photos", verifyAuth, async (req, res) => {
+  try {
+    const { photoUrls } = req.body;
+
+    if (!Array.isArray(photoUrls) || photoUrls.length < AUTHENTICATION_MIN_PHOTOS) {
+      return res.status(400).json({ success: false, message: `Upload at least ${AUTHENTICATION_MIN_PHOTOS} photos to continue` });
+    }
+
+    const orderId = req.params.id;
+    const docRef = db.collection("orders").doc(orderId);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const order = docSnap.data();
+
+    if (req.token.uid !== order.sellerId) {
+      return res.status(403).json({ success: false, message: "Only the seller can do this" });
+    }
+
+    if (order.fulfillmentStatus !== "pending_authentication") {
+      return res.status(409).json({ success: false, message: `Order is not awaiting authentication (status: ${order.fulfillmentStatus})` });
+    }
+
+    // doc id = orderId, same idempotent-upsert reasoning as
+    // deliveryConfirmations above -- a retry after a partial failure
+    // overwrites the same doc instead of risking a second one.
+    await db.collection("orderAuthenticationPhotos").doc(orderId).set({
+      sellerId: order.sellerId,
+      photoUrls,
+      status: "submitted",
+      reviewedByUserId: null,
+      reviewedAt: null,
+      reviewerNotes: null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    return res.status(200).json({ success: true, message: "Photos submitted for authentication review." });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // order.subtotal is the buyer's FULL total (listing price + shipping + tax
 // + marketplace fee combined -- see buildOrderDataFromPaymentIntent), not
 // the seller's cut. There's no listingPrice field stored directly, so it
@@ -1514,6 +1592,152 @@ app.get("/api/admin/disputes", verifyAuth, async (req, res) => {
     }));
 
     return res.status(200).json({ success: true, items: items.filter(Boolean) });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Same server-mediated reasoning as the two lists above -- orders carries
+// PII, so this joins orders + orderAuthenticationPhotos server-side instead
+// of a direct client query. Primary source is orders at
+// pending_authentication; an order that hasn't had photos submitted yet is
+// correctly excluded by filtering out anything whose joined doc isn't
+// "submitted" (same pattern as the disputes list above).
+app.get("/api/admin/order-authentications", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const ordersSnap = await db.collection("orders")
+      .where("fulfillmentStatus", "==", "pending_authentication")
+      .get();
+
+    const items = (await Promise.all(ordersSnap.docs.map(async (orderDoc) => {
+      const order = orderDoc.data();
+      const photosSnap = await db.collection("orderAuthenticationPhotos").doc(orderDoc.id).get();
+      const photos = photosSnap.data();
+
+      if (!photos || photos.status !== "submitted") return null;
+
+      return {
+        orderId: orderDoc.id,
+        itemName: order.item?.name || "Item",
+        itemBrand: order.item?.brand || null,
+        buyerId: order.buyerId,
+        sellerId: order.sellerId,
+        subtotal: order.subtotal,
+        photoUrls: photos.photoUrls || [],
+        submittedAt: photos.updatedAt?.toDate?.().getTime() || null
+      };
+    }))).filter(Boolean);
+
+    return res.status(200).json({ success: true, items });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+const ORDER_AUTHENTICATION_DECISIONS = ["passed", "failed"];
+
+// orderId here is the orders collection's Firestore doc id (matches every
+// other /api/orders/:id/... route's convention) -- NOT the same as
+// order.id, which is the Stripe PaymentIntent id and is what the capture/
+// cancel calls below actually need (same distinction dispute/uphold's
+// stripe.refunds.create({ payment_intent: order.id }) already relies on).
+app.post("/api/admin/order-authentications/:orderId/decision", verifyAuth, async (req, res) => {
+  const orderId = req.params.orderId;
+  const { decision, reviewerNotes } = req.body;
+
+  if (!ORDER_AUTHENTICATION_DECISIONS.includes(decision)) {
+    return res.status(400).json({ success: false, message: `decision must be one of: ${ORDER_AUTHENTICATION_DECISIONS.join(", ")}` });
+  }
+
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const orderRef = db.collection("orders").doc(orderId);
+    const orderSnap = await orderRef.get();
+
+    if (!orderSnap.exists) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const order = orderSnap.data();
+
+    if (order.fulfillmentStatus !== "pending_authentication") {
+      return res.status(409).json({ success: false, message: `Order is not awaiting an authentication decision (status: ${order.fulfillmentStatus})` });
+    }
+
+    const photosRef = db.collection("orderAuthenticationPhotos").doc(orderId);
+    const photosSnap = await photosRef.get();
+
+    if (!photosSnap.exists || photosSnap.data().status !== "submitted") {
+      return res.status(409).json({ success: false, message: "No submitted photos to review for this order" });
+    }
+
+    const itemName = order.item?.name || "your item";
+
+    if (decision === "passed") {
+      // Triggers the existing payment_intent.succeeded webhook unchanged --
+      // that's what actually flips fulfillmentStatus to "processing",
+      // records the tax transaction, bumps listing sale stats, AND already
+      // purchases a real EasyShip label unconditionally for prepaid-shipping
+      // listings (purchaseShippingLabel, called from inside that same
+      // webhook) -- none of that is duplicated here. authenticationStatus is
+      // set directly here (not left to the webhook) so the seller's
+      // certificate link can appear immediately without racing it.
+      await stripe.paymentIntents.capture(order.id);
+
+      await orderRef.update({
+        authenticationStatus: "passed",
+        authenticationDecidedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      await createNotification(
+        order.buyerId,
+        "order_status",
+        "Authentication Passed",
+        `Good news -- ${itemName} passed authentication and is being prepared for shipment.`,
+        "/profile?tab=purchases"
+      );
+    } else {
+      // Zero-tolerance: void the authorization hold outright, no refund
+      // object needed since nothing was ever captured. Nothing listens for
+      // payment_intent.canceled, so fulfillmentStatus is set directly here
+      // -- same reasoning as dispute/uphold setting "refunded" directly
+      // rather than waiting on a webhook.
+      await stripe.paymentIntents.cancel(order.id);
+
+      await orderRef.update({
+        fulfillmentStatus: "cancelled",
+        authenticationStatus: "failed",
+        authenticationDecidedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      await createNotification(
+        order.buyerId,
+        "order_status",
+        "Authentication Failed",
+        `${itemName} did not pass authentication. Your order has been cancelled and the authorization on your card has been released -- you were never charged.`,
+        "/profile?tab=purchases"
+      );
+    }
+
+    await photosRef.update({
+      status: decision,
+      reviewerNotes: reviewerNotes || null,
+      reviewedByUserId: req.token.uid,
+      reviewedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    return res.status(200).json({ success: true });
 
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -2047,6 +2271,19 @@ app.post("/create-checkout-session", async (req, res) => {
     const item = priceData[0];
     const isAuthPayment = item.itemType === 'authentication';
 
+    // Mandatory, not a buyer choice -- authentication triggers purely off
+    // server-recomputed eligibility. item.authenticationRequested (or any
+    // other client-sent flag) is never consulted here: a buyer sending a
+    // manipulated request to skip mandatory authentication on a genuinely
+    // eligible item must not be able to, so this can't depend on anything
+    // the client provides, not even as one half of an AND.
+    let authenticationRequested = false;
+    if (!isAuthPayment && item.listingId) {
+      const listingSnap = await db.collection("listings").doc(item.listingId).get();
+      const listing = listingSnap.data();
+      authenticationRequested = !!listing && isAuthenticationEligible(listing);
+    }
+
     // Authentication payments carry no seller/listing/shipping -- tagging
     // item_type here is what lets the webhook branch to the
     // authenticationRequests update instead of creating an `orders` doc.
@@ -2070,6 +2307,7 @@ app.post("/create-checkout-session", async (req, res) => {
           listing_id: item.listingId,
           shipping_cost: item.shippingCost,
           shipping_from: item.shippingFrom,
+          authentication_requested: String(authenticationRequested),
           item: JSON.stringify({
             name: item.productName,
             size: item.size,
@@ -2084,6 +2322,11 @@ app.post("/create-checkout-session", async (req, res) => {
       amount: Math.round(item.price * 100),
       currency: 'usd',
       payment_method_types: ['card'],
+      // Authentication-opted orders authorize the card without capturing --
+      // money only actually moves once admin passes the item (capture) or
+      // never at all if it fails (cancel/void). Normal purchases keep
+      // capturing immediately, unchanged.
+      ...(authenticationRequested ? { capture_method: 'manual' } : {}),
       metadata,
     });
 
@@ -2178,7 +2421,8 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
         tax: "0.00",
         taxPending: true,
         delivery: delivery,
-        total: parseFloat((marketplaceFee + delivery + listing.listingPrice).toFixed(2))
+        total: parseFloat((marketplaceFee + delivery + listing.listingPrice).toFixed(2)),
+        authenticationEligible: isAuthenticationEligible(listing)
       })
 
     } catch (error) {
@@ -2192,7 +2436,7 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
 // /create-checkout-session already made, so the mounted Payment Element can
 // pick it up via elements.fetchUpdates() before the buyer submits payment.
 app.post("/tax/calculate", verifyAuth, async (req, res) => {
-  const { paymentIntentId, listingId, address } = req.body;
+  const { paymentIntentId, listingId, address, name, phone } = req.body;
 
   if (!paymentIntentId || !listingId || !address) {
     return res.status(400).json({ success: false, message: "paymentIntentId, listingId, and address are required" });
@@ -2250,11 +2494,16 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     const currentItem = JSON.parse(paymentIntent.metadata.item);
     currentItem.salesTax = parseFloat(tax.toFixed(2));
 
+    // name/phone are carried alongside the address fields here (rather than
+    // as separate metadata keys) since buildOrderDataFromPaymentIntent just
+    // JSON.parses this whole blob into buyerShippingAddress -- that's what
+    // the EasyShip shipment-create call will read contact_name/contact_phone
+    // off of later.
     await stripe.paymentIntents.update(paymentIntentId, {
       amount: Math.round(total * 100),
       metadata: {
         tax_calculation_id: calculation.id,
-        shipping_to: JSON.stringify(address),
+        shipping_to: JSON.stringify({ ...address, name, phone }),
         item: JSON.stringify(currentItem)
       }
     });
@@ -2907,6 +3156,166 @@ function buildOrderDataFromPaymentIntent(paymentData) {
   };
 }
 
+// Authorization-time counterpart to handlePaymentIntentSucceeded below --
+// deliberately thin. Does NOT record the tax transaction, bump the
+// listing's sale stats, or notify the seller of a sale, since none of that
+// is true yet: this fires when the card is merely authorized (capture_method
+// 'manual'), before admin has passed the item. Those steps stay entirely in
+// handlePaymentIntentSucceeded, which will still fire later, unchanged, once
+// step 5's admin-pass actually captures the PaymentIntent.
+async function handlePaymentIntentAuthorized(paymentData) {
+  try {
+    if (paymentData.metadata.authentication_requested !== 'true') return;
+
+    const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
+    let data;
+
+    if (!existingOrder.empty) {
+      const orderDoc = existingOrder.docs[0];
+      data = orderDoc.data();
+
+      if (data.fulfillmentStatus !== 'pending') {
+        console.log(`order for payment intent ${paymentData.id} already past pending, skipping duplicate authorization webhook`);
+        return;
+      }
+
+      await orderDoc.ref.update({
+        status: paymentData.status,
+        fulfillmentStatus: 'pending_authentication',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } else {
+      // /orders/init either never fired or failed -- build the order now
+      // off the PaymentIntent's own metadata, same fallback reasoning as
+      // handlePaymentIntentSucceeded.
+      data = buildOrderDataFromPaymentIntent(paymentData);
+
+      await db.collection('orders').add({
+        ...data,
+        status: paymentData.status,
+        fulfillmentStatus: 'pending_authentication'
+      });
+    }
+
+    console.log(`order for payment intent ${paymentData.id} now pending authentication`);
+
+    await createNotification(
+      data.sellerId,
+      "order_status",
+      "Authentication Required",
+      `Your sale of ${data.item?.name || "an item"} needs authentication photos before it can ship. Submit at least 8 photos from your Selling dashboard.`,
+      "/profile?tab=selling"
+    );
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// Builds & purchases an EasyShip label for a prepaid-shipping sale, called
+// right as the order moves to "processing" in handlePaymentIntentSucceeded
+// below. Self-ship listings (no courierServiceId saved on listing.shipping --
+// see seller.js's courierConfirmBtn handler) are skipped entirely; this only
+// applies to the "Hexxo's prepaid label" path. Throws on any failure instead
+// of swallowing it, so the caller can notify the seller rather than silently
+// leaving an order with no label and no tracking number.
+async function purchaseShippingLabel(order, listing) {
+  const shipping = listing.shipping;
+  if (!shipping || typeof shipping !== 'object' || !shipping.courierServiceId) {
+    return null;
+  }
+
+  if (!order.buyerShippingAddress) {
+    throw new Error('Order has no buyerShippingAddress -- cannot address a label');
+  }
+
+  const sellerSnap = await db.collection('users').doc(order.sellerId).get();
+  const seller = sellerSnap.data();
+
+  if (!seller?.shipping?.address) {
+    throw new Error(`Seller ${order.sellerId} has no shipping address on file`);
+  }
+
+  // No separate "business name" field exists on the seller profile -- this
+  // is a peer marketplace, so the seller's own name doubles as the
+  // EasyShip-required origin company_name (shown on the label's "from" line).
+  const sellerName = `${seller.firstName || ''} ${seller.lastName || ''}`.trim() || 'Hexxo Seller';
+  const buyerAddress = order.buyerShippingAddress;
+
+  const { data } = await easyship.shipments_create({
+    origin_address: {
+      line_1: seller.shipping.address,
+      line_2: seller.shipping.address2 || undefined,
+      city: seller.shipping.city,
+      state: seller.shipping.state,
+      postal_code: seller.shipping.zipCode,
+      country_alpha2: seller.shipping.country,
+      company_name: sellerName,
+      contact_name: sellerName,
+      contact_email: seller.email,
+      contact_phone: seller.shipping.phoneNumber
+    },
+    destination_address: {
+      line_1: buyerAddress.line1,
+      line_2: buyerAddress.line2 || undefined,
+      city: buyerAddress.city,
+      state: buyerAddress.state,
+      postal_code: buyerAddress.postal_code,
+      country_alpha2: buyerAddress.country,
+      contact_name: buyerAddress.name,
+      contact_email: order.buyerEmail,
+      contact_phone: buyerAddress.phone
+    },
+    parcels: [
+      {
+        total_actual_weight: parseFloat(shipping.parcel.weight),
+        box: {
+          slug: 'custom',
+          length: parseFloat(shipping.parcel.length),
+          width: parseFloat(shipping.parcel.width),
+          height: parseFloat(shipping.parcel.height)
+        },
+        items: [
+          {
+            description: listing.productName,
+            quantity: 1,
+            category: 'Clothes & Accessories',
+            declared_currency: 'USD',
+            declared_customs_value: listing.listingPrice ?? 1,
+            hs_code: '6211'
+          }
+        ]
+      }
+    ],
+    // Selects the exact rate the seller confirmed at listing time (seller.js)
+    // rather than letting EasyShip pick a "best value" courier now -- prices
+    // and availability can drift between listing and sale.
+    courier_settings: {
+      courier_service_id: shipping.courierServiceId
+    },
+    shipping_settings: {
+      units: { weight: 'lb', dimensions: 'in' },
+      buy_label: true,
+      buy_label_synchronous: true,
+      printing_options: { format: 'url', label: '4x6' }
+    }
+  });
+
+  const shipment = data.shipment;
+  const labelDoc = shipment.shipping_documents?.find((doc) => doc.category === 'label');
+  const tracking = shipment.trackings?.[0];
+
+  if (!labelDoc?.url || !tracking?.tracking_number) {
+    throw new Error(`EasyShip returned no label/tracking for shipment ${shipment.easyship_shipment_id}`);
+  }
+
+  return {
+    trackingNumber: tracking.tracking_number,
+    shippingCarrier: shipping.courier,
+    shippingLabelUrl: labelDoc.url,
+    easyshipShipmentId: shipment.easyship_shipment_id
+  };
+}
+
 async function handlePaymentIntentSucceeded(paymentData){
   console.log(paymentData)
   try {
@@ -2966,6 +3375,8 @@ async function handlePaymentIntentSucceeded(paymentData){
       }
     }
 
+    const itemName = data.item?.name || "an item";
+
     const listingId = data.listingId;
     if (listingId) {
       const listingRef = db.collection('listings').doc(listingId);
@@ -2982,14 +3393,40 @@ async function handlePaymentIntentSucceeded(paymentData){
           averageSalePrice: parseFloat(newAverage.toFixed(2)),
           lastSalePrice: salePrice
         });
+
+        // Prepaid-shipping sales only (purchaseShippingLabel no-ops on
+        // self-ship listings). fulfillmentStatus deliberately stays
+        // "processing" here -- the seller still confirms drop-off themselves
+        // from their orders screen, same as the self-ship flow, just with
+        // tracking/carrier pre-filled instead of hand-typed.
+        try {
+          const label = await purchaseShippingLabel(data, listing);
+          if (label) {
+            await orderRef.update({
+              trackingNumber: label.trackingNumber,
+              shippingCarrier: label.shippingCarrier,
+              shippingLabelUrl: label.shippingLabelUrl,
+              easyshipShipmentId: label.easyshipShipmentId,
+              labelGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+            console.log(`shipping label purchased for order ${paymentData.id}`);
+          }
+        } catch (err) {
+          console.error(`Failed to purchase shipping label for order ${paymentData.id}:`, err.message);
+          await createNotification(
+            data.sellerId,
+            "order_status",
+            "Shipping Label Needed",
+            `We couldn't automatically generate a shipping label for ${itemName}. Please ship this item yourself and add tracking from your Selling dashboard.`,
+            "/profile?tab=selling"
+          );
+        }
       } else {
         console.error(`listing ${listingId} not found, skipping sale price update`);
       }
     } else {
       console.error(`payment intent ${paymentData.id} has no listing_id in metadata, skipping sale price update`);
     }
-
-    const itemName = data.item?.name || "an item";
 
     // Buyer already got "Order Confirmed" from /orders/init at pending --
     // only the seller gets notified here, since this is the point they

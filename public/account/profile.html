@@ -3709,6 +3709,15 @@
                   <p class="seller-order-action-status"></p>
                   <p class="order-action-error"></p>
 
+                  <div class="seller-order-action-auth-fields">
+                    <label>
+                      Authentication Photos (minimum 8, add as many as you'd like)
+                      <input type="file" id="seller-auth-photos-input" accept="image/png, image/jpeg" multiple />
+                    </label>
+                    <p class="seller-auth-photos-error"></p>
+                    <button type="button" class="order-action-btn" id="seller-submit-auth-photos-btn">Submit Photos</button>
+                  </div>
+
                   <div class="seller-order-action-ship-fields">
                     <label>
                       Tracking Number
@@ -3718,12 +3727,14 @@
                       Carrier
                       <input type="text" id="seller-shipping-carrier" placeholder="e.g. USPS, UPS, FedEx" />
                     </label>
-                    <button type="button" class="order-action-btn" id="seller-mark-shipped-btn">Mark Shipped</button>
                   </div>
+
+                  <button type="button" class="order-action-btn certificate" id="seller-view-certificate-btn">View Certificate</button>
+                  <button type="button" class="order-action-btn danger" id="seller-mark-shipped-btn">Mark Shipped</button>
 
                   <button type="button" class="order-action-btn" id="seller-mark-delivered-btn">Mark Delivered</button>
 
-                  <button type="button" class="order-action-btn danger" id="seller-cancel-order-btn">Cancel Order</button>
+                  <button type="button" class="order-action-btn cancel" id="seller-cancel-order-btn">Cancel Order</button>
                 </div>
               </div>
             </div>

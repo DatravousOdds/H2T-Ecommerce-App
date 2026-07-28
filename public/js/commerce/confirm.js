@@ -202,7 +202,10 @@ function displayOrderConfirmation(orderData) {
                     <div class="" id="orderDetails">
                         <div class="order-content">
                             <strong><p>An order confirmation. will be sent to <span class="email">${orderData.buyerEmail}</span></p></strong>
-                            <strong><p>We will update order with tracking number once it has been shipped by seller</p></strong>
+                            ${orderData.fulfillmentStatus === 'pending_authentication'
+                                ? `<strong><p>This item will be authenticated before it ships -- we'll notify you once the review is complete.</p></strong>`
+                                : `<strong><p>We will update order with tracking number once it has been shipped by seller</p></strong>`
+                            }
                         </div>
                         <hr>
                         <div class="details">

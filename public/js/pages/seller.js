@@ -155,6 +155,13 @@ let previousListingPrice = null;
 // a category and the matching size options exist to select from.
 let pendingAuthSize = null;
 
+// Set by setDimensionsListeners()'s defaultsBtn handler right before it
+// requests rates. courierConfirmBtn (setCourierListeners) needs the same
+// parcel later to persist onto listing.shipping -- EasyShip's shipment-create
+// call needs these dimensions again to re-book the exact rate the seller
+// picked here, and nothing else in this file keeps them around that long.
+let selectedParcel = null;
+
 // Listing docs (seller.js) only ever save brand/condition/size/description,
 // so those are the only auth intake fields worth mapping across. Auth
 // condition values (from authenticator/templates/*-form.html) don't line up
@@ -485,10 +492,14 @@ function setCourierListeners() {
 
         listing.shipping = {
             courier: selectedRate.dataset.courier,
+            courierServiceId: selectedRate.dataset.courierServiceId,
             service_name : selectedRate.dataset.serviceName,
             min_delivery_time: selectedRate.dataset.minDeliveryTime,
             max_delivery_time: selectedRate.dataset.maxDeliveryTime,
-            estimateRate: parseFloat(selectedRate.value)
+            estimateRate: parseFloat(selectedRate.value),
+            // EasyShip needs these again at label-purchase time (sale) to
+            // re-book the exact rate confirmed here -- see selectedParcel.
+            parcel: selectedParcel
         };
 
         collectListingInfo();
@@ -513,7 +524,9 @@ function setDimensionsListeners() {
             "height": document.getElementById('height').value,
             "weight": document.getElementById('weight').value
         }
-        
+
+        selectedParcel = parcel;
+
         closeDimensionsModal();
         proceedWithShipping(parcel);
         showCourierRatesModal();
@@ -966,6 +979,7 @@ function displayShippingCouriers(couriersArray) {
                         id="carrier-price"
                         value="${courierInfo.total_charge}"
                         data-courier="${courier.courier_service.umbrella_name}"
+                        data-courier-service-id="${courier.courier_service.id}"
                         data-service-name="${courierInfo.name}"
                         data-min-delivery-time="${courier.min_delivery_time}"
                         data-max-delivery-time="${courier.max_delivery_time}"

@@ -103,6 +103,67 @@ p {
     transform: none;
 }
 
+/* checkout.js toggles this on #spinner/#button-text/#payment-message --
+   neither checkout.html's Bootstrap import nor checkout.css defined it, so
+   nothing was actually hiding/showing. */
+.hidden {
+    display: none;
+}
+
+/* Three-dot loader shown on #submit while a payment is confirming.
+   currentColor picks up .place-order-btn's white text color so it doesn't
+   need its own color, including while the button is :disabled. */
+.spinner {
+    position: relative;
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background-color: currentColor;
+    color: currentColor;
+    animation: dot-flashing 1s infinite linear alternate;
+    animation-delay: 0.5s;
+}
+
+.spinner::before,
+.spinner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    color: currentColor;
+}
+
+.spinner::before {
+    left: -11px;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 0s;
+}
+
+.spinner::after {
+    left: 11px;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 1s;
+}
+
+@keyframes dot-flashing {
+    0% { opacity: 1; }
+    50%, 100% { opacity: 0.25; }
+}
+
+/* .hidden and .spinner have equal specificity (one class each) and .spinner's
+   display: inline-block sits later in this file, so it was winning the
+   cascade and showing the dots even with .hidden applied. This selector
+   pair outranks both on specificity, so hidden always wins regardless of
+   source order. */
+.spinner.hidden {
+    display: none;
+}
+
 #payment-message {
     font-size: 0.875rem;
     color: #6b7280;
@@ -258,6 +319,23 @@ p {
 .total-cost {
     font-size: 1.5rem;
     font-weight: 600;
+}
+
+.authentication-guarantee-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background-color: #f0f9f0;
+    border: 1px solid #cfe8cf;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #1e5c1e;
+}
+
+.authentication-guarantee-badge i {
+    color: #2f8f2f;
 }
 
 .shipping-payment {

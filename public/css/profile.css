@@ -3882,7 +3882,7 @@ h6 {
 
 .status-badge.under-review {
   background: #fef3c7;
-  color: #92400e;
+  color: #E86B2A;
 }
 
 .status-badge.needs-info {
@@ -5783,7 +5783,6 @@ h6 {
 }
 
 .order-details-header h2 {
-  font-size: var(--font-size-lg);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -5833,13 +5832,24 @@ h6 {
   display: block;
 }
 
-.seller-order-action-ship-fields {
+.seller-order-action-ship-fields,
+.seller-order-action-auth-fields {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
 }
 
-.seller-order-action-ship-fields label {
+.seller-auth-photos-error {
+  color: var(--color-danger, #c0392b);
+  font-size: var(--font-size-sm);
+}
+
+.seller-auth-photos-error:empty {
+  display: none;
+}
+
+.seller-order-action-ship-fields label,
+.seller-order-action-auth-fields label {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -5847,7 +5857,8 @@ h6 {
   color: var(--color-text-primary);
 }
 
-.seller-order-action-ship-fields input {
+.seller-order-action-ship-fields input,
+.seller-order-action-auth-fields input {
   padding: var(--spacing-sm);
   border: 1px solid var(--color-border-primary);
   border-radius: var(--border-radius-sm);
@@ -5858,7 +5869,7 @@ h6 {
   padding: var(--spacing-sm) var(--spacing-md);
   border: none;
   border-radius: var(--border-radius-sm);
-  background-color: var(--color-primary);
+  /* background-color: var(--color-primary); */
   color: var(--color-white);
   cursor: pointer;
   font-size: var(--font-size-md);
@@ -5870,6 +5881,28 @@ h6 {
 
 .order-action-btn.danger {
   background-color: #dc2626;
+}
+
+.order-action-btn.cancel {
+  background-color: #f0f0f0;
+  color: #444;
+}
+
+.order-action-btn.certificate {
+  background-color: rgba(42, 232, 122, 0.08);
+  font-weight: 600;
+  color: #2AE87A;
+  border: 1.5px solid #2AE87A;
+  border-radius: 8px; /* Added for a modern touch */
+  padding: 10px 18px; /* Ensures a balanced shape */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.order-action-btn.certificate:hover {
+  background-color: #2AE87A;
+  color: #04130a;
+  box-shadow: 0 4px 14px rgba(42, 232, 122, 0.35); /* Soft glowing elevation */
+  transform: translateY(-1px); /* Micro-interaction lift */
 }
 
 .order-details-cancel {
@@ -7809,8 +7842,8 @@ h6 {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  /* padding: 0.25rem 0.5rem; */
-  border-radius: 0.25rem;
+  width: fit-content;
+  border-radius: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
   justify-content: center;

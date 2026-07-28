@@ -8,6 +8,10 @@ import {
   getDocs,
   query,
   where,
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
 } from "../../../../api/firebase-client.js";
 
 const currentUser = await checkUserStatus();
@@ -321,6 +325,8 @@ function getOrderActionState(order) {
     canShip: status === "pending" || status === "processing",
     canDeliver: status === "shipped",
     canCancel: status === "pending" || status === "processing",
+    needsAuthPhotos: status === "pending_authentication",
+    hasCertificate: order.authenticationStatus === "passed",
   };
 }
 
@@ -338,16 +344,34 @@ function openOrderActionMenu(order) {
   menu.dataset.docId = order.docId;
   showActionError("");
 
-  const { status, canShip, canDeliver, canCancel } = getOrderActionState(order);
+  const { status, canShip, canDeliver, canCancel, needsAuthPhotos, hasCertificate } = getOrderActionState(order);
 
   menu.querySelector(".seller-order-action-item-name").textContent = order.item?.name || "Item";
   menu.querySelector(".seller-order-action-status").textContent = `Status: ${status}`;
   menu.querySelector(".seller-order-action-ship-fields").style.display = canShip ? "flex" : "none";
+  // Pulled out of .seller-order-action-ship-fields so it can sit visually
+  // right above Mark Shipped while staying independently visible -- it used
+  // to be implicitly shown/hidden along with that container.
+  menu.querySelector("#seller-mark-shipped-btn").style.display = canShip ? "block" : "none";
   menu.querySelector("#seller-mark-delivered-btn").style.display = canDeliver ? "block" : "none";
   menu.querySelector("#seller-cancel-order-btn").style.display = canCancel ? "block" : "none";
+  menu.querySelector(".seller-order-action-auth-fields").style.display = needsAuthPhotos ? "flex" : "none";
+
+  const certificateBtn = menu.querySelector("#seller-view-certificate-btn");
+  if (certificateBtn) {
+    certificateBtn.style.display = hasCertificate ? "block" : "none";
+    certificateBtn.onclick = () => window.open(`/certificate.html?orderId=${order.docId}`, "_blank");
+  }
 
   document.getElementById("seller-tracking-number").value = order.trackingNumber || "";
   document.getElementById("seller-shipping-carrier").value = order.shippingCarrier || "";
+
+  // Reset on every open -- a leftover file selection or error from a
+  // previously-opened order shouldn't bleed into this one.
+  const authPhotosInput = document.getElementById("seller-auth-photos-input");
+  if (authPhotosInput) authPhotosInput.value = "";
+  const authPhotosError = document.querySelector(".seller-auth-photos-error");
+  if (authPhotosError) authPhotosError.textContent = "";
 
   menu.classList.add("active");
 }
@@ -380,6 +404,69 @@ async function patchOrder(docId, body) {
   return result;
 }
 
+// Uploads straight to Storage first, same pattern as authenticationRequests'
+// proof photos and deliveryConfirmations' review photos -- the server route
+// only ever receives the resulting download URLs, never raw file bytes.
+async function uploadAuthenticationPhotos(files, sellerId, orderId) {
+  const storage = getStorage();
+
+  const uploadPromises = Array.from(files).map(async (file, index) => {
+    const imagePath = `orderAuthentications/${sellerId}/${orderId}/image_${index}_${Date.now()}.jpg`;
+    const storageRef = ref(storage, imagePath);
+    const uploadResult = await uploadBytes(storageRef, file);
+    return getDownloadURL(uploadResult.ref);
+  });
+
+  return Promise.all(uploadPromises);
+}
+
+const AUTHENTICATION_MIN_PHOTOS = 8;
+
+async function submitAuthenticationPhotos(docId, sellerId) {
+  const fileInput = document.getElementById("seller-auth-photos-input");
+  const errorEl = document.querySelector(".seller-auth-photos-error");
+  const submitBtn = document.getElementById("seller-submit-auth-photos-btn");
+  const files = fileInput.files;
+
+  errorEl.textContent = "";
+
+  // Server re-validates this too -- this check just saves the seller from
+  // uploading a batch of photos to Storage only to have the submission
+  // rejected afterward.
+  if (!files || files.length < AUTHENTICATION_MIN_PHOTOS) {
+    errorEl.textContent = `Upload at least ${AUTHENTICATION_MIN_PHOTOS} photos to continue (${files?.length || 0} selected).`;
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Uploading...";
+
+  try {
+    const photoUrls = await uploadAuthenticationPhotos(files, sellerId, docId);
+    const idToken = await auth.currentUser.getIdToken();
+
+    const response = await fetch(`/api/orders/${docId}/authentication-photos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({ photoUrls }),
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || "Submission failed");
+
+    closeOrderActionMenu();
+    await refreshOrders(sellerId);
+  } catch (error) {
+    errorEl.textContent = error.message;
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit Photos";
+  }
+}
+
 async function cancelOrder(docId) {
   const idToken = await auth.currentUser.getIdToken();
 
@@ -406,6 +493,7 @@ function wireOrderActions(userId) {
   const shipBtn = document.getElementById("seller-mark-shipped-btn");
   const deliverBtn = document.getElementById("seller-mark-delivered-btn");
   const cancelBtn = document.getElementById("seller-cancel-order-btn");
+  const submitAuthPhotosBtn = document.getElementById("seller-submit-auth-photos-btn");
 
   if (table) {
     table.addEventListener("click", (e) => {
@@ -466,6 +554,13 @@ function wireOrderActions(userId) {
       } catch (error) {
         showActionError(error.message);
       }
+    });
+  }
+
+  if (submitAuthPhotosBtn) {
+    submitAuthPhotosBtn.addEventListener("click", () => {
+      const docId = menu.dataset.docId;
+      submitAuthenticationPhotos(docId, userId);
     });
   }
 }

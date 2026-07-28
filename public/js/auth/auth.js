@@ -434,10 +434,9 @@ function initAuthForm() {
                 errorMessage = "The user corresponding to the given email has been disabled.";
                 break;
               case 'auth/user-not-found':
-                errorMessage = "There is no user corresponding to the given email.";
-                break;
               case 'auth/wrong-password':
-                errorMessage = "The password is invalid for the given email.";
+              case 'auth/invalid-credential':
+                errorMessage = "Incorrect email or password.";
                 break;
             }
 

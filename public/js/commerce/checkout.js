@@ -1,6 +1,6 @@
 import { collection, getDocs, db } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
-const stripe = Stripe("pk_live_51TfzCeClJc0GzijRcUvKdnm7dCkWSNuBzQMI3hgeoJsQ97IXaDCQtrLZCyuVVXiPZOWpyfGD2jfj13IpIJeQwy3X00GHsIsrzz");
+const stripe = Stripe("pk_test_51Tfwj9PHPIWBS1BJqszOAwKKlL5xCJGBsfTJhcbyWndXlUBiLbDsGhlmLCf7XGxdiFtamED8mlZxZbVKJDBu1tao004NMblLug");
 
 
 const searchQuery = new URLSearchParams(window.location.search);
@@ -21,6 +21,11 @@ let currentUser = await checkUserStatus();
 let isAuthPayment = false;
 let isTaxReady = false;
 let taxRequestSeq = 0;
+// Distinct from isAuthPayment above, which means "this checkout IS an
+// authentication-tier service fee purchase." This means "this listing
+// purchase qualifies for the buyer-authentication feature" -- set from
+// /order-summary's authenticationEligible field once data loads below.
+let authenticationEligible = false;
 
 if(!currentUser) {
     window.location.href = '/login';
@@ -53,6 +58,13 @@ if(!currentUser) {
         } else {
             queryItem.salesTax = data.tax;
             queryItem.marketplaceFee = data.marketplaceFee;
+            // Authentication is mandatory when eligible, not a buyer choice
+            // -- server.js's /create-checkout-session recomputes and enforces
+            // this itself from the listing, ignoring anything sent from here.
+            // This is only used to decide whether displayOrderSummary shows
+            // the informational badge below, and whether handleSubmit waits
+            // for pending_authentication before redirecting.
+            authenticationEligible = !!data.authenticationEligible;
             displayShipping(currentUser);
             displayOrderDetails(queryItem);
         }
@@ -122,7 +134,13 @@ async function initializeCheckout() {
     } else {
         const shippingAddressElement = elements.create("address", {
             mode: "shipping",
-            allowedCountries: ["US"]
+            allowedCountries: ["US"],
+            // EasyShip requires a contact_phone on the destination address to
+            // purchase a shipping label. fields.phone alone only makes the
+            // field collectible -- validation.phone.required is what actually
+            // makes the Element withhold event.complete until it's filled in.
+            fields: { phone: "always" },
+            validation: { phone: { required: "always" } }
         });
         shippingAddressElement.mount("#shipping-address-element");
         shippingAddressElement.on("change", handleShippingAddressChange);
@@ -135,7 +153,10 @@ function handleShippingAddressChange(event) {
         updateSubmitState();
         return;
     }
-    calculateTax(event.value.address);
+    // name/phone ride along with address here since this is the only point
+    // the buyer's contact info is captured -- both are required later to
+    // actually purchase the EasyShip label (destination_address needs them).
+    calculateTax(event.value.address, event.value.name, event.value.phone);
 }
 
 // Recomputes tax server-side (server.js's /tax/calculate) whenever the
@@ -143,7 +164,7 @@ function handleShippingAddressChange(event) {
 // amount onto the already-created PaymentIntent. requestId guards against a
 // slower, earlier calculation overwriting a newer one if the buyer edits
 // the address again before the first call resolves.
-async function calculateTax(address) {
+async function calculateTax(address, name, phone) {
     const requestId = ++taxRequestSeq;
     isTaxReady = false;
     updateSubmitState();
@@ -155,7 +176,7 @@ async function calculateTax(address) {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${currentUser.idToken}`
             },
-            body: JSON.stringify({ paymentIntentId, listingId, address })
+            body: JSON.stringify({ paymentIntentId, listingId, address, name, phone })
         });
 
         const result = await response.json();
@@ -202,6 +223,13 @@ async function handleSubmit(e) {
 
     console.log("confirming payment...");
 
+    // Show the loading state as soon as the buyer commits -- previously this
+    // only got set inside the error branch (immediately undone right after)
+    // or inside waitForPendingAuthentication, which never runs for a normal
+    // purchase. Without this the button just sat there doing nothing for the
+    // full /orders/init + confirmPayment round trip.
+    setLoading(true);
+
     // Writes the order as "pending" now, right as the buyer commits to
     // paying -- not blocking/aborting checkout if this fails, since the
     // payment itself is the critical path and the webhook will still
@@ -227,17 +255,67 @@ async function handleSubmit(e) {
         }
     }
 
-    const { error } = await stripe.confirmPayment({
+    // Every other checkout keeps Stripe's default automatic redirect
+    // (unchanged, still untouched below) -- only an authentication-eligible
+    // order needs redirect: 'if_required' here, so control actually returns
+    // to this function on success instead of the browser navigating away
+    // immediately, letting waitForPendingAuthentication hold the buyer on a
+    // loader until the order doc is genuinely at pending_authentication
+    // rather than just "card confirmed."
+    const { error, paymentIntent: confirmedPaymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
             return_url: `${window.location.origin}/confirm.html`
-        }
-    })
+        },
+        ...(authenticationEligible ? { redirect: 'if_required' } : {})
+    });
+
+    if (error) {
+        showMessage(error.message);
+        setLoading(false);
+        return;
+    }
+
+    if (authenticationEligible) {
+        await waitForPendingAuthentication(confirmedPaymentIntent.id);
+    }
+}
+
+async function fetchOrderByPaymentIntent(paymentIntentId) {
+    try {
+        const response = await fetch(`/api/orders/by-payment-intent/${paymentIntentId}`, {
+            headers: { "Authorization": `Bearer ${currentUser.idToken}` }
+        });
+        if (!response.ok) return null;
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error("Error polling order status:", error);
+        return null;
+    }
+}
+
+// Polls rather than trusting "card confirmed" alone, since the order only
+// actually reaches pending_authentication once the webhook processes
+// amount_capturable_updated -- a real, if usually short, async gap. Redirects
+// to confirm.html regardless of whether polling ever saw
+// pending_authentication -- the card is already authorized either way by
+// this point, and confirm.js has its own displayOrderPendingFallback() for a
+// doc that's still slow to show up. Never leave the buyer stuck on this page
+// over a webhook delay.
+async function waitForPendingAuthentication(paymentIntentId) {
     setLoading(true);
 
-    showMessage(error.message);
+    const MAX_ATTEMPTS = 10;
+    const DELAY_MS = 1000;
 
-    setLoading(false);
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        const order = await fetchOrderByPaymentIntent(paymentIntentId);
+        if (order?.fulfillmentStatus === 'pending_authentication') break;
+        await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+    }
+
+    window.location.href = `${window.location.origin}/confirm.html?payment_intent=${paymentIntentId}&redirect_status=succeeded`;
 }
 
 async function getCartItems(userId) {
@@ -340,9 +418,24 @@ function displayOrderSummary(data, isAuthPayment = false) {
             </div>
         `;
 
+    // Informational only, not a choice -- authentication is mandatory for
+    // eligible items (server.js enforces this independent of anything sent
+    // from the client). Not a checkbox: a buyer being able to opt out would
+    // let a counterfeit item in an authenticate-required category skip
+    // review entirely.
+    const authenticationBadgeHTML = (!isAuthPayment && data.authenticationEligible)
+        ? `
+            <div class="authentication-guarantee-badge">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>Authenticity Guarantee -- this item will be authenticated before it ships to you.</span>
+            </div>
+        `
+        : '';
+
     checkoutBox.innerHTML = `
         <h3>Order Summary</h3>
         ${lineItemsHTML}
+        ${authenticationBadgeHTML}
             <hr>
             <div class="line-item-container">
               <dt>Total</dt>
