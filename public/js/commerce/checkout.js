@@ -1,6 +1,6 @@
 import { collection, getDocs, db } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
-const stripe = Stripe("pk_test_51Tfwj9PHPIWBS1BJqszOAwKKlL5xCJGBsfTJhcbyWndXlUBiLbDsGhlmLCf7XGxdiFtamED8mlZxZbVKJDBu1tao004NMblLug");
+const stripe = Stripe("pk_live_51TfzCeClJc0GzijRcUvKdnm7dCkWSNuBzQMI3hgeoJsQ97IXaDCQtrLZCyuVVXiPZOWpyfGD2jfj13IpIJeQwy3X00GHsIsrzz");
 
 
 const searchQuery = new URLSearchParams(window.location.search);
