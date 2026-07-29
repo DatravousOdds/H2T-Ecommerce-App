@@ -124,6 +124,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
         <li><a href="/releases" class="nav-link">Releases</a></li>
         <li><a href="/mens" class="nav-link">Men</a></li>
         <li><a href="/women" class="nav-link">Women</a></li>
+        <li><a href="/collectibles" class="nav-link">Collectibles</a></li>
         <li><a href="/accessories" class="nav-link">Accessories</a></li>
         <li><a href="/seller" class="nav-link">Sell</a></li>
         <li>
@@ -172,6 +173,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
             <ul class="submenu">
               <li><a href="/mens">Men</a></li>
               <li><a href="/women">Women</a></li>
+              <li><a href="/collectibles">Collectibles</a></li>
               <li><a href="/accessories">Accessories</a></li>
               <li><a href="/releases">Releases</a></li>
             </ul>

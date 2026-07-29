@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/style2.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/components/product-card.css">
+    <link rel="stylesheet" href="../css/components/skeleton.css" />
+    <link rel="stylesheet" href="../css/components/newsletter.css" />
+    <link rel="stylesheet" href="../css/components/cartDrawer.css" />
+
+    <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/854f8a6196.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    />
+    <title>Streetwear Collectibles | Hexxo</title>
+    <meta name="description" content="Shop authenticated streetwear collectibles on Hexxo -- trading cards, vinyl figures, hype merch, and more from a community of trusted sellers.">
+    <link rel="canonical" href="https://hexxo.store/collectibles">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Hexxo">
+    <meta property="og:title" content="Streetwear Collectibles | Hexxo">
+    <meta property="og:description" content="Shop authenticated streetwear collectibles on Hexxo -- trading cards, vinyl figures, hype merch, and more from a community of trusted sellers.">
+    <meta property="og:url" content="https://hexxo.store/collectibles">
+    <meta property="og:image" content="https://hexxo.store/images/accessories_banner_2.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Streetwear Collectibles | Hexxo">
+    <meta name="twitter:description" content="Shop authenticated streetwear collectibles on Hexxo -- trading cards, vinyl figures, hype merch, and more from a community of trusted sellers.">
+    <meta name="twitter:image" content="https://hexxo.store/images/accessories_banner_2.png">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <!-- Header section -->
+    <section id="header">
+
+      <nav class="navbar"></nav>
+
+    </section>
+
+    <section id="page-header" class="collectibles-header">
+      <h2>Shop All Collectibles</h2>
+
+      <p>
+        Browse trading cards, vinyl figures, hype merch, and more from a community of trusted sellers.
+      </p>
+    </section>
+
+    <!-- Breadcrumbs -->
+      <div class="breadcrumbs">
+        <ol class="breadcrumbs-routes">
+          <li><a href="/">Home</a></li>
+          <li><span>></span></li>
+          <li id="curr-page" class="curr-pg">Collectibles</li>
+        </ol>
+      </div>
+
+    <!-- begin of Products-->
+    <section id="product1" class="product-page">
+
+      <!-- Filter -->
+      <div id="filter-section" class="filter-section">
+          <h1>Filter by</h1>
+
+          <div class="filter-option" style="border: 2px solid transparent">
+            <div class="expand-details filter">
+              <button type="button" class="filter-btn">Category</button>
+              <i class="fa-solid fa-minus"></i>
+            </div>
+
+            <div class="filter-container" id="type-filter" data-filter-type="size">
+              <div>
+                <input name="size" type="checkbox" class="check" id="trading-cards" value="Trading Cards" />
+                <label for="trading-cards">Trading Cards</label>
+              </div>
+              <div>
+                <input name="size" type="checkbox" class="check" id="vinyl-figures" value="Vinyl Figures" />
+                <label for="vinyl-figures">Vinyl Figures</label>
+              </div>
+              <div>
+                <input name="size" type="checkbox" class="check" id="hype-merch" value="Hype Merch" />
+                <label for="hype-merch">Hype Merch</label>
+              </div>
+              <div>
+                <input name="size" type="checkbox" class="check" id="plushies" value="Plushies" />
+                <label for="plushies">Plushies</label>
+              </div>
+              <div>
+                <input name="size" type="checkbox" class="check" id="enamel-pins" value="Enamel Pins" />
+                <label for="enamel-pins">Enamel Pins</label>
+              </div>
+              <div>
+                <input name="size" type="checkbox" class="check" id="gaming-gear" value="Gaming Gear" />
+                <label for="gaming-gear">Gaming Gear</label>
+              </div>
+              <div>
+                <input name="size" type="checkbox" class="check" id="comic-books" value="Comic Books" />
+                <label for="comic-books">Comic Books</label>
+              </div>
+              <div>
+                <input name="size" type="checkbox" class="check" id="skate-decks" value="Skate Decks" />
+                <label for="skate-decks">Skate Decks</label>
+              </div>
+            </div>
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+          </div>
+          <div class="filter-option" style="border: 2px solid transparent">
+            <div class="expand-details filter">
+              <button type="button" class="filter-btn">Brand</button>
+              <i class="fa-solid fa-minus"></i>
+            </div>
+
+            <div class="filter-container" id="brand-filter" data-filter-type="brand">
+              <!-- loaded from javascript -->
+            </div>
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+          </div>
+          <div class="filter-option" style="border: 2px solid transparent">
+            <div class="expand-details filter">
+              <button type="button" class="filter-btn">Color</button>
+              <i class="fa-solid fa-minus"></i>
+            </div>
+
+            <div class="filter-container" data-filter-type="color">
+              <div
+                class="shoe-filter-container"
+
+              >
+                <ul class="color-picker" id="colorPicker">
+                 <!-- loaded from javascript -->
+                </ul>
+              </div>
+            </div>
+            <hr />
+          </div>
+          <div class="filter-option" style="border: 2px solid transparent">
+            <div class="expand-details filter">
+              <button type="button" class="filter-btn">Shop by Price</button>
+              <i class="fa-solid fa-minus"></i>
+            </div>
+
+            <div class="filter-container price-filter" data-filter-type="price">
+              <div>
+                <input type="checkbox" class="check" id="20-50" value="20-50" />
+                <label for="20-50">$25 - $50</label>
+              </div>
+              <div>
+                <input type="checkbox" class="check" id="50-100" value="50-100" />
+                <label for="50-100">$50 - $100</label>
+              </div>
+              <div>
+                <input type="checkbox" class="check" id="100-150" value="100-150" />
+                <label for="100-150">$100 - $150</label>
+              </div>
+              <div>
+                <input type="checkbox" class="check" id="over_150" value="over_150" />
+                <label for="over_150">Over $150</label>
+              </div>
+            </div>
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+          </div>
+          <div class="filter-option" style="border: 2px solid transparent">
+            <div class="expand-details filter">
+              <button type="button" class="filter-btn">Condition</button>
+              <i class="fa-solid fa-minus"></i>
+            </div>
+
+            <div class="filter-container" data-filter-type="condition">
+              <div>
+                <input name="condition" type="checkbox" class="check" id="brandNew" value="Brand New" />
+                <label for="brandNew">Brand New</label>
+              </div>
+              <div>
+                <input name="condition" type="checkbox" class="check" id="likeNew" value="Like New" />
+                <label for="likeNew">Like New</label>
+              </div>
+              <div>
+                <input name="condition" type="checkbox" class="check" id="usedExcellent" value="Used - Excellent" />
+                <label for="usedExcellent">Used - Excellent</label>
+              </div>
+              <div>
+                <input name="condition" type="checkbox" class="check" id="usedGood" value="Used - Good" />
+                <label for="usedGood">Used - Good</label>
+              </div>
+            </div>
+            <hr style="width: 100%; text-align: left; margin-left: 0" />
+          </div>
+      </div>
+
+      <!-- Main content: results/sort + product grid stack independently of the filter sidebar -->
+      <div class="main-content">
+      <!-- Filter Results -->
+      <div class="results-sort">
+        <div class="page-results">
+            <div class="pg-results" id="pageResults">50 Results</div>
+            <!-- Sort By Dropdown -->
+            <div class="filter-opt">
+              <div class="sort-data" id="sort-container">
+                <button type="button" class="btn dropdown-btn" id="sort-btn">
+                  Sort By: <span id="sort-select" class="sort-text"></span>
+                  <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <div class="sort-content">
+                  <a  href="#">Featured</a>
+                  <a  href="#">Newest</a>
+                  <a  href="#">Price: High-Low</a>
+                  <a  href="#">Price: Low-High</a>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- Filters display -->
+         <div class="filters-display" id="filterDisplay">
+            <button type="button" class="filter-button" data-filter-tag="clear-all">
+              Clear All
+            </button>
+            <div class="applied-filters" id="appliedFilters">
+              <!-- Dynamically applied-->
+            </div>
+         </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="products-section">
+        <div class="product-grid" id="productsContainer">
+          <!-- loaded from javascript -->
+        </div>
+      </div>
+      </div>
+      <!-- Pagination -->
+      <section id="pagination" class="pagination-section">
+      <div id="pagination-links" class="pagination-link-container">
+        <button type="button" id="loadMoreBtn" class="load-more-btn">Load More</button>
+      </div>
+      </section>
+
+    </section>
+    <!-- end of Products-->
+    <!-- newsletter -->
+      <section id="newsletter" class="section-p1 section-m1">
+        <div class="newstext">
+          <h4>Sign Up for Newsletter</h4>
+          <p>
+            Get E-mail updates about latest shop and <span>special offers</span>
+          </p>
+        </div>
+        <div class="form">
+          <input type="text" placeholder="  Your email address" />
+          <button class="normal">Sign Up</button>
+        </div>
+      </section>
+    <!-- Pagination section-->
+
+
+    <footer class="margin-l-r-sm"></footer>
+
+    <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
+    </div>
+    <div class="cart-drawer-backdrop" id="cartBackdrop"></div>
+
+    <script type="module" src="../js/pages/collectibles.js"></script>
+    <script type="module" src="../js/components/newsletter.js"></script>
+    <script type="module" src="../js/core/global.js"></script>
+    <script src="../js/components/footer.js"></script>
+    <script type="module" src="../js/components/nav.js"></script>
+  </body>
+</html>

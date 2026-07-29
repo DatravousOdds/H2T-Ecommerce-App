@@ -273,6 +273,11 @@ app.get("/women", (req, res) => {
 app.get("/accessories", (req, res) => {
   res.sendFile(path.join(staticPth, "shop/accessories.html"));
 });
+
+// collectibles page route
+app.get("/collectibles", (req, res) => {
+  res.sendFile(path.join(staticPth, "shop/collectibles.html"));
+});
 // accessories page route
 app.get("/contact", (req, res) => {
   res.sendFile(path.join(staticPth, "static/contact.html"));

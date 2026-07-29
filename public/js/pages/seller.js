@@ -229,6 +229,13 @@ const CATEGORY_FIELDS = {
     "accessories": {
         fields: [{ type: "dropdown", name:"size", options: ['OS','S/M','L/XL'] }]
     },
+    "collectibles": {
+        sizeLabel: "Type",
+        fields: [{ type: "dropdown", name:"size", options: [
+            "Trading Cards", "Vinyl Figures", "Hype Merch", "Plushies",
+            "Enamel Pins", "Gaming Gear", "Comic Books", "Skate Decks"
+        ] }]
+    },
     "other": {
         fields: []
     }
@@ -848,11 +855,13 @@ function getCategoryFields(category) {
 
 function renderSizeOptions(category) {
     const fields = CATEGORY_FIELDS[category].fields;
+    const sizeLabel = document.querySelector('label[for="size"]');
     if (fields.length === 0) {
         sizeInfo.style.display = "none";
 
     } else {
         sizeInfo.style.display = 'block';
+        if (sizeLabel) sizeLabel.textContent = CATEGORY_FIELDS[category].sizeLabel || "Size";
         productSize.innerHTML = "";
         fields.forEach(field => {  
             if (field.type === "dropdown") {
