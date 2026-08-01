@@ -205,7 +205,7 @@
                         type="file"
                         id="file-input"
                         style="display: none"
-                        accept="'image/*"
+                        accept="image/*"
                       />
                       <button type="button" id="upload-btn">
                         <i
@@ -3718,6 +3718,11 @@
                     <button type="button" class="order-action-btn" id="seller-submit-auth-photos-btn">Submit Photos</button>
                   </div>
 
+                  <div class="seller-order-action-prepaid-info">
+                    <p>Prepaid shipping label purchased — <span id="seller-prepaid-carrier"></span> tracking <span id="seller-prepaid-tracking"></span></p>
+                    <button type="button" class="order-action-btn" id="seller-download-label-btn">Download Shipping Label</button>
+                  </div>
+
                   <div class="seller-order-action-ship-fields">
                     <label>
                       Tracking Number
@@ -3731,8 +3736,6 @@
 
                   <button type="button" class="order-action-btn certificate" id="seller-view-certificate-btn">View Certificate</button>
                   <button type="button" class="order-action-btn danger" id="seller-mark-shipped-btn">Mark Shipped</button>
-
-                  <button type="button" class="order-action-btn" id="seller-mark-delivered-btn">Mark Delivered</button>
 
                   <button type="button" class="order-action-btn cancel" id="seller-cancel-order-btn">Cancel Order</button>
                 </div>

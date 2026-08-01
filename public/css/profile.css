@@ -25,7 +25,8 @@
   --bg-white: #fff;
 
   /* Colors */
-  --color-primary: #2563eb;
+  --color-primary: #F30C1E;
+  --color-primary-hover: #F63747;
   --color-white: #ffffff;
   --color-gray-50: #f9fafb;
   --color-gray-100: #e5e7eb;
@@ -5839,6 +5840,12 @@ h6 {
   gap: var(--spacing-sm);
 }
 
+.seller-order-action-prepaid-info {
+  display: none;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+}
+
 .seller-auth-photos-error {
   color: var(--color-danger, #c0392b);
   font-size: var(--font-size-sm);
@@ -5869,10 +5876,22 @@ h6 {
   padding: var(--spacing-sm) var(--spacing-md);
   border: none;
   border-radius: var(--border-radius-sm);
-  /* background-color: var(--color-primary); */
   color: var(--color-white);
   cursor: pointer;
   font-size: var(--font-size-md);
+  transition: 0.3s ease-in-out;
+}
+
+.order-action-btn.secondary {
+  
+}
+
+.order-action-btn.primary {
+  background-color: var(--color-primary);
+}
+
+.order-action-btn.primary:hover {
+  background-color: var(--color-primary-hover);
 }
 
 .order-action-btn:hover {
@@ -5927,6 +5946,21 @@ h6 {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+}
+
+.order-mark-received {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.mark-received-subtext {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin: 0;
 }
 
 .delivery-confirmation-header h3 {

@@ -23,13 +23,11 @@ function firstImageUrl(listing) {
 }
 
 function listingTile(listing) {
-  // listing.shipping only gets set when the seller picked a carrier rate
-  // (seller.js's courier-rates modal); the "I'll handle my own shipping"
-  // path never writes it, which the checkout modal already treats as free
-  // (seller.js:996) -- mirrored here and on the shop/product-detail cards.
-  const shippingText = listing.shipping?.courier
-    ? `+ $${Number(listing.shipping.estimateRate || 0).toFixed(2)} shipping`
-    : "+ Free shipping";
+  // The buyer is never charged for shipping, whether the seller chose a
+  // Hexxo prepaid label or self-ship -- a prepaid label's courier rate is
+  // deducted from the seller's payout instead (see purchaseShippingLabel in
+  // server.js), so this is always "Free shipping" from the buyer's side.
+  const shippingText = "+ Free shipping";
 
   return `
     <a class="seller-listing-tile" href="/shop/product.html?id=${listing.id}">

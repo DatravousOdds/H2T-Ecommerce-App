@@ -330,19 +330,9 @@ imageGridContainer.addEventListener('click', (e) => {
         return;
     }
 
-        // console.log(e.target)
         const imageInput = imageContainer.querySelector('input');
         const imagePreview = imageContainer.querySelector('.image-preview');
         const removeImageBtn = imageContainer.querySelector('.remove-image-btn');
-
-        imagePreview.addEventListener('dragstart', (e) => {
-            console.log(e);
-            // e.dataTransfer.setData(imageContainer.dataset.id);
-        })
-
-        imageContainer.addEventListener('dragover', (e) => {
-            e.preventDefault();
-        })
 
         if (e.target.closest('.remove-image-btn')) {
             e.stopPropagation();
@@ -360,29 +350,51 @@ let draggedBox = null;
 
 imageGridContainer.addEventListener('dragstart', (e) => {
     const imageContainer = e.target.closest('.image-container');
-    const imagePreview = imageContainer.querySelector('.image-preview');
-    console.log(imageContainer);
-    
-    const emptyContainer = getEmptyImageContainers();
+    if (!imageContainer) return;
 
-    if (imageContainer === videoContainer || emptyContainer.includes(imageContainer)) {
-        console.log("Images cannot be draggable!");
+    // Only filled photo slots are draggable -- handleImageUpload/handleImageRemove
+    // are what flip container.draggable, this is just the guard for stale state.
+    const emptyContainers = getEmptyImageContainers();
+    if (imageContainer === videoContainer || emptyContainers.includes(imageContainer)) {
         return;
     }
 
     draggedBox = imageContainer;
-    console.log(draggedBox);
 })
 
 imageGridContainer.addEventListener('dragover', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // required for the element to accept a drop
 
     const imageContainer = e.target.closest('.image-container');
-    console.log(imageContainer);
+    if (!imageContainer || imageContainer === videoContainer || imageContainer === draggedBox) return;
+
+    imageContainer.classList.add('drag-over');
+})
+
+imageGridContainer.addEventListener('dragleave', (e) => {
+    const imageContainer = e.target.closest('.image-container');
+    if (imageContainer) imageContainer.classList.remove('drag-over');
 })
 
 imageGridContainer.addEventListener('drop', (e) => {
-    
+    e.preventDefault();
+
+    const targetContainer = e.target.closest('.image-container');
+    targetContainer?.classList.remove('drag-over');
+
+    if (!draggedBox || !targetContainer || targetContainer === videoContainer || targetContainer === draggedBox) {
+        draggedBox = null;
+        return;
+    }
+
+    swapImageContainers(draggedBox, targetContainer);
+    draggedBox = null;
+})
+
+imageGridContainer.addEventListener('dragend', () => {
+    document.querySelectorAll('.images-grid-container .image-container.drag-over')
+        .forEach(c => c.classList.remove('drag-over'));
+    draggedBox = null;
 })
 
 
@@ -498,14 +510,13 @@ function setCourierListeners() {
         removeCourierRatesModal();
 
         listing.shipping = {
-            courier: selectedRate.dataset.courier,
-            courierServiceId: selectedRate.dataset.courierServiceId,
-            service_name : selectedRate.dataset.serviceName,
-            min_delivery_time: selectedRate.dataset.minDeliveryTime,
-            max_delivery_time: selectedRate.dataset.maxDeliveryTime,
+            carrierCode: selectedRate.dataset.carrierCode,
+            serviceCode: selectedRate.dataset.serviceCode,
+            service_name: selectedRate.dataset.serviceName,
             estimateRate: parseFloat(selectedRate.value),
-            // EasyShip needs these again at label-purchase time (sale) to
-            // re-book the exact rate confirmed here -- see selectedParcel.
+            // ShipStation's label-purchase call re-books by passing
+            // carrierCode + serviceCode directly -- no separate reservation
+            // id like EasyShip's courierServiceId -- see selectedParcel.
             parcel: selectedParcel
         };
 
@@ -950,55 +961,42 @@ function displayShippingCouriers(couriersArray) {
         return;
     }
 
-    couriersArray.forEach(courier => {
-        console.log(courier)
-        const courierInfo = {
-            id: courier.courier_service.courier_id,
-            logo: courier.courier_service.logo,
-            name: courier.courier_service.name,
-            total_charge: parseFloat(courier.total_charge),
-            time: `${courier.min_delivery_time} - ${courier.max_delivery_time}`
-        }
-        
+    couriersArray.forEach(rate => {
+        const totalCharge = (rate.shipmentCost + rate.otherCost).toFixed(2);
+
         // create row element
         const carrierRow = document.createElement('div');
         carrierRow.classList.add('carrier-row');
-        carrierRow.dataset.id = `${courierInfo.id}`;
+        carrierRow.dataset.id = `${rate.carrierCode}-${rate.serviceCode}`;
         carrierRow.innerHTML = `
             <div class="carrier-info">
-                <div class="carrier-image-wrapper">
-                    <img src=${courierInfo.logo} alt="" class="carrier-image">
-                </div>
                 <div class="carrier-title">
-                    <span>${courierInfo.name}</span>
-                    <p>${courierInfo.time} business days</p>
+                    <span>${rate.serviceName}</span>
                 </div>
             </div>
             <div class="carrier-pricing">
                 <div class="carrier-price">
-                    <span>$${courierInfo.total_charge}</span>
-                    <p>est. rate</p>   
+                    <span>$${totalCharge}</span>
+                    <p>est. rate</p>
                 </div>
-                
+
                 <div class="form-input">
                     <label for="carrier-price"></label>
                     <input
                         type="radio"
                         name="carrier-price"
                         id="carrier-price"
-                        value="${courierInfo.total_charge}"
-                        data-courier="${courier.courier_service.umbrella_name}"
-                        data-courier-service-id="${courier.courier_service.id}"
-                        data-service-name="${courierInfo.name}"
-                        data-min-delivery-time="${courier.min_delivery_time}"
-                        data-max-delivery-time="${courier.max_delivery_time}"
+                        value="${totalCharge}"
+                        data-carrier-code="${rate.carrierCode}"
+                        data-service-code="${rate.serviceCode}"
+                        data-service-name="${rate.serviceName}"
                     >
                 </div>
             </div>
         `;
 
-        carrierRows.append(carrierRow);    
-        
+        carrierRows.append(carrierRow);
+
     })
 
     // add listeners to new elements
@@ -1329,6 +1327,30 @@ function proceedWithShipping(parcel) {
     fetchShippingRates(parcel);
 }
 
+function swapImageContainers(containerA, containerB) {
+    const previewA = containerA.querySelector('.image-preview');
+    const previewB = containerB.querySelector('.image-preview');
+    const removeBtnA = containerA.querySelector('.remove-image-btn');
+    const removeBtnB = containerB.querySelector('.remove-image-btn');
+
+    // Read via getAttribute, not the .src property -- an empty <img src>
+    // property getter resolves to the current page URL, not ''. collectImageData
+    // reads the same way, so this has to match or "empty" slots stop counting as empty.
+    const srcA = previewA.getAttribute('src') || '';
+    const srcB = previewB.getAttribute('src') || '';
+    previewA.setAttribute('src', srcB);
+    previewB.setAttribute('src', srcA);
+
+    const pathA = previewA.dataset.storagePath;
+    const pathB = previewB.dataset.storagePath;
+    pathB === undefined ? delete previewA.dataset.storagePath : previewA.dataset.storagePath = pathB;
+    pathA === undefined ? delete previewB.dataset.storagePath : previewB.dataset.storagePath = pathA;
+
+    [previewA.style.display, previewB.style.display] = [previewB.style.display, previewA.style.display];
+    [removeBtnA.style.display, removeBtnB.style.display] = [removeBtnB.style.display, removeBtnA.style.display];
+    [containerA.draggable, containerB.draggable] = [containerB.draggable, containerA.draggable];
+}
+
 function getEmptyImageContainers() {
     return [...document.querySelectorAll('.images-grid-container .image-container')]
         .filter(c => c !== videoContainer)
@@ -1474,23 +1496,24 @@ async function fetchShippingRates(parcel) {
 
     renderCarrierSkeletons();
     const payload = {
-        fromAddress: {
-            line_1: shipping.address,
-            city: shipping.city,
-            state: shipping.state,
-            postal_code: shipping.zipCode,
-            country_alpha2: shipping.country,
+        fromPostalCode: shipping.zipCode,
+        toState: PLACEHOLDER_DESTINATION.state,
+        toCountry: PLACEHOLDER_DESTINATION.country_alpha2,
+        toPostalCode: PLACEHOLDER_DESTINATION.postal_code,
+        weight: {
+            value: parseFloat(parcel.weight),
+            units: "pounds"
         },
-        toAddress: PLACEHOLDER_DESTINATION,
-        parcel: {
-            ...parcel,
-            category: productCategory.value,
-            price: parseFloat(productPrice.value)
+        dimensions: {
+            units: "inches",
+            length: parseFloat(parcel.length),
+            width: parseFloat(parcel.width),
+            height: parseFloat(parcel.height)
         }
     };
 
     try {
-        const response = await fetch('/seller/api/shipping-rates', {
+        const response = await fetch('/rates/compare', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify(payload)
@@ -1501,7 +1524,7 @@ async function fetchShippingRates(parcel) {
             throw new Error(errorBody.error || `Response status: ${response.status}`)
         }
         const result =  await response.json();
-        const bestShippingCourier = result.rates ? result.rates.filter(rates => rates.cost_rank <= 5) : [];
+        const bestShippingCourier = result.slice(0, 5);
         displayShippingCouriers(bestShippingCourier);
     } catch (error) {
         console.error("Error fetching data:", error);

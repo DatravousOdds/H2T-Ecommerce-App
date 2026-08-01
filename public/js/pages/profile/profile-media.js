@@ -1,7 +1,7 @@
 "use strict";
 
 import { db, doc, updateDoc, ref, getStorage, app, uploadBytes, getDownloadURL } from "../../api/firebase-client.js";
-import { checkUserStatus } from "../../auth/auth.js";
+import { checkUserStatus, updateCachedUser } from "../../auth/auth.js";
 
 const USER = await checkUserStatus();
 const storage = getStorage(app, 'gs://ecom-website-94d87');
@@ -27,6 +27,7 @@ export const updateProfilePicture = async (userId, file) => {
       profileImage: imageUrl,
       lastUpdated: new Date()
     });
+    updateCachedUser({ profileImage: imageUrl });
 
     console.log("Image update success!")
   } catch (error) {
@@ -48,6 +49,7 @@ export const updateBackgroundPicture = async (userId, file) => {
       backgroundImage: imageUrl,
       lastUpdated: new Date()
     });
+    updateCachedUser({ backgroundImage: imageUrl });
 
     console.log("Background Image update successfully!")
   } catch (error) {

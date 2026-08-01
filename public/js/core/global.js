@@ -981,19 +981,21 @@ const displayProducts = (products, containerElement) => {
       ? 'W'
       : '';
 
-    const sizeConditionHTML = productData.size
+    // Collectibles' "size" field actually holds the sub-type (e.g. "Trading
+    // Cards"), not a wearable size, so the card shows brand instead there.
+    const isCollectibles = productData.category === 'collectibles';
+    const sizeOrBrand = isCollectibles ? productData.brand : productData.size;
+    const sizeConditionHTML = sizeOrBrand
       ? `<p class="pro-meta">
-          Size ${productData.size}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | ${productData.condition}` : ''}
+          ${isCollectibles ? sizeOrBrand : `Size ${sizeOrBrand}`}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | ${productData.condition}` : ''}
         </p>`
       : '';
 
-    // listing.shipping only gets set when the seller picked a carrier rate
-    // (seller.js's courier-rates modal); the "I'll handle my own shipping"
-    // path never writes it, which the checkout modal already treats as free
-    // (seller.js:996) -- mirrored here for the same "no rate = free" read.
-    const shippingHTML = productData.shipping?.courier
-      ? `<span class="shipping-note">+ $${productData.shipping.estimateRate.toFixed(2)} shipping</span>`
-      : `<span class="shipping-note">+ Free shipping</span>`;
+    // The buyer is never charged for shipping, whether the seller chose a
+    // Hexxo prepaid label or self-ship -- a prepaid label's courier rate is
+    // deducted from the seller's payout instead (see purchaseShippingLabel
+    // in server.js), so this is always "Free shipping" from the buyer's side.
+    const shippingHTML = `<span class="shipping-note">+ Free shipping</span>`;
 
     // Set on the listing by seller.js when it's created from an approved
     // authenticationRequests doc -- see prefillFromAuthRequest().

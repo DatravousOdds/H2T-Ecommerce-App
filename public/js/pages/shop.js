@@ -397,9 +397,9 @@ const sortProducts = (sortType) => {
   console.log("Sorted Products:",sortedProducts)
 
   if (sortType === "Price: Low-High") {
-    sortedProducts = sortedProducts.sort((a, b) => a.data().originalPrice - b.data().originalPrice);
+    sortedProducts = sortedProducts.sort((a, b) => a.data().listingPrice - b.data().listingPrice);
   } else if (sortType === "Price: High-Low") {
-    sortedProducts = sortedProducts.sort((a, b) => b.data().originalPrice - a.data().originalPrice);
+    sortedProducts = sortedProducts.sort((a, b) => b.data().listingPrice - a.data().listingPrice);
   } else if (sortType === "Newest") {
     sortedProducts = sortedProducts.sort((a, b) => b.data().createdAt - a.data().createdAt);
   } else if (sortType === "Featured") {

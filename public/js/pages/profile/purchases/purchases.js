@@ -17,8 +17,11 @@ let deliveryConfirmationPhotos = [];
  *
  * fulfillmentStatus is real now: "pending" (checkout submit, before payment
  * captures) -> "processing" (webhook confirms payment) -> "shipped" (seller
- * enters tracking) -> "delivered" (seller marks it), or "cancelled" from
- * pending/processing. order.status stays Stripe's own payment status
+ * enters tracking) -> "delivered" (never seller-set -- either
+ * /webhooks/easyship, for orders with a purchased label, or the buyer
+ * confirming receipt themselves below, for self-ship orders with no carrier
+ * webhook to source that truth from), or "cancelled" from pending/processing.
+ * order.status stays Stripe's own payment status
  * ("succeeded"/etc) and is unrelated -- see orders.js for that one.
  * trackingNumber/carrier are written by PUT /orders/:id when a seller ships.
  *
@@ -256,6 +259,21 @@ function buildOrderDetailsHTML(order) {
   const needsDeliveryConfirmation = status === "delivered" && order.deliveryConfirmationStatus === "required";
   if (needsDeliveryConfirmation) deliveryConfirmationPhotos = [];
 
+  // Self-ship orders (no purchased Easyship label, order.easyshipShipmentId
+  // unset) have no carrier webhook to source real delivery ground truth
+  // from -- the buyer confirms receipt themselves instead of trusting the
+  // seller's own say-so. Easyship-tracked orders skip this section entirely;
+  // /webhooks/easyship marks them delivered automatically (see server.js's
+  // BUYER_FULFILLMENT_TRANSITIONS).
+  const needsMarkAsReceived = status === "shipped" && !order.easyshipShipmentId;
+  const markAsReceivedSection = needsMarkAsReceived
+    ? `<div class="order-mark-received">
+         <p class="mark-received-subtext">This seller ships independently, so we can't confirm delivery automatically. Let us know once your item arrives.</p>
+         <button type="button" class="order-action-btn" id="mark-as-received-btn">Mark as Received</button>
+         <p class="order-action-error mark-received-error"></p>
+       </div>`
+    : "";
+
   const confirmationSection = needsDeliveryConfirmation
     ? `<div class="order-delivery-confirmation">
          <div class="delivery-confirmation-header">
@@ -279,7 +297,7 @@ function buildOrderDetailsHTML(order) {
          <p class="order-action-error delivery-confirmation-error"></p>
          <p class="delivery-confirmation-success"></p>
          <div class="delivery-confirmation-actions">
-           <button type="button" class="order-action-btn" id="submit-review-btn">Submit review</button>
+           <button type="button" class="order-action-btn primary" id="submit-review-btn">Submit review</button>
            <button type="button" class="order-action-btn secondary" id="report-problem-btn">Report a problem</button>
          </div>
        </div>`
@@ -342,6 +360,7 @@ function buildOrderDetailsHTML(order) {
         </div>
       </div>
       ${cancelSection}
+      ${markAsReceivedSection}
       ${confirmationSection}
     `,
   };
@@ -402,6 +421,26 @@ async function cancelOrder(docId) {
 
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || "Cancel failed");
+  return result;
+}
+
+// Buyer-initiated "shipped" -> "delivered" for self-ship orders only --
+// server.js's BUYER_FULFILLMENT_TRANSITIONS rejects this for any order with
+// an easyshipShipmentId, since /webhooks/easyship owns that transition there.
+async function markOrderReceived(docId) {
+  const idToken = await auth.currentUser.getIdToken();
+
+  const response = await fetch(`/orders/${docId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${idToken}`,
+    },
+    body: JSON.stringify({ fulfillmentStatus: "delivered" }),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Update failed");
   return result;
 }
 
@@ -510,6 +549,40 @@ function wireEventDelegation(currentUser) {
         orderDetailsMenu.classList.remove("active");
         await refreshPurchases(currentUser);
       } catch (error) {
+        if (errorEl) {
+          errorEl.textContent = error.message;
+          errorEl.classList.add("visible");
+        }
+      }
+    });
+
+    // Feeds straight into the same Confirm Delivery flow below -- patches
+    // the in-memory order and re-renders the modal in place (rather than
+    // closing it) so the star-rating/photo section appears immediately
+    // instead of making the buyer reopen the modal to see it.
+    orderDetailsMenu.addEventListener("click", async (e) => {
+      const receivedBtn = e.target.closest("#mark-as-received-btn");
+      if (!receivedBtn) return;
+
+      const docId = orderDetailsMenu.dataset.docId;
+      if (!docId) return;
+
+      const errorEl = orderDetailsMenu.querySelector(".mark-received-error");
+      receivedBtn.disabled = true;
+
+      try {
+        await markOrderReceived(docId);
+
+        const order = currentOrders.find((o) => o.docId === docId);
+        if (order) {
+          order.fulfillmentStatus = "delivered";
+          order.deliveryConfirmationStatus = "required";
+          openOrderDetails(order);
+        }
+
+        await refreshPurchases(currentUser);
+      } catch (error) {
+        receivedBtn.disabled = false;
         if (errorEl) {
           errorEl.textContent = error.message;
           errorEl.classList.add("visible");

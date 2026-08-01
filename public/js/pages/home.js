@@ -73,29 +73,50 @@ const womenCollection = async () => {
 
 };
 
-const belowRetailPrices = async () => {
+const collectiblesCollection = async () => {
   const q = query(
     collection(db, "listings"),
     where("status", "==", "active"),
+    where("category","==","collectibles"),
     limit(7)
+  );
+
+  const querySnapshot = await getDocs(q);
+  displayProducts(querySnapshot.docs.filter(doc => isReleaseLive(doc.data())), "collectiblesCollection");
+
+};
+
+const belowRetailPrices = async () => {
+  // Firestore can't filter "listingPrice < originalPrice" server-side (it's a
+  // comparison between two fields on the same doc, not a fixed value), so this
+  // has to pull the active listings and filter client-side -- same reasoning
+  // as loadHomepageCounts() below. A pre-filter limit() here would only look
+  // at an arbitrary handful of active listings and likely miss real markdowns
+  // sitting outside that sample, so fetch all active listings and take the
+  // first 7 *matches* instead.
+  const q = query(
+    collection(db, "listings"),
+    where("status", "==", "active")
   );
 
   const querySnapshot = await getDocs(q);
   const filtered = querySnapshot.docs
     .filter(doc => isReleaseLive(doc.data()))
-    .filter(doc => doc.data().listingPrice < doc.data().originalPrice);
+    .filter(doc => doc.data().listingPrice < doc.data().originalPrice)
+    .slice(0, 7);
 
   displayProducts(filtered, "belowRetail");
-  
+
 }
 
-["justDropped", "menCollection", "womenCollection", "belowRetail"].forEach(
+["justDropped", "menCollection", "womenCollection", "collectiblesCollection", "belowRetail"].forEach(
   (containerId) => renderProductSkeletons(containerId)
 );
 
 justDropped();
 mensCollection();
 womenCollection();
+collectiblesCollection();
 belowRetailPrices();
 loadHomepageCounts();
 
@@ -182,96 +203,10 @@ const renderCategories = () => {
 renderCategories();
 
 
-// const displayProduct = (products) => {
-//   const proContainer = document.querySelector('.pro-container');
-//   proContainer.innerHTML = "";
-//   if (products.length === 0) {
-//     proContainer.innerHTML = `<div class="no-results">No results!</div>`
-//   }
-//   products.forEach((doc) => {
-//     const productData = doc.data();
-//     const productElement = document.createElement("div");
-//     productElement.classList.add("pro");
-//     productElement.onclick = () => {
-//       window.location.href = `shop/product.html?id=${doc.id}`;
-//     };
-//     productElement.innerHTML = `
-      
-//             <!--- Image container-->
-//             <div class="product-image">
-//               <div class="liked">
-//                 <i class="fa-regular fa-heart"></i>
-//               </div>
-
-//               <img
-//                 src="${productData.images[0].url}"
-//                 class="image-custom"
-//                 alt="${productData.productName}"
-//               />
-//             </div>
-//             <!--- Image container-->
-
-//             <!-- product details -->
-//             <div class="des">
-//               <div class="price-description">
-//                 <p class="product-name">
-//                   ${productData.productName}
-//                 </p>
-                
-//                 <div class="pro-price">
-//                   <span>$${productData.originalPrice}</span>
-//                   <div class="price-change">
-//                     <div class="product-discount">
-//                       <p>20% OFF</p>
-//                     </div>
-//                     <div class="price-trend">
-//                       <i class="fa-solid fa-arrow-trend-up"></i>
-//                       <span>+5%</span>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//               </div>
-              
-//             </div>
-//             <!-- product details -->
-          
-//     `;
-//     proContainer.appendChild(productElement);
-//   });
-// }
 
 
-// setupSliderEffect = () => {
-//   const prodcontainers = [...document.querySelectorAll(".pro-container")];
-//   const nextBTn = [...document.querySelectorAll("nxt-btn")];
-//   const preBTn = [...document.querySelectorAll("pre-btn")];
 
-//   prodcontainers.forEach((item, i) => {
-//     let containerDimensions = item.getBoundingClientRect();
-//     let containerWidth = containerDimensions.width;
 
-//     nextBTn[i].addEventListener("click", () => {
-//       item.scrollLeft += containerWidth;
-//     });
-
-//     preBTn[i].addEventListener("click", () => {
-//       item.scrollLeft -= containerWidth;
-//     });
-//   });
-// };
-//fetch prod cards
-// const getProducts = (tag) => {
-//     return fetch('/get-products', {
-//         method: "post",
-//         headers: new Headers({ 'Content-Type': 'application/json' }),
-//         body: JSON.stringify({ tag: tag })
-//     })
-//         .then(res => res.json())
-//         .then(data => {
-//             return data;
-//         })
-// }
 
 // create product slider
 const createProductSlider = (data, parent, title) => {

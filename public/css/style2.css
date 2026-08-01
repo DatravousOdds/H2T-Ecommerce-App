@@ -213,7 +213,7 @@ button.white {
 
 .search-form {
   position: relative;
-  width: 450px;
+  width: 420px;
 }
 
 .sku-search-group {
@@ -443,7 +443,7 @@ button.white {
   display: flex;
   align-items: center;
   font-size: var(--fontSize-1);
-  gap: 2rem;
+  gap: 1.5rem;
   list-style: none;
   margin: 0;
   padding: 0;

@@ -26,6 +26,30 @@ function ratingStars(rating) {
     .join("");
 }
 
+// No automated "delivered" webhook exists for ShipStation on our plan (V1 has
+// no such event, V2's tracking endpoint needs the Advanced plan) -- this link
+// lets admin manually check the carrier's own tracking page before approving
+// a payout or resolving a dispute, standing in for that missing ground truth.
+const CARRIER_TRACKING_URL_BUILDERS = {
+  stamps_com: (n) => `https://tools.usps.com/go/TrackConfirmAction?tLabels=${n}`,
+  usps: (n) => `https://tools.usps.com/go/TrackConfirmAction?tLabels=${n}`,
+  ups: (n) => `https://www.ups.com/track?tracknum=${n}`,
+  ups_walleted: (n) => `https://www.ups.com/track?tracknum=${n}`,
+  fedex: (n) => `https://www.fedex.com/fedextrack/?trknbr=${n}`,
+  fedex_walleted: (n) => `https://www.fedex.com/fedextrack/?trknbr=${n}`,
+};
+
+function trackingInfoHTML(item) {
+  if (!item.trackingNumber) return "";
+
+  const buildUrl = CARRIER_TRACKING_URL_BUILDERS[item.shippingCarrier];
+  const trackingDisplay = buildUrl
+    ? `<a href="${buildUrl(encodeURIComponent(item.trackingNumber))}" target="_blank" rel="noopener noreferrer">${item.trackingNumber}</a>`
+    : item.trackingNumber;
+
+  return `<p class="default-paragraph review-tracking">Tracking: ${trackingDisplay}</p>`;
+}
+
 function reviewCard(item) {
   const images = item.photoUrls
     .map((url, index) => `<img src="${url}" alt="Delivery confirmation photo" data-image-index="${index}" />`)
@@ -41,6 +65,7 @@ function reviewCard(item) {
         <span class="status-badge status-submitted">submitted</span>
       </div>
       <p class="default-paragraph"><strong>${item.itemName}</strong> &mdash; Buyer: ${item.buyerEmail || item.buyerId}</p>
+      ${trackingInfoHTML(item)}
       <div class="delivery-confirmation-rating">${ratingStars(item.rating)}</div>
       ${item.comment ? `<p class="default-paragraph">"${item.comment}"</p>` : ""}
       <div class="review-images">${images}</div>
@@ -88,6 +113,7 @@ function disputeCard(item) {
         <span class="status-badge status-disputed">disputed</span>
       </div>
       <p class="default-paragraph"><strong>${item.itemName}</strong> &mdash; Buyer: ${item.buyerEmail || item.buyerId} &mdash; $${item.saleAmount}</p>
+      ${trackingInfoHTML(item)}
       <p class="default-paragraph">"${item.comment}"</p>
       <div class="review-images">${images}</div>
       <div class="dispute-return-shipping-field">

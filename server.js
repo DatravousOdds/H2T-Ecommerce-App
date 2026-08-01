@@ -5,25 +5,28 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 const easyship = require('@api/easyship');
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
+const { getRatesForCarrier, createLabel } = require('./services/shipstation');
 easyship.auth(process.env.EASYSHIP_KEY);
+if (process.env.EASYSHIP_KEY?.startsWith('sand_')) {
+    easyship.server('https://public-api-sandbox.easyship.com');
+}
 
 // Hexxo only lists clothing/accessories, so USPS's restricted-content rate
 // classes (media mail and its close relatives) are never legitimate for a
-// listing and should never reach the seller's courier picker. EasyShip's
-// display name truncates these to a single word (observed: "USPS - Media",
-// not "USPS - Media Mail"), so we match on the single word with a boundary
-// check rather than the full USPS product name.
+// listing and should never reach the seller's courier picker. Matching on
+// single words with a boundary check rather than the full USPS product name
+// since carriers are inconsistent about exact naming.
 const RESTRICTED_COURIER_KEYWORD_PATTERNS = [/\bmedia\b/, /\blibrary\b/, /\bbound printed matter\b/];
 
 function isRestrictedCourierRate(rate) {
-  const name = rate.courier_service?.name ?? "";
-  const umbrellaName = rate.courier_service?.umbrella_name ?? "";
-  // Normalize hyphens/underscores to spaces so "USPS - Media" and
-  // EasyShip's snake_case slug style ("media_mail") both match the same way.
-  const haystack = `${name} ${umbrellaName}`.toLowerCase().replace(/[-_]/g, " ").replace(/\s+/g, " ");
+  // Normalize hyphens/underscores to spaces so "USPS Media Mail" and
+  // ShipStation's snake_case serviceCode ("usps_media_mail") both match the
+  // same way.
+  const haystack = `${rate.serviceName ?? ""} ${rate.serviceCode ?? ""}`.toLowerCase().replace(/[-_]/g, " ").replace(/\s+/g, " ");
   return RESTRICTED_COURIER_KEYWORD_PATTERNS.some((pattern) => pattern.test(haystack));
 }
 
@@ -53,6 +56,10 @@ const accessKeyId = process.env.aws_access_key_id;
 const secretKeyId = process.env.aws_secret_access_key;
 const MARKETPLACE_FEE_RATE = 0.07
 const DELIVERY_CONFIRMATION_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
+
+// shipstation parameters
+const shipStationKey = process.env.SHIPSTATION_KEY;
+const shipStationSecretKey = process.env.SHIPSTATION_SECRET_KEY
 
 // Buyer-initiated item authentication (distinct from the seller listing-
 // authentication flow / authenticationRequests collection). Two independent
@@ -189,68 +196,119 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
 app.use(express.json());
 
 
-app.post('/seller/api/shipping-rates',  async (req, res) => {
-  const { fromAddress , toAddress, parcel } = req.body;
-  console.log("Received shipping rate request:", { fromAddress, toAddress, parcel });
 
-  
-
-  try {
-    const { data } = await easyship.rates_request({
-      origin_address: fromAddress,
-      destination_address: toAddress,
-      incoterms: 'DDU',
-      insurance: { is_insured: false },
-      courier_settings: {
-        apply_shipping_rules: true,
-        show_courier_logo_url: true
-      },
-      shipping_settings: {
-        units: {
-          weight: 'lb',
-          dimensions: 'in'
-        }
-      },
-      parcels: [
-        {
-          total_actual_weight: parcel.weight,
-          box: 
-            {
-              slug: 'custom',
-              length: parcel.length,
-              width: parcel.width,
-              height: parcel.height
-            },
-            items: 
-            [
-              {
-              quantity: 1,
-              category: 'Clothes & Accessories',
-              declared_currency: 'USD',
-              declared_customs_value: parcel.price ?? 1,
-              hs_code: '6211'
-
-              }
-            ]
-        }
-    ],
-      calculate_tax_and_duties: false
-    });
-
-    console.log("Returned shipping data:", data);
-
-    const filteredRates = (data.rates ?? []).filter((rate) => !isRestrictedCourierRate(rate));
-    res.json({ ...data, rates: filteredRates });
-
-  } catch (err) {
-    console.error("Failed to fetch shipping rates", JSON.stringify(err.data?.error?.details, null, 2))
-    res.status(err.status || 500).json({
-      error: "Failed to fetch shipping rates",
-      details: err.data?.error?.details ?? null
-    });
+app.post('/webhooks/easyship', async (req, res) => {
+  const signature = req.headers['x-easyship-signature'];
+  if (!signature) {
+    return res.sendStatus(401);
   }
 
+  try {
+    jwt.verify(signature, process.env.EASYSHIP_WEBHOOK_SECRET, { algorithms: ['HS256'] });
+  } catch (err) {
+    console.error("Easyship webhook signature verification failed:", err.message);
+    return res.sendStatus(401);
+  }
 
+  const event = req.body;
+  console.log("Received Easyship webhook:", JSON.stringify(event));
+
+  if (event?.event_type !== 'shipment.tracking.status.changed') {
+    return res.sendStatus(200);
+  }
+
+  const shipment = event.data;
+  const shipmentId = shipment?.easyship_shipment_id;
+  const deliveryStatus = shipment?.status;
+
+  if (!shipmentId || deliveryStatus?.toLowerCase() !== 'delivered') {
+    return res.sendStatus(200);
+  }
+
+  try {
+    const snapshot = await db.collection('orders').where('easyshipShipmentId', '==', shipmentId).limit(1).get();
+    if (snapshot.empty) {
+      console.error(`No order found for Easyship shipment ${shipmentId}`);
+      return res.sendStatus(200);
+    }
+
+    const orderDoc = snapshot.docs[0];
+    const order = orderDoc.data();
+
+    // Already delivered (duplicate webhook delivery) or somehow not shipped
+    // yet -- either way, nothing to do. Not an error: Easyship's own docs
+    // don't promise exactly-once delivery.
+    if (order.fulfillmentStatus !== 'shipped') {
+      return res.sendStatus(200);
+    }
+
+    const deliveredAt = new Date();
+    await orderDoc.ref.update({
+      fulfillmentStatus: 'delivered',
+      deliveredAt,
+      deliveryConfirmationDeadlineAt: new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS),
+      deliveryConfirmationStatus: 'required',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Order Delivered",
+      `Your order for ${order.item?.name || "your item"} has been delivered.`,
+      "/profile?tab=purchases"
+    );
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Failed to process Easyship webhook:", err);
+    res.sendStatus(500);
+  }
+});
+
+
+app.get('/carriers', async (req, res) => {
+  try {
+    const request =  await fetch('https://ssapi.shipstation.com/carriers', {
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`${shipStationKey}:${shipStationSecretKey}`).toString('base64')}`
+      }
+    })
+
+   const data = await request.json();
+
+   return res.json(data);
+
+  } catch (error) {
+    return res.status(500).json({success: false, message: error})
+  }
+})
+
+app.post('/rates/compare', async (req, res) => {
+  try {
+    const request =  await fetch('https://ssapi.shipstation.com/carriers', {
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`${shipStationKey}:${shipStationSecretKey}`).toString('base64')}`
+      }
+    })
+
+   const data = await request.json();
+   // TEMPORARY: walleted carriers (Stamps.com, ups_walleted, fedex_walleted)
+   // quote rates fine but fail label purchase with InsufficientFundsException
+   // until the ShipStation wallet is funded -- excluded here so testing only
+   // surfaces carriers that can actually complete a real label purchase.
+   // Remove this filter once the wallet is funded.
+   const codes = data.filter(d => !d.requiresFundedAccount).map(d => d.code);
+
+   const rates = codes.map(code => getRatesForCarrier(code, req.body));
+   const carrierRates = await Promise.allSettled(rates);
+   const lowestRates = carrierRates.filter(carrier => carrier.status === "fulfilled").map(v => v.value).flat().filter(rate => !isRestrictedCourierRate(rate)).sort((a, b) => (a.shipmentCost + a.otherCost) - (b.shipmentCost + b.otherCost))
+
+   return res.json(lowestRates);
+
+  } catch (error) {
+    return res.status(500).json({success: false, message: error})
+  }
 })
 
 
@@ -1081,10 +1139,22 @@ app.put("/users/:id", verifyAuth, async (req, res) => {
 
 // Which fulfillmentStatus values a seller is allowed to move *from* for
 // each target status -- e.g. you can only mark "shipped" from pending or
-// processing, and only mark "delivered" once it's actually shipped. Keeps
-// the state machine in one place instead of scattered if/else checks.
+// processing. Keeps the state machine in one place instead of scattered
+// if/else checks.
+//
+// Sellers can never self-declare "delivered" -- that used to let a seller
+// start the buyer's 3-day delivery-confirmation window (deliveredAt) with a
+// single click, regardless of whether the item had actually arrived.
+// "delivered" is now only set from ground truth: the /webhooks/easyship
+// route below (for orders with a purchased label, order.easyshipShipmentId
+// set) or the buyer confirming receipt themselves via
+// BUYER_FULFILLMENT_TRANSITIONS (for self-ship orders, where no carrier
+// webhook exists to source that truth from).
 const SELLER_FULFILLMENT_TRANSITIONS = {
-  shipped: ["pending", "processing"],
+  shipped: ["pending", "processing"]
+};
+
+const BUYER_FULFILLMENT_TRANSITIONS = {
   delivered: ["shipped"]
 };
 
@@ -1131,24 +1201,41 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       if (!allowedFrom.includes(order.fulfillmentStatus)) {
         return res.status(409).json({ success: false, message: `Cannot mark "${data.fulfillmentStatus}" from "${order.fulfillmentStatus}"` });
       }
-      if (data.fulfillmentStatus === "shipped" && !data.trackingNumber) {
+      if (!data.trackingNumber) {
         return res.status(400).json({ success: false, message: "Tracking number is required to mark an order shipped" });
       }
 
       updatedData.fulfillmentStatus = data.fulfillmentStatus;
-      if (data.fulfillmentStatus === "shipped") {
-        updatedData.trackingNumber = data.trackingNumber;
-        updatedData.shippingCarrier = data.shippingCarrier;
+      updatedData.trackingNumber = data.trackingNumber;
+      updatedData.shippingCarrier = data.shippingCarrier;
+    }
+
+    // Buyer-confirmed delivery -- only reachable when there's no Easyship
+    // shipment to source ground truth from instead (self-ship listings, or a
+    // prepaid listing whose label purchase failed and the seller had to ship
+    // manually). Orders with a real Easyship shipment are only ever moved to
+    // "delivered" by /webhooks/easyship below.
+    if (isBuyer && data.fulfillmentStatus !== undefined) {
+      const allowedFrom = BUYER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus];
+
+      if (!allowedFrom) {
+        return res.status(400).json({ success: false, message: `Buyers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
       }
-      if (data.fulfillmentStatus === "delivered") {
-        // Plain Dates, not FieldValue.serverTimestamp() -- the deadline has
-        // to be computed from deliveredAt in the same write, and a
-        // serverTimestamp sentinel can't be used for arithmetic client-side.
-        const deliveredAt = new Date();
-        updatedData.deliveredAt = deliveredAt;
-        updatedData.deliveryConfirmationDeadlineAt = new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS);
-        updatedData.deliveryConfirmationStatus = "required";
+      if (!allowedFrom.includes(order.fulfillmentStatus)) {
+        return res.status(409).json({ success: false, message: `Cannot mark "${data.fulfillmentStatus}" from "${order.fulfillmentStatus}"` });
       }
+      if (order.easyshipShipmentId) {
+        return res.status(409).json({ success: false, message: "This order's delivery is tracked automatically and can't be confirmed manually." });
+      }
+
+      // Plain Dates, not FieldValue.serverTimestamp() -- the deadline has to
+      // be computed from deliveredAt in the same write, and a serverTimestamp
+      // sentinel can't be used for arithmetic client-side.
+      const deliveredAt = new Date();
+      updatedData.fulfillmentStatus = "delivered";
+      updatedData.deliveredAt = deliveredAt;
+      updatedData.deliveryConfirmationDeadlineAt = new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS);
+      updatedData.deliveryConfirmationStatus = "required";
     }
 
     if(isAdmin) {
@@ -1348,12 +1435,17 @@ app.post("/api/orders/:id/authentication-photos", verifyAuth, async (req, res) =
   }
 });
 
-// order.subtotal is the buyer's FULL total (listing price + shipping + tax
-// + marketplace fee combined -- see buildOrderDataFromPaymentIntent), not
-// the seller's cut. There's no listingPrice field stored directly, so it
-// has to be derived: subtract shipping/tax/fee back out to recover the
-// listing price, then subtract the fee once more for the platform's cut.
-// Computed in cents throughout to avoid float drift on currency math.
+// order.subtotal is the buyer's FULL total (listing price + tax + marketplace
+// fee combined -- see buildOrderDataFromPaymentIntent), not the seller's cut.
+// order.shippingCost is always 0 going forward (the buyer is never charged
+// for shipping -- a Hexxo prepaid label's cost is deducted from the seller's
+// payout via a sellerDebts entry instead, see purchaseShippingLabel's caller).
+// It's still backed out here for orders placed before that change, where
+// shipping genuinely was part of the buyer's subtotal. There's no
+// listingPrice field stored directly, so it has to be derived: subtract
+// shipping/tax/fee back out to recover the listing price, then subtract the
+// fee once more for the platform's cut. Computed in cents throughout to
+// avoid float drift on currency math.
 function calculateSellerPayoutCents(order) {
   const toCents = (v) => Math.round(parseFloat(v || 0) * 100);
 
@@ -1546,6 +1638,11 @@ app.get("/api/admin/delivery-confirmations", verifyAuth, async (req, res) => {
         rating: confirmation.rating,
         comment: confirmation.comment,
         photoUrls: confirmation.photoUrls || [],
+        // No automated delivery webhook exists for ShipStation on our plan
+        // (see project notes) -- surfacing these lets admin manually check
+        // the carrier's own tracking page before approving payout.
+        trackingNumber: order.trackingNumber || null,
+        shippingCarrier: order.shippingCarrier || null,
         // Plain millis, not the raw Firestore Timestamp -- res.json() doesn't
         // serialize that back into something toDate()-able on the other end.
         submittedAt: confirmation.updatedAt?.toDate?.().getTime() || null
@@ -1592,6 +1689,8 @@ app.get("/api/admin/disputes", verifyAuth, async (req, res) => {
         saleAmount: dispute.saleAmount,
         comment: dispute.comment,
         photoUrls: dispute.photoUrls || [],
+        trackingNumber: order.trackingNumber || null,
+        shippingCarrier: order.shippingCarrier || null,
         submittedAt: dispute.createdAt?.toDate?.().getTime() || null
       };
     }));
@@ -2310,7 +2409,11 @@ app.post("/create-checkout-session", async (req, res) => {
           buyer_email: item.buyerEmail,
           seller_id: item.sellerId,
           listing_id: item.listingId,
-          shipping_cost: item.shippingCost,
+          // Always 0 -- the buyer is never charged for shipping (see
+          // /order-summary and /tax/calculate). A Hexxo prepaid label's cost
+          // is deducted from the seller's payout instead, via the
+          // sellerDebts entry purchaseShippingLabel creates.
+          shipping_cost: 0,
           shipping_from: item.shippingFrom,
           authentication_requested: String(authenticationRequested),
           item: JSON.stringify({
@@ -2415,7 +2518,13 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
       }
 
       const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice;
-      const delivery = listing.shipping === "" ? 0 : listing.shipping.estimateRate;
+
+      // A Hexxo prepaid label's courier rate is a seller cost, not a buyer
+      // one -- it's deducted from the seller's payout (see the sellerDebts
+      // entry purchaseShippingLabel creates), never added to what the buyer
+      // pays. Self-ship listings were already free to the buyer, so this
+      // just makes both paths consistent: delivery is always 0 here.
+      const delivery = 0;
 
       // Real tax depends on the buyer's destination address, which isn't
       // known yet at this point in the flow -- /tax/calculate fills it in
@@ -2470,7 +2579,10 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     }
 
     const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice;
-    const delivery = listing.shipping === "" ? 0 : listing.shipping.estimateRate;
+
+    // Same reasoning as /order-summary -- the buyer never pays the courier
+    // rate, so this stays 0 regardless of shipping method.
+    const delivery = 0;
 
     const calculation = await stripe.tax.calculations.create({
       currency: 'usd',
@@ -3216,16 +3328,23 @@ async function handlePaymentIntentAuthorized(paymentData) {
   }
 }
 
-// Builds & purchases an EasyShip label for a prepaid-shipping sale, called
+// Builds & purchases a ShipStation label for a prepaid-shipping sale, called
 // right as the order moves to "processing" in handlePaymentIntentSucceeded
-// below. Self-ship listings (no courierServiceId saved on listing.shipping --
-// see seller.js's courierConfirmBtn handler) are skipped entirely; this only
-// applies to the "Hexxo's prepaid label" path. Throws on any failure instead
-// of swallowing it, so the caller can notify the seller rather than silently
-// leaving an order with no label and no tracking number.
+// below. Self-ship listings (no carrierCode/serviceCode saved on
+// listing.shipping -- see seller.js's courierConfirmBtn handler) are skipped
+// entirely; this only applies to the "Hexxo's prepaid label" path. Throws on
+// any failure instead of swallowing it, so the caller can notify the seller
+// rather than silently leaving an order with no label and no tracking number.
+//
+// Returns `shipstationShipmentId`, deliberately NOT `easyshipShipmentId` --
+// the buyer-confirms-delivery path (PUT /orders/:id) only blocks a buyer's
+// self-confirm when `easyshipShipmentId` is set, since ShipStation has no
+// delivered webhook to source that ground truth from instead. Keeping this
+// field under a different name lets these orders fall into the same
+// buyer-self-confirms flow as self-ship orders, on purpose.
 async function purchaseShippingLabel(order, listing) {
   const shipping = listing.shipping;
-  if (!shipping || typeof shipping !== 'object' || !shipping.courierServiceId) {
+  if (!shipping || typeof shipping !== 'object' || !shipping.carrierCode || !shipping.serviceCode) {
     return null;
   }
 
@@ -3233,91 +3352,76 @@ async function purchaseShippingLabel(order, listing) {
     throw new Error('Order has no buyerShippingAddress -- cannot address a label');
   }
 
-  const sellerSnap = await db.collection('users').doc(order.sellerId).get();
+  const sellerSnap = await db.collection('userProfiles').doc(order.sellerId).get();
   const seller = sellerSnap.data();
 
   if (!seller?.shipping?.address) {
     throw new Error(`Seller ${order.sellerId} has no shipping address on file`);
   }
 
-  // No separate "business name" field exists on the seller profile -- this
-  // is a peer marketplace, so the seller's own name doubles as the
-  // EasyShip-required origin company_name (shown on the label's "from" line).
   const sellerName = `${seller.firstName || ''} ${seller.lastName || ''}`.trim() || 'Hexxo Seller';
   const buyerAddress = order.buyerShippingAddress;
 
-  const { data } = await easyship.shipments_create({
-    origin_address: {
-      line_1: seller.shipping.address,
-      line_2: seller.shipping.address2 || undefined,
+  const label = await createLabel({
+    carrierCode: shipping.carrierCode,
+    serviceCode: shipping.serviceCode,
+    packageCode: 'package',
+    shipDate: new Date().toISOString().slice(0, 10),
+    weight: {
+      value: parseFloat(shipping.parcel.weight),
+      units: 'pounds'
+    },
+    dimensions: {
+      units: 'inches',
+      length: parseFloat(shipping.parcel.length),
+      width: parseFloat(shipping.parcel.width),
+      height: parseFloat(shipping.parcel.height)
+    },
+    shipFrom: {
+      name: sellerName,
+      company: sellerName,
+      street1: seller.shipping.address,
+      street2: seller.shipping.address2 || undefined,
       city: seller.shipping.city,
       state: seller.shipping.state,
-      postal_code: seller.shipping.zipCode,
-      country_alpha2: seller.shipping.country,
-      company_name: sellerName,
-      contact_name: sellerName,
-      contact_email: seller.email,
-      contact_phone: seller.shipping.phoneNumber
+      postalCode: seller.shipping.zipCode,
+      country: seller.shipping.country,
+      phone: seller.shipping.phoneNumber
     },
-    destination_address: {
-      line_1: buyerAddress.line1,
-      line_2: buyerAddress.line2 || undefined,
+    shipTo: {
+      name: buyerAddress.name,
+      street1: buyerAddress.line1,
+      street2: buyerAddress.line2 || undefined,
       city: buyerAddress.city,
       state: buyerAddress.state,
-      postal_code: buyerAddress.postal_code,
-      country_alpha2: buyerAddress.country,
-      contact_name: buyerAddress.name,
-      contact_email: order.buyerEmail,
-      contact_phone: buyerAddress.phone
-    },
-    parcels: [
-      {
-        total_actual_weight: parseFloat(shipping.parcel.weight),
-        box: {
-          slug: 'custom',
-          length: parseFloat(shipping.parcel.length),
-          width: parseFloat(shipping.parcel.width),
-          height: parseFloat(shipping.parcel.height)
-        },
-        items: [
-          {
-            description: listing.productName,
-            quantity: 1,
-            category: 'Clothes & Accessories',
-            declared_currency: 'USD',
-            declared_customs_value: listing.listingPrice ?? 1,
-            hs_code: '6211'
-          }
-        ]
-      }
-    ],
-    // Selects the exact rate the seller confirmed at listing time (seller.js)
-    // rather than letting EasyShip pick a "best value" courier now -- prices
-    // and availability can drift between listing and sale.
-    courier_settings: {
-      courier_service_id: shipping.courierServiceId
-    },
-    shipping_settings: {
-      units: { weight: 'lb', dimensions: 'in' },
-      buy_label: true,
-      buy_label_synchronous: true,
-      printing_options: { format: 'url', label: '4x6' }
+      postalCode: buyerAddress.postal_code,
+      country: buyerAddress.country,
+      phone: buyerAddress.phone,
+      residential: true
     }
   });
 
-  const shipment = data.shipment;
-  const labelDoc = shipment.shipping_documents?.find((doc) => doc.category === 'label');
-  const tracking = shipment.trackings?.[0];
-
-  if (!labelDoc?.url || !tracking?.tracking_number) {
-    throw new Error(`EasyShip returned no label/tracking for shipment ${shipment.easyship_shipment_id}`);
+  if (!label?.trackingNumber || !label?.labelData) {
+    throw new Error(`ShipStation returned no label/tracking for shipment ${label?.shipmentId}`);
   }
 
+  // ShipStation returns the label as a base64 PDF directly in the response
+  // (no hosted URL like EasyShip gave us) -- upload it to our own Storage
+  // bucket so the rest of the app can keep treating shippingLabelUrl as a
+  // plain link, same as before.
+  const labelBuffer = Buffer.from(label.labelData, 'base64');
+  const labelFile = bucket.file(`shippingLabels/${order.id}.pdf`);
+  await labelFile.save(labelBuffer, { contentType: 'application/pdf' });
+  const [shippingLabelUrl] = await labelFile.getSignedUrl({
+    action: 'read',
+    expires: '01-01-2100'
+  });
+
   return {
-    trackingNumber: tracking.tracking_number,
-    shippingCarrier: shipping.courier,
-    shippingLabelUrl: labelDoc.url,
-    easyshipShipmentId: shipment.easyship_shipment_id
+    trackingNumber: label.trackingNumber,
+    shippingCarrier: shipping.carrierCode,
+    shippingLabelUrl,
+    shipstationShipmentId: label.shipmentId
   };
 }
 
@@ -3381,6 +3485,7 @@ async function handlePaymentIntentSucceeded(paymentData){
     }
 
     const itemName = data.item?.name || "an item";
+    let labelCost = 0;
 
     const listingId = data.listingId;
     if (listingId) {
@@ -3411,9 +3516,28 @@ async function handlePaymentIntentSucceeded(paymentData){
               trackingNumber: label.trackingNumber,
               shippingCarrier: label.shippingCarrier,
               shippingLabelUrl: label.shippingLabelUrl,
-              easyshipShipmentId: label.easyshipShipmentId,
+              shipstationShipmentId: label.shipstationShipmentId,
               labelGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
             });
+
+            // The buyer was never charged for this label (see /order-summary),
+            // so its cost comes out of the seller's payout instead -- same
+            // debt ledger/netting path as a return-shipping charge from an
+            // upheld dispute (see /api/orders/:id/dispute/uphold).
+            labelCost = parseFloat(listing.shipping?.estimateRate) || 0;
+            if (labelCost > 0) {
+              await db.collection("sellerDebts").doc(orderRef.id).set({
+                sellerId: data.sellerId,
+                orderId: orderRef.id,
+                reason: "prepaid_shipping_label",
+                amount: labelCost.toFixed(2),
+                remainingAmount: labelCost.toFixed(2),
+                status: "outstanding",
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                settledAt: null
+              });
+            }
+
             console.log(`shipping label purchased for order ${paymentData.id}`);
           }
         } catch (err) {
@@ -3436,11 +3560,15 @@ async function handlePaymentIntentSucceeded(paymentData){
     // Buyer already got "Order Confirmed" from /orders/init at pending --
     // only the seller gets notified here, since this is the point they
     // learn about the sale for the first time.
+    const saleMessage = labelCost > 0
+      ? `You sold ${itemName}. $${labelCost.toFixed(2)} for your prepaid shipping label will be deducted from this payout.`
+      : `You sold ${itemName}.`;
+
     await createNotification(
       data.sellerId,
       "sale",
       "New Order",
-      `You sold ${itemName}.`,
+      saleMessage,
       "/profile?tab=selling"
     );
 

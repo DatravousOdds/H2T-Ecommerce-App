@@ -323,7 +323,6 @@ function getOrderActionState(order) {
   return {
     status,
     canShip: status === "pending" || status === "processing",
-    canDeliver: status === "shipped",
     canCancel: status === "pending" || status === "processing",
     needsAuthPhotos: status === "pending_authentication",
     hasCertificate: order.authenticationStatus === "passed",
@@ -344,16 +343,30 @@ function openOrderActionMenu(order) {
   menu.dataset.docId = order.docId;
   showActionError("");
 
-  const { status, canShip, canDeliver, canCancel, needsAuthPhotos, hasCertificate } = getOrderActionState(order);
+  const { status, canShip, canCancel, needsAuthPhotos, hasCertificate } = getOrderActionState(order);
+
+  // Prepaid-shipping sales already have trackingNumber/shippingCarrier
+  // written onto the order at purchaseShippingLabel() time (server.js) --
+  // the seller shouldn't have to retype what ShipStation already gave us.
+  // Self-ship listings (no shipstationShipmentId) still enter it by hand.
+  const isPrepaid = Boolean(order.shipstationShipmentId);
 
   menu.querySelector(".seller-order-action-item-name").textContent = order.item?.name || "Item";
   menu.querySelector(".seller-order-action-status").textContent = `Status: ${status}`;
-  menu.querySelector(".seller-order-action-ship-fields").style.display = canShip ? "flex" : "none";
+  menu.querySelector(".seller-order-action-ship-fields").style.display = canShip && !isPrepaid ? "flex" : "none";
+
+  const prepaidInfo = menu.querySelector(".seller-order-action-prepaid-info");
+  if (prepaidInfo) {
+    prepaidInfo.style.display = canShip && isPrepaid ? "block" : "none";
+    if (isPrepaid) {
+      prepaidInfo.querySelector("#seller-prepaid-carrier").textContent = order.shippingCarrier || "";
+      prepaidInfo.querySelector("#seller-prepaid-tracking").textContent = order.trackingNumber || "";
+    }
+  }
   // Pulled out of .seller-order-action-ship-fields so it can sit visually
   // right above Mark Shipped while staying independently visible -- it used
   // to be implicitly shown/hidden along with that container.
   menu.querySelector("#seller-mark-shipped-btn").style.display = canShip ? "block" : "none";
-  menu.querySelector("#seller-mark-delivered-btn").style.display = canDeliver ? "block" : "none";
   menu.querySelector("#seller-cancel-order-btn").style.display = canCancel ? "block" : "none";
   menu.querySelector(".seller-order-action-auth-fields").style.display = needsAuthPhotos ? "flex" : "none";
 
@@ -361,6 +374,12 @@ function openOrderActionMenu(order) {
   if (certificateBtn) {
     certificateBtn.style.display = hasCertificate ? "block" : "none";
     certificateBtn.onclick = () => window.open(`/certificate.html?orderId=${order.docId}`, "_blank");
+  }
+
+  const downloadLabelBtn = menu.querySelector("#seller-download-label-btn");
+  if (downloadLabelBtn) {
+    downloadLabelBtn.style.display = order.shippingLabelUrl ? "block" : "none";
+    downloadLabelBtn.onclick = () => window.open(order.shippingLabelUrl, "_blank");
   }
 
   document.getElementById("seller-tracking-number").value = order.trackingNumber || "";
@@ -491,7 +510,6 @@ function wireOrderActions(userId) {
   const menu = document.getElementById("seller-order-action-menu");
   const closeBtn = document.getElementById("close-seller-order-action-menu");
   const shipBtn = document.getElementById("seller-mark-shipped-btn");
-  const deliverBtn = document.getElementById("seller-mark-delivered-btn");
   const cancelBtn = document.getElementById("seller-cancel-order-btn");
   const submitAuthPhotosBtn = document.getElementById("seller-submit-auth-photos-btn");
 
@@ -511,8 +529,18 @@ function wireOrderActions(userId) {
   if (shipBtn) {
     shipBtn.addEventListener("click", async () => {
       const docId = menu.dataset.docId;
-      const trackingNumber = document.getElementById("seller-tracking-number").value.trim();
-      const shippingCarrier = document.getElementById("seller-shipping-carrier").value.trim();
+      const order = currentOrders.find((o) => o.docId === docId);
+      const isPrepaid = Boolean(order?.shipstationShipmentId);
+
+      // Prepaid orders already have real tracking/carrier values on the
+      // order doc -- read those instead of the (hidden, never filled in)
+      // input fields, which only apply to the self-ship path.
+      const trackingNumber = isPrepaid
+        ? order.trackingNumber
+        : document.getElementById("seller-tracking-number").value.trim();
+      const shippingCarrier = isPrepaid
+        ? order.shippingCarrier
+        : document.getElementById("seller-shipping-carrier").value.trim();
 
       if (!trackingNumber) {
         showActionError("Tracking number is required.");
@@ -521,20 +549,6 @@ function wireOrderActions(userId) {
 
       try {
         await patchOrder(docId, { fulfillmentStatus: "shipped", trackingNumber, shippingCarrier });
-        closeOrderActionMenu();
-        await refreshOrders(userId);
-      } catch (error) {
-        showActionError(error.message);
-      }
-    });
-  }
-
-  if (deliverBtn) {
-    deliverBtn.addEventListener("click", async () => {
-      const docId = menu.dataset.docId;
-
-      try {
-        await patchOrder(docId, { fulfillmentStatus: "delivered" });
         closeOrderActionMenu();
         await refreshOrders(userId);
       } catch (error) {

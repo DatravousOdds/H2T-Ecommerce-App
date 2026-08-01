@@ -152,7 +152,8 @@ export function initBio() {
   });
 
   // Save
-  saveBioBtn.addEventListener("click", async () => {
+  saveBioBtn.addEventListener("click", async (event) => {
+    event.preventDefault();
     wordCountDisplay.style.display = "none";
 
     bioTextarea.disabled = true;
