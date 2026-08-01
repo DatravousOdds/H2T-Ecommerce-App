@@ -7,6 +7,7 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const easyship = require('@api/easyship');
+const resend = require("resend")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 const { getRatesForCarrier, createLabel } = require('./services/shipstation');
@@ -59,19 +60,12 @@ const DELIVERY_CONFIRMATION_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
 
 // shipstation parameters
 const shipStationKey = process.env.SHIPSTATION_KEY;
-const shipStationSecretKey = process.env.SHIPSTATION_SECRET_KEY
+const shipStationSecretKey = process.env.SHIPSTATION_SECRET_KEY;
 
-// Buyer-initiated item authentication (distinct from the seller listing-
-// authentication flow / authenticationRequests collection). Two independent
-// qualifying paths -- see isAuthenticationEligible() below: price alone
-// (>= AUTHENTICATION_MIN_PRICE) qualifies any category, including ones with
-// no entry in AUTHENTICATION_CATALOG at all (hats/accessories/women-bags/
-// other can still qualify this way); separately, an approved category+brand
-// combo qualifies regardless of price. Brand approval is scoped per
-// category, not a global list -- e.g. adidas is approved for sneakers but
-// says nothing about apparel. Brand values below must stay lowercase since
-// isAuthenticationEligible() lowercases listing.brand before comparing --
-// brand is free text on the listing form, not a fixed dropdown.
+// Initializing the Resend client with the API key
+const resendClient = new resend.Resend(process.env.RESEND_API_KEY);
+
+
 const AUTHENTICATION_MIN_PRICE = 150;
 const SNEAKER_FOOTWEAR_BRANDS = [
   "nike", "jordan", "adidas", "yeezy", "new balance", "asics", "vans",
@@ -196,6 +190,23 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
 app.use(express.json());
 
 
+
+
+app.post('/send/update', async (req, res) => {
+  const { userEmail, subject, message } = req.body;
+  try {
+    await resendClient.emails.send({
+      from: 'noreply@yhexxo.store',
+      to: userEmail,
+      subject,
+      html: `<p>${message}</p>`
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ success: false, message: 'Failed to send email' });
+  }
+});
 
 app.post('/webhooks/easyship', async (req, res) => {
   const signature = req.headers['x-easyship-signature'];

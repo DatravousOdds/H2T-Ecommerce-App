@@ -19,7 +19,7 @@
   --color-background-alert: #f30c1e;
 
   /* Border variants */
-  --color-border-primary: #070707;
+  --color-border-primary: #F2F2F2;
   --color-border-secondary: #fff;
 
 
@@ -2498,7 +2498,6 @@ footer .rights {
   width: 35px;
   height: 35px;
   border-radius: 28px;
-  border: 2px solid  var(--color-border-secondary);
   object-fit: cover;
   background: #f0f0f0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
