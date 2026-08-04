@@ -1,7 +1,7 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
-import { loadProducts, handleFavoriteClick, mensRange, renderProductSkeletons, displayProducts, updateResultsCount } from '../core/global.js';
+import { loadProducts, handleFavoriteClick, mensRange, renderProductSkeletons, displayProducts, updateResultsCount, matchesPriceBuckets } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
@@ -471,6 +471,10 @@ const filterProducts = (products, filters) => {
         if (!values.includes(normalizeBrand(data.brand))) return false;
         continue;
       }
+      if (key === "price") {
+        if (!matchesPriceBuckets(data.listingPrice, values)) return false;
+        continue;
+      }
       if(!values.includes(data[key])) {
         return false;
       }
@@ -498,14 +502,15 @@ const sortProducts = (sortType) => {
   console.log("Sorted Products:",sortedProducts)
 
   if (sortType === "Price: Low-High") {
-    sortedProducts = sortedProducts.sort((a, b) => a.data().originalPrice - b.data().originalPrice);
+    sortedProducts = sortedProducts.sort((a, b) => a.data().listingPrice - b.data().listingPrice);
   } else if (sortType === "Price: High-Low") {
-    sortedProducts = sortedProducts.sort((a, b) => b.data().originalPrice - a.data().originalPrice);
+    sortedProducts = sortedProducts.sort((a, b) => b.data().listingPrice - a.data().listingPrice);
   } else if (sortType === "Newest") {
     sortedProducts = sortedProducts.sort((a, b) => b.data().createdAt - a.data().createdAt);
-  } else if (sortType === "Featured") {
-    // TODO: Implement logic for featured
   }
+  // "Featured" falls through with no reordering -- filteredProducts is never
+  // mutated by a prior sort (only a copy of it is), so this correctly shows
+  // the default fetch order regardless of what was sorted before.
   
   displayProducts(sortedProducts, "productsContainer")
 

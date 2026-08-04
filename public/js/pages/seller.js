@@ -131,6 +131,7 @@ const CATEGORY_DEFAULTS = {
     'jackets':     { length: 16, width: 14, height: 5,  weight: 2.0 },
     'hats':        { length: 12, width: 10, height: 6,  weight: 0.5 },
     'accessories': { length: 8,  width: 6,  height: 2,  weight: 0.25 },
+    'collectibles': { length: 6, width: 4,  height: 1,  weight: 0.2 },
     'other':       { length: 12, width: 9,  height: 4,  weight: 1.0 },
 };
 let listing = {
@@ -1030,7 +1031,13 @@ function removeCourierRatesModal() {
 }
 
 function showDimensionsModal() {
-    const category = productCategory.value;
+    // productCategory.value is gender-prefixed ("unisex-collectibles",
+    // "men-sneakers", etc.) for every option except "other" -- same
+    // normalization as getCategoryFields() above, needed here too so the
+    // lookup below hits the real per-category defaults instead of always
+    // falling back to CATEGORY_DEFAULTS['other'].
+    const rawCategory = productCategory.value;
+    const category = CATEGORY_DEFAULTS[rawCategory] ? rawCategory : rawCategory.split("-")[1];
 
     setDefaultDimensions(category);
     exitModalListener(dimensionExitBtn, packageDimensions);

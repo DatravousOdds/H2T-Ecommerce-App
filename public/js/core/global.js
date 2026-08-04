@@ -656,17 +656,39 @@ const isReleaseLive = (data) => {
   return data.releaseDate.toDate() <= new Date();
 };
 
+// Price-filter checkboxes emit bucket labels ("20-50", "over_150"), not a
+// real listing field -- there is no `price` field on a listing doc, the
+// current price lives in `listingPrice`. Buckets are matched client-side via
+// matchesPriceBuckets() below instead of a Firestore "in" query.
+const PRICE_BUCKET_RANGES = {
+  "20-50": [20, 50],
+  "50-100": [50, 100],
+  "100-150": [100, 150],
+  "over_150": [150, Infinity]
+};
+
+function matchesPriceBuckets(price, bucketValues) {
+  if (typeof price !== "number" || Number.isNaN(price)) return false;
+  return bucketValues.some((bucket) => {
+    const range = PRICE_BUCKET_RANGES[bucket];
+    if (!range) return false;
+    const [min, max] = range;
+    return price >= min && price <= max;
+  });
+}
+
 const loadProducts = async (field,categoryMeta, state = { lastVisible: null, filters: new Map()}) => {
   let q;
   const productsCollection = collection(db, "listings");
   const baseConstraints = [where("status", "==", "active"), where(field, "==", `${categoryMeta}`)];
   state.lastVisible ? baseConstraints.push(startAfter(state.lastVisible)) : null;
   q = query(productsCollection, ...baseConstraints, limit(48));
-  
-  // loop through active filters ("sort" is UI-only state, not a listing field)
+
+  // loop through active filters ("sort" is UI-only state, not a listing
+  // field; "price" is a bucket label handled client-side, see above)
   let whereConstraints = [];
   for (const [key, values] of state.filters) {
-    if (key === "sort") continue;
+    if (key === "sort" || key === "price") continue;
     whereConstraints.push(where(key, "in", values));
   }
 
@@ -1408,6 +1430,7 @@ export {
   formatFirebaseDate,
   loadProducts,
   isReleaseLive,
+  matchesPriceBuckets,
   renderFilterTags,
   deleteMapEntry,
   updateResultsCount,

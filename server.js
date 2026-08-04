@@ -192,7 +192,7 @@ app.use(express.json());
 
 
 
-app.post('/send/update', async (req, res) => {
+app.post('/send/update', verifyAuth, async (req, res) => {
   const { userEmail, subject, message } = req.body;
   try {
     await resendClient.emails.send({

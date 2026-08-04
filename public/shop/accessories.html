@@ -124,23 +124,8 @@
               <i class="fa-solid fa-minus"></i>
             </div>
 
-            <div class="filter-container" data-filter-type="brand">
-              <div>
-                <input name="brand" type="checkbox" class="check" id="nike" value="nike" />
-                <label for="nike">Nike</label>
-              </div>
-              <div>
-                <input name="brand" type="checkbox" class="check" id="adidas" value="adidas" />
-                <label for="adidas">Adidas</label>
-              </div>
-              <div>
-                <input name="brand" type="checkbox" class="check" id="supreme" value="supreme" />
-                <label for="supreme">Supreme</label>
-              </div>
-              <div>
-                <input name="brand" type="checkbox" class="check" id="shoes" value="new-balance" />
-                <label for="shoes">New Balance</label>
-              </div>
+            <div class="filter-container" id="brand-filter" data-filter-type="brand">
+              <!-- loaded from javascript -->
             </div>
             <hr style="width: 100%; text-align: left; margin-left: 0" />
           </div>
@@ -194,22 +179,26 @@
               <i class="fa-solid fa-minus"></i>
             </div>
 
-            <div class="filter-container price-filter" data-filter-type="price">
+            <div class="filter-container" data-filter-type="condition">
               <div>
-                <input type="checkbox" class="check" id="brandNew" value="Brand New" />
-                <label for="brandNew">Brand New</label>
+                <input type="checkbox" class="check" id="conditionNew" value="new" />
+                <label for="conditionNew">New</label>
               </div>
               <div>
-                <input type="checkbox" class="check" id="likeNew" value="Like New" />
-                <label for="likeNew">Like New</label>
+                <input type="checkbox" class="check" id="conditionLikeNew" value="like new" />
+                <label for="conditionLikeNew">Like New</label>
               </div>
               <div>
-                <input type="checkbox" class="check" id="usedExcellent" value="Used - Excellent" />
-                <label for="usedExcellent">Used - Excellent</label>
+                <input type="checkbox" class="check" id="conditionGood" value="good" />
+                <label for="conditionGood">Good</label>
               </div>
               <div>
-                <input type="checkbox" class="check" id="usedGood" value="Used - Good" />
-                <label for="usedGood">Used - Good</label>
+                <input type="checkbox" class="check" id="conditionFair" value="fair" />
+                <label for="conditionFair">Fair</label>
+              </div>
+              <div>
+                <input type="checkbox" class="check" id="conditionPoor" value="poor" />
+                <label for="conditionPoor">Poor</label>
               </div>
             </div>
             <hr style="width: 100%; text-align: left; margin-left: 0" />
@@ -220,22 +209,18 @@
               <i class="fa-solid fa-minus"></i>
             </div>
 
-            <div class="filter-container price-filter" data-filter-type="price">
+            <div class="filter-container" data-filter-type="categoryMeta">
               <div>
-                <input type="checkbox" class="check" id="unisex" value="unisex" />
-                <label for="unisex">Unisex</label>
+                <input type="checkbox" class="check" id="genderUnisex" value="unisex" />
+                <label for="genderUnisex">Unisex</label>
               </div>
               <div>
-                <input type="checkbox" class="check" id="men" value="men" />
-                <label for="men">Men</label>
+                <input type="checkbox" class="check" id="genderMen" value="men" />
+                <label for="genderMen">Men</label>
               </div>
               <div>
-                <input type="checkbox" class="check" id="women" value="women" />
-                <label for="women">Women</label>
-              </div>
-              <div>
-                <input type="checkbox" class="check" id="kids" value="kids" />
-                <label for="kids">Kids</label>
+                <input type="checkbox" class="check" id="genderWomen" value="women" />
+                <label for="genderWomen">Women</label>
               </div>
             </div>
             <hr style="width: 100%; text-align: left; margin-left: 0" />

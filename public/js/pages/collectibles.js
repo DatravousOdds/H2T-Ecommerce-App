@@ -1,10 +1,25 @@
 
 import { checkUserStatus } from '../auth/auth.js';
-import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags, renderProductSkeletons } from '../core/global.js';
+import { db, collection, getDocs, where, query } from '../api/firebase-client.js';
+import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, displayProducts, renderFilterTags, renderProductSkeletons, matchesPriceBuckets } from '../core/global.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
 initCartDrawer();
+
+// Popular picks always shown in the brand filter, even with 0 listings so far.
+// Kept in sync with seller.js's BRAND_GROUPS -- same names, flattened.
+const CURATED_BRANDS = [
+  "Supreme", "Bape", "Palace", "Stüssy", "Off-White", "Fear of God", "Chrome Hearts", "Kith", "Vlone", "Essentials",
+  "Nike", "Jordan", "Adidas", "New Balance", "Converse", "Vans", "Puma", "Reebok", "Asics", "Yeezy",
+  "Carhartt", "Champion", "Polo Ralph Lauren", "Levi's", "The North Face", "Nautica",
+];
+
+// brand is free text, so there's no fixed casing/punctuation to match on.
+// Mirrors men.js's normalizeBrand() -- keep in sync if that one changes.
+function normalizeBrand(brand) {
+  return (brand || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+}
 
 const sortSelect = document.getElementById("sort-select");
 const sortIcon = document.querySelector("#sort-btn i");
@@ -22,6 +37,78 @@ const picker = document.getElementById("colorPicker");
 
 const productsContainer = document.getElementById("productsContainer");
 const loadMoreBtn = document.getElementById("loadMoreBtn");
+const brandFilterContainer = document.getElementById("brand-filter");
+const brandLabels = new Map(); // normalized brand slug -> display name, for filter tags
+
+// fetches every active collectibles listing (not just the loaded/paginated page)
+// so the brand filter reflects everything sellers have listed, not only what's on screen
+async function loadBrandFilterOptions() {
+  if (!brandFilterContainer) return;
+
+  try {
+    const q = query(
+      collection(db, "listings"),
+      where("status", "==", "active"),
+      where("category", "==", "collectibles")
+    );
+    const snapshot = await getDocs(q);
+
+    // normalizedBrand -> { name: first-seen casing, count }
+    const brandCounts = new Map();
+    snapshot.docs.forEach((doc) => {
+      const rawBrand = (doc.data().brand || "").trim();
+      const key = normalizeBrand(rawBrand);
+      if (!key) return;
+
+      if (!brandCounts.has(key)) brandCounts.set(key, { name: rawBrand, count: 0 });
+      brandCounts.get(key).count += 1;
+    });
+
+    renderBrandFilterOptions(brandCounts);
+  } catch (error) {
+    console.error("Error loading brand filter options:", error);
+  }
+}
+
+function renderBrandFilterOptions(brandCounts) {
+  brandFilterContainer.innerHTML = "";
+
+  const appendBrandCheckbox = (key, name, count) => {
+    const wrapper = document.createElement("div");
+
+    const checkbox = document.createElement("input");
+    checkbox.name = "brand";
+    checkbox.type = "checkbox";
+    checkbox.className = "check";
+    checkbox.id = `brand-${key}`;
+    checkbox.value = key;
+
+    const label = document.createElement("label");
+    label.setAttribute("for", `brand-${key}`);
+    label.textContent = count ? `${name} (${count})` : name;
+
+    wrapper.appendChild(checkbox);
+    wrapper.appendChild(label);
+    brandFilterContainer.appendChild(wrapper);
+
+    // so applied-filter tags can show "New Balance" instead of the raw "newbalance" slug
+    brandLabels.set(key, name);
+  };
+
+  CURATED_BRANDS.forEach((name) => {
+    const key = normalizeBrand(name);
+    const count = brandCounts.get(key)?.count || 0;
+    brandCounts.delete(key);
+    appendBrandCheckbox(key, name, count);
+  });
+
+  // Everything else sellers have actually listed under, most-listed first.
+  [...brandCounts.entries()]
+    .sort((a, b) => b[1].count - a[1].count || a[1].name.localeCompare(b[1].name))
+    .forEach(([key, { name, count }]) => appendBrandCheckbox(key, name, count));
+}
+
+loadBrandFilterOptions();
 
 document
   .querySelectorAll(".filter-option .expand-details")
@@ -230,6 +317,14 @@ const filterProducts = (products, filters) => {
     const data = product.data();
     for (const [key, values] of filters) {
       if (key === "sort") continue;
+      if (key === "brand") {
+        if (!values.includes(normalizeBrand(data.brand))) return false;
+        continue;
+      }
+      if (key === "price") {
+        if (!matchesPriceBuckets(data.listingPrice, values)) return false;
+        continue;
+      }
       if(!values.includes(data[key])) {
         return false;
       }
@@ -254,14 +349,14 @@ const sortProducts = (sortType) => {
   console.log("Sorted Products:",sortedProducts)
 
   if (sortType === "Price: Low-High") {
-    sortedProducts = sortedProducts.sort((a, b) => a.data().originalPrice - b.data().originalPrice);
+    sortedProducts = sortedProducts.sort((a, b) => a.data().listingPrice - b.data().listingPrice);
   } else if (sortType === "Price: High-Low") {
-    sortedProducts = sortedProducts.sort((a, b) => b.data().originalPrice - a.data().originalPrice);
+    sortedProducts = sortedProducts.sort((a, b) => b.data().listingPrice - a.data().listingPrice);
   } else if (sortType === "Newest") {
     sortedProducts = sortedProducts.sort((a, b) => b.data().createdAt - a.data().createdAt);
-  } else if (sortType === "Featured") {
-    // TODO: Implement logic for featured
   }
+  // "Featured" falls through with no reordering -- see men.js for why that's
+  // correct, not a stub.
 
   displayProducts(sortedProducts, "productsContainer")
 
