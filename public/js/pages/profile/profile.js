@@ -42,7 +42,7 @@ import { initReviews, loadReviewData } from "./reviews.js";
 // ---------------------------------------------------------------------------
 
 function loadProfileDisplayData(userData) {
-  console.log("loading with userdata:", userData)
+  // console.log("loading with userdata:", userData)
   const profileBackground = document.querySelector(".profile-background");
   if (userData.backgroundImage) {
     profileBackground.style.backgroundImage = `url('${userData.backgroundImage}')`;
@@ -120,7 +120,7 @@ async function loadProfileData() {
 
   try {
     const userData = await checkUserStatus();
-    console.log("Profile Data:", userData)
+    // console.log("Profile Data:", userData)
     const currentYear = new Date().getFullYear();
 
     if (userData) {

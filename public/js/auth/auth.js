@@ -337,6 +337,23 @@ function initAuthForm() {
 
           await createUserProfile(user, userData);
 
+          // Best-effort welcome email -- isolated from the signup try/catch
+          // below so a Resend failure never surfaces as a signup error to a
+          // user whose account was actually created fine.
+          try {
+            const idToken = await user.getIdToken();
+            await fetch("/send/update", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`
+              },
+              body: JSON.stringify({ notificationType: "ACCOUNT_CREATED" })
+            });
+          } catch (error) {
+            console.error("Error sending welcome email:", error);
+          }
+
           showAlert("Account created successfully!", "success");
 
           sessionStorage.setItem("user", JSON.stringify({ 

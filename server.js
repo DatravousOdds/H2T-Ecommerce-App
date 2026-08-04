@@ -11,6 +11,7 @@ const resend = require("resend")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 const { getRatesForCarrier, createLabel } = require('./services/shipstation');
+const { templateBuilder } = require('./services/emailTemplates');
 easyship.auth(process.env.EASYSHIP_KEY);
 if (process.env.EASYSHIP_KEY?.startsWith('sand_')) {
     easyship.server('https://public-api-sandbox.easyship.com');
@@ -193,13 +194,25 @@ app.use(express.json());
 
 
 app.post('/send/update', verifyAuth, async (req, res) => {
-  const { userEmail, subject, message } = req.body;
+  const { notificationType, metadata } = req.body;
+
+  if (!notificationType) {
+    return res.status(400).json({ success: false, message: 'Missing notificationType' });
+  }
+
   try {
+    const userRecord = await admin.auth().getUser(req.token.uid);
+    const template = templateBuilder(notificationType, { firstName: userRecord.displayName, ...metadata });
+
+    if (!template) {
+      return res.status(400).json({ success: false, message: 'Unknown notificationType' });
+    }
+
     await resendClient.emails.send({
-      from: 'noreply@yhexxo.store',
-      to: userEmail,
-      subject,
-      html: `<p>${message}</p>`
+      from: 'noreply@hexxo.store',
+      to: userRecord.email,
+      subject: template.subject,
+      html: template.html
     });
     res.json({ success: true });
   } catch (error) {
