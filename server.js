@@ -2560,7 +2560,8 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
         taxPending: true,
         delivery: delivery,
         total: parseFloat((marketplaceFee + delivery + listing.listingPrice).toFixed(2)),
-        authenticationEligible: isAuthenticationEligible(listing)
+        authenticationEligible: isAuthenticationEligible(listing),
+        authenticated: !!listing.authenticated
       })
 
     } catch (error) {

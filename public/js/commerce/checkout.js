@@ -423,7 +423,16 @@ function displayOrderSummary(data, isAuthPayment = false) {
     // from the client). Not a checkbox: a buyer being able to opt out would
     // let a counterfeit item in an authenticate-required category skip
     // review entirely.
-    const authenticationBadgeHTML = (!isAuthPayment && data.authenticationEligible)
+    const authenticationBadgeHTML = isAuthPayment
+        ? ''
+        : data.authenticated
+        ? `
+            <div class="authentication-guarantee-badge">
+              <img src="/images/hexxo_auth_badge.png" alt="" style="width: 20px; height: 20px; object-fit: contain;">
+              <span>This item has already been authenticated.</span>
+            </div>
+        `
+        : data.authenticationEligible
         ? `
             <div class="authentication-guarantee-badge">
               <i class="fa-solid fa-shield-halved"></i>
