@@ -66,6 +66,29 @@ const shipStationSecretKey = process.env.SHIPSTATION_SECRET_KEY;
 // Initializing the Resend client with the API key
 const resendClient = new resend.Resend(process.env.RESEND_API_KEY);
 
+// Best-effort notifications to the site owner (new sale / signup / auth
+// request queued). Never throws -- callers fire this without awaiting so a
+// Resend hiccup can't block a webhook or an API response.
+async function sendAdminNotification(notificationType, data) {
+  if (!process.env.ADMIN_EMAIL) {
+    console.warn(`ADMIN_EMAIL not set, skipping ${notificationType} admin notification`);
+    return;
+  }
+
+  try {
+    const template = templateBuilder(notificationType, data);
+    if (!template) return;
+
+    await resendClient.emails.send({
+      from: 'noreply@hexxo.store',
+      to: process.env.ADMIN_EMAIL,
+      subject: template.subject,
+      html: template.html
+    });
+  } catch (error) {
+    console.error(`Error sending admin notification (${notificationType}):`, error);
+  }
+}
 
 const AUTHENTICATION_MIN_PRICE = 150;
 const SNEAKER_FOOTWEAR_BRANDS = [
@@ -214,11 +237,32 @@ app.post('/send/update', verifyAuth, async (req, res) => {
       subject: template.subject,
       html: template.html
     });
+
+    if (notificationType === 'ACCOUNT_CREATED') {
+      sendAdminNotification('NEW_SIGNUP', { firstName: userRecord.displayName, email: userRecord.email });
+    }
+
     res.json({ success: true });
   } catch (error) {
     console.error('Error sending email:', error);
     res.status(500).json({ success: false, message: 'Failed to send email' });
   }
+});
+
+// Admin-only notification types a logged-in client is allowed to trigger
+// directly (as opposed to NEW_SALE, which only ever fires server-side from
+// the Stripe webhook -- an allow-list here stops a client from forging one).
+const CLIENT_TRIGGERABLE_ADMIN_NOTIFICATIONS = ['AUTH_REQUEST_QUEUED'];
+
+app.post('/send/admin-notify', verifyAuth, async (req, res) => {
+  const { notificationType, metadata } = req.body;
+
+  if (!CLIENT_TRIGGERABLE_ADMIN_NOTIFICATIONS.includes(notificationType)) {
+    return res.status(400).json({ success: false, message: 'Unknown notificationType' });
+  }
+
+  await sendAdminNotification(notificationType, metadata || {});
+  res.json({ success: true });
 });
 
 app.post('/webhooks/easyship', async (req, res) => {
@@ -3510,6 +3554,16 @@ async function handlePaymentIntentSucceeded(paymentData){
     }
 
     const itemName = data.item?.name || "an item";
+
+    // Fire-and-forget, same reasoning as the tax transaction record above --
+    // a Resend hiccup here shouldn't stop the order itself from completing.
+    sendAdminNotification('NEW_SALE', {
+      itemName,
+      salePrice: salePrice.toFixed(2),
+      orderId: orderRef.id,
+      buyerEmail: data.buyerEmail
+    });
+
     let labelCost = 0;
 
     const listingId = data.listingId;

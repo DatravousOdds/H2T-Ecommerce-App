@@ -1,5 +1,5 @@
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api/firebase-client.js';
-import { collection, addDoc, db, serverTimestamp, getDocs, query, where } from '../api/firebase-client.js';
+import { collection, addDoc, db, serverTimestamp, getDocs, query, where, auth } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { getUserCartCount, updateCartCount } from '../commerce/cart.js';
@@ -1283,6 +1283,29 @@ async function submitToFirebase() {
     );
 
     console.log("✅ Document created with id: ", docRef.id);
+
+    // Best-effort admin alert -- isolated from the submission try/catch so a
+    // Resend/network failure never surfaces as a submission error to a user
+    // whose request was actually queued fine.
+    try {
+      const idToken = await auth.currentUser.getIdToken();
+      await fetch("/send/admin-notify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          notificationType: "AUTH_REQUEST_QUEUED",
+          metadata: {
+            itemLabel: authRequestData.productDetails.details || authRequestData.productDetails.category,
+            requestId: docRef.id
+          }
+        })
+      });
+    } catch (error) {
+      console.error("Error sending admin notification for auth request:", error);
+    }
 
     return { success: true, requestId: docRef.id, images: uploadedImages }
     

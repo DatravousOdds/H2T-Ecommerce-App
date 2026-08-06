@@ -17,13 +17,13 @@
   --z-tooltip: 200;
 
   /* Primary Colors */
-  --primary-red: #dc2626;
-  --primary-red-hover: #b91c1c;
+  --primary-red: #F30C1E;
+  --primary-red-hover: #F63747;
   --primary-red-light: #fef2f2;
 
   /* Sucess Colors */
-  --success-green: #16a34a;
-  --success-green-light: #dcfce7;
+  --success-green: #009240;
+  --success-green-light: #E6FFF1;
 
 
   --gray-border: #d1d5db;
@@ -229,7 +229,6 @@ body {
 
 .content-header h1 {
   font-weight: bold;
-  font-size: 1.5rem;
   margin-bottom: var(--spacing-sm);
   color: var(--color-text-primary);
 }
