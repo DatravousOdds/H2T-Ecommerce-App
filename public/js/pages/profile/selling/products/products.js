@@ -16,9 +16,9 @@ const currentUser = await checkUserStatus();
 
 const listBtn = document.getElementById('list-products-btn').addEventListener('click', () => {
   if (!currentUser || currentUser === null) {
-    window.href.location = '/login';
+    window.location.href = '/login';
   } else {
-    window.href.location = '/seller';
+    window.location.href = '/seller/seller.html';
   }
 })
 

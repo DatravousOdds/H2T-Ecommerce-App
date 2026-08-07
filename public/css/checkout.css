@@ -4,6 +4,33 @@ body{
     font-family: "Space Grotesk", sans-serif !important;
 }
 
+.checkout-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 2rem;
+    background: #070707;
+    height: 80px;
+}
+
+.checkout-navbar-logo {
+    display: flex;
+    align-items: center;
+}
+
+.checkout-navbar-logo img {
+    height: 60px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+
+.checkout-navbar-secure {
+    color: #fff;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
 .heading{
     text-transform: capitalize;
     font-size: 500;

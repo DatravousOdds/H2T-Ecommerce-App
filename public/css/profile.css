@@ -4293,14 +4293,23 @@ h6 {
   margin-bottom: 1rem;
 }
 #orders-filters select {
-  /* margin-bottom: 1rem; */
+  background-color: #F30C1E;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-radius: 8px;
   gap: 1rem;
-  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+#orders-filters select:hover {
+  background-color: #F63747;
+  color: white;
 }
 
 #orders-filters {
@@ -5881,7 +5890,7 @@ h6 {
   font-size: var(--font-size-md);
   transition: 0.3s ease-in-out;
 }
-
+a
 .order-action-btn.secondary {
   
 }
@@ -7924,6 +7933,13 @@ details h3 {
   color: #2563eb;
   background: none;
   font-size: 0.875rem;
+}
+
+.view-all-link {
+  color: 007EFA;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 /* Extra small devices (phones, <576px) */

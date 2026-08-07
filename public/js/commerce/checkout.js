@@ -2,6 +2,10 @@ import { collection, getDocs, db } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 const stripe = Stripe("pk_live_51TfzCeClJc0GzijRcUvKdnm7dCkWSNuBzQMI3hgeoJsQ97IXaDCQtrLZCyuVVXiPZOWpyfGD2jfj13IpIJeQwy3X00GHsIsrzz");
 
+// Checkout intentionally skips the full nav.js component (search, cart,
+// auth dropdown, mobile menu) -- a stripped-down bar with just the logo and
+// a trust signal keeps the buyer focused on completing payment.
+renderCheckoutNav();
 
 const searchQuery = new URLSearchParams(window.location.search);
 const listingId = searchQuery.get('listingId');
@@ -74,6 +78,20 @@ if(!currentUser) {
 
         await initializeCheckout(data);
     }
+}
+
+function renderCheckoutNav() {
+    const header = document.querySelector('#header');
+    if (!header) return;
+
+    header.innerHTML = `
+        <nav class="checkout-navbar" aria-label="Checkout">
+            <a href="/" class="checkout-navbar-logo" aria-label="Go to homepage">
+                <img src="/images/Hexxo_Bg_Removed.png" alt="Hexxo" width="60" height="60" />
+            </a>
+            <span class="checkout-navbar-secure">Secure checkout</span>
+        </nav>
+    `;
 }
 
 // Stops checkout cold instead of letting downstream code crash on a missing

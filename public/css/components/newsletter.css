@@ -68,7 +68,7 @@
 
 #newsletter button {
   /* change color */
-  background-color: #ff4c4c;
+  background-color: #F30C1E;
   color: #fff;
   white-space: nowrap;
   padding: 0 1.5rem;
@@ -77,11 +77,11 @@
   cursor: pointer;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  transition: 0.5s;
+  transition: 0.5s ease;
 }
 
 #newsletter button:hover {
-  background-color: rgb(255, 136, 136);
+  background-color: #F63747;
 }
 
 

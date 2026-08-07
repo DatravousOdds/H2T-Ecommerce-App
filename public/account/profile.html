@@ -197,10 +197,11 @@
                       </div>
                       <div id="stats-counter">following</div>
                     </div>
-                    <!-- Rating -->
-                    <div id="rating" class="spacing-1 center-text">
+                    <!-- Rating -- hidden by default; profile.js only reveals this once
+                         it confirms totalRatings > 0, to avoid showing a fake rating -->
+                    <div id="rating" class="spacing-1 center-text" style="display: none">
                       <div id="rating-counter" class="rating-counter">
-                        <h5 id="current-rating">5.0</h5>
+                        <h5 id="current-rating"></h5>
                         <i class="fa-solid fa-star"></i>
                       </div>
                       <div id="stats-counter">Rating</div>
@@ -617,7 +618,7 @@
                   <!-- Rating Content -->
                   <div class="rating-container">
                     <div class="rating-overall">
-                      <h2 id="average-rating">4.0</h2>
+                      <h2 id="average-rating"><span class="skeleton" style="display:inline-block; width:30px; height:1em;"></span></h2>
                     </div>
                     <div class="rating-details">
                       <div class="rating-stars">
@@ -628,7 +629,7 @@
                         <i class="fa-regular fa-star"></i>
                       </div>
                       <div id="total-ratings" class="rating-count">
-                        35k ratings
+                        <span class="skeleton" style="display:inline-block; width:80px; height:0.9em;"></span>
                       </div>
                     </div>
                   </div>
@@ -640,7 +641,7 @@
                       </div>
                       <p class="review-overall">5.0</p>
                       <p id="rating-count-5" class="review-counter">
-                        14k reviews
+                        <span class="skeleton" style="display:inline-block; width:70px; height:0.9em;"></span>
                       </p>
                     </div>
 
@@ -650,7 +651,7 @@
                       </div>
                       <p class="review-overall">4.0</p>
                       <p id="rating-count-4" class="review-counter">
-                        6k reviews
+                        <span class="skeleton" style="display:inline-block; width:70px; height:0.9em;"></span>
                       </p>
                     </div>
 
@@ -660,7 +661,7 @@
                       </div>
                       <p class="review-overall">3.0</p>
                       <p id="rating-count-3" class="review-counter">
-                        4k reviews
+                        <span class="skeleton" style="display:inline-block; width:70px; height:0.9em;"></span>
                       </p>
                     </div>
                     <div class="rating-process">
@@ -669,7 +670,7 @@
                       </div>
                       <p class="review-overall">2.0</p>
                       <p id="rating-count-2" class="review-counter">
-                        800 reviews
+                        <span class="skeleton" style="display:inline-block; width:70px; height:0.9em;"></span>
                       </p>
                     </div>
                     <div class="rating-process">
@@ -678,7 +679,7 @@
                       </div>
                       <p class="review-overall">1.0</p>
                       <p id="rating-count-1" class="review-counter">
-                        9k reviews
+                        <span class="skeleton" style="display:inline-block; width:70px; height:0.9em;"></span>
                       </p>
                     </div>
                   </div>
@@ -1294,9 +1295,9 @@
                     <h2>Total Revenue</h2>
                     <i class="fa-solid fa-dollar-sign blue"></i>
                   </header>
-                  <p class="stat-value" id="total-revenue-value">$45,231.89</p>
+                  <p class="stat-value" id="total-revenue-value"><span class="skeleton" style="display:inline-block; width:90px; height:1.1em;"></span></p>
                   <p class="trend-indicator trend-positive" id="total-revenue-trend">
-                    +20.1% from last month
+                    <span class="skeleton" style="display:inline-block; width:140px; height:0.9em;"></span>
                   </p>
                 </article>
                 <article class="stat-card">
@@ -1304,9 +1305,9 @@
                     <h2>Active Listings</h2>
                     <i class="fa-solid fa-box blue"></i>
                   </header>
-                  <p class="stat-value" id="active-listing-value">456</p>
+                  <p class="stat-value" id="active-listing-value"><span class="skeleton" style="display:inline-block; width:50px; height:1.1em;"></span></p>
                   <p class="trend-indicator trend-neutral" id="active-listings-trend">
-                    +19 new listings this month
+                    <span class="skeleton" style="display:inline-block; width:160px; height:0.9em;"></span>
                   </p>
                 </article>
                 <article class="stat-card">
@@ -1315,9 +1316,9 @@
                     <i class="fa-solid fa-boxes-stacked blue"></i>
                   </header>
 
-                  <p class="stat-value" id="product-sold-value">1,234</p>
+                  <p class="stat-value" id="product-sold-value"><span class="skeleton" style="display:inline-block; width:60px; height:1.1em;"></span></p>
                   <p class="trend-indicator trend-neutral" id="products-sold-trend">
-                    +123 in the last 30 days
+                    <span class="skeleton" style="display:inline-block; width:150px; height:0.9em;"></span>
                   </p>
                 </article>
                 <!-- HIDDEN FOR MVP: no rating data source exists yet (reviews deferred) -->
@@ -1360,30 +1361,21 @@
                 </header>
 
                 <div class="activity-list">
-                  <!-- code to display recent activity -->
-                  <article class="activity-item">
-                    <div class="activity-icon icon-warning">
-                      <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
+                  <!-- Populated by overview.js renderActivity() -- skeleton rows shown while it fetches -->
+                  <article class="activity-item" aria-hidden="true">
+                    <div class="skeleton skeleton-img" style="width:36px; height:36px; border-radius:50%;"></div>
                     <div class="activity-content">
-                      <p class="activity-title">Low Stock Alert</p>
-                      <p class="default-paragraph activity-detail">
-                        Vintage Camera
-                        <span class="warning-text">(5 remaining)</span>
-                      </p>
-                      <p class="activity-time default-paragraph">2 hours ago</p>
+                      <span class="skeleton skeleton-line medium"></span>
+                      <span class="skeleton skeleton-line long"></span>
+                      <span class="skeleton skeleton-line short"></span>
                     </div>
                   </article>
-                  <article class="activity-item">
-                    <div class="activity-icon icon-success">
-                      <i class="fa-solid fa-bag-shopping"></i>
-                    </div>
+                  <article class="activity-item" aria-hidden="true">
+                    <div class="skeleton skeleton-img" style="width:36px; height:36px; border-radius:50%;"></div>
                     <div class="activity-content">
-                      <p class="activity-title">New Order Received</p>
-                      <p class="activity-detail">
-                        Leather Backpack <span>x2</span>
-                      </p>
-                      <p class="activity-time default-paragraph">5 hours ago</p>
+                      <span class="skeleton skeleton-line medium"></span>
+                      <span class="skeleton skeleton-line long"></span>
+                      <span class="skeleton skeleton-line short"></span>
                     </div>
                   </article>
                 </div>
@@ -1399,59 +1391,28 @@
                     </button>
                   </header>
                   <div class="view-all-activity-content">
-                    <!-- code to display all activity -->
-                    <div class="activity-item">
-                      <div class="activity-icon icon-warning">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                      </div>
+                    <!-- Populated by overview.js renderActivity() -- skeleton rows shown while it fetches -->
+                    <div class="activity-item" aria-hidden="true">
+                      <div class="skeleton skeleton-img" style="width:36px; height:36px; border-radius:50%;"></div>
                       <div class="activity-header">
                         <div class="activity-content">
-                          <p class="activity-title">Low Stock Alert</p>
-                          <p class="activity-detail">Vintage Camera</p>
-                          <span class="warning-text">(5 remaining)</span>
-                          <p class="order-number">Order #1234567890</p>
+                          <span class="skeleton skeleton-line medium"></span>
+                          <span class="skeleton skeleton-line long"></span>
                         </div>
                         <div class="activity-timestamp">
-                          <p class="activity-time default-paragraph">
-                            2 hours ago
-                          </p>
+                          <span class="skeleton skeleton-line short"></span>
                         </div>
                       </div>
                     </div>
-                    <div class="activity-item">
-                      <div class="activity-icon icon-success">
-                        <i class="fa-solid fa-bag-shopping"></i>
-                      </div>
+                    <div class="activity-item" aria-hidden="true">
+                      <div class="skeleton skeleton-img" style="width:36px; height:36px; border-radius:50%;"></div>
                       <div class="activity-header">
                         <div class="activity-content">
-                          <p class="activity-title">New Order Received</p>
-                          <p class="activity-detail">
-                            Leather Backpack <span>x2</span>
-                          </p>
-                          <p class="order-number">Order #1234567890</p>
+                          <span class="skeleton skeleton-line medium"></span>
+                          <span class="skeleton skeleton-line long"></span>
                         </div>
                         <div class="activity-timestamp">
-                          <p class="activity-time default-paragraph">
-                            5 hours ago
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="activity-item">
-                      <div class="activity-icon icon-warning">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                      </div>
-                      <div class="activity-header">
-                        <div class="activity-content">
-                          <p class="activity-title">Low Stock Alert</p>
-                          <p class="activity-detail">Vintage Camera</p>
-                          <span class="warning-text">(5 remaining)</span>
-                          <p class="order-number">Order #1234567890</p>
-                        </div>
-                        <div class="activity-timestamp">
-                          <p class="activity-time default-paragraph">
-                            2 hours ago
-                          </p>
+                          <span class="skeleton skeleton-line short"></span>
                         </div>
                       </div>
                     </div>
@@ -1473,7 +1434,7 @@
                     <h2>Active Listings</h2>
                     <i class="fa-solid fa-tag"></i>
                   </header>
-                  <p class="stat-card-value">892</p>
+                  <p class="stat-card-value"><span class="skeleton" style="display:inline-block; width:50px; height:1.1em;"></span></p>
                 </article>
 
                 <!-- HIDDEN FOR MVP: Trade Offers / Sell to Us not in scope -->
@@ -1498,7 +1459,7 @@
                     <h2>Total Sales</h2>
                     <i class="fa-solid fa-arrow-trend-up"></i>
                   </header>
-                  <p class="stat-card-value">$45,231.89</p>
+                  <p class="stat-card-value"><span class="skeleton" style="display:inline-block; width:90px; height:1.1em;"></span></p>
                 </article>
               </div>
 
@@ -1846,122 +1807,7 @@
                         </tr>
                       </thead>
                       <tbody id="active-products-table">
-                        <tr class="product-row">
-                          <td>
-                            <div class="product-info">
-                              <img
-                                src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                alt="Jordan 1"
-                                class="product-image"
-                              />
-                              <div class="product-details">
-                                <p class="product-name">Air Jordan 1 High OG</p>
-                                <p class="product-sku">SKU: AJ1-HIGH-001</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <span class="category-badge">Sneakers</span>
-                          </td>
-                          <td>US 10</td>
-                          <td>
-                            <div class="condition-info">
-                              <span class="condition-badge new">New</span>
-                              <span class="condition-note">With Box</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="stock-info">
-                              <span class="stock-number">5</span>
-                              <span class="stock-status in-stock"
-                                >In Stock</span
-                              >
-                            </div>
-                          </td>
-                          <td>$180.00</td>
-                          <td>
-                            <div class="price-info">
-                              <span class="current-price">$220.00</span>
-                              <span class="price-trend positive">+22%</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="views-info">
-                              <span class="view-count">1,234</span>
-                              <span class="view-trend positive">↑12%</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="listing-date">
-                              <span class="date">Nov 22, 2024</span>
-                              <span class="time-listed">14 days</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="action-buttons">
-                              <button
-                                class="action-button edit"
-                                aria-label="Edit Listing"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path
-                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                  ></path>
-                                  <path
-                                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                  ></path>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button pause"
-                                aria-label="Pause Listing"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <rect
-                                    x="6"
-                                    y="4"
-                                    width="4"
-                                    height="16"
-                                  ></rect>
-                                  <rect
-                                    x="14"
-                                    y="4"
-                                    width="4"
-                                    height="16"
-                                  ></rect>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button promote"
-                                aria-label="Promote Listing"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <polygon
-                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                                  ></polygon>
-                                </svg>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                        <!-- Populated by products.js loadProductsTab() -- renderProductTableSkeletons() fills this in before the real fetch resolves -->
                       </tbody>
                     </table>
                   </div>
@@ -2282,114 +2128,7 @@
                         </tr>
                       </thead>
                       <tbody id="out-of-stock-products-table">
-                        <tr class="product-row">
-                          <td>
-                            <div class="product-info">ORD-2024-1234</div>
-                          </td>
-                          <td>
-                            <div class="category-info">
-                              <span class="category-badge">Sneakers</span>
-                              <span class="sub-category">Basketball</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="stock-date">
-                              <span class="date">Nov 15, 2024</span>
-                              <span class="time-ago">7 days ago</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="price-info">
-                              <span class="last-price">$199.99</span>
-                              <span class="price-note">Sold Out at Retail</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="demand-info">
-                              <span class="demand-badge high">High Demand</span>
-                              <div class="demand-trend">
-                                <span class="trend-arrow up">↑</span>
-                                <span class="trend-value">32%</span>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="waitlist-info">
-                              <span class="waitlist-count">124</span>
-                              <span class="waitlist-label">people waiting</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="notification-info">
-                              <span class="notification-count">89</span>
-                              <span class="notification-status"
-                                >Subscribed</span
-                              >
-                            </div>
-                          </td>
-                          <td>
-                            <div class="supplier-info">
-                              <span class="supplier-name">Nike Direct</span>
-                              <span class="restock-estimate"
-                                >Expected: Dec 2024</span
-                              >
-                            </div>
-                          </td>
-                          <td>
-                            <div class="action-buttons">
-                              <button
-                                class="action-button restock"
-                                aria-label="Restock Product"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path d="M3 3v18h18"></path>
-                                  <path d="M18.4 8.64L18.4 15.36"></path>
-                                  <path d="M13.6 10.72L13.6 15.36"></path>
-                                  <path d="M8.8 12.8L8.8 15.36"></path>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button notify"
-                                aria-label="Send Notifications"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path
-                                    d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
-                                  ></path>
-                                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button archive"
-                                aria-label="Archive Product"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path d="M21 8v13H3V8"></path>
-                                  <path d="M1 3h22v5H1z"></path>
-                                  <path d="M10 12h4"></path>
-                                </svg>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                        <!-- Populated by products.js loadProductsTab() -- renderProductTableSkeletons() fills this in before the real fetch resolves -->
                       </tbody>
                     </table>
                   </div>
@@ -2424,159 +2163,7 @@
                         </tr>
                       </thead>
                       <tbody id="draft-products-table">
-                        <tr class="product-row">
-                          <td>
-                            <div class="product-info">
-                              <div class="product-image-container">
-                                <img
-                                  src="/images/Jordan 5 Retro Racer(9) 2.jpg"
-                                  alt="Draft Product"
-                                  class="product-image"
-                                />
-                                <span class="draft-badge">Draft</span>
-                              </div>
-                              <div class="product-details">
-                                <p class="product-name">Nike Dunk Low</p>
-                                <p class="product-id">ID: #DFT-2024112</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="completion-info">
-                              <div class="progress-bar">
-                                <div class="progress" style="width: 75%"></div>
-                              </div>
-                              <span class="completion-text">75% Complete</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="missing-info">
-                              <ul class="missing-list">
-                                <li class="missing-item">
-                                  <svg
-                                    class="missing-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    width="12"
-                                    height="12"
-                                  >
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line
-                                      x1="12"
-                                      y1="16"
-                                      x2="12"
-                                      y2="16"
-                                    ></line>
-                                  </svg>
-                                  Product Photos
-                                </li>
-                                <li class="missing-item">
-                                  <svg
-                                    class="missing-icon"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    width="12"
-                                    height="12"
-                                  >
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line
-                                      x1="12"
-                                      y1="16"
-                                      x2="12"
-                                      y2="16"
-                                    ></line>
-                                  </svg>
-                                  Description
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="date-info">
-                              <span class="date">Nov 22, 2024</span>
-                              <span class="time">2:30 PM</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="date-info">
-                              <span class="date">Nov 22, 2024</span>
-                              <span class="time">4:45 PM</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="category-info">
-                              <span class="category-badge">Sneakers</span>
-                              <span class="sub-category">Lifestyle</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="price-info">
-                              <span class="draft-price">$159.99</span>
-                              <span class="price-status">Not Published</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div class="action-buttons">
-                              <button
-                                class="action-button edit"
-                                aria-label="Edit Draft"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path
-                                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                                  ></path>
-                                  <path
-                                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                                  ></path>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button publish"
-                                aria-label="Publish Draft"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path d="M12 20V10"></path>
-                                  <path d="M18 14l-6-6-6 6"></path>
-                                </svg>
-                              </button>
-                              <button
-                                class="action-button delete"
-                                aria-label="Delete Draft"
-                              >
-                                <svg
-                                  class="action-icon"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                >
-                                  <path d="M3 6h18"></path>
-                                  <path
-                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                                  ></path>
-                                </svg>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                        <!-- Populated by products.js loadProductsTab() -- renderProductTableSkeletons() fills this in before the real fetch resolves -->
                       </tbody>
                     </table>
                   </div>
@@ -3544,11 +3131,11 @@
                   <h2 class="total-orders-heading">Total Orders</h2>
                   <div class="total-orders-info">
                     <div class="trend-indicator">
-                      <strong class="stat-number">1,234</strong>
+                      <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:50px; height:1em;"></span></strong>
                       <div class="trend-icon up">
                         <i class="fa-solid fa-arrow-trend-up"></i>
                       </div>
-                      <span class="trend-status up">+10.5%</span>
+                      <span class="trend-status up"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
                     </div>
                   </div>
                   <p class="default-paragraph">Compared to last month</p>
@@ -3557,12 +3144,12 @@
                 <article id="total-revenue" class="orders-wrapper">
                   <h2 class="revenue-heading">Total Revenue</h2>
                   <div class="total-revenue-info">
-                    <strong class="stat-number">$123.45</strong>
+                    <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:70px; height:1em;"></span></strong>
                     <div class="trend-indicator">
                       <div class="trend-icon up">
                         <i class="fa-solid fa-arrow-trend-up"></i>
                       </div>
-                      <span class="trend-status up">+10.5%</span>
+                      <span class="trend-status up"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
                     </div>
                   </div>
                   <p class="default-paragraph">last month</p>
@@ -3571,12 +3158,12 @@
                 <article id="average-order-value" class="orders-wrapper">
                   <h2 class="average-orders-heading">Average Order Value</h2>
                   <div class="average-orders-info">
-                    <strong class="stat-number">$123.45</strong>
+                    <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:70px; height:1em;"></span></strong>
                     <div class="trend-indicator">
                       <div class="trend-icon up">
                         <i class="fa-solid fa-arrow-trend-up"></i>
                       </div>
-                      <span class="trend-status up">+10.5%</span>
+                      <span class="trend-status up"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
                     </div>
                   </div>
                   <p class="default-paragraph">last month</p>
@@ -3584,12 +3171,12 @@
                 <article id="pending-orders" class="orders-wrapper">
                   <h2 class="pending-orders-heading">Pending Orders</h2>
                   <div class="pending-orders-info">
-                    <strong class="stat-number">23</strong>
+                    <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:30px; height:1em;"></span></strong>
                     <div class="trend-indicator">
                       <div class="trend-icon down">
                         <i class="fa-solid fa-arrow-trend-down"></i>
                       </div>
-                      <span class="trend-status down">-5</span>
+                      <span class="trend-status down"><span class="skeleton" style="display:inline-block; width:30px; height:0.9em;"></span></span>
                     </div>
                   </div>
                   <p class="default-paragraph">Compared to last month</p>
@@ -3652,53 +3239,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="product-row">
-                      <td>
-                        <div class="product-info">
-                          <div class="product-details">
-                            <p class="product-id">Draft ID: #DFT-2024112</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="date-info">
-                          <span class="date">Nov 22, 2024</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="customer-info">
-                          <span class="customer-name">John Doe</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="items-info">
-                          <span class="items">2</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="total-info">
-                          <span class="total">$159.99</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="status-info">
-                          <span class="status-badge pending">Pending</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="payment-info">
-                          <span class="payment-method">Credit Card</span>
-                          <span class="payment-status">Not Paid</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="action-buttons">
-                          <button class="action-button view">
-                            View Details
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    <!-- Populated by orders.js loadOrdersTab() -- renderOrderSkeletons() fills this in before the real fetch resolves -->
                   </tbody>
                 </table>
               </div>
@@ -3823,10 +3364,10 @@
                     <i class="fa-solid fa-dollar-sign"></i>
                   </div>
                   <div class="metric-value">
-                    <h1>$123.45</h1>
+                    <h1><span class="skeleton" style="display:inline-block; width:80px; height:1em;"></span></h1>
                     <span class="metric-trend">
                       <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status">+10.5%</span>
+                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
                     </span>
                   </div>
                   <p class="default-paragraph metric-subtitle">last month</p>
@@ -3838,10 +3379,10 @@
                     <i class="fa-solid fa-cart-shopping"></i>
                   </div>
                   <div class="metric-value">
-                    <h1>1,234</h1>
+                    <h1><span class="skeleton" style="display:inline-block; width:60px; height:1em;"></span></h1>
                     <span class="metric-trend">
                       <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status">+10.5%</span>
+                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
                     </span>
                   </div>
                   <p class="default-paragraph metric-subtitle">last month</p>
@@ -3853,10 +3394,10 @@
                     <i class="fa-solid fa-dollar-sign"></i>
                   </div>
                   <div class="metric-value">
-                    <h1>$123.45</h1>
+                    <h1><span class="skeleton" style="display:inline-block; width:80px; height:1em;"></span></h1>
                     <span class="metric-trend">
                       <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status">+10.5%</span>
+                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
                     </span>
                   </div>
                   <p class="default-paragraph metric-subtitle">last month</p>
@@ -3868,10 +3409,10 @@
                     <i class="fa-solid fa-user"></i>
                   </div>
                   <div class="metric-value">
-                    <h1>123</h1>
+                    <h1><span class="skeleton" style="display:inline-block; width:50px; height:1em;"></span></h1>
                     <span class="metric-trend">
                       <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status">+10.5%</span>
+                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
                     </span>
                   </div>
                   <p class="default-paragraph metric-subtitle">last month</p>
@@ -3978,7 +3519,7 @@
                   <h4>Wallet Balance</h4>
                   <span class="update-status" id="update-status">
                     <i class="fa-solid fa-clock"></i>
-                    Last updated 12 hours ago
+                    <span class="skeleton" style="display:inline-block; width:120px; height:0.9em;"></span>
                   </span>
                 </div>
 
@@ -3998,7 +3539,7 @@
 
                 <!-- Balance display-->
                 <div class="balance-wrapper">
-                  <h1 id="act-wallet-balance">$0.00</h1>
+                  <h1 id="act-wallet-balance"><span class="skeleton" style="display:inline-block; width:110px; height:1em;"></span></h1>
                   <p class="balance-label">Available balance</p>
                 </div>
 
@@ -4018,13 +3559,13 @@
                   <div class="wallet-activity">
                     <p class="default-paragraph">Monthly Activity</p>
                     <p class="default-paragraph font-600" id="monthly-activity">
-                      $150.00
+                      <span class="skeleton" style="display:inline-block; width:70px; height:0.9em;"></span>
                     </p>
                   </div>
                   <div class="pending-activity">
                     <p class="default-paragraph">Pending</p>
                     <p class="default-paragraph font-600" id="pending-balance">
-                      $100.00
+                      <span class="skeleton" style="display:inline-block; width:70px; height:0.9em;"></span>
                     </p>
                   </div>
                 </div>
@@ -4034,7 +3575,7 @@
             <div class="inner-wrapper" id="payouts">
               <div id="payouts-container">
                 <h4>Upcoming Payouts</h4>
-                <h1 id="upcoming-payouts">$492.48</h1>
+                <h1 id="upcoming-payouts"><span class="skeleton" style="display:inline-block; width:110px; height:1em;"></span></h1>
                 <p class="default-paragraph">Collected from order(s)</p>
               </div>
               <!--  Payout Filters -->
@@ -4107,20 +3648,20 @@
                     <div class="total-amount">
                       <p class="default-paragraph">Total Amount</p>
                       <p class="default-paragraph" id="totalPayoutAmount">
-                        $492.48
+                        <span class="skeleton" style="display:inline-block; width:80px; height:0.9em;"></span>
                       </p>
                     </div>
                     <div class="completed-payouts">
                       <p class="default-paragraph">Completed</p>
-                      <p class="default-paragraph" id="completed-payouts">2</p>
+                      <p class="default-paragraph" id="completed-payouts"><span class="skeleton" style="display:inline-block; width:20px; height:0.9em;"></span></p>
                     </div>
                     <div class="pending-payouts">
                       <p class="default-paragraph">Pending</p>
-                      <p class="default-paragraph" id="pending-payouts">1</p>
+                      <p class="default-paragraph" id="pending-payouts"><span class="skeleton" style="display:inline-block; width:20px; height:0.9em;"></span></p>
                     </div>
                     <div class="processing-payouts">
                       <p class="default-paragraph">Processing</p>
-                      <p class="default-paragraph" id="processing-payouts">1</p>
+                      <p class="default-paragraph" id="processing-payouts"><span class="skeleton" style="display:inline-block; width:20px; height:0.9em;"></span></p>
                     </div>
                   </div>
                   <div class="filter-payouts">
@@ -4170,24 +3711,7 @@
                     </div>
                   </div>
                   <div class="filter-payout-list">
-                    <div class="filter-payout-item">
-                      <p class="default-paragraph" id="order-date">
-                        03/01/2024
-                      </p>
-                      <p class="default-paragraph" id="order-id">
-                        Order #1234567890
-                      </p>
-                      <p class="default-paragraph" id="order-processingDate">
-                        Sale
-                      </p>
-                      <p class="default-paragraph" id="order-amount">$123.45</p>
-                      <div class="status-wrapper">
-                        <p class="default-paragraph" id="order-status">
-                          Completed
-                        </p>
-                      </div>
-                      <p class="default-paragraph">-</p>
-                    </div>
+                    <!-- Populated by payouts.js -- cleared via innerHTML = "" and rebuilt before this is ever visible -->
                   </div>
                   <div class="payouts-tooltip">
                     <div class="tooltip-wrapper">
