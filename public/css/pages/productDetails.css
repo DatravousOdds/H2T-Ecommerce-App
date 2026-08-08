@@ -68,6 +68,38 @@
 .single-pro-image {
     flex: 1 1 50%;
     min-width: 0;
+    position: relative;
+}
+
+.img-slider-arrow {
+    position: absolute;
+    top: calc(50% - 1.25rem);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.85);
+    color: #000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease-in-out;
+    z-index: 2;
+}
+
+.img-slider-arrow:hover {
+    background: #fff;
+    transform: scale(1.08);
+}
+
+.img-slider-prev {
+    left: 0.75rem;
+}
+
+.img-slider-next {
+    right: 0.75rem;
 }
 
 /* Skeleton loading state -- hidden by default, swapped in for the real

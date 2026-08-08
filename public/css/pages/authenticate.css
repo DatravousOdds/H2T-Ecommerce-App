@@ -1204,6 +1204,26 @@ select {
   gap: var(--spacing-sm);
 }
 
+/* Sneakers' Model field -- shown/hidden (not just its option list emptied)
+   depending on whether the selected brand has any models, per
+   initSneakerModelPicker() in authenticate.js. max-height is the standard
+   trick for animating a collapse/expand since height:auto can't be
+   transitioned directly; 400px comfortably covers label + search box +
+   .brand-option-list's own 260px cap. */
+.model-field-transition {
+  overflow: hidden;
+  max-height: 400px;
+  opacity: 1;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+}
+
+.model-field-transition.model-field-hidden {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
 .brand-search-wrapper {
   position: relative;
   display: flex;

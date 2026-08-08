@@ -29,6 +29,13 @@ const shippingNote = document.getElementById('shippingNote');
 const prodMeta = document.getElementById('prodMeta');
 const mainImage = document.getElementById('MainImg');
 const smallImagesGroup = document.querySelector('.s-img-group');
+const prevImgBtn = document.getElementById('prevImgBtn');
+const nextImgBtn = document.getElementById('nextImgBtn');
+
+// Populated by displayProductDetails() -- shared by the arrow buttons,
+// thumbnail clicks, and touch swipe so they all move the same slider state.
+let currentImages = [];
+let currentImageIndex = 0;
 
 // Scoped past .s_prod_details:not(.skeleton-item) -- the skeleton placeholder
 // reuses the same .sizes class for layout, so a bare '.sizes' selector would
@@ -147,6 +154,25 @@ buyBtn.addEventListener('click', async () => {
 // Keep the button in sync when the cart changes elsewhere (drawer delete,
 // bag page delete) -- both dispatch 'cartUpdated' from removeFromCart().
 window.addEventListener('cartUpdated', setAddToCartButtonState);
+
+prevImgBtn.addEventListener('click', () => showImage(currentImageIndex - 1));
+nextImgBtn.addEventListener('click', () => showImage(currentImageIndex + 1));
+
+// Touch swipe: only the horizontal delta matters, and it has to clear a
+// minimum distance so a vertical scroll/tap on the image isn't mistaken
+// for a swipe.
+const SWIPE_THRESHOLD_PX = 40;
+let touchStartX = 0;
+
+mainImage.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+}, { passive: true });
+
+mainImage.addEventListener('touchend', (e) => {
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD_PX) return;
+    showImage(deltaX < 0 ? currentImageIndex + 1 : currentImageIndex - 1);
+}, { passive: true });
 
 /* ==== ASYNC FUNCTIONS ===== */
 
@@ -286,6 +312,14 @@ async function displayReviews() {
     }
 }
 
+// Wraps the index so prev/next loop around both ends of the array instead
+// of dead-ending at the first/last image.
+function showImage(index) {
+    if (!currentImages.length) return;
+    currentImageIndex = (index + currentImages.length) % currentImages.length;
+    mainImage.src = currentImages[currentImageIndex].url;
+}
+
 async function displayProductDetails() {
     productDetailsWrapper.classList.add('is-loading');
     try {
@@ -352,21 +386,24 @@ async function displayProductDetails() {
 
         const productMainImage = data.images.find(image => image.isPrimary === true) || data.images[0];
 
-        mainImage.src = productMainImage.url;
+        currentImages = data.images;
+        showImage(currentImages.indexOf(productMainImage));
+
+        // Single-image listings have nothing to slide between.
+        const hasMultipleImages = currentImages.length > 1;
+        prevImgBtn.style.display = hasMultipleImages ? '' : 'none';
+        nextImgBtn.style.display = hasMultipleImages ? '' : 'none';
 
         smallImagesGroup.innerHTML = "";
 
-        data.images.forEach(image => {
-            console.log("image:", image)
+        data.images.forEach((image, index) => {
             const div = document.createElement("div");
             div.classList.add("s-img-col");
 
             const img = document.createElement('img');
             img.classList.add('s-img');
             img.src = image.url;
-            img.addEventListener('click', () => {
-                mainImage.src = image.url;
-            });
+            img.addEventListener('click', () => showImage(index));
 
             div.append(img);
             smallImagesGroup.append(div);

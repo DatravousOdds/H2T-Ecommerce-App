@@ -50,7 +50,79 @@ const handleTabs = () => {
 // ============================================
 // SHARED NAV STRUCTURE - Used by both states
 // ============================================
-const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthContent) => `
+// The five items below used to be hardcoded directly into the slide-menu
+// markup after the auth-specific content. Pulling them into named fragments
+// lets each nav state (logged out / logged in / admin) assemble its own
+// item order instead of always getting Home/Shop/Services/Sell/Help stuck
+// at the end in a fixed sequence -- see LoggedInNav's admin ordering below.
+const mobileHomeItem = `
+  <li>
+    <a href="/" class="menu-item">
+      <i class="fa-solid fa-home"></i>
+      <span>Home</span>
+    </a>
+  </li>
+`;
+
+const mobileShopItem = `
+  <li class="menu-dropdown">
+    <button class="menu-item dropdown-trigger">
+      <i class="fa-solid fa-shopping-bag"></i>
+      <span>Shop</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    <ul class="submenu">
+      <li><a href="/mens">Men</a></li>
+      <li><a href="/women">Women</a></li>
+      <li><a href="/collectibles">Collectibles</a></li>
+      <li><a href="/accessories">Accessories</a></li>
+      <li><a href="/releases">Releases</a></li>
+    </ul>
+  </li>
+`;
+
+const mobileServicesItem = `
+  <li class="menu-dropdown">
+    <button class="menu-item dropdown-trigger">
+      <i class="fa-solid fa-screwdriver"></i>
+      <span>Services</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    <ul class="submenu">
+      <li><a href="/authenticate">Authentication</a></li>
+      <li>
+        <a class="is-disabled" aria-disabled="true">
+          Trade-in <span class="coming-soon-badge">Coming Soon</span>
+        </a>
+      </li>
+      <li>
+        <a class="is-disabled" aria-disabled="true">
+          Sell to Us <span class="coming-soon-badge">Coming Soon</span>
+        </a>
+      </li>
+    </ul>
+  </li>
+`;
+
+const mobileSellItem = `
+  <li>
+    <a href="/seller" class="menu-item">
+      <i class="fa-solid fa-store"></i>
+      <span>Sell</span>
+    </a>
+  </li>
+`;
+
+const mobileHelpItem = `
+  <li>
+    <a href="/help" class="menu-item">
+      <i class="fa-solid fa-question"></i>
+      <span>Help</span>
+    </a>
+  </li>
+`;
+
+const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuContent) => `
   <nav class="navbar" aria-label="main navigation">
     <!-- Left section with search and logo -->
     
@@ -155,61 +227,8 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileAuthConten
         </div>
         
         <ul class="slide-menu-list">
-          <!-- MOBILE AUTH CONTENT -->
-          ${mobileAuthContent}
-          
-          <li>
-            <a href="/" class="menu-item">
-              <i class="fa-solid fa-home"></i>
-              <span>Home</span>
-            </a>
-          </li>
-          <li class="menu-dropdown">
-            <button class="menu-item dropdown-trigger">
-              <i class="fa-solid fa-shopping-bag"></i>
-              <span>Shop</span>
-              <i class="fa-solid fa-chevron-right"></i>
-            </button>
-            <ul class="submenu">
-              <li><a href="/mens">Men</a></li>
-              <li><a href="/women">Women</a></li>
-              <li><a href="/collectibles">Collectibles</a></li>
-              <li><a href="/accessories">Accessories</a></li>
-              <li><a href="/releases">Releases</a></li>
-            </ul>
-          </li>
-          <li class="menu-dropdown">
-            <button class="menu-item dropdown-trigger">
-              <i class="fa-solid fa-screwdriver"></i>
-              <span>Services</span>
-              <i class="fa-solid fa-chevron-right"></i>
-            </button>
-            <ul class="submenu">
-              <li><a href="/authenticate">Authentication</a></li>
-              <li>
-                <a class="is-disabled" aria-disabled="true">
-                  Trade-in <span class="coming-soon-badge">Coming Soon</span>
-                </a>
-              </li>
-              <li>
-                <a class="is-disabled" aria-disabled="true">
-                  Sell to Us <span class="coming-soon-badge">Coming Soon</span>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <a href="/seller" class="menu-item">
-              <i class="fa-solid fa-store"></i>
-              <span>Sell</span>
-            </a>
-          </li>
-          <li>
-            <a href="/help" class="menu-item">
-              <i class="fa-solid fa-question"></i>
-              <span>Help</span>
-            </a>
-          </li>
+          <!-- MOBILE MENU CONTENT (order varies by auth/admin state -- see LoggedOutNav/LoggedInNav) -->
+          ${mobileMenuContent}
         </ul>
       </div>
     </div>
@@ -266,6 +285,11 @@ const LoggedOutNav = () => ({
         <span>Login</span>
       </a>
     </li>
+    ${mobileHomeItem}
+    ${mobileShopItem}
+    ${mobileServicesItem}
+    ${mobileSellItem}
+    ${mobileHelpItem}
   `
 });
 
@@ -359,50 +383,83 @@ const LoggedInNav = (user) => ({
       </div>
     </li>
   `,
-  mobile: `
-    <li class="menu-dropdown">
-      <button class="menu-item dropdown-trigger">
-        <i class="fa-solid fa-user"></i>
-        <span>Profile</span>
-        <i class="fa-solid fa-chevron-right"></i>
-      </button>
-      <ul class="submenu">
-        <li><a data-section="profile" href="/profile?tab=profile">Profile</a></li>
-        <li><a data-section="payment-information" href="/profile?tab=payment-information">Payment Information</a></li>
-        <li><a data-section="selling" href="/profile?tab=selling">Seller Dashboard</a></li>
-        <li><a data-section="favorites" href="/profile?tab=favorites">Favorites</a></li>
-        <li><a data-section="notification" href="/profile?tab=notification">Notifications</a></li>
-        <li><a data-section="purchases" href="/profile?tab=purchases">Purchases</a></li>
-        <li><a data-section="settings" href="/profile?tab=settings">Settings</a></li>
-      </ul>
-    </li>
-    ${user.isAdmin ? `
-    <li>
-      <a href="/admin/authentication-review.html" class="menu-item">
-        <i class="fa-solid fa-user-shield"></i>
-        <span>Authentication Review</span>
-      </a>
-    </li>
-    <li>
-      <a href="/admin/delivery-confirmation-review.html" class="menu-item">
-        <i class="fa-solid fa-truck-ramp-box"></i>
-        <span>Delivery Confirmation Review</span>
-      </a>
-    </li>
-    <li>
-      <a href="/admin/order-authentication-review.html" class="menu-item">
-        <i class="fa-solid fa-magnifying-glass-chart"></i>
-        <span>Order Authentication Review</span>
-      </a>
-    </li>
-    ` : ""}
-    <li>
-      <a href="#" class="menu-item" id="mobileLogoutLink">
-        <i class="fa-solid fa-sign-in-alt"></i>
-        <span>Logout</span>
-      </a>
-    </li>
-  `
+  mobile: (() => {
+    const profileDropdown = `
+      <li class="menu-dropdown">
+        <button class="menu-item dropdown-trigger">
+          <i class="fa-solid fa-user"></i>
+          <span>Profile</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <ul class="submenu">
+          <li><a data-section="profile" href="/profile?tab=profile">Profile</a></li>
+          <li><a data-section="payment-information" href="/profile?tab=payment-information">Payment Information</a></li>
+          <li><a data-section="selling" href="/profile?tab=selling">Seller Dashboard</a></li>
+          <li><a data-section="favorites" href="/profile?tab=favorites">Favorites</a></li>
+          <li><a data-section="notification" href="/profile?tab=notification">Notifications</a></li>
+          <li><a data-section="purchases" href="/profile?tab=purchases">Purchases</a></li>
+          <li><a data-section="settings" href="/profile?tab=settings">Settings</a></li>
+        </ul>
+      </li>
+    `;
+
+    const adminItems = `
+      <li>
+        <a href="/admin/authentication-review.html" class="menu-item">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Authentication Review</span>
+        </a>
+      </li>
+      <li>
+        <a href="/admin/delivery-confirmation-review.html" class="menu-item">
+          <i class="fa-solid fa-truck-ramp-box"></i>
+          <span>Delivery Confirmation Review</span>
+        </a>
+      </li>
+      <li>
+        <a href="/admin/order-authentication-review.html" class="menu-item">
+          <i class="fa-solid fa-magnifying-glass-chart"></i>
+          <span>Order Authentication Review</span>
+        </a>
+      </li>
+    `;
+
+    const logoutItem = `
+      <li>
+        <a href="#" class="menu-item" id="mobileLogoutLink">
+          <i class="fa-solid fa-sign-in-alt"></i>
+          <span>Logout</span>
+        </a>
+      </li>
+    `;
+
+    // Admins get a purpose-built order (Shop/Sell/Services grouped up top,
+    // the three review queues together, Profile pushed down) instead of the
+    // regular Profile-first layout -- requested explicitly so admin's daily
+    // review workflow isn't buried under account-settings links.
+    if (user.isAdmin) {
+      return `
+        ${mobileHomeItem}
+        ${mobileShopItem}
+        ${mobileSellItem}
+        ${mobileServicesItem}
+        ${adminItems}
+        ${profileDropdown}
+        ${mobileHelpItem}
+        ${logoutItem}
+      `;
+    }
+
+    return `
+      ${profileDropdown}
+      ${logoutItem}
+      ${mobileHomeItem}
+      ${mobileShopItem}
+      ${mobileServicesItem}
+      ${mobileSellItem}
+      ${mobileHelpItem}
+    `;
+  })()
 });
 
 // ============================================

@@ -47,6 +47,9 @@
 
 body {
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: "Oswald", sans-serif !important;
   overflow-x: hidden;
 }
@@ -1888,7 +1891,7 @@ button.white {
 
 
 .category-shop {
-  width: 400px;
+  width: 100%;
   height: 200px;
   padding: 1rem;
   border-radius: 8px;
@@ -1934,6 +1937,7 @@ button.white {
 
 footer {
   margin: 1rem 2rem;
+  margin-top: auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;

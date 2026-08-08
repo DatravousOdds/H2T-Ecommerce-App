@@ -109,10 +109,10 @@ const validationRules = {
       'Sneakers':
       [
         {id: 'sneaker-brand', name: 'Brand', required: true },
-        // Not required yet -- SNEAKER_MODELS_BY_BRAND is empty for every
-        // brand today, so the model picker has nothing to select. Flip to
-        // required: true once real per-brand model lists are added.
-        {id: 'sneaker-model', name: 'Model', required: false },
+        // Only required when the selected brand actually has a closed model
+        // list (SNEAKER_MODELS_BY_BRAND) -- e.g. required once Jordan is
+        // picked, but skippable for a brand with no model list defined yet.
+        {id: 'sneaker-model', name: 'Model', required: () => !!SNEAKER_MODELS_BY_BRAND[document.getElementById('sneaker-brand')?.value] },
       ],
       'Bags & Leather Goods':
       [
@@ -123,8 +123,9 @@ const validationRules = {
 
         // Other details -- bags-model resolves to whichever element currently
         // carries that id (free-text or the Hermès dropdown), swapped by
-        // initBagsBrandModelToggle() based on the selected brand.
-        {id: 'bags-model', name: 'Model', required: false },
+        // initBagsBrandModelToggle() based on the selected brand. Only
+        // required when Hermès's closed model list is what's showing.
+        {id: 'bags-model', name: 'Model', required: () => document.getElementById('bags-brand')?.value === 'Hermès' },
         {id: 'bags-color', name: 'Color', required: false },
         {id: 'bags-size', name: 'Size', required: false },
       ],
@@ -196,6 +197,18 @@ const SNEAKER_MODELS_BY_BRAND = {
     "Jordan 1", "Jordan 2", "Jordan 3", "Jordan 4", "Jordan 5", "Jordan 6",
     "Jordan 7", "Jordan 8", "Jordan 9", "Jordan 10", "Jordan 11", "Jordan 12",
     "Jordan 13", "Jordan 14", "Jordan 15", "Jordan 1 Low", "Other"
+  ],
+  "Converse": ["Chuck 1970s", "Other"],
+  "Asics": ["Gel-1130", "Gel-NYC", "Gel-Kayano", "Other"],
+  "Adidas": [
+    "Samba", "Handball", "Campus", "Gazelle", "Taekwondo", "SL 72", "Superstar",
+    "Adizero", "Fear of God", "AE 1", "Harden", "Forum", "Stan Smith", "NMD",
+    "Ultra Boost", "Tobacco", "Country", "Bermuda", "Italia SPZL", "SL83 SPZL",
+    "Response CL", "Human Race", "Ozweego", "Manchester", "Wimberly SPZL",
+    "Helvellyn SPZL", "adiFOM", "D.O.N.", "Dame", "Mad liinfinity", "XLG Runner",
+    "Orketro Bape", "Palos Hills", "Radlander", "Nite Jogger", "Iniki", "EQT",
+    "Ivy Park", "Raf Simons", "Basketball", "Running", "Skateboarding", "Soccer",
+    "Other"
   ]
 };
 
@@ -477,11 +490,12 @@ function initSneakerBrandPicker() {
 // brand today -- renders the "No matches found" empty state until per-brand
 // model lists are added there.
 function initSneakerModelPicker() {
+  const fieldWrapper = document.getElementById('sneaker-model-field');
   const searchInput = document.getElementById('sneaker-model-search');
   const optionList = document.getElementById('sneaker-model-options');
   const hiddenInput = document.getElementById('sneaker-model');
   const brandHiddenInput = document.getElementById('sneaker-brand');
-  if (!searchInput || !optionList || !hiddenInput || !brandHiddenInput) return;
+  if (!fieldWrapper || !searchInput || !optionList || !hiddenInput || !brandHiddenInput) return;
 
   function currentModels() {
     return SNEAKER_MODELS_BY_BRAND[brandHiddenInput.value] || [];
@@ -505,11 +519,16 @@ function initSneakerModelPicker() {
 
   // A brand change invalidates whatever model was picked for the previous
   // brand -- clears the field rather than leaving a stale model attached to
-  // a different brand.
+  // a different brand. Also shows/hides the whole field (not just an empty
+  // option list) depending on whether this brand has any models at all,
+  // via the CSS transition on .model-field-hidden.
   function refreshForNewBrand() {
     hiddenInput.value = '';
     searchInput.value = '';
-    renderOptions(currentModels(), '');
+
+    const models = currentModels();
+    renderOptions(models, '');
+    fieldWrapper.classList.toggle('model-field-hidden', models.length === 0);
   }
 
   optionList.addEventListener('click', (e) => {
@@ -934,7 +953,13 @@ function validateForm(form) {
 
       const value = element.value.trim();
 
-      if(!value && rule.required) {
+      // required can be a plain boolean or a function -- the latter lets a
+      // field's required-ness depend on other form state, e.g. Sneakers'
+      // Model field only being required when the selected brand actually
+      // has a closed model list to pick from.
+      const isRequired = typeof rule.required === 'function' ? rule.required() : rule.required;
+
+      if(!value && isRequired) {
         errors.push(`${rule.name} is required`);
         element.classList.add('error');
         return;

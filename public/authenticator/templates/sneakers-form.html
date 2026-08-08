@@ -26,17 +26,17 @@
                 <input type="hidden" id="sneaker-brand" name="brand" />
               </div>
 
-              <div class="form-input">
+              <!-- Hidden entirely (not just an empty option list) when the selected
+                   brand has no entry in SNEAKER_MODELS_BY_BRAND -- toggled with a
+                   smooth transition by initSneakerModelPicker() in authenticate.js. -->
+              <div class="form-input model-field-transition model-field-hidden" id="sneaker-model-field">
                 <label id="sneaker-model-picker-label" for="sneaker-model-search">Choose a model</label>
 
                 <!-- Same button+search widget as the brand picker above, but as a
                      standalone second field rather than a drill-down within Brand --
                      Brand stays captured in #sneaker-brand regardless of what's picked
                      here. Options come from SNEAKER_MODELS_BY_BRAND[currently selected
-                     brand], which is empty for every brand today, so this renders an
-                     empty state until per-brand model lists are added. Not marked
-                     required for that reason -- see initSneakerModelPicker() in
-                     authenticate.js. -->
+                     brand]. -->
                 <div class="brand-picker" id="sneaker-model-picker">
                   <div class="brand-search-wrapper">
                     <i class="fa-solid fa-magnifying-glass"></i>
