@@ -1317,9 +1317,10 @@
                   </header>
 
                   <p class="stat-value" id="product-sold-value"><span class="skeleton" style="display:inline-block; width:60px; height:1.1em;"></span></p>
-                  <p class="trend-indicator trend-neutral" id="products-sold-trend">
-                    <span class="skeleton" style="display:inline-block; width:150px; height:0.9em;"></span>
-                  </p>
+                  <!-- Never set by overview.js -- fetchProductsSold's status=='sold' query is always 0
+                       by architecture (nothing in the app writes that status yet), so there's no real
+                       trend to show. Hidden rather than faked, same convention as the Rating stat above. -->
+                  <p class="trend-indicator trend-neutral" id="products-sold-trend" style="display: none"></p>
                 </article>
                 <!-- HIDDEN FOR MVP: no rating data source exists yet (reviews deferred) -->
                 <!--

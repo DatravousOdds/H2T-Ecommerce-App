@@ -23,13 +23,6 @@ const payNowBtn = document.getElementById('payNowBtn');
 const categories = document.getElementById('categories');
 const dynamicFormContainer = document.getElementById('dynamic-form-container');
 let categorySelected;
-// product sku search
-const productSkuInput = document.getElementById('productSku');
-const skuSearchGroup = document.getElementById('skuSearchGroup');
-const SKU_DEBOUNCE_MS = 250;
-const SKU_MAX_RESULTS = 8;
-let cachedActiveListings = null;
-let skuDebounceTimer = null;
 
 const uploadSlotByCategory = {
   "trading cards" : {
@@ -68,30 +61,6 @@ const uploadSlotByCategory = {
       { id: "logo", label: "Brand Logo Close-Up", type: "required", icon: 'fa-solid fa-camera' }
     ]
   },
-  "shoes": {
-    angles: [
-      { id: "front", label: "Front View", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "side", label: "Side Profile View", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "sole-stamp", label: "Sole Stamp / Engraving Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "insole", label: "Insole Logo / Branding", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "heel", label: "Heel View", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "stitching", label: "Stitching / Seam Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "material", label: "Material / Leather Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "size-stamp", label: "Size Stamp Close-Up", type: "required", icon: 'fa-solid fa-camera' }
-    ]
-  },
-  "accessories": {
-    angles: [
-      { id: "front", label: "Front View", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "back", label: "Back View", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "brand-mark", label: "Brand Logo / Engraving Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "serial-code", label: "Serial Number / Date Code", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "hardware", label: "Hardware Close-Up (Zippers, Clasps, or Buckles)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "stitching", label: "Stitching Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "material", label: "Material / Craftsmanship Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "interior-lining", label: "Interior Lining / Stamp", type: "required", icon: 'fa-solid fa-camera' }
-    ]
-  },
 }
 
 // cart modal actions
@@ -122,12 +91,11 @@ const validationRules = {
         {id: 'card-number', name: 'Card Number', required: false },
         {id: 'card-edition', name: 'Card Edition', required: false },
         {id: 'card-grading-company', name: 'Card Grading Company', required: false },
-        {id: 'card-additionalDetails', name: 'Additional Details', required: false },
 
       ],
       'Apparel': 
       [
-        {id: 'apparel-brand', name: 'Brand', required: true, type: 'text'},
+        {id: 'apparel-brand', name: 'Brand', required: true },
         {id: 'apparel-type', name: 'Item Type', required: true },
         {id: 'apparel-size', name: 'Size', required: true },
         {id: 'apparel-condition', name: 'Condition', required: true },
@@ -136,64 +104,105 @@ const validationRules = {
         // Other details
         {id: 'apparel-material', name: 'Material', required: false, type: 'text'},
         {id: 'apparel-style', name: 'Style', required: false, type: 'text'},
-        {id: 'apparel-additionalDetails', name: 'Additional Details', required: false, type: 'text'},
 
       ],
-      'Sneakers': 
+      'Sneakers':
       [
-        {id: 'sneaker-brand', name: 'Brand', required: true, type: 'text'},
-        {id: 'sneaker-model', name: 'Model', required: true, type: 'text'},
-        {id: 'sneaker-size', name: 'Size', required: true },
-        {id: 'sneaker-condition', name: 'Condition', required: true },
-
-        // Other details
-        {id: 'sneaker-color', name: 'Color', required: false },
-        {id: 'sneaker-year', name: 'Condition', required: false },
-        {id: 'sneaker-additionalDetails', name: 'Additonal Details', required: false },
-
-
+        {id: 'sneaker-brand', name: 'Brand', required: true },
+        // Not required yet -- SNEAKER_MODELS_BY_BRAND is empty for every
+        // brand today, so the model picker has nothing to select. Flip to
+        // required: true once real per-brand model lists are added.
+        {id: 'sneaker-model', name: 'Model', required: false },
       ],
-      'Shoes':
-      [
-        {id: 'shoes-brand', name: 'Brand', required: true, type: 'text'},
-        {id: 'shoes-model', name: 'Model', required: true, type: 'text'},
-        {id: 'shoes-type', name: 'Shoe Type', required: true },
-        {id: 'shoes-color', name: 'Color', required: true, type: 'text' },
-        {id: 'shoes-condition', name: 'Condition', required: true },
-
-        // Other details
-        {id: 'shoes-material', name: 'Material', required: false },
-        {id: 'shoes-additionalDetails', name: 'Additonal Details', required: false },
-
-      ],
-      'Accessories': 
+      'Bags & Leather Goods':
       [
         // Required fields
-        {id: 'accessories-type', name: 'Accessory Type', required: true },
-        {id: 'accessories-brand', name: 'Brand', required: true, type: 'text'},
-        {id: 'accessories-condition', name: 'Condition', required: true },
+        {id: 'bags-type', name: 'Item Type', required: true },
+        {id: 'bags-brand', name: 'Brand', required: true },
+        {id: 'bags-condition', name: 'Condition', required: true },
 
-        // Other details
-        {id: 'accessories-model', name: 'Model', required: false },
-        {id: 'accessories-color', name: 'Color', required: false },
-        {id: 'accessories-size', name: 'Size', required: false },
-        {id: 'accessories-year', name: 'Year', required: false },
-        {id: 'accessories-additionalDetails', name: 'Additional Details', required: false },
+        // Other details -- bags-model resolves to whichever element currently
+        // carries that id (free-text or the Hermès dropdown), swapped by
+        // initBagsBrandModelToggle() based on the selected brand.
+        {id: 'bags-model', name: 'Model', required: false },
+        {id: 'bags-color', name: 'Color', required: false },
+        {id: 'bags-size', name: 'Size', required: false },
+      ],
+      'Luxury Shoes':
+      [
+        // Required fields
+        {id: 'luxury-shoes-brand', name: 'Brand', required: true },
+        // luxury-shoes-model resolves to whichever element currently carries
+        // that id (free-text or the Jordan/Nike collab dropdown), swapped by
+        // initLuxuryShoesBrandModelToggle() based on the selected brand.
+        {id: 'luxury-shoes-model', name: 'Model', required: true },
+        {id: 'luxury-shoes-size', name: 'Size', required: true },
+        {id: 'luxury-shoes-color', name: 'Color', required: true },
+        {id: 'luxury-shoes-condition', name: 'Condition', required: true },
       ]
 }
 
 const forms = {
-  "Accessories": "/authenticator/templates/accessories-form.html",
   "Apparel": "/authenticator/templates/apparel-form.html",
-  "Shoes": "/authenticator/templates/shoes-form.html",
   "Sneakers": "/authenticator/templates/sneakers-form.html",
-  "Trading Cards": "/authenticator/templates/trading-card-form.html"
+  "Trading Cards": "/authenticator/templates/trading-card-form.html",
+  "Bags & Leather Goods": "/authenticator/templates/bags-form.html",
+  "Luxury Shoes": "/authenticator/templates/luxury-shoes-form.html"
 }
+
+// Only Jordan and Nike have a closed list of eligible collab styles within
+// Luxury Shoes -- every other brand in that category keeps free-text Model.
+const LUXURY_SHOES_MODELS_BY_BRAND = {
+  "Jordan": [
+    "Dior Jordan 1 Retro High",
+    "Dior Jordan 1 Retro Low",
+    "Off-White x Air Jordan 1 Retro High OG 'Chicago'",
+    "Off-White x Air Jordan 1 Retro High OG 'UNC'",
+    "Off-White x Air Jordan 1 Retro High OG 'White'"
+  ],
+  "Nike": [
+    "Air Yeezy 'Blink'",
+    "Air Yeezy 'Net'",
+    "Air Yeezy 'Zen'",
+    "Air Yeezy 2 NRG 'Pure Platinum'",
+    "Air Yeezy 2 NRG 'Solar Red'",
+    "Air Yeezy 2 SP 'Red October'",
+    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White",
+    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Black",
+    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Black Metallic Silver",
+    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Metallic Gold",
+    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Green",
+    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Red",
+    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Royal",
+    "NikeCraft Mars Yard Shoe 1.0",
+    "NikeCraft Mars Yard Shoe 2.0"
+  ]
+};
+
+// Closed list -- these are the only brands Hexxo currently authenticates
+// sneakers for. Rendered as buttons by initSneakerBrandPicker() rather than
+// a native <select>, per the searchable brand-picker design.
+const SNEAKER_BRANDS = [
+  "Adidas", "Asics", "Converse", "Hoka", "Jordan", "New Balance", "Nike",
+  "On", "Reebok", "Salomon", "Saucony", "Vans", "Veja"
+];
+
+// Per-brand closed model lists for the standalone Model picker
+// (initSneakerModelPicker) -- empty for a brand just means that picker shows
+// its "No matches found" empty state until a list is added here, same as
+// every other brand today.
+const SNEAKER_MODELS_BY_BRAND = {
+  "Jordan": [
+    "Jordan 1", "Jordan 2", "Jordan 3", "Jordan 4", "Jordan 5", "Jordan 6",
+    "Jordan 7", "Jordan 8", "Jordan 9", "Jordan 10", "Jordan 11", "Jordan 12",
+    "Jordan 13", "Jordan 14", "Jordan 15", "Jordan 1 Low", "Other"
+  ]
+};
 
 let formData = {
   images: [],
   productDetails: {},
-  productSku: '',
+  additionalComments: '',
   tierSelection: ''
 }
 
@@ -327,129 +336,205 @@ imageInputs.forEach((input) => {
   
 });
 
-async function fetchActiveListingsForSkuSearch() {
-  if (cachedActiveListings) return cachedActiveListings;
+// Bags & Leather Goods only: Hermès models are a closed, well-known list, so
+// swap the free-text Model input for a constrained dropdown when Hermès is
+// selected -- every other brand keeps free text since there's no equivalent
+// closed list for them. Both elements share the name="model" attribute, but
+// only one at a time carries id="bags-model" so collectProductData/
+// validateForm's generic getElementById(rule.id) lookup keeps working
+// unmodified regardless of which variant is showing.
+function initBagsBrandModelToggle() {
+  const brandSelect = document.getElementById('bags-brand');
+  const modelText = document.getElementById('bags-model');
+  const modelHermes = document.getElementById('bags-model-hermes');
+  if (!brandSelect || !modelText || !modelHermes) return;
 
-  const listingsRef = collection(db, 'listings');
-  const q = query(listingsRef, where('status', '==', 'active'));
-  const snapshot = await getDocs(q);
+  const syncModelField = () => {
+    const isHermes = brandSelect.value === 'Hermès';
 
-  cachedActiveListings = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-  return cachedActiveListings;
+    if (isHermes) {
+      modelText.style.display = 'none';
+      modelText.removeAttribute('id');
+      modelHermes.style.display = '';
+      modelHermes.id = 'bags-model';
+    } else {
+      modelHermes.style.display = 'none';
+      modelHermes.removeAttribute('id');
+      modelText.style.display = '';
+      modelText.id = 'bags-model';
+    }
+  };
+
+  brandSelect.addEventListener('change', syncModelField);
+  syncModelField();
 }
 
-function matchesSku(listing, term) {
-  return (listing.sku || '').toLowerCase().includes(term.toLowerCase());
+// Luxury Shoes only: Jordan and Nike each have their own closed list of
+// eligible collab styles (see LUXURY_SHOES_MODELS_BY_BRAND above) -- every
+// other brand in this category keeps free-text Model, same reasoning as
+// Hermès in Bags. Unlike the Bags toggle, the dropdown's options are rebuilt
+// per-brand here since two different brands each need their own list rather
+// than one fixed list.
+function initLuxuryShoesBrandModelToggle() {
+  const brandSelect = document.getElementById('luxury-shoes-brand');
+  const modelText = document.getElementById('luxury-shoes-model');
+  const modelSelect = document.getElementById('luxury-shoes-model-select');
+  if (!brandSelect || !modelText || !modelSelect) return;
+
+  const syncModelField = () => {
+    const models = LUXURY_SHOES_MODELS_BY_BRAND[brandSelect.value];
+
+    if (models) {
+      modelSelect.innerHTML = '<option value="">Select model...</option>' +
+        models.map(model => `<option value="${model}">${model}</option>`).join('');
+
+      modelText.style.display = 'none';
+      modelText.removeAttribute('id');
+      modelSelect.style.display = '';
+      modelSelect.id = 'luxury-shoes-model';
+    } else {
+      modelSelect.style.display = 'none';
+      modelSelect.removeAttribute('id');
+      modelText.style.display = '';
+      modelText.id = 'luxury-shoes-model';
+    }
+  };
+
+  brandSelect.addEventListener('change', syncModelField);
+  syncModelField();
 }
 
-function skuResultRowHTML(listing) {
-  const imageUrl = listing.images?.[0]?.url || '/images/HypebeastBG.jpeg';
+// Sneakers' brand field is a custom searchable button-picker rather than a
+// native <select> (matches the Figma "Frame 10" mockup). Single step only --
+// Model is a separate standalone picker below it (initSneakerModelPicker),
+// not a drill-down within this widget. Whichever brand is clicked is
+// written into the #sneaker-brand hidden input, so collectProductData/
+// validateForm/draft save-restore all keep working unmodified via their
+// existing getElementById('sneaker-brand') lookup.
+function initSneakerBrandPicker() {
+  const searchInput = document.getElementById('sneaker-brand-search');
+  const optionList = document.getElementById('sneaker-brand-options');
+  const hiddenInput = document.getElementById('sneaker-brand');
+  if (!searchInput || !optionList || !hiddenInput) return;
 
-  return `
-    <div class="search-result-item" data-sku="${listing.sku}">
-      <img src="${imageUrl}" alt="${listing.productName || ''}" class="search-result-image" loading="lazy" />
-      <div class="search-result-info">
-        <p class="search-result-name">${listing.productName || 'Untitled listing'}</p>
-        <p class="search-result-meta">SKU: ${listing.sku}</p>
-      </div>
-    </div>
-  `;
-}
-
-const skuResultsPanel = document.createElement('div');
-skuResultsPanel.className = 'search-results-panel';
-skuSearchGroup.appendChild(skuResultsPanel);
-
-function renderSkuResults(results, term) {
-  if (!term) {
-    skuResultsPanel.innerHTML = '';
-    skuResultsPanel.classList.remove('active');
-    return;
+  function renderOptions(names, selectedValue) {
+    optionList.innerHTML = names.map(name => `
+      <button type="button" class="brand-option${name === selectedValue ? ' selected' : ''}" data-value="${name}">
+        ${name}
+      </button>
+    `).join('') || `<p class="brand-option-empty">No matches found.</p>`;
   }
 
-  if (results.length === 0) {
-    skuResultsPanel.innerHTML = `<p class="search-no-results">No product with this SKU</p>`;
-    skuResultsPanel.classList.add('active');
-    return;
+  // Does NOT dispatch 'change' -- only an external set (draft restore) needs
+  // the resync listener below to run. Having every in-widget click dispatch
+  // 'change' too would just trigger that same listener, which calls back
+  // into selectValue() -- a self-triggering loop for no reason, since the
+  // visuals are already updated right here.
+  //
+  // Does dispatch a *custom* 'sneaker-brand-selected' event -- this is what
+  // initSneakerModelPicker() listens for to know which brand's model list
+  // to show.
+  function selectValue(value) {
+    hiddenInput.value = value;
+
+    [...optionList.children].forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.value === value);
+    });
+
+    hiddenInput.dispatchEvent(new CustomEvent('sneaker-brand-selected', { bubbles: true, detail: { brand: value } }));
   }
 
-  skuResultsPanel.innerHTML = results.slice(0, SKU_MAX_RESULTS).map(skuResultRowHTML).join('');
-  skuResultsPanel.classList.add('active');
-}
-
-productSkuInput.addEventListener('input', () => {
-  const term = productSkuInput.value.trim();
-
-  clearTimeout(skuDebounceTimer);
-  skuDebounceTimer = setTimeout(async () => {
-    saveDraftState();
-
-    if (!term) {
-      renderSkuResults([], term);
-      return;
-    }
-
-    try {
-      const listings = await fetchActiveListingsForSkuSearch();
-      const results = listings.filter(listing => matchesSku(listing, term));
-      renderSkuResults(results, term);
-    } catch (error) {
-      console.error('Error searching listings by SKU:', error);
-    }
-  }, SKU_DEBOUNCE_MS);
-});
-
-// Listing docs (seller.js) only ever save brand/condition/size/description --
-// no model/color/material/etc. So only these four can be auto-filled; the
-// rest of each category's fields still need the user to fill them in by hand.
-const LISTING_FIELD_MAP = {
-  brand: 'brand',
-  condition: 'condition',
-  size: 'size',
-  additionalDetails: 'description'
-};
-
-function fillFormFieldsFromListing(listing, category) {
-  const rules = validationRules[category];
-  if (!rules) return;
-
-  rules.forEach(rule => {
-    const suffix = rule.id.split('-').slice(1).join('-');
-    const listingField = LISTING_FIELD_MAP[suffix];
-    if (!listingField) return;
-
-    const value = listing[listingField];
-    if (value === undefined || value === null || value === '') return;
-
-    const element = document.getElementById(rule.id);
-    if (element) element.value = value;
+  optionList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.brand-option');
+    if (!btn) return;
+    selectValue(btn.dataset.value);
   });
+
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    renderOptions(SNEAKER_BRANDS.filter(name => name.toLowerCase().includes(query)), hiddenInput.value);
+  });
+
+  // Draft restore sets #sneaker-brand's value directly and dispatches
+  // 'change' (see restoreDraftState) -- resync the visible picker so the
+  // right button shows as selected instead of silently drifting out of
+  // sync with the hidden input.
+  hiddenInput.addEventListener('change', () => {
+    if (hiddenInput.value) selectValue(hiddenInput.value);
+  });
+
+  // Bakes hiddenInput's current value (empty at this point -- formLocator
+  // just injected fresh HTML) into the initial render's selected state.
+  renderOptions(SNEAKER_BRANDS, hiddenInput.value);
 }
 
-skuResultsPanel.addEventListener('click', async (e) => {
-  const item = e.target.closest('.search-result-item');
-  if (!item) return;
+// Standalone second picker for Sneakers' Model, same button+search widget
+// as the brand picker but not a drill-down within it -- Brand stays captured
+// in #sneaker-brand no matter what's picked here. Its option list is
+// SNEAKER_MODELS_BY_BRAND[currently selected brand], refreshed whenever the
+// brand picker fires 'sneaker-brand-selected' (live user pick) or
+// #sneaker-brand fires a plain 'change' (draft restore). Empty for every
+// brand today -- renders the "No matches found" empty state until per-brand
+// model lists are added there.
+function initSneakerModelPicker() {
+  const searchInput = document.getElementById('sneaker-model-search');
+  const optionList = document.getElementById('sneaker-model-options');
+  const hiddenInput = document.getElementById('sneaker-model');
+  const brandHiddenInput = document.getElementById('sneaker-brand');
+  if (!searchInput || !optionList || !hiddenInput || !brandHiddenInput) return;
 
-  const sku = item.dataset.sku;
-  const listing = cachedActiveListings?.find(l => l.sku === sku);
-
-  productSkuInput.value = sku;
-  formData.productSku = sku;
-  skuResultsPanel.classList.remove('active');
-
-  if (listing?.category && forms[listing.category]) {
-    categories.value = listing.category;
-    categorySelected = listing.category;
-    await formLocator(categorySelected);
-    fillFormFieldsFromListing(listing, categorySelected);
+  function currentModels() {
+    return SNEAKER_MODELS_BY_BRAND[brandHiddenInput.value] || [];
   }
-});
 
-document.addEventListener('click', (e) => {
-  if (!skuSearchGroup.contains(e.target)) {
-    skuResultsPanel.classList.remove('active');
+  function renderOptions(names, selectedValue) {
+    optionList.innerHTML = names.map(name => `
+      <button type="button" class="brand-option${name === selectedValue ? ' selected' : ''}" data-value="${name}">
+        ${name}
+      </button>
+    `).join('') || `<p class="brand-option-empty">No matches found.</p>`;
   }
-});
+
+  function selectValue(value) {
+    hiddenInput.value = value;
+
+    [...optionList.children].forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.value === value);
+    });
+  }
+
+  // A brand change invalidates whatever model was picked for the previous
+  // brand -- clears the field rather than leaving a stale model attached to
+  // a different brand.
+  function refreshForNewBrand() {
+    hiddenInput.value = '';
+    searchInput.value = '';
+    renderOptions(currentModels(), '');
+  }
+
+  optionList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.brand-option');
+    if (!btn) return;
+    selectValue(btn.dataset.value);
+  });
+
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    renderOptions(currentModels().filter(name => name.toLowerCase().includes(query)), hiddenInput.value);
+  });
+
+  brandHiddenInput.addEventListener('sneaker-brand-selected', refreshForNewBrand);
+  brandHiddenInput.addEventListener('change', refreshForNewBrand);
+
+  // Draft restore sets #sneaker-model directly and dispatches 'change' after
+  // #sneaker-brand's own restore already ran refreshForNewBrand() above --
+  // resync the visible selection now that the correct brand's options exist.
+  hiddenInput.addEventListener('change', () => {
+    if (hiddenInput.value) selectValue(hiddenInput.value);
+  });
+
+  refreshForNewBrand();
+}
 
 categories.addEventListener('change', (e) => {
   const target = e.target.value;
@@ -473,7 +558,7 @@ addAnotherItemBtn.addEventListener('click', () => {
   formData = {
     images: [],
     productDetails: {},
-    productSku: null,
+    additionalComments: '',
     tierSelection: null
   };
 
@@ -628,7 +713,7 @@ function saveDraftState() {
   const draft = {
     step: currentStep,
     category: categorySelected || null,
-    productSku: productSkuInput.value || '',
+    additionalComments: document.getElementById('photo-additionalComments')?.value || '',
     tierSelection: formData.tierSelection || null,
     fieldValues: collectDraftFieldValues()
   };
@@ -665,7 +750,13 @@ async function restoreDraftState() {
 
     Object.entries(draft.fieldValues || {}).forEach(([id, value]) => {
       const element = document.getElementById(id);
-      if (element) element.value = value;
+      if (!element) return;
+
+      element.value = value;
+      // Same reasoning as fillFormFieldsFromListing -- setting .value
+      // directly doesn't fire 'change', which the sneaker brand-picker
+      // relies on to resync its visible selected button after a restore.
+      element.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
     // Restoring the DOM fields isn't enough -- formData.productDetails is
@@ -675,9 +766,10 @@ async function restoreDraftState() {
     formData.productDetails = collectProductData(categorySelected);
   }
 
-  if (draft.productSku) {
-    productSkuInput.value = draft.productSku;
-    formData.productSku = draft.productSku;
+  if (draft.additionalComments) {
+    const commentsField = document.getElementById('photo-additionalComments');
+    if (commentsField) commentsField.value = draft.additionalComments;
+    formData.additionalComments = draft.additionalComments;
   }
 
   if (draft.tierSelection) {
@@ -940,6 +1032,7 @@ function validateStep(stepNumber) {
     } else {
 
       formData.images = collectImageData();
+      formData.additionalComments = document.getElementById('photo-additionalComments')?.value.trim() || '';
       imgErrorsContainer.innerHTML = '';
       return true;
     }
@@ -1118,7 +1211,17 @@ function formLocator(category) {
       }
       return res.text();
     })
-    .then(html => dynamicFormContainer.innerHTML = html)
+    .then(html => {
+      dynamicFormContainer.innerHTML = html;
+      if (category === 'Bags & Leather Goods') {
+        initBagsBrandModelToggle();
+      } else if (category === 'Luxury Shoes') {
+        initLuxuryShoesBrandModelToggle();
+      } else if (category === 'Sneakers') {
+        initSneakerBrandPicker();
+        initSneakerModelPicker();
+      }
+    })
     .catch(err => {
       dynamicFormContainer.innerHTML = "Internal Error";
       console.error("Error", err);
@@ -1254,6 +1357,8 @@ async function submitToFirebase() {
         category: formData.productDetails.productCategory,
         details: formData.productDetails.details
       },
+
+      additionalComments: formData.additionalComments || '',
 
       tierSelection: {
         type: formData.tierSelection.type,

@@ -645,6 +645,7 @@ body {
 }
 
  .content-wrapper {
+  display: none;
   border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
   padding: 1rem;
@@ -760,28 +761,6 @@ body {
   grid-template-columns: 1fr auto;
   gap: var(--spacing-sm);
   align-items: end;
-}
-
-/* SKU search button */
-.sku-search-button {
-  border: none;
-  border-radius: 8px;
-  padding: 0.625rem var(--spacing-lg);
-  color: white;
-  font-weight: 600;
-  background-color: var(--primary-red);
-  font-size: var(--font-size-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  min-height: 42px;
-}
-
-.sku-search-button:hover {
-  background-color: var(--primary-red-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 /* Product Details Section */
@@ -1213,3 +1192,88 @@ select {
     width: 90%;
   }
 }
+
+/* ============================================
+    Brand Picker (Sneakers) -- searchable button list,
+    used instead of a native <select>. See
+    initSneakerBrandPicker() in authenticate.js.
+   ============================================ */
+.brand-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.brand-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.brand-search-wrapper i {
+  position: absolute;
+  left: var(--spacing-md);
+  color: var(--gray-400);
+  font-size: var(--font-size-sm);
+  pointer-events: none;
+}
+
+.brand-search-input {
+  width: 100%;
+  padding: 0.625rem 2.5rem !important;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  color: var(--color-text-primary);
+  background: var(--color-bg-base);
+  transition: all ease-in-out 0.3s;
+}
+
+.brand-search-input:focus {
+  border-color: var(--primary-red);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.brand-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.brand-option {
+  width: 100%;
+  padding: 0.75rem var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-base);
+  color: var(--gray-500);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: all ease-in-out 0.2s;
+}
+
+.brand-option:hover {
+  border-color: var(--gray-400);
+  color: var(--color-text-primary);
+}
+
+.brand-option.selected {
+  border-color: var(--primary-red);
+  color: var(--primary-red);
+  background: var(--primary-red-light);
+}
+
+.brand-option-empty {
+  color: var(--gray-400);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--spacing-md) 0;
+}
+

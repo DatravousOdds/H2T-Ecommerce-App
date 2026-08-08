@@ -1,0 +1,164 @@
+<!-- ============================================ -->
+            <!-- Bags & Leather Goods Form -->
+            <!-- ============================================ -->
+            <div class="form-wrapper" id="bags-form" data-category="bags" style="display: block;">
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="bags-type">Item Type <span class="required">*</span></label>
+                  <select name="itemType" id="bags-type" required aria-required="true">
+                    <option value="">Select type...</option>
+                    <option value="handbag">Handbag</option>
+                    <option value="tote">Tote</option>
+                    <option value="crossbody">Crossbody</option>
+                    <option value="shoulder-bag">Shoulder Bag</option>
+                    <option value="clutch">Clutch</option>
+                    <option value="backpack">Backpack</option>
+                    <option value="briefcase">Briefcase</option>
+                    <option value="travel-bag">Travel Bag</option>
+                    <option value="wallet">Wallet</option>
+                    <option value="belt">Belt</option>
+                    <option value="card-holder">Card Holder</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="bags-brand">Brand <span class="required">*</span></label>
+                  <!-- Closed list -- these are the only brands Hexxo currently authenticates
+                       bags & leather goods for. -->
+                  <select name="brand" id="bags-brand" required aria-required="true">
+                    <option value="">Select brand...</option>
+                    <optgroup label="Iconic Leather Houses">
+                      <option value="Chanel">Chanel</option>
+                      <option value="Dior">Dior</option>
+                      <option value="Goyard">Goyard</option>
+                      <option value="Hermès">Hermès</option>
+                    </optgroup>
+                    <optgroup label="Luxury & Designer">
+                      <option value="Balenciaga">Balenciaga</option>
+                      <option value="Bottega Veneta">Bottega Veneta</option>
+                      <option value="Burberry">Burberry</option>
+                      <option value="Celine">Celine</option>
+                      <option value="Chloé">Chloé</option>
+                      <option value="Christian Louboutin">Christian Louboutin</option>
+                      <option value="Dolce & Gabbana">Dolce & Gabbana</option>
+                      <option value="D&G">D&G</option>
+                      <option value="D&G Beachwear">D&G Beachwear</option>
+                      <option value="Fendi">Fendi</option>
+                      <option value="Givenchy">Givenchy</option>
+                      <option value="Gucci">Gucci</option>
+                      <option value="Loewe">Loewe</option>
+                      <option value="Louis Vuitton">Louis Vuitton</option>
+                      <option value="Prada">Prada</option>
+                      <option value="Saint Laurent">Saint Laurent</option>
+                      <option value="Salvatore Ferragamo">Salvatore Ferragamo</option>
+                      <option value="Valentino">Valentino</option>
+                      <option value="Miu Miu">Miu Miu</option>
+                    </optgroup>
+                    <optgroup label="Contemporary & Streetwear">
+                      <option value="BAPE">BAPE</option>
+                      <option value="Coach">Coach</option>
+                      <option value="Denim Tears">Denim Tears</option>
+                      <option value="Eric Emanuel">Eric Emanuel</option>
+                      <option value="Fear of God Essentials">Fear of God Essentials</option>
+                      <option value="GV Gallery">GV Gallery</option>
+                      <option value="Hellstar">Hellstar</option>
+                      <option value="MCM">MCM</option>
+                      <option value="Off White">Off White</option>
+                      <option value="Palace">Palace</option>
+                      <option value="Polo Ralph Lauren">Polo Ralph Lauren</option>
+                      <option value="READYMADE">READYMADE</option>
+                      <option value="Saint Michael">Saint Michael</option>
+                      <option value="Sp5der">Sp5der</option>
+                      <option value="Stussy">Stussy</option>
+                      <option value="Supreme">Supreme</option>
+                      <option value="The North Face">The North Face</option>
+                      <option value="Travis Scott">Travis Scott</option>
+                      <option value="Vale Forever">Vale Forever</option>
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <!-- Free-text by default; swapped for the Hermès-model dropdown below
+                       when Brand = Hermès. Toggled in authenticate.js (initBagsBrandModelToggle) --
+                       whichever element is visible carries id="bags-model" so the rest of the
+                       form (collectProductData, validateForm, etc.) can keep reading a single id. -->
+                  <label for="bags-model">Model</label>
+                  <input
+                    type="text"
+                    id="bags-model"
+                    name="model"
+                    placeholder="e.g., Classic Flap, Neverfull"
+                  />
+                  <select name="model" id="bags-model-hermes" style="display: none">
+                    <option value="">Select model...</option>
+                    <option value="24/24">24/24</option>
+                    <option value="Birkin">Birkin</option>
+                    <option value="Bolide">Bolide</option>
+                    <option value="Constance">Constance</option>
+                    <option value="Constance Élan">Constance Élan</option>
+                    <option value="Constance Wallet">Constance Wallet</option>
+                    <option value="HAC (Haut à Courroies)">HAC (Haut à Courroies)</option>
+                    <option value="Hac a Dos">Hac a Dos</option>
+                    <option value="Jypsière">Jypsière</option>
+                    <option value="Kelly Wallet">Kelly Wallet</option>
+                    <option value="Kelly Cut">Kelly Cut</option>
+                    <option value="Kelly Dépêches">Kelly Dépêches</option>
+                    <option value="Kelly Lakis">Kelly Lakis</option>
+                    <option value="Kelly Pochette">Kelly Pochette</option>
+                    <option value="Kelly Relax">Kelly Relax</option>
+                    <option value="Kelly Retourne">Kelly Retourne</option>
+                    <option value="Kelly Sellier">Kelly Sellier</option>
+                    <option value="Kelly Voyage">Kelly Voyage</option>
+                    <option value="Lindy">Lindy</option>
+                    <option value="Picotin">Picotin</option>
+                    <option value="Roulis">Roulis</option>
+                    <option value="Shoulder Birkin">Shoulder Birkin</option>
+                    <option value="Shoulder Kelly">Shoulder Kelly</option>
+                    <option value="So Kelly">So Kelly</option>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="bags-color">Color/Material</label>
+                  <input
+                    type="text"
+                    id="bags-color"
+                    name="color"
+                    placeholder="e.g., Black Leather, Togo, Epsom"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="bags-size">Size (if applicable)</label>
+                  <input
+                    type="text"
+                    id="bags-size"
+                    name="size"
+                    placeholder="e.g., 25cm, 30cm, One Size"
+                  />
+                </div>
+                <div class="form-input">
+                  <label for="bags-condition">Condition <span class="required">*</span></label>
+                  <select
+                    name="condition"
+                    id="bags-condition"
+                    class="condition-select"
+                    required
+                    aria-required="true"
+                  >
+                    <option value="">Select condition...</option>
+                    <option value="new-with-tags">New with Tags/Box</option>
+                    <option value="new-without-tags">New without Tags/Box</option>
+                    <option value="like-new">Like New</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="worn">Well Worn</option>
+                  </select>
+                </div>
+              </div>
+            </div>

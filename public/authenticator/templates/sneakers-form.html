@@ -1,114 +1,57 @@
 <!-- Sneakers Form (Your Original) -->
             <div class="form-wrapper" id="sneakers-form" data-category="sneaker" style="display: block;">
-              <div class="form-input-row">
-                <div class="form-input">
-                  <label for="sneaker-brand">Brand <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    id="sneaker-brand"
-                    name="brand"
-                    placeholder="e.g., Nike, Adidas, Jordan"
-                    required
-                    aria-required="true"
-                  />
-                </div>
-                <div class="form-input">
-                  <label for="sneaker-model">Model <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    id="sneaker-model"
-                    name="model"
-                    placeholder="e.g., Air Jordan 1, Yeezy 350"
-                    required
-                    aria-required="true"
-                  />
-                </div>
-              </div>
+              <div class="form-input">
+                <label id="sneaker-brand-picker-label" for="sneaker-brand-search">Choose a brand <span class="required">*</span></label>
 
-              <div class="form-input-row">
-                <div class="form-input">
-                  <label for="sneaker-size">Size <span class="required">*</span></label>
-                  <select name="size" id="sneaker-size" required aria-required="true">
-                    <option value="">Select size...</option>
-                    <option value="US M 4">US M 4</option>
-                    <option value="US M 4.5">US M 4.5</option>
-                    <option value="US M 5">US M 5</option>
-                    <option value="US M 5.5">US M 5.5</option>
-                    <option value="US M 6">US M 6</option>
-                    <option value="US M 6.5">US M 6.5</option>
-                    <option value="US M 7">US M 7</option>
-                    <option value="US M 7.5">US M 7.5</option>
-                    <option value="US M 8">US M 8</option>
-                    <option value="US M 8.5">US M 8.5</option>
-                    <option value="US M 9">US M 9</option>
-                    <option value="US M 9.5">US M 9.5</option>
-                    <option value="US M 10">US M 10</option>
-                    <option value="US M 10.5">US M 10.5</option>
-                    <option value="US M 11">US M 11</option>
-                    <option value="US M 11.5">US M 11.5</option>
-                    <option value="US M 12">US M 12</option>
-                    <option value="US M 12.5">US M 12.5</option>
-                    <option value="US M 13">US M 13</option>
-                    <option value="US M 13.5">US M 13.5</option>
-                    <option value="US M 14">US M 14</option>
-                    <option value="US M 15">US M 15</option>
-                  </select>
-                </div>
-                <div class="form-input">
-                  <label for="sneaker-condition">Condition <span class="required">*</span></label>
-                  <select
-                    name="condition"
-                    id="sneaker-condition"
-                    class="condition-select"
-                    required
-                    aria-required="true"
-                  >
-                    <option value="">Select condition...</option>
-                    <option value="new">New with Box</option>
-                    <option value="new-no-box">New without Box</option>
-                    <option value="like-new">Like New</option>
-                    <option value="good">Good</option>
-                    <option value="fair">Fair</option>
-                    <option value="worn">Well Worn</option>
-                  </select>
-                </div>
-              </div>
+                <!-- Custom picker, not a native <select> -- initSneakerBrandPicker() in
+                     authenticate.js renders the brand buttons and filters them against the
+                     search box. Whichever brand is clicked is written into the hidden
+                     #sneaker-brand input below, which is the only thing the rest of the
+                     form (collectProductData, validateForm, draft save/restore) reads. -->
+                <div class="brand-picker" id="sneaker-brand-picker">
+                  <div class="brand-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input
+                      type="text"
+                      id="sneaker-brand-search"
+                      class="brand-search-input"
+                      placeholder="Search brand"
+                      autocomplete="off"
+                    />
+                  </div>
 
-              <div class="form-input-row">
-                <div class="form-input">
-                  <label for="sneaker-color">Color</label>
-                  <input
-                    type="text"
-                    id="sneaker-color"
-                    name="color"
-                    placeholder="e.g., Black/Red, White"
-                  />
+                  <div class="brand-option-list" id="sneaker-brand-options"></div>
                 </div>
-                <div class="form-input">
-                  <label for="sneaker-year">Release Year</label>
-                  <input
-                    type="number"
-                    id="sneaker-year"
-                    name="year"
-                    placeholder="e.g., 2023"
-                    min="1980"
-                    max="2025"
-                  />
-                </div>
+
+                <input type="hidden" id="sneaker-brand" name="brand" />
               </div>
 
               <div class="form-input">
-                <label for="sneaker-additionalDetails">Additional Details</label>
-                <textarea
-                  id="sneaker-additionalDetails"
-                  class="additional-details"
-                  name="additionalDetails"
-                  placeholder="Any additional information about the sneakers..."
-                  rows="4"
-                  aria-describedby="sneakerDetailsHelp"
-                ></textarea>
-                <small id="sneakerDetailsHelp" class="form-text"
-                  >Include details about box condition, accessories, defects, or special features</small
-                >
+                <label id="sneaker-model-picker-label" for="sneaker-model-search">Choose a model</label>
+
+                <!-- Same button+search widget as the brand picker above, but as a
+                     standalone second field rather than a drill-down within Brand --
+                     Brand stays captured in #sneaker-brand regardless of what's picked
+                     here. Options come from SNEAKER_MODELS_BY_BRAND[currently selected
+                     brand], which is empty for every brand today, so this renders an
+                     empty state until per-brand model lists are added. Not marked
+                     required for that reason -- see initSneakerModelPicker() in
+                     authenticate.js. -->
+                <div class="brand-picker" id="sneaker-model-picker">
+                  <div class="brand-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input
+                      type="text"
+                      id="sneaker-model-search"
+                      class="brand-search-input"
+                      placeholder="Search model"
+                      autocomplete="off"
+                    />
+                  </div>
+
+                  <div class="brand-option-list" id="sneaker-model-options"></div>
+                </div>
+
+                <input type="hidden" id="sneaker-model" name="model" />
               </div>
             </div>

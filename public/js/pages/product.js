@@ -42,6 +42,7 @@ const reviewsContainer = document.querySelector('.comments');
 const detailTriggers = document.querySelectorAll('.detail-trigger');
 const writeReviewBtn = document.getElementById("writeReviewBtn");
 const offerBtn = document.getElementById('offerBtn');
+const editListingBtn = document.getElementById('editListingBtn');
 const modalOverlay = document.querySelector('.modal-overlay');
 const modalCloseBtns = document.querySelectorAll('.modal-close');
 const offerModal = document.getElementById('offerModal');
@@ -289,6 +290,17 @@ async function displayProductDetails() {
     productDetailsWrapper.classList.add('is-loading');
     try {
         const data = await getProductData(productId);
+
+        // Viewing your own listing -- swap the buyer actions for an edit
+        // link instead, same ownership check as renderSellerOffersPanel()
+        // below uses for the seller-offers panel.
+        const isOwnListing = !!user && data.userId === user.userId;
+        offerBtn.style.display = isOwnListing ? 'none' : '';
+        addToCartBtn.style.display = isOwnListing ? 'none' : '';
+        editListingBtn.style.display = isOwnListing ? '' : 'none';
+        if (isOwnListing) {
+            editListingBtn.href = `/seller?listingId=${productId}`;
+        }
 
         productCategory.textContent = data.category;
         authBadge.style.display = data.authenticated ? '' : 'none';

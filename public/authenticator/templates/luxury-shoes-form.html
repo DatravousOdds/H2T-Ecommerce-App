@@ -1,0 +1,118 @@
+<!-- ============================================ -->
+            <!-- Luxury Shoes Form (Designer / Collab Footwear) -->
+            <!-- ============================================ -->
+            <div class="form-wrapper" id="luxury-shoes-form" data-category="luxury-shoes" style="display: block;">
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="luxury-shoes-brand">Brand <span class="required">*</span></label>
+                  <!-- Closed list -- these are the only brands Hexxo currently authenticates
+                       luxury/collab shoes for. Jordan and Nike are here specifically for their
+                       designer collabs (Dior, Off-White, Louis Vuitton, Air Yeezy, NikeCraft) --
+                       everyday Jordan/Nike releases go under the plain Sneakers category instead. -->
+                  <select name="brand" id="luxury-shoes-brand" required aria-required="true">
+                    <option value="">Select brand...</option>
+                    <option value="Alexander McQueen">Alexander McQueen</option>
+                    <option value="Balenciaga">Balenciaga</option>
+                    <option value="Chanel">Chanel</option>
+                    <option value="Christian Louboutin">Christian Louboutin</option>
+                    <option value="Dior">Dior</option>
+                    <option value="Gucci">Gucci</option>
+                    <option value="Jordan">Jordan (select styles)</option>
+                    <option value="Louis Vuitton">Louis Vuitton</option>
+                    <option value="Nike">Nike (select styles)</option>
+                    <option value="Off-White">Off-White</option>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <!-- Free-text by default; swapped for a brand-specific closed dropdown when
+                       Brand = Jordan or Nike (only specific collab styles qualify for those two --
+                       see LUXURY_SHOES_MODELS_BY_BRAND in authenticate.js). Toggled by
+                       initLuxuryShoesBrandModelToggle(); whichever element is visible carries
+                       id="luxury-shoes-model" so the rest of the form keeps reading a single id. -->
+                  <label for="luxury-shoes-model">Model <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="luxury-shoes-model"
+                    name="model"
+                    placeholder="e.g., Spike Sneaker, Triple S"
+                    required
+                    aria-required="true"
+                  />
+                  <select name="model" id="luxury-shoes-model-select" style="display: none">
+                    <option value="">Select model...</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-input-row">
+                <div class="form-input">
+                  <label for="luxury-shoes-size">Size <span class="required">*</span></label>
+                  <select name="size" id="luxury-shoes-size" required aria-required="true">
+                    <option value="">Select size...</option>
+                    <optgroup label="Men's US Sizes">
+                      <option value="US M 6">US M 6</option>
+                      <option value="US M 6.5">US M 6.5</option>
+                      <option value="US M 7">US M 7</option>
+                      <option value="US M 7.5">US M 7.5</option>
+                      <option value="US M 8">US M 8</option>
+                      <option value="US M 8.5">US M 8.5</option>
+                      <option value="US M 9">US M 9</option>
+                      <option value="US M 9.5">US M 9.5</option>
+                      <option value="US M 10">US M 10</option>
+                      <option value="US M 10.5">US M 10.5</option>
+                      <option value="US M 11">US M 11</option>
+                      <option value="US M 11.5">US M 11.5</option>
+                      <option value="US M 12">US M 12</option>
+                      <option value="US M 13">US M 13</option>
+                      <option value="US M 14">US M 14</option>
+                    </optgroup>
+                    <optgroup label="Women's US Sizes">
+                      <option value="US W 5">US W 5</option>
+                      <option value="US W 5.5">US W 5.5</option>
+                      <option value="US W 6">US W 6</option>
+                      <option value="US W 6.5">US W 6.5</option>
+                      <option value="US W 7">US W 7</option>
+                      <option value="US W 7.5">US W 7.5</option>
+                      <option value="US W 8">US W 8</option>
+                      <option value="US W 8.5">US W 8.5</option>
+                      <option value="US W 9">US W 9</option>
+                      <option value="US W 9.5">US W 9.5</option>
+                      <option value="US W 10">US W 10</option>
+                      <option value="US W 10.5">US W 10.5</option>
+                      <option value="US W 11">US W 11</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="form-input">
+                  <label for="luxury-shoes-color">Color <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="luxury-shoes-color"
+                    name="color"
+                    placeholder="e.g., White, Black Metallic Silver"
+                    required
+                    aria-required="true"
+                  />
+                </div>
+              </div>
+
+              <div class="form-input">
+                <label for="luxury-shoes-condition">Condition <span class="required">*</span></label>
+                <select
+                  name="condition"
+                  id="luxury-shoes-condition"
+                  class="condition-select"
+                  required
+                  aria-required="true"
+                >
+                  <option value="">Select condition...</option>
+                  <option value="new-with-box">New with Box</option>
+                  <option value="new-no-box">New without Box</option>
+                  <option value="like-new">Like New</option>
+                  <option value="excellent">Excellent</option>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="worn">Well Worn</option>
+                </select>
+              </div>
+            </div>

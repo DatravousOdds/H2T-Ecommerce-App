@@ -5,14 +5,48 @@
               <div class="form-input-row">
                 <div class="form-input">
                   <label for="apparel-brand">Brand <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    id="apparel-brand"
-                    name="brand"
-                    placeholder="e.g., Supreme, Nike, Adidas"
-                    required
-                    aria-required="true"
-                  />
+                  <!-- Closed list -- these are the only brands Hexxo currently authenticates
+                       apparel for. -->
+                  <select name="brand" id="apparel-brand" required aria-required="true">
+                    <option value="">Select brand...</option>
+                    <optgroup label="Iconic Luxury Houses">
+                      <option value="Chanel">Chanel</option>
+                      <option value="Chrome Hearts">Chrome Hearts</option>
+                      <option value="Hermès">Hermès</option>
+                      <option value="Louis Vuitton">Louis Vuitton</option>
+                    </optgroup>
+                    <optgroup label="Luxury & Designer">
+                      <option value="Burberry">Burberry</option>
+                      <option value="Canada Goose">Canada Goose</option>
+                      <option value="Dior">Dior</option>
+                      <option value="Gucci">Gucci</option>
+                      <option value="Miu Miu">Miu Miu</option>
+                      <option value="Moncler">Moncler</option>
+                      <option value="Off-White">Off-White</option>
+                      <option value="Prada">Prada</option>
+                      <option value="Saint Laurent">Saint Laurent</option>
+                      <option value="Supreme">Supreme</option>
+                      <option value="The North Face">The North Face</option>
+                    </optgroup>
+                    <optgroup label="Contemporary & Streetwear">
+                      <option value="BAPE">BAPE</option>
+                      <option value="Denim Tears">Denim Tears</option>
+                      <option value="Eric Emanuel">Eric Emanuel</option>
+                      <option value="Fear of God ESSENTIALS">Fear of God ESSENTIALS</option>
+                      <option value="GV Gallery">GV Gallery</option>
+                      <option value="Hellstar">Hellstar</option>
+                      <option value="Nike">Nike</option>
+                      <option value="Palace">Palace</option>
+                      <option value="Polo Ralph Lauren">Polo Ralph Lauren</option>
+                      <option value="Readymade">Readymade</option>
+                      <option value="Saint Michael">Saint Michael</option>
+                      <option value="Skylrk">Skylrk</option>
+                      <option value="Sp5der">Sp5der</option>
+                      <option value="Stussy">Stussy</option>
+                      <option value="Travis Scott">Travis Scott</option>
+                      <option value="Vale Forever">Vale Forever</option>
+                    </optgroup>
+                  </select>
                 </div>
                 <div class="form-input">
                   <label for="apparel-type">Item Type <span class="required">*</span></label>
@@ -130,20 +164,5 @@
                   name="style"
                   placeholder="e.g., Box Logo, Travis Scott Collab"
                 />
-              </div>
-
-              <div class="form-input">
-                <label for="apparel-additionalDetails">Additional Details</label>
-                <textarea
-                  id="apparel-additionalDetails"
-                  class="additional-details"
-                  name="additionalDetails"
-                  placeholder="Any additional information about the item..."
-                  rows="4"
-                  aria-describedby="apparelDetailsHelp"
-                ></textarea>
-                <small id="apparelDetailsHelp" class="form-text"
-                  >Include details about fit, flaws, alterations, or special features</small
-                >
               </div>
             </div>

@@ -285,7 +285,13 @@
 }
 
 .atc-btn {
-    background-color: red;
+    background-color: #F30C1E;
+    color: white;
+    transition: 0.3s ease;
+}
+
+.atc-btn:hover {
+    background-color: #F63747;
     color: white;
 }
 
@@ -752,6 +758,11 @@
     cursor: pointer;
     align-items: flex-start;
     text-decoration: none;
+}
+
+.edit-listing-btn {
+    background-color:#007EFA;
+    color: #fff;
 }
 
 .seller-profile-info {
