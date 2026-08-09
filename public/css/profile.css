@@ -9692,6 +9692,11 @@ input:checked + .slider:before {
     min-width: 100%;
   }
 
+  .modal-content {
+    max-width: 90% !important;
+    width: 90% !important;
+  }
+
   .dashboard-nav-container .nav-menu {
     gap: 1rem;
     padding: 0 0.5rem;
@@ -9911,6 +9916,12 @@ input:checked + .slider:before {
     overflow-y: auto;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
     gap: 1rem;
+  }
+
+
+  .modal-content {
+    max-width: 90% !important;
+    width: 90% !important;
   }
 
   /* Reply Card */

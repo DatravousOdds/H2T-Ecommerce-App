@@ -644,7 +644,7 @@ body {
   /* padding: 1rem; */
 }
 
- .content-wrapper {
+#step2 .content-wrapper {
   display: none;
   border: 2px solid var(--gray-200);
   border-radius: var(--radius-lg);
