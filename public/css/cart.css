@@ -330,7 +330,7 @@ header {
         cursor: pointer;
         height: 27%;
         border-radius: 5px;
-        background: red;
+        background: var(--color-button-primary);
         color: #fff;
         text-align: center;
         line-height: 40px;
@@ -428,7 +428,7 @@ header {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        margin: 11px;
+        /* margin: 11px; */
         margin-top: auto;
     }
 }

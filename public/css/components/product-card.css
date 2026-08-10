@@ -76,6 +76,11 @@
   margin-bottom: 4px;
 }
 
+.product-name,
+.pro-condition {
+  text-transform: capitalize;
+}
+
 .shipping-note {
   font-size: 0.8125rem;
   color: #747474;
@@ -301,7 +306,7 @@
 /* Tablet */
 @media (max-width: 768px) {
   .pro-container {
-    margin: 0 2rem;
+    /* margin: 0 2rem; */
   }
   
   .pro,

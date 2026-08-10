@@ -1009,7 +1009,7 @@ const displayProducts = (products, containerElement) => {
     const sizeOrBrand = isCollectibles ? productData.brand : productData.size;
     const sizeConditionHTML = sizeOrBrand
       ? `<p class="pro-meta">
-          ${isCollectibles ? sizeOrBrand : `Size ${sizeOrBrand}`}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | ${productData.condition}` : ''}
+          ${isCollectibles ? sizeOrBrand : `Size ${sizeOrBrand}`}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | <span class="pro-condition">${productData.condition}</span>` : ''}
         </p>`
       : '';
 

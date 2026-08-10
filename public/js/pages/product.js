@@ -331,6 +331,7 @@ async function displayProductDetails() {
         const isOwnListing = !!user && data.userId === user.userId;
         offerBtn.style.display = isOwnListing ? 'none' : '';
         addToCartBtn.style.display = isOwnListing ? 'none' : '';
+        buyBtn.style.display = isOwnListing ? 'none' : '';
         editListingBtn.style.display = isOwnListing ? '' : 'none';
         if (isOwnListing) {
             editListingBtn.href = `/seller?listingId=${productId}`;

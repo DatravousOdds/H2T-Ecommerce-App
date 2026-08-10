@@ -18,7 +18,7 @@
   --gray-500: #6b7280;
   --gray-700: #374151;
   --gray-900: #111827;
-  --primary-red: #dc2626;
+  --primary-red: #F30C1E;
   --primary-red-hover: #b91c1c;
   --border-gray: #e5e7eb;
   --shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
@@ -8698,6 +8698,7 @@ details h3 {
 
 .payout-setup-card #payout-setup-btn {
   white-space: nowrap;
+  background-color: var(--primary-red);
 }
 
 .card-header {
@@ -9034,6 +9035,7 @@ details h3 {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 8px 16px;
+  white-space: nowrap;
 }
 
 #orders-filter-btn:hover {

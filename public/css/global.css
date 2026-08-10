@@ -793,6 +793,10 @@ hr {
   .product-card {
     width: 100%;
   }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {

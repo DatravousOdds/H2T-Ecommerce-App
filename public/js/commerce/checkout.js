@@ -57,7 +57,6 @@ if(!currentUser) {
 
         if (isAuthPayment) {
             queryItem.authRequestId = authRequestId;
-            hideShippingSection();
             displayAuthOrderDetails(queryItem);
         } else {
             queryItem.salesTax = data.tax;
@@ -69,7 +68,6 @@ if(!currentUser) {
             // the informational badge below, and whether handleSubmit waits
             // for pending_authentication before redirecting.
             authenticationEligible = !!data.authenticationEligible;
-            displayShipping(currentUser);
             displayOrderDetails(queryItem);
         }
 
@@ -143,9 +141,7 @@ async function initializeCheckout() {
     billingAddressElement.mount("#billing-address-element");
 
     // Tax is destination-based, so this is what actually drives
-    // calculateTax() below -- distinct from the billing address and from
-    // the legacy #shippingInfo block (which is the seller's ship-from
-    // location, not where the buyer receives the item).
+    // calculateTax() below -- distinct from the billing address.
     if (isAuthPayment) {
         const shippingToSection = document.querySelector('#shipping-to-section');
         if (shippingToSection) shippingToSection.style.display = 'none';
@@ -175,6 +171,17 @@ function handleShippingAddressChange(event) {
     // the buyer's contact info is captured -- both are required later to
     // actually purchase the EasyShip label (destination_address needs them).
     calculateTax(event.value.address, event.value.name, event.value.phone);
+
+    // This Address Element is now the only place the buyer enters a
+    // delivery address (the old standalone "Shipping Address" card/profile
+    // address was removed), so it's what has to feed shippingFrom too --
+    // server.js's buildOrderDataFromPaymentIntent reads the order's
+    // shippingAddress straight off the PaymentIntent's shipping_from
+    // metadata, which this patches on every completed edit.
+    queryItem.shippingFrom = formatShippingAddress(event.value.address);
+    updateOrderShipping(queryItem.shippingFrom).catch((error) => {
+        console.error("Failed to update shipping address on payment intent:", error);
+    });
 }
 
 // Recomputes tax server-side (server.js's /tax/calculate) whenever the
@@ -544,117 +551,13 @@ function displayAuthOrderDetails(item) {
     cart.append(cartItem)
 }
 
-// No shipping address is collected at this step for an authentication
-// payment -- hide the whole block rather than leaving it half-relevant.
-function hideShippingSection() {
-    const shippingInfo = document.getElementById('shippingInfo');
-    const shippingBlock = shippingInfo?.closest('.input-form');
-    if (shippingBlock) shippingBlock.style.display = 'none';
-}
-
-// Only affects this order -- edits here are never written back to the
-// buyer's saved profile (no PUT to /userProfiles/:id), just to `queryItem`
-// so the address the buyer confirms is the one that actually reaches the
-// PaymentIntent metadata (shipping_from) instead of whatever's on file.
-function formatShippingAddress(shipping) {
-    return `${shipping.address}, ${shipping.city}, ${shipping.state} ${shipping.zipCode}`;
-}
-
-function displayShipping(data) {
-    const shippingInfo = document.getElementById('shippingInfo');
-    shippingInfo.innerHTML = "";
-
-    queryItem.shippingFrom = formatShippingAddress(data.shipping);
-
-    const div = document.createElement('div');
-    div.classList.add('address-wrapper');
-    shippingInfo.append(div);
-
-    renderShippingView(div, data);
-}
-
-function renderShippingView(container, data) {
-    container.innerHTML = `
-        <div class="address-value">
-            <p class="first-last-name">${data.firstName} ${data.lastName}</p>
-            <p class="address-street">${data.shipping.address}</p>
-            <p class="address-city">${data.shipping.city}, ${data.shipping.state} ${data.shipping.zipCode}</p>
-        </div>
-
-        <div class="edit-address">
-            <p>Edit</p>
-        </div>
-    `;
-
-    container.querySelector('.edit-address').addEventListener('click', () => {
-        renderShippingForm(container, data);
-    });
-}
-
-function renderShippingForm(container, data) {
-    container.innerHTML = `
-        <form class="address-edit-form">
-            <label>
-                Street address
-                <input type="text" name="address" value="${data.shipping.address}" required>
-            </label>
-            <label>
-                City
-                <input type="text" name="city" value="${data.shipping.city}" required>
-            </label>
-            <label>
-                State
-                <input type="text" name="state" value="${data.shipping.state}" required>
-            </label>
-            <label>
-                Zip code
-                <input type="text" name="zipCode" value="${data.shipping.zipCode}" required>
-            </label>
-            <div class="address-edit-actions">
-                <button type="submit" class="save-address-btn">Save</button>
-                <button type="button" class="cancel-address-btn">Cancel</button>
-            </div>
-            <p class="address-edit-error hidden"></p>
-        </form>
-    `;
-
-    const form = container.querySelector('.address-edit-form');
-    const errorEl = form.querySelector('.address-edit-error');
-    const saveBtn = form.querySelector('.save-address-btn');
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorEl.classList.add('hidden');
-
-        const formData = new FormData(form);
-        const updatedShipping = {
-            ...data.shipping,
-            address: formData.get('address').trim(),
-            city: formData.get('city').trim(),
-            state: formData.get('state').trim(),
-            zipCode: formData.get('zipCode').trim()
-        };
-        const shippingFrom = formatShippingAddress(updatedShipping);
-
-        saveBtn.disabled = true;
-        saveBtn.textContent = "Saving...";
-
-        try {
-            await updateOrderShipping(shippingFrom);
-            data.shipping = updatedShipping;
-            queryItem.shippingFrom = shippingFrom;
-            renderShippingView(container, data);
-        } catch (error) {
-            saveBtn.disabled = false;
-            saveBtn.textContent = "Save";
-            errorEl.textContent = "Couldn't save this address, please try again.";
-            errorEl.classList.remove('hidden');
-        }
-    });
-
-    form.querySelector('.cancel-address-btn').addEventListener('click', () => {
-        renderShippingView(container, data);
-    });
+// Sourced from the Stripe shipping AddressElement's `value.address` (see
+// handleShippingAddressChange) now that the standalone "Shipping Address"
+// card is gone -- that Element is the only place left where the buyer
+// enters a delivery address.
+function formatShippingAddress(address) {
+    const line2 = address.line2 ? `, ${address.line2}` : '';
+    return `${address.line1}${line2}, ${address.city}, ${address.state} ${address.postal_code}`;
 }
 
 // Patches the shipping_from metadata on the already-created PaymentIntent so
