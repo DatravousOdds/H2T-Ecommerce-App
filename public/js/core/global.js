@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs, where, query, limit, getDoc, startAfter } from '../api/firebase-client.js';
-import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, setDoc, serverTimestamp, db, doc, app, writeBatch, increment } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 
 // var, not let: on iOS Safari, Firebase's onAuthStateChanged callback (routed
@@ -47,30 +47,33 @@ async function getFavoritedIds(userId) {
   }
 }
 
-// Batched with the listing doc's favoritesCount update so the two never
-// drift apart from a partial-write failure -- listings/{id} is already
-// fetched for every card/product-page render, so that counter is free to
-// read there instead of a per-listing collectionGroup count query.
-async function addFavorite(userId, listingId, listingData) {
-  const batch = writeBatch(db);
-  batch.set(doc(db, "favorites", userId, "items", listingId), {
-    listingId,
-    productName: listingData.productName || "",
-    listingPrice: listingData.listingPrice || 0,
-    brand: listingData.brand || "",
-    category: listingData.category || "",
-    images: listingData.images || [],
-    addedAt: serverTimestamp(),
+// Routed through the server (not a direct client-side Firestore write) --
+// this needs to increment favoritesCount on *someone else's* listing doc,
+// which Firestore rules correctly refuse to let any non-owner write
+// directly. A batch that mixed that with the favorites/{uid}/items write
+// used to fail wholesale (batches are all-or-nothing), silently losing the
+// favorite record too. The server endpoint runs both writes with admin
+// privileges instead. See app.post("/favorites/:listingId") in server.js.
+async function addFavorite(userId, listingId) {
+  const response = await fetch(`/favorites/${listingId}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${currentUser.idToken}` },
   });
-  batch.update(doc(db, "listings", listingId), { favoritesCount: increment(1) });
-  await batch.commit();
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.message || "Failed to add favorite");
+  }
 }
 
 async function removeFavorite(userId, listingId) {
-  const batch = writeBatch(db);
-  batch.delete(doc(db, "favorites", userId, "items", listingId));
-  batch.update(doc(db, "listings", listingId), { favoritesCount: increment(-1) });
-  await batch.commit();
+  const response = await fetch(`/favorites/${listingId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${currentUser.idToken}` },
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.message || "Failed to remove favorite");
+  }
 }
 
 
@@ -874,7 +877,7 @@ async function handleFavoriteClick(element, listingId, listingData) {
         await removeFavorite(currentUser.userId, listingId);
         favoritedIds.delete(listingId);
       } else {
-        await addFavorite(currentUser.userId, listingId, listingData);
+        await addFavorite(currentUser.userId, listingId);
         favoritedIds.add(listingId);
       }
     } catch (error) {

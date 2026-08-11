@@ -1,6 +1,6 @@
 "use strict";
 
-import { db, doc, collection, getDocs, deleteDoc } from "../../../api/firebase-client.js";
+import { db, collection, getDocs } from "../../../api/firebase-client.js";
 
 
 /**
@@ -95,11 +95,24 @@ async function fetchFavorites(userId) {
   return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
 }
 
-async function removeFavorite(userId, listingId) {
-  await deleteDoc(doc(db, "favorites", userId, "items", listingId));
+// Routed through the server, not a direct client-side deleteDoc -- the
+// favorites/{userId}/items delete alone is fine on its own (a user can
+// always write their own favorites subcollection), but it needs to be
+// paired with decrementing favoritesCount on the listing doc, which
+// Firestore rules don't let a non-owner write directly. See
+// app.delete("/favorites/:listingId") in server.js.
+async function removeFavorite(listingId, idToken) {
+  const response = await fetch(`/favorites/${listingId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${idToken}` },
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.message || "Failed to remove favorite");
+  }
 }
 
-function wireRemoveButtons(userId) {
+function wireRemoveButtons(idToken) {
   const grid = document.querySelector("#favorites .favorite-grid");
   if (!grid) return;
 
@@ -114,7 +127,7 @@ function wireRemoveButtons(userId) {
     const listingId = removeBtn.dataset.removeFavorite;
 
     try {
-      await removeFavorite(userId, listingId);
+      await removeFavorite(listingId, idToken);
       const card = removeBtn.closest(".pro");
       if (card) card.remove();
 
@@ -149,7 +162,7 @@ export async function initFavorites(userData) {
       showGrid(favorites);
     }
 
-    wireRemoveButtons(userData.userId);
+    wireRemoveButtons(userData.idToken);
   } catch (error) {
     console.error("Error loading favorites:", error);
     showEmptyState();

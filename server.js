@@ -991,6 +991,87 @@ app.post("/api/offers/:offerId/respond", verifyAuth, async (req, res) => {
   }
 });
 
+// Favoriting/unfavoriting used to be two direct client-side Firestore writes
+// (favorites/{uid}/items/{listingId} + an increment on listings/{id}) batched
+// together for atomicity. Firestore rules correctly only let a listing's
+// owner write to that listing doc, so as soon as the counter update was
+// added to the batch, favoriting someone else's listing (the normal case)
+// got rejected wholesale -- including the favorite record itself, since a
+// batch is all-or-nothing. Moved server-side so it runs with admin
+// privileges instead of needing a client-writable counter field.
+app.post("/favorites/:listingId", verifyAuth, async (req, res) => {
+  try {
+    const userId = req.token.uid;
+    const listingId = req.params.listingId;
+
+    const listingRef = db.collection("listings").doc(listingId);
+    const favoriteRef = db.collection("favorites").doc(userId).collection("items").doc(listingId);
+
+    await db.runTransaction(async (tx) => {
+      const [listingSnap, favoriteSnap] = await Promise.all([tx.get(listingRef), tx.get(favoriteRef)]);
+
+      if (!listingSnap.exists) {
+        throw new Error("LISTING_NOT_FOUND");
+      }
+      if (favoriteSnap.exists) {
+        // Already favorited -- nothing to do, not an error (e.g. a retried request).
+        return;
+      }
+
+      const listing = listingSnap.data();
+      tx.set(favoriteRef, {
+        listingId,
+        productName: listing.productName || "",
+        listingPrice: listing.listingPrice || 0,
+        brand: listing.brand || "",
+        category: listing.category || "",
+        images: listing.images || [],
+        addedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      tx.update(listingRef, { favoritesCount: admin.firestore.FieldValue.increment(1) });
+    });
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    if (error.message === "LISTING_NOT_FOUND") {
+      return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.delete("/favorites/:listingId", verifyAuth, async (req, res) => {
+  try {
+    const userId = req.token.uid;
+    const listingId = req.params.listingId;
+
+    const listingRef = db.collection("listings").doc(listingId);
+    const favoriteRef = db.collection("favorites").doc(userId).collection("items").doc(listingId);
+
+    await db.runTransaction(async (tx) => {
+      // Firestore transactions require every read to happen before any write
+      // -- both tx.get() calls have to run first, even though the listing
+      // read is only needed by the write branch further down.
+      const [favoriteSnap, listingSnap] = await Promise.all([tx.get(favoriteRef), tx.get(listingRef)]);
+      if (!favoriteSnap.exists) {
+        // Already unfavorited -- nothing to do, not an error (e.g. a retried request).
+        return;
+      }
+
+      tx.delete(favoriteRef);
+      // The listing itself may since have been deleted -- only decrement a
+      // counter that still exists rather than throwing on a dangling favorite.
+      if (listingSnap.exists) {
+        tx.update(listingRef, { favoritesCount: admin.firestore.FieldValue.increment(-1) });
+      }
+    });
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Backs the "conversation" page tied to a seller's profile (linked from the
 // buyer's "View offers" confirmation after sending an offer). One query
 // covers both roles: the seller viewing this route on their own profile sees
