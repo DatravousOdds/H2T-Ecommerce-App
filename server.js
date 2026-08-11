@@ -268,6 +268,58 @@ app.post('/send/admin-notify', verifyAuth, async (req, res) => {
   res.json({ success: true });
 });
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Deliberately no verifyAuth -- the contact page has to work for logged-out
+// visitors, unlike /send/update and /send/admin-notify above (both require
+// a Firebase session). Not routed through sendAdminNotification() either:
+// that helper is fire-and-forget and swallows errors, but this route needs
+// to actually report success/failure back to the submitter.
+app.post('/send/contact', async (req, res) => {
+  const { name, email, subject, message, website } = req.body;
+
+  // Honeypot -- a hidden field real visitors never see or fill in, but a
+  // naive bot filling every field in the form will. Report success so it
+  // doesn't learn to look elsewhere, just silently drop the message instead
+  // of actually sending it.
+  if (website) {
+    return res.json({ success: true });
+  }
+
+  if (!name?.trim() || !email?.trim() || !subject?.trim() || !message?.trim()) {
+    return res.status(400).json({ success: false, message: 'All fields are required.' });
+  }
+  if (!EMAIL_PATTERN.test(email.trim())) {
+    return res.status(400).json({ success: false, message: 'Enter a valid email address.' });
+  }
+  if (!process.env.ADMIN_EMAIL) {
+    console.warn('ADMIN_EMAIL not set, cannot send contact form submission');
+    return res.status(500).json({ success: false, message: 'Contact form is temporarily unavailable.' });
+  }
+
+  try {
+    const template = templateBuilder('CONTACT_FORM_SUBMISSION', {
+      name: name.trim(),
+      email: email.trim(),
+      subject: subject.trim(),
+      message: message.trim(),
+    });
+
+    await resendClient.emails.send({
+      from: 'noreply@hexxo.store',
+      to: process.env.ADMIN_EMAIL,
+      replyTo: email.trim(),
+      subject: template.subject,
+      html: template.html,
+    });
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Error sending contact form email:', error);
+    return res.status(500).json({ success: false, message: 'Failed to send message. Please try again.' });
+  }
+});
+
 app.post('/webhooks/easyship', async (req, res) => {
   const signature = req.headers['x-easyship-signature'];
   if (!signature) {
@@ -1123,6 +1175,10 @@ app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPth, "checkout.html"));
 });
 
+app.get("/track-order", (req, res) => {
+  res.sendFile(path.join(staticPth, "track-order.html"));
+});
+
 app.get("/orders/:id", verifyAuth, async (req, res) => {
   try {
     const docId = req.params.id;
@@ -1361,6 +1417,13 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       updatedData.fulfillmentStatus = data.fulfillmentStatus;
       updatedData.trackingNumber = data.trackingNumber;
       updatedData.shippingCarrier = data.shippingCarrier;
+      // Both prepaid-label and self-ship orders converge on this same
+      // branch to actually mark "shipped" (a prepaid label being generated
+      // deliberately doesn't set fulfillmentStatus itself -- see
+      // purchaseShippingLabel's call site) -- so this is the one place that
+      // needs to stamp it. Nothing else on the order doc records a
+      // per-stage timestamp for this transition otherwise.
+      updatedData.shippedAt = admin.firestore.FieldValue.serverTimestamp();
     }
 
     // Buyer-confirmed delivery -- only reachable when there's no Easyship

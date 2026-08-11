@@ -60,9 +60,9 @@
   flex: 1 1 55%;
   padding: 40px;
   background-color: var(--color-background-primary);
-  border: 1px solid #e1e1e1;
-  border-radius: 12px;
-  box-shadow: 0px 4px 16px hsl(208 20% 79% / 1);
+  border: 1px solid #F2F2F2;
+  border-radius: 8px;
+  /* box-shadow: 0px 4px 16px hsl(208 20% 79% / 1); */
 }
 
 #form-details form {
@@ -109,14 +109,50 @@
   color: var(--color-text-secondary);
 }
 
+#form-details form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Off-screen, not display:none -- a display:none/hidden field is a well-known
+   honeypot tell that more sophisticated bots already skip; position it out
+   of the viewport instead so it's invisible to real visitors but still a
+   normal, fillable field to anything just scripting through form inputs. */
+.contact-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact-form-status {
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.contact-form-status.success {
+  background: #eafbea;
+  color: #1a7a1a;
+  border: 1px solid #b7e6b7;
+}
+
+.contact-form-status.error {
+  background: #fdeaea;
+  color: var(--color-button-primary, #f30c1e);
+  border: 1px solid #f5b8b8;
+}
+
 .faqs-styles {
   flex: 1 1 40%;
   flex-direction: column !important;
   padding: 40px;
   background-color: var(--color-background-primary);
-  border: 1px solid #e1e1e1;
-  border-radius: 12px;
-  box-shadow: 0px 4px 16px hsl(208 20% 79% / 1);
+  border: 1px solid #F2F2F2;
+  border-radius: 8px;
+  /* box-shadow: 0px 4px 16px hsl(208 20% 79% / 1); */
 }
 
 .faqs-title {
@@ -127,7 +163,7 @@
 
 .faqs-section hr {
   border: none;
-  border-top: 1px solid #e1e1e1;
+  border-top: 1px solid #C3C3C3;
   margin: 0;
 }
 
@@ -177,6 +213,7 @@
   display: flex;
   justify-content: space-around;
   gap: 20px;
+  margin-bottom: 20px;
 }
 
 #contact-info .info-container {
@@ -187,9 +224,9 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  border: 1px solid #e1e1e1;
-  border-radius: 12px;
-  box-shadow: 0px 4px 16px hsl(208 20% 79% / 1);
+  border: 1px solid #C3C3C3;
+  border-radius: 8px;
+  /* box-shadow: 0px 4px 16px hsl(208 20% 79% / 1); */
 }
 
 .info-icon {

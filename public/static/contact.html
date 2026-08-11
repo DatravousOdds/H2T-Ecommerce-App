@@ -78,20 +78,25 @@
     <section class="section-p1">
       <div id="contact-wrapper" class="contact-wrapper">
         <div id="form-details">
-          <form action="" id="contact-form">
-            <!--- CHANGE LATER IF NEEDED -->
+          <form id="contact-form" novalidate>
             <span>LEAVE A MESSAGE</span>
             <h2>We love to hear from you</h2>
-            <input type="text" placeholder="Your Name" />
-            <input type="text" placeholder="E-mail" />
-            <input type="text" placeholder="Subject" />
+            <p class="contact-form-status" id="contactFormStatus" style="display: none;"></p>
+            <input type="text" name="name" id="contact-name" placeholder="Your Name" required />
+            <input type="email" name="email" id="contact-email" placeholder="E-mail" required />
+            <input type="text" name="subject" id="contact-subject" placeholder="Subject" required />
             <textarea
-              name=""
+              name="message"
+              id="contact-message"
               cols="30"
               rows="10"
               placeholder="Your Message"
+              required
             ></textarea>
-            <button type="submit" class="normal">Submit</button>
+            <!-- Honeypot -- hidden from real visitors via CSS, left blank by
+                 them, but a naive bot filling every field will populate it. -->
+            <input type="text" name="website" id="contact-website" class="contact-honeypot" tabindex="-1" autocomplete="off" />
+            <button type="submit" class="normal" id="contact-submit-btn">Submit</button>
           </form>
         </div>
 
@@ -191,9 +196,10 @@
       </div>
     </section>
 
-    <footer class="section-m1" style="background-color: white"></footer>
+    <footer></footer>
 
     <script type="module" src="../js/components/nav.js"></script>
     <script src="../js/components/footer.js"></script>
+    <script src="../js/pages/contact.js"></script>
   </body>
 </html>

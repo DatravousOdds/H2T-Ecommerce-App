@@ -20,7 +20,7 @@ const createFooter = () => {
 
     <!-- gird-container-3 -->
     <div class="col">
-      <h4>About Us</h4>
+      <h4>Company</h4>
       <a href="/static/about.html">About Us</a>
     </div>
 

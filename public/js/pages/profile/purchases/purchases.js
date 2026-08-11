@@ -231,7 +231,7 @@ function buildOrderDetailsHTML(order) {
     : "";
 
   const trackingSection = order.trackingNumber
-    ? `<button class="track-order-btn" data-tracking="${order.trackingNumber}" data-carrier="${order.shippingCarrier || ""}">
+    ? `<button class="track-order-btn" data-order-id="${order.id}">
          <i class="fa-solid fa-truck"></i>
          Track Order
        </button>`
@@ -554,6 +554,19 @@ function wireEventDelegation(currentUser) {
           errorEl.classList.add("visible");
         }
       }
+    });
+
+    // Delegated for the same reason as the cancel button above -- this
+    // button (and its data-order-id) is regenerated fresh every
+    // openOrderDetails() call.
+    orderDetailsMenu.addEventListener("click", (e) => {
+      const trackBtn = e.target.closest(".track-order-btn");
+      if (!trackBtn || trackBtn.disabled) return;
+
+      const orderId = trackBtn.dataset.orderId;
+      if (!orderId) return;
+
+      window.location.href = `/track-order?orderId=${orderId}`;
     });
 
     // Feeds straight into the same Confirm Delivery flow below -- patches

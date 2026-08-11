@@ -311,7 +311,7 @@ function displayOrderConfirmation(orderData) {
                 </div>
                 <div class="cta-buttons">
                         <button type="button" onclick="window.print()" class="printOrderBtn">Print receipt</button>
-                        <button type="button">Track order</button>
+                        <button type="button" onclick="window.location.href='/track-order?orderId=${orderData.id}'">Track order</button>
                 </div>
             </div>
     `

@@ -152,7 +152,7 @@ button.normal {
   padding: 15px 30px;
   color: var(--color-text-primary);
   background-color: var( var(--color-background-primary));
-  border-radius: 24px;
+  border-radius: 8px;
   cursor: pointer;
   border: none;
   outline: none;
@@ -2087,10 +2087,10 @@ footer .rights {
 #form-details {
   display: flex;
   justify-content: space-between;
-  margin: 30px;
+  margin:0 30px;
   padding: 80px;
-  border: 1px solid #e1e1e1;
-  border-radius: 12px;
+  border: 1px solid #F2F2F2;
+  border-radius: 8px;
   align-items: center;
 }
 

@@ -1,5 +1,19 @@
 "use strict";
 
+// Every other template's inputs come from trusted internal data (Firebase
+// Auth, Stripe, this app's own DB) -- CONTACT_FORM_SUBMISSION is the first
+// one fed raw public-form input, so its fields need escaping before going
+// into an HTML email (otherwise a submitted name/subject/message containing
+// HTML/script would render in the admin's inbox instead of as plain text).
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // Shared shell every notification email renders inside -- keeps brand colors
 // (see public/css/style2.css :root) and layout in one place instead of each
 // template repeating its own HTML boilerplate.
@@ -138,6 +152,25 @@ const notificationTemplates = {
           <li>Item: ${itemLabel}</li>
           <li>Request ID: ${requestId}</li>
         </ul>
+      </div>
+      `)
+  }),
+
+  // Fed by the public, unauthenticated /send/contact route -- name/email/
+  // subject/message are all untrusted user input, hence escapeHtml() on
+  // every one of them (see that function's comment above).
+  CONTACT_FORM_SUBMISSION: ({ name, email, subject, message }) => ({
+    subject: `New contact form message: ${escapeHtml(subject)}`,
+    html: baseTemplate(`
+      <div style="background: #fff; padding: 24px; color: #070707;">
+        <p>Someone submitted the contact form on Hexxo.</p>
+        <ul>
+          <li>Name: ${escapeHtml(name)}</li>
+          <li>Email: ${escapeHtml(email)}</li>
+          <li>Subject: ${escapeHtml(subject)}</li>
+        </ul>
+        <p>Message:</p>
+        <p style="white-space: pre-wrap;">${escapeHtml(message)}</p>
       </div>
       `)
   })

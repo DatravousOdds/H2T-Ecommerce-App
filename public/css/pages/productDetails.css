@@ -591,7 +591,7 @@
 
 .stat-val {
     font-size: 1.25rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .stat-delta {
@@ -740,14 +740,14 @@
 }
 
 .seller-name {
-    text-decoration: underline;
+    text-decoration: none;
     color: #000;
     font-weight: 600;
 }
 
 .seller-profile-picture {
-    width: 32px;
-    height: 32px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -788,7 +788,8 @@
 .single-pro-image .seller-profile {
     margin: 0.5rem 0;
     cursor: pointer;
-    align-items: flex-start;
+    align-items: center;
+    gap: 0.5rem;
     text-decoration: none;
 }
 
@@ -800,7 +801,6 @@
 .seller-profile-info {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
 }
 
 .seller-name-row {
