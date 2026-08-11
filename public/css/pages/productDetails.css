@@ -823,10 +823,11 @@
 }
 
 .auth-badge {
+    text-transform: capitalize;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    color: #1a1a1a;
+    color: #070707;
     font-size: 0.85rem;
     font-weight: 700;
     width: fit-content;
@@ -851,6 +852,16 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
+}
+
+/* :not(:last-child) rather than a hardcoded divider between two specific
+   stats -- works the same whether sellerRatingStat is hidden (no reviews
+   yet, the common case today) or visible, without needing two different
+   markup paths. display:none siblings don't render a border at all, so a
+   hidden rating stat just doesn't contribute one. */
+.seller-stat:not(:last-child) {
+    padding-right: 0.75rem;
+    border-right: 1px solid #d9d9d9;
 }
 
 .seller-rating-stars {

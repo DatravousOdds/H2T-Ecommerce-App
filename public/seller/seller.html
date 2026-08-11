@@ -37,127 +37,11 @@
         </nav>
     </section>
     <main>
-        <section class="photos" id="photos">
+        <section class="category-select" id="category-select">
             <div class="section-header">
-              <h4>Photos</h4>
-              <p>Submit up to 8 photos and 1 video</p>  
+              <h4>Category</h4>
+              <p>Choose a category to see which photos are required</p>
             </div>
-            
-            <div class="images-grid-container">
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-1" id="image-1" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-2" id="image-2" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-3" id="image-3" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-4" id="image-4" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-5" id="image-5" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-6" id="image-6" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-7" id="image-7" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container" draggable="false">
-                    <input type="file" name="image-8" id="image-8" multiple accept="image/jpeg,image/png">
-                    <i class="fa-solid fa-images"></i>
-                    <span>Add up to 8 photos</span>
-                    <img src="" alt="Preview" class="image-preview" style="display: none;">
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-                <article class="image-container video-container" id="videoContainer">
-                    <input type="file" name="video" id="video" accept="video/mp4,video/quicktime,video/webm">
-                    <i class="fa-solid fa-video"></i>
-                    <span>Add 1 video (optional, max 30s)</span>
-                    <video class="video-preview" muted playsinline controls style="display: none;"></video>
-                    <button type="button" class="remove-image-btn" style="display: none;">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </article>
-            </div>
-            <p class="errorText" id="errorText"></p>
-        </section>
-        <section class="product-info" id="product-info">
-            <div class="section-header">
-              <h4>Product Info</h4>
-              <p>Describe your product to buyer get a clear picture</p> 
-            </div>
-            <div class="input-container">
-                <div class="input-header">
-                    <label for="title">Title</label>
-                    <div class="char-counter" id="titleCharCounter">0/80</div> 
-                </div>
-                <input type="text" id="title" placeholder="What are you selling?" maxlength="80">
-                <p class="errorText" id="error-title"></p>
-            </div>
-
-            <!-- Admin-only: shown/hidden via JS in seller.js based on currentUser.isAdmin -->
-            <div class="input-container" id="listingTypeSection" style="display:none;">
-                <label for="listingType">Listing Type</label>
-                <select name="listingType" id="listingType">
-                    <option value="standard">Standard</option>
-                    <option value="release">Release Listing</option>
-                </select>
-                <p class="errorText" id="error-listingType"></p>
-            </div>
-
-            <div class="input-container" id="releaseDateSection" style="display:none;">
-                <label for="releaseDate">Release Date</label>
-                <input type="date" id="releaseDate">
-                <p class="errorText" id="error-releaseDate"></p>
-            </div>
-
             <div class="input-container">
                 <label for="category">Category</label>
                 <select name="category" id="category">
@@ -186,6 +70,60 @@
                     </optgroup>
                 </select>
                 <p class="errorText" id="error-category"></p>
+            </div>
+        </section>
+        <section class="photos" id="photos">
+            <div class="section-header">
+              <h4>Photos</h4>
+              <p id="photosSubheader">Select a category above to see the required photos</p>
+            </div>
+
+            <div class="images-grid-container">
+                <!-- Required-angle photo slots populated per-category by
+                     renderImageSlots() in seller.js -- required count/labels
+                     vary by category, same data source as the standalone
+                     authentication-request flow (angleRequirements.js). The
+                     video slot below stays static/category-independent. -->
+                <article class="image-container video-container" id="videoContainer">
+                    <input type="file" name="video" id="video" accept="video/mp4,video/quicktime,video/webm">
+                    <i class="fa-solid fa-video"></i>
+                    <span>Add 1 video (optional, max 30s)</span>
+                    <video class="video-preview" muted playsinline controls style="display: none;"></video>
+                    <button type="button" class="remove-image-btn" style="display: none;">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </article>
+            </div>
+            <p class="errorText" id="errorText"></p>
+        </section>
+        <section class="product-info" id="product-info">
+            <div class="section-header">
+              <h4>Product Info</h4>
+              <p>Describe your product to buyer get a clear picture</p>
+            </div>
+            <div class="input-container">
+                <div class="input-header">
+                    <label for="title">Title</label>
+                    <div class="char-counter" id="titleCharCounter">0/80</div>
+                </div>
+                <input type="text" id="title" placeholder="What are you selling?" maxlength="80">
+                <p class="errorText" id="error-title"></p>
+            </div>
+
+            <!-- Admin-only: shown/hidden via JS in seller.js based on currentUser.isAdmin -->
+            <div class="input-container" id="listingTypeSection" style="display:none;">
+                <label for="listingType">Listing Type</label>
+                <select name="listingType" id="listingType">
+                    <option value="standard">Standard</option>
+                    <option value="release">Release Listing</option>
+                </select>
+                <p class="errorText" id="error-listingType"></p>
+            </div>
+
+            <div class="input-container" id="releaseDateSection" style="display:none;">
+                <label for="releaseDate">Release Date</label>
+                <input type="date" id="releaseDate">
+                <p class="errorText" id="error-releaseDate"></p>
             </div>
 
             <div class="input-container">

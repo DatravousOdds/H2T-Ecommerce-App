@@ -1935,12 +1935,21 @@ button.white {
   height: -20px;
 }
 
+/* Fixed 5-column grid (matches the 5 .col elements footer.js renders today)
+   rather than repeat(auto-fit, minmax(...)) -- auto-fit computes its column
+   count from container-width / track-min-size regardless of how many items
+   actually exist, and footer .rights' grid-column: 1 / -1 span keeps every
+   one of those extra phantom tracks "occupied" so auto-fit won't collapse
+   them. On a wide screen that meant the 1fr growth got diluted across ~13
+   tracks instead of concentrated in the 5 real ones, leaving a dead zone on
+   the right. A literal column count has no such ambiguity -- it always
+   divides the full row width across exactly the columns that exist.
+   Reduced at narrower widths below since 5 real columns get cramped there. */
 footer {
   padding:2rem;
-  margin-top: auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem 4rem;
   background-color: #070707
 }
 
@@ -2004,6 +2013,7 @@ footer a:hover {
 }
 
 footer .rights {
+  grid-column: 1 / -1;
   width: 100%;
   text-align: center;
 }
@@ -2680,8 +2690,10 @@ footer .rights {
     margin-bottom: 1rem;
   }
 
-  footer .col {
-    flex: 0 0 22%;
+  /* 5 real columns get cramped below 1040px -- 3 per row, wrapping the
+     remaining 2 onto a second row. */
+  footer {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -2865,22 +2877,6 @@ footer .rights {
 
   /* Footer */
 
-  footer {
-    display: flex;
-    flex-wrap: wrap;
-    /* border: 1px solid red; */
-    justify-content: space-between;
-    /* align-items: center; */
-    /* padding: 0px 25px; */
-    /* margin: 1rem 0; */
-    height: 90%;
-  }
-
-  footer .col {
-    max-width: 160px;
-    flex-basis: 170px;
-  }
-
   footer .install img {
     margin: 1px 0 15px 0;
     width: 48%;
@@ -2915,6 +2911,12 @@ footer .rights {
 
 /* Mobile (768px and below) */
 @media (max-width: 768px) {
+  /* Stacked single column -- 3 per row is still too tight for the longer
+     link labels (e.g. "Terms of Service") at phone widths. */
+  footer {
+    grid-template-columns: 1fr;
+  }
+
   /* Profile Picture */
   .profile-picture {
     width: 35px;

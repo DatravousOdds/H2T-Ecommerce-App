@@ -194,154 +194,21 @@
             <!-- Header -->
             <div class="form-header">
               <h1 class="form-title">Upload Images</h1>
-              <p class="subheader">Upload at least 5 accurate images</p>
+              <p class="subheader" id="imageUploadSubheader">Select a category to see the required photos</p>
             </div>
             <!-- Content -->
              <div class="image-section-errors">
 
              </div>
+            <!-- Populated per-category by renderImageSlots() in authenticate.js --
+                 required angles vary by category (e.g. Sneakers needs 8 distinct
+                 angles, Apparel needs 5), so this can't be a fixed set of slots. -->
             <div
               class="image-grid"
+              id="imageGrid"
               role="group"
               aria-label="Product image Uploads"
-            >
-              <!-- Main Image Upload -->
-              <div class="image-item main-image" data-index="0">
-                <input
-                  data-index="0"
-                  type="file"
-                  id="mainImage"
-                  name="mainImage"
-                  accept="image/png, image/jpeg"
-                  class="file-input"
-                  required
-                  aria-required="true"
-                  aria-describedby="mainImageHelp"
-                />
-                <label for="mainImage" class="file-label">
-                  <div class="preview-container">
-                    <i class="fas fa-plus upload-icon"></i>
-                    <span class="upload-text"> Upload Main Image </span>
-                    <img
-                      src=""
-                      alt="Preview"
-                      class="image-preview"
-                      style="display: none"
-                    />
-                  </div>
-                </label>
-
-                <button
-                  class="remove-image-btn"
-                  style="display: none"
-                  aria-label="Remove image"
-                >
-                  <i class="fas fa-trash-alt" aria-hidden="true"></i>
-                </button>
-
-              </div>
-              <!-- Image 2 -->
-              <div class="image-item" data-upload-type="back">
-                <input
-                  data-index="1"
-                  type="file"
-                  id="image2"
-                  accept="image/png, image/jpeg"
-                  class="file-input"
-                />
-                <label for="image2" class="file-label">
-                  <div class="preview-container">
-                    <i class="fa-regular fa-image upload-icon"></i>
-                    <img
-                      src=""
-                      alt="Preview"
-                      class="image-preview"
-                      style="display: none"
-                    />
-                  </div>
-                </label>
-                <!-- Remove Image button -->
-                <button class="remove-image-btn" style="display: none">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-              <!-- Image 3 -->
-              <div class="image-item">
-                <input
-                  data-index="2"
-                  type="file"
-                  id="image3"
-                  accept="image/png, image/jpeg"
-                  class="file-input"
-                />
-                <label for="image3" class="file-label">
-                  <div class="preview-container">
-                    <i class="fa-regular fa-image upload-icon"></i>
-                    <img
-                      src=""
-                      alt="Preview"
-                      class="image-preview"
-                      style="display: none"
-                    />
-                  </div>
-                </label>
-                <!-- Remove Image button -->
-                <button class="remove-image-btn" style="display: none">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-              <!-- Image 4 -->
-              <div class="image-item">
-                <input
-                  data-index="3"
-                  type="file"
-                  id="image4"
-                  accept="image/png, image/jpeg"
-                  class="file-input"
-                />
-                <label for="image4" class="file-label">
-                  <div class="preview-container">
-                    <i class="fa-regular fa-image upload-icon"></i>
-                    <img
-                      src=""
-                      alt="Preview"
-                      class="image-preview"
-                      style="display: none"
-                    />
-                  </div>
-                </label>
-                <!-- Remove Image button -->
-                <button class="remove-image-btn" style="display: none">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-              <!-- Image 5 -->
-              <div class="image-item">
-                <input
-                  data-index="4"
-                  type="file"
-                  id="image5"
-                  accept="image/png, image/jpeg"
-                  class="file-input"
-                />
-                <label for="image5" class="file-label">
-                  <div class="preview-container">
-                    <i class="fa-regular fa-image upload-icon"></i>
-                    
-                    <img
-                      src=""
-                      alt="Preview"
-                      class="image-preview"
-                      style="display: none"
-                    />
-                  </div>
-                </label>
-                <!-- Remove Image button -->
-                <button class="remove-image-btn" style="display: none">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </div>
-            </div>
+            ></div>
 
             <!-- Shared across every category (step 3 isn't category-specific) --
                  captured in validateStep(3), included in the submitted request
@@ -358,19 +225,15 @@
             </div>
 
             <!-- Message -->
+            <!-- List populated per-category by renderImageSlots() -- mirrors
+                 whatever angles imageGrid above is currently asking for. -->
             <div class="message-wrapper" role="alert">
               <i class="fa-solid fa-circle-exclamation"></i>
-              <h4 class="msg-text">
-                Please upload at least 5 clear photos for authentication
-                verification. Include:
+              <h4 class="msg-text" id="imageUploadMsgText">
+                Select a category above to see the required photos for
+                authentication verification.
               </h4>
-              <ul>
-                <li>Front view (required)</li>
-                <li>Back view (required)</li>
-                <li>Side views</li>
-                <li>Label/tags</li>
-                <li>Special details or markings</li>
-              </ul>
+              <ul id="requiredAnglesList"></ul>
             </div>
             <div class="form-actions">
               <button type="button" class="back-btn">
@@ -487,14 +350,9 @@
                   </div>
                   
                 </div>
-                <!-- Image preview grid-->
-                 <div class="image-grid-review">
-                  <img class="review-image" src="" alt="" />
-                  <img class="review-image" src="" alt="" />
-                  <img class="review-image" src="" alt="" />
-                  <img class="review-image" src="" alt="" />
-                  <img class="review-image" src="" alt="" /> 
-                 </div>
+                <!-- Image preview grid -- populated by renderReviewImageSlots()
+                     in authenticate.js to match the current category's angle count -->
+                 <div class="image-grid-review" id="reviewImageGrid"></div>
                 
               </div>
               <!-- Details Review-->

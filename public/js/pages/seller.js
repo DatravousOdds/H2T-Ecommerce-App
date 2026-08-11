@@ -3,6 +3,31 @@ import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app,
 import { collection, setDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { ANGLE_REQUIREMENTS, getRequiredAngleCount } from '../core/angleRequirements.js';
+
+// Maps this page's seller-listing categories onto the 5 categories
+// angleRequirements.js actually defines angle sets for. Sneakers/Shoes both
+// map to "Sneakers" (Luxury Shoes reuses that same set, see
+// angleRequirements.js). Everything without a real match (Hats, Accessories,
+// every Collectibles sub-type besides Trading Cards, and "Other") falls back
+// to Apparel's angle set rather than leaving those categories with no photo
+// guidance at all.
+const ANGLE_CATEGORY_BY_NORMALIZED_CATEGORY = {
+    sneakers: 'Sneakers',
+    shoes: 'Sneakers',
+    bags: 'Bags & Leather Goods',
+    apparel: 'Apparel',
+};
+
+// Same normalization seller.js already uses everywhere else (category.value
+// is gender-prefixed, e.g. "men-sneakers"). Collectibles' Trading-Cards-vs-
+// other-subtype split isn't knowable yet at this point in the flow -- the
+// "Type" field that captures it lives in Product Info, which now comes
+// *after* the photo step -- so Collectibles falls back to Apparel here too.
+function resolveAngleCategory(rawCategoryValue) {
+    const normalized = (rawCategoryValue || '').trim().split('-')[1] || 'other';
+    return ANGLE_CATEGORY_BY_NORMALIZED_CATEGORY[normalized] || 'Apparel';
+}
 
 // Kept in sync with the color values men.js filters listings by.
 const colors = [
@@ -32,9 +57,7 @@ const BRAND_GROUPS = [
 
 const imageGridContainer = document.querySelector('.images-grid-container');
 const imagesErrorText = document.getElementById('errorText');
-
-const TOTAL_IMAGE_SLOTS = [...imageGridContainer.querySelectorAll('.image-container')]
-    .filter(c => c.id !== 'videoContainer').length;
+const photosSubheader = document.getElementById('photosSubheader');
 
 const videoContainer = document.getElementById('videoContainer');
 const videoInput = document.getElementById('video');
@@ -442,6 +465,7 @@ imageGridContainer.addEventListener('dragend', () => {
 productCategory.addEventListener("change", () => {
     if (!productCategory.value) return;
     getCategoryFields(productCategory.value.trim());
+    renderImageSlots(resolveAngleCategory(productCategory.value));
 })
 
 productCategory.addEventListener("change", () => {
@@ -735,6 +759,10 @@ function populateFormForEdit(existing) {
         : 'other';
     productCategory.value = categoryValue;
     getCategoryFields(categoryValue);
+    // Must run before this function's populateExistingImages() call below --
+    // the angle grid has to exist before there's anywhere to put the
+    // existing photos.
+    renderImageSlots(resolveAngleCategory(categoryValue));
     if (existing.size) productSize.value = existing.size;
 
     productBrand.value = existing.brand || '';
@@ -838,6 +866,14 @@ function populateFormFromAuthRequest(authData) {
     } else if (details.Size) {
         pendingAuthSize = details.Size;
     }
+
+    // Renders off authCategory directly, not through resolveAngleCategory --
+    // authCategory is already one of angleRequirements.js's own keys (it's
+    // the category the buyer's authentication request was actually
+    // submitted under), and for Sneakers/Shoes/Apparel the seller category
+    // dropdown above is deliberately left unset until the seller picks by
+    // hand, so there'd be nothing for resolveAngleCategory to read yet.
+    if (authCategory) renderImageSlots(authCategory);
 
     populateExistingImages(authData.images || []);
 }
@@ -1280,20 +1316,26 @@ function validateProductInfo() {
 }
 
 function validateImages() {
-    const images = document.querySelectorAll('.image-preview');
-
-    if (images.length === 0) return false;
-
-    const hasAtLeastOneImage = [...images].some(image => {
-        const imageSrc = image.getAttribute('src');
-        return imageSrc !== '' && imageSrc !== null;
-    })
-
-    if (!hasAtLeastOneImage) {
-        alert('Please upload at least one photo!');
+    if (!productCategory.value) {
+        showImagesError('Please select a category above to see which photos are required.');
         return false;
     }
 
+    const images = document.querySelectorAll('.image-preview');
+    const angleCategory = resolveAngleCategory(productCategory.value);
+    const requiredCount = getRequiredAngleCount(angleCategory);
+
+    const uploadedCount = [...images].filter(image => {
+        const imageSrc = image.getAttribute('src');
+        return imageSrc !== '' && imageSrc !== null;
+    }).length;
+
+    if (uploadedCount < requiredCount) {
+        showImagesError(`Please upload ${requiredCount} required photo${requiredCount === 1 ? '' : 's'} for this category (currently ${uploadedCount}).`);
+        return false;
+    }
+
+    removeImagesError();
     return true;
 }
 
@@ -1410,6 +1452,48 @@ function getEmptyImageContainers() {
         .filter(c => c.querySelector('.image-preview').style.display === 'none');
 }
 
+function getTotalImageSlots() {
+    return [...document.querySelectorAll('.images-grid-container .image-container')]
+        .filter(c => c !== videoContainer).length;
+}
+
+function imageSlotHTML(angle, index) {
+    const isOptional = angle.type !== 'required';
+    return `
+        <article class="image-container" draggable="false" data-angle-id="${angle.id}">
+            <input type="file" name="image-${index + 1}" id="image-${index + 1}" multiple accept="image/jpeg,image/png">
+            <i class="fa-solid ${isOptional ? 'fa-plus' : 'fa-camera'}"></i>
+            <span>${angle.label}</span>
+            <img src="" alt="Preview" class="image-preview" style="display: none;">
+            <button type="button" class="remove-image-btn" style="display: none;">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </article>
+    `;
+}
+
+// Rebuilds the photo grid around whichever angle category the currently
+// selected listing category maps to (see resolveAngleCategory) -- required
+// angle count/labels vary a lot per category, same as the standalone
+// authentication-request flow's photo step. The static video slot is left
+// alone (category-independent, stays put as the grid's last child); only
+// the image-angle slots ahead of it get discarded and rebuilt. The existing
+// click/drag listeners are delegated on imageGridContainer itself (see
+// below), so newly-inserted slots pick those up automatically -- nothing
+// else needs re-wiring after a rebuild.
+function renderImageSlots(angleCategory) {
+    const angles = ANGLE_REQUIREMENTS[angleCategory];
+    if (!angles || !videoContainer) return;
+
+    imageGridContainer.querySelectorAll('.image-container:not(.video-container)').forEach(el => el.remove());
+    videoContainer.insertAdjacentHTML('beforebegin', angles.map((angle, i) => imageSlotHTML(angle, i)).join(''));
+
+    if (photosSubheader) {
+        const requiredCount = getRequiredAngleCount(angleCategory);
+        photosSubheader.textContent = `Submit ${requiredCount} required photo${requiredCount === 1 ? '' : 's'} for this category`;
+    }
+}
+
 function showImagesError(message) {
     imagesErrorText.textContent = message;
     imageGridContainer.classList.add('error');
@@ -1442,7 +1526,7 @@ function handleImageUpload(input) {
 
         if (files.length > emptyContainers.length) {
             showImagesError(emptyContainers.length === 0
-                ? `You've reached the ${TOTAL_IMAGE_SLOTS} photo limit.`
+                ? `You've reached the ${getTotalImageSlots()} photo limit.`
                 : `You selected ${files.length} photos, but only ${emptyContainers.length} slot${emptyContainers.length === 1 ? '' : 's'} left.`);
             return;
         }

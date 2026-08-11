@@ -3,6 +3,13 @@
 #newsletter {
   min-height: 100px;
   display: flex;
+  /* Pinned to the bottom of the sticky-footer flex column (body's
+     display:flex/flex-direction:column) instead of footer itself -- so on
+     short pages the newsletter+footer move down as one attached unit,
+     rather than footer alone jumping to the bottom and leaving a gap
+     between it and wherever the newsletter happened to land in normal
+     flow. See footer's own margin-top removal in style2.css. */
+  margin-top: auto;
   padding: 0 2rem;
   justify-content: space-between;
   flex-wrap: wrap;

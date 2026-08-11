@@ -102,12 +102,15 @@ const STREETWEAR_APPAREL_BRANDS = [
   "fear of god essentials", "eric emanuel", "hellstar", "moncler",
   "the north face", "polo ralph lauren", "mcm", "canada goose"
 ];
+// Keyed by the de-gendered value actually stored in listing.category (see
+// seller.js's collectListingInfo: category.split('-')[1] -- gender lives
+// separately in categoryMeta). This used to be keyed by gender-prefixed
+// values ("men-sneakers" etc.) that never matched any real listing doc, so
+// the brand-match path silently never fired for sneakers/shoes -- only
+// listingPrice >= AUTHENTICATION_MIN_PRICE was ever qualifying them.
 const AUTHENTICATION_CATALOG = {
-  "men-sneakers": SNEAKER_FOOTWEAR_BRANDS,
-  "women-sneakers": SNEAKER_FOOTWEAR_BRANDS,
-  "kids-sneakers": SNEAKER_FOOTWEAR_BRANDS,
-  "men-shoes": SNEAKER_FOOTWEAR_BRANDS,
-  "women-shoes": SNEAKER_FOOTWEAR_BRANDS,
+  "sneakers": SNEAKER_FOOTWEAR_BRANDS,
+  "shoes": SNEAKER_FOOTWEAR_BRANDS,
   "apparel": STREETWEAR_APPAREL_BRANDS
 };
 
@@ -728,6 +731,7 @@ app.get("/api/sellers/:id/public-profile", async (req, res) => {
       ratings: profile.ratings || {},
       stats: profile.stats || {},
       websiteLinks: profile.websiteLinks || [],
+      salesCount: profile.salesCount || 0,
     });
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
@@ -2026,6 +2030,48 @@ async function notifySellerPayoutSucceeded(order, payout) {
   );
 }
 
+// Rolls a delivery confirmation's rating into the seller's public-profile
+// stats (running average + count + per-star breakdown) once that
+// confirmation is fully admin-reviewed and confirmed good -- direct
+// approval, or a dispute resolved in the seller's favor (both call this via
+// approveDeliveryAndReleasePayout below). Deliberately never called from
+// dispute/uphold: whether a refunded, upheld-dispute order's original
+// rating should still count against the seller is a separate, more
+// contestable call than "aggregate ratings exist at all," left for a later
+// decision instead of assumed here.
+async function applyDeliveryRatingToSellerProfile(sellerId, orderId) {
+  const confirmationSnap = await db.collection("deliveryConfirmations").doc(orderId).get();
+  const rating = confirmationSnap.data()?.rating;
+
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return;
+
+  const profileRef = db.collection("userProfiles").doc(sellerId);
+
+  await db.runTransaction(async (tx) => {
+    const profileSnap = await tx.get(profileRef);
+    if (!profileSnap.exists) return;
+
+    const profile = profileSnap.data();
+    const metrics = profile.ratings?.metrics || { averageRating: 0, totalRatings: 0 };
+    const ratingCount = profile.ratings?.ratingCount || {};
+
+    const newTotal = metrics.totalRatings + 1;
+    // Rounded here (the one place this is computed) rather than left as a
+    // raw repeating-decimal float -- product.js/sellerProfile.js/reviews.js
+    // all just display stats.rating directly, no formatting of their own.
+    const newAverage = parseFloat(
+      (((metrics.averageRating * metrics.totalRatings) + rating) / newTotal).toFixed(1)
+    );
+
+    tx.update(profileRef, {
+      "ratings.metrics.totalRatings": newTotal,
+      "ratings.metrics.averageRating": newAverage,
+      [`ratings.ratingCount.${rating}`]: (ratingCount[rating] || 0) + 1,
+      "stats.rating": newAverage,
+    });
+  });
+}
+
 // Shared by the approve endpoint below and the dispute-reject endpoint --
 // both end the same way: deliveryConfirmationStatus -> "approved", attempt
 // the payout, notify the seller either way. Advances regardless of whether
@@ -2036,6 +2082,13 @@ async function approveDeliveryAndReleasePayout(order, orderId, docRef) {
   await docRef.update({
     deliveryConfirmationStatus: "approved",
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  // Best-effort, same reasoning as the tax-transaction record and admin
+  // notifications elsewhere in this file -- a rating-aggregation failure
+  // shouldn't block the actual payout, which is the critical path here.
+  await applyDeliveryRatingToSellerProfile(order.sellerId, orderId).catch((error) => {
+    console.error(`Failed to apply delivery rating to seller profile for order ${orderId}:`, error);
   });
 
   const payout = await releasePayoutToSeller(order, orderId);
@@ -3093,6 +3146,75 @@ app.delete('/api/payment-methods/:id', verifyAuth, async (req, res) => {
   }
 })
 
+// Mirrors ANGLE_REQUIREMENTS in public/js/services/authenticate.js -- just
+// the required-angle *count* per category, not the full label list, since
+// this only needs to check "enough photos for this category," not render
+// anything. Luxury Shoes has no angle table of its own (see that file's
+// comment) and reuses Sneakers' count for the same reason.
+const REQUIRED_ANGLE_COUNTS = {
+  "Trading Cards": 8,
+  "Apparel": 5,
+  "Sneakers": 8,
+  "Bags & Leather Goods": 6,
+  "Luxury Shoes": 8,
+};
+
+// Authentication requests used to be created with a direct client-side
+// addDoc() call (authenticate.js's old submitToFirebase()) -- meaning the
+// "upload N required angle photos" rule (ANGLE_REQUIREMENTS/validateStep(3)
+// in that file) was purely a client-side check, trivially skippable by
+// editing the running JS or calling Firestore directly. This recomputes the
+// required count for the declared category server-side and rejects a
+// request that doesn't actually meet it, instead of trusting the client's
+// own image array length.
+app.post("/authentication-requests", verifyAuth, async (req, res) => {
+  try {
+    const { images, price, productDetails, additionalComments, tierSelection } = req.body;
+
+    const category = productDetails?.category;
+    const requiredCount = REQUIRED_ANGLE_COUNTS[category];
+
+    if (!requiredCount) {
+      return res.status(400).json({ success: false, message: "Unknown or missing category" });
+    }
+
+    if (!Array.isArray(images) || images.length < requiredCount) {
+      return res.status(400).json({
+        success: false,
+        message: `${category} requires at least ${requiredCount} photos (received ${Array.isArray(images) ? images.length : 0})`,
+      });
+    }
+
+    const authRequestData = {
+      images,
+      price,
+      productDetails,
+      additionalComments: additionalComments || "",
+      tierSelection,
+
+      // Transitional status -- the AI matching step (not yet built) is
+      // responsible for advancing this to "pending_review" (confident
+      // match found) or "needs_manual_review" (no match cleared the
+      // threshold), per the planning doc's status table. "submitted" is
+      // the honest interim state between form submission and that
+      // pipeline actually running.
+      // Full enum: submitted | pending_review | needs_manual_review |
+      // needs_info | approved | rejected
+      status: "submitted",
+      userId: req.token.uid,
+
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updateAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    const docRef = await db.collection("authenticationRequests").add(authRequestData);
+
+    return res.status(200).json({ success: true, requestId: docRef.id });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Triggers the AI matching step for a submitted authentication request:
 // generates an embedding for its primary image, compares against every
 // listing's referenceEmbedding, and writes matches + status. Called
@@ -3663,6 +3785,16 @@ async function handlePaymentIntentSucceeded(paymentData){
           averageSalePrice: parseFloat(newAverage.toFixed(2)),
           lastSalePrice: salePrice
         });
+
+        // Denormalized on the seller's public profile (not a live orders
+        // query) since orders has no public Firestore read rule -- see
+        // /api/sellers/:id/public-profile's own reasoning. Best-effort,
+        // same as the admin notification above.
+        if (listing.userId) {
+          db.collection('userProfiles').doc(listing.userId)
+            .update({ salesCount: admin.firestore.FieldValue.increment(1) })
+            .catch((error) => console.error(`Failed to increment salesCount for seller ${listing.userId}:`, error));
+        }
 
         // Prepaid-shipping sales only (purchaseShippingLabel no-ops on
         // self-ship listings). fulfillmentStatus deliberately stays

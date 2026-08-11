@@ -4,6 +4,7 @@ import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { fetchSalesPrices } from '../components/priceChart.js';
+import { isAuthenticationEligible } from '../core/authenticationEligibility.js';
 
 
 const user = await checkUserStatus();
@@ -19,8 +20,11 @@ const sellerVerifiedTag = document.getElementById('sellerVerifiedTag');
 const sellerRatingStat = document.getElementById('sellerRatingStat');
 const sellerRatingStars = document.getElementById('sellerRatingStars');
 const sellerRating = document.getElementById('sellerRating');
+const sellerReviewCount = document.getElementById('sellerReviewCount');
 const sellerListingsCount = document.getElementById('sellerListingsCount');
+const sellerSalesCount = document.getElementById('sellerSalesCount');
 const authBadge = document.getElementById('authBadge');
+const authBadgeText = authBadge.querySelector('span');
 const productTitle = document.querySelector('.prod-title');
 const productPrice = document.querySelector('.prod-price')
 const productOriginalPrice = document.querySelector('.original-price');
@@ -346,7 +350,20 @@ async function displayProductDetails() {
         handleFavoriteClick(singleProImage, productId, data);
 
         productCategory.textContent = data.category;
-        authBadge.style.display = data.authenticated ? '' : 'none';
+
+        // Same priority as the card renderers (global.js/this file's related-
+        // products grid): authenticated means this exact item already passed
+        // review; isAuthenticationEligible means it hasn't yet but mandatorily
+        // will before it ships (enforced server-side at checkout regardless).
+        if (data.authenticated) {
+            authBadge.style.display = '';
+            authBadgeText.textContent = 'Authenticity Guarantee';
+        } else if (isAuthenticationEligible(data)) {
+            authBadge.style.display = '';
+            authBadgeText.textContent = 'Verified authentic';
+        } else {
+            authBadge.style.display = 'none';
+        }
 
         const sellerProfile = await getUserProfile(data.userId);
         sellerProfilePicture.src = sellerProfile.profileImage || '/images/default-avatar.svg';
@@ -361,12 +378,14 @@ async function displayProductDetails() {
             sellerRatingStat.style.display = '';
             sellerRatingStars.innerHTML = renderRatingStars(sellerProfile.stats?.rating || 0);
             sellerRating.textContent = sellerProfile.stats?.rating;
+            sellerReviewCount.textContent = `(${totalRatings})`;
         } else {
             sellerRatingStat.style.display = 'none';
         }
 
         const sellerActiveListings = await fetchSellerActiveListingsCount(data.userId);
         sellerListingsCount.textContent = sellerActiveListings;
+        sellerSalesCount.textContent = sellerProfile.salesCount || 0;
 
         productTitle.textContent = data.productName;
         productPrice.textContent = `$${data.listingPrice.toFixed(2)}`;
@@ -1007,22 +1026,13 @@ function displayProducts(products) {
             </div>
           </div>`;
 
-      // categoryMeta only carries 'men'/'women' for gendered categories
-      // (Sneakers/Shoes/Apparel) -- see seller.js's category dropdown
-      // split; ungendered categories like Accessories have no letter.
-      const genderLetter = productData.categoryMeta === 'men'
-        ? 'M'
-        : productData.categoryMeta === 'women'
-        ? 'W'
-        : '';
-
       // Collectibles' "size" field actually holds the sub-type (e.g. "Trading
       // Cards"), not a wearable size, so the card shows brand instead there.
       const isCollectibles = productData.category === 'collectibles';
       const sizeOrBrand = isCollectibles ? productData.brand : productData.size;
       const sizeConditionHTML = sizeOrBrand
         ? `<p class="pro-meta">
-            ${isCollectibles ? sizeOrBrand : `Size ${sizeOrBrand}`}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | ${productData.condition}` : ''}
+            ${isCollectibles ? sizeOrBrand : `Size ${sizeOrBrand}`}${productData.condition ? ` | ${productData.condition}` : ''}
           </p>`
         : '';
 
@@ -1032,6 +1042,25 @@ function displayProducts(products) {
       // purchaseShippingLabel in server.js), so this is always "Free
       // shipping" from the buyer's side.
       const shippingHTML = `<span class="shipping-note">+ Free shipping</span>`;
+
+      // authenticated (set by seller.js from an approved authenticationRequests
+      // doc) means this exact item has already been checked.
+      // isAuthenticationEligible() is the weaker claim -- not checked yet,
+      // but mandatorily will be as part of checkout before it ships
+      // (server.js's /create-checkout-session enforces this itself). Same
+      // priority order as global.js's displayProducts and checkout.js's own
+      // authenticationBadgeHTML.
+      const authBadgeHTML = productData.authenticated
+        ? `<div class="auth-badge auth-badge--card">
+            <img src="/images/hexxo_auth_badge.png" alt="">
+            <span>Authenticity Guarantee</span>
+          </div>`
+        : isAuthenticationEligible(productData)
+        ? `<div class="auth-badge auth-badge--card">
+            <img src="/images/hexxo_auth_badge.png" alt="">
+            <span>Verified authentic</span>
+          </div>`
+        : '';
 
       productElement.innerHTML = `
 
@@ -1069,12 +1098,14 @@ function displayProducts(products) {
                     ${priceChangeHTML}
                   </div>
 
+                  ${authBadgeHTML}
+
                 </div>
 
               </div>
               <!-- product details -->
       `;
-  
+
       handleFavoriteClick(productElement, doc.id, productData);
 
       productsContainer.appendChild(productElement);

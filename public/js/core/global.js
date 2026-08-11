@@ -1,6 +1,7 @@
 import { collection, addDoc, getDocs, where, query, limit, getDoc, startAfter } from '../api/firebase-client.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
+import { isAuthenticationEligible } from './authenticationEligibility.js';
 
 // var, not let: on iOS Safari, Firebase's onAuthStateChanged callback (routed
 // through IndexedDB persistence) can resolve and call back into getCartCount()
@@ -1039,22 +1040,13 @@ const displayProducts = (products, containerElement) => {
           </div>
         </div>`;
 
-    // categoryMeta only carries 'men'/'women' for gendered categories
-    // (Sneakers/Shoes/Apparel -- see seller.js's category dropdown split);
-    // ungendered categories like Accessories have no letter to show.
-    const genderLetter = productData.categoryMeta === 'men'
-      ? 'M'
-      : productData.categoryMeta === 'women'
-      ? 'W'
-      : '';
-
     // Collectibles' "size" field actually holds the sub-type (e.g. "Trading
     // Cards"), not a wearable size, so the card shows brand instead there.
     const isCollectibles = productData.category === 'collectibles';
     const sizeOrBrand = isCollectibles ? productData.brand : productData.size;
     const sizeConditionHTML = sizeOrBrand
       ? `<p class="pro-meta">
-          ${isCollectibles ? sizeOrBrand : `Size ${sizeOrBrand}`}${genderLetter ? ` · ${genderLetter}` : ''}${productData.condition ? ` | <span class="pro-condition">${productData.condition}</span>` : ''}
+          ${isCollectibles ? sizeOrBrand : `Size ${sizeOrBrand}`}${productData.condition ? ` | <span class="pro-condition">${productData.condition}</span>` : ''}
         </p>`
       : '';
 
@@ -1064,12 +1056,22 @@ const displayProducts = (products, containerElement) => {
     // in server.js), so this is always "Free shipping" from the buyer's side.
     const shippingHTML = `<span class="shipping-note">+ Free shipping</span>`;
 
-    // Set on the listing by seller.js when it's created from an approved
-    // authenticationRequests doc -- see prefillFromAuthRequest().
+    // authenticated (set by seller.js from an approved authenticationRequests
+    // doc -- see prefillFromAuthRequest()) means this exact item has already
+    // been checked. isAuthenticationEligible() is the weaker claim -- this
+    // item hasn't been checked yet, but mandatorily will be as part of
+    // checkout before it ships (server.js's /create-checkout-session
+    // enforces this itself, ignoring anything the client sends -- same
+    // priority order as checkout.js's own authenticationBadgeHTML).
     const authBadgeHTML = productData.authenticated
       ? `<div class="auth-badge auth-badge--card">
           <img src="/images/hexxo_auth_badge.png" alt="">
           <span>Authenticity Guarantee</span>
+        </div>`
+      : isAuthenticationEligible(productData)
+      ? `<div class="auth-badge auth-badge--card">
+          <img src="/images/hexxo_auth_badge.png" alt="">
+          <span>Verified authentic</span>
         </div>`
       : '';
 

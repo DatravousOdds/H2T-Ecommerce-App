@@ -1,9 +1,10 @@
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api/firebase-client.js';
-import { collection, addDoc, db, serverTimestamp, getDocs, query, where, auth } from '../api/firebase-client.js';
+import { db, doc, getDocs, query, where, auth } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { getUserCartCount, updateCartCount } from '../commerce/cart.js';
 import { addToCart, createAuthCartItem } from '../core/global.js';
+import { ANGLE_REQUIREMENTS, getRequiredAngleCount } from '../core/angleRequirements.js';
 
 const storage = getStorage();
 
@@ -12,10 +13,6 @@ initCartDrawer();
 let currentUser = null;
 currentUser = await checkUserStatus();
 
-// Image upload functionality
-const imageInputs = document.querySelectorAll(".file-input");
-const imageItems = document.querySelectorAll(".image-item");
-const reviewImages = document.querySelectorAll('.review-image');
 // auth form
 const authSubmitBtn = document.getElementById('submitAuthBtn');
 const payNowBtn = document.getElementById('payNowBtn');
@@ -23,45 +20,6 @@ const payNowBtn = document.getElementById('payNowBtn');
 const categories = document.getElementById('categories');
 const dynamicFormContainer = document.getElementById('dynamic-form-container');
 let categorySelected;
-
-const uploadSlotByCategory = {
-  "trading cards" : {
-    angles: [
-      { id: "front", label: "Front View", type: "required", icon:'fa-solid fa-camera' },
-      { id: "label", label: "Front of Label", type: "required" },
-      { id: "sticker", label: "Laser Sticker Front (Straight On)", type: "required" },
-      { id: "upper-left-corners", label: "Front Corners of Card (Upper Left)", type: "required" },
-      { id: "upper-right-corners", label: "Front Corners of Card (Upper Right)", type: "required" },
-      { id: "lower-left-corners", label: "Front Corners of Card (Lower Left)", type: "required" },
-      { id: "lower-right-corners", label: "Front Corners of Card (Lower Right)", type: "required" },
-      { id: "back", label: "Back View", type: "required" }
-    ]
-  },
-  "apparel": {
-    angles: [
-      { id: "front", label: "Front View (Laid Flat or On Hanger)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "back", label: "Back View", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "brand-tag", label: "Brand / Main Label Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "care-label", label: "Care Label / Size Tag Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "stitching", label: "Stitching Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "fabric", label: "Fabric / Material Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "hardware", label: "Hardware Close-Up (Buttons, Zippers, or Drawstrings)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "rn-tag", label: "Manufacturer / RN Number Tag", type: "required", icon: 'fa-solid fa-camera' }
-    ]
-  },
-  "sneakers": {
-    angles: [
-      { id: "pair-front", label: "Front View (Both Shoes)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "pair-side", label: "Side Profile View (Both Shoes)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "outsole-left", label: "Outsole / Bottom (Left Shoe)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "outsole-right", label: "Outsole / Bottom (Right Shoe)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "size-tag", label: "Size Tag (Inside Tongue)", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "box-label", label: "Box Label / UPC Sticker", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "stitching", label: "Stitching Close-Up", type: "required", icon: 'fa-solid fa-camera' },
-      { id: "logo", label: "Brand Logo Close-Up", type: "required", icon: 'fa-solid fa-camera' }
-    ]
-  },
-}
 
 // cart modal actions
 const cartModal = document.getElementById('addedToCartModal');
@@ -219,37 +177,26 @@ let formData = {
   tierSelection: ''
 }
 
-function rebuildUploadCards(category) {
-  const currentListing = [category].angles.map(angle => ({
-    ...angle,
-    status: "not-uploaded",
-    file: null
-  }))
+// Draft persistence -- sessionStorage (not localStorage) because this
+// should survive a refresh but not linger after the tab is closed.
+const DRAFT_STORAGE_KEY = 'h2t_auth_draft';
 
-  return currentListing;
-}
-
-function renderUploadCards(arrayOfAngles) {
-  arrayOfAngles.forEach((index, angles) => {
-    const div = document.createElement('div');
-    div.classList.add('image-item');
-    div.dataset.dataIndex = index;
-    div.innerHTML = `
+function imageSlotHTML(angle, index) {
+  const isOptional = angle.type !== 'required';
+  return `
+    <div class="image-item${index === 0 ? ' main-image' : ''}" data-angle-id="${angle.id}">
       <input
-        data-index="0"
+        data-index="${index}"
         type="file"
-        id="mainImage"
-        name="mainImage"
+        id="angleImage-${angle.id}"
         accept="image/png, image/jpeg"
         class="file-input"
-        required
-        aria-required="true"
-        aria-describedby="mainImageHelp"
+        ${isOptional ? '' : 'required aria-required="true"'}
       />
-      <label for="mainImage" class="file-label">
+      <label for="angleImage-${angle.id}" class="file-label">
         <div class="preview-container">
-          <i class="fas fa-plus upload-icon"></i>
-          <span class="upload-text"> Upload Main Image </span>
+          <i class="fa-solid ${isOptional ? 'fa-plus' : 'fa-camera'} upload-icon"></i>
+          <span class="upload-text">${angle.label}</span>
           <img
             src=""
             alt="Preview"
@@ -266,88 +213,138 @@ function renderUploadCards(arrayOfAngles) {
       >
         <i class="fas fa-trash-alt" aria-hidden="true"></i>
       </button>
-    `
-
-  })
+    </div>
+  `;
 }
 
-// Draft persistence -- sessionStorage (not localStorage) because this
-// should survive a refresh but not linger after the tab is closed.
-const DRAFT_STORAGE_KEY = 'h2t_auth_draft';
+// Rebuilds the image-upload slots (plus the matching step-4 review
+// thumbnails and the "required photos" hint list) around whichever category
+// was picked in step 2 -- required angle count varies a lot per category
+// (Apparel needs 5, Sneakers needs 8), so this can't be a fixed static grid
+// like it used to be.
+function renderImageSlots(category) {
+  const grid = document.getElementById('imageGrid');
+  const subheader = document.getElementById('imageUploadSubheader');
+  const msgText = document.getElementById('imageUploadMsgText');
+  const anglesList = document.getElementById('requiredAnglesList');
+  if (!grid) return;
 
-imageInputs.forEach((input) => {
-  const imageItem = input.closest(".image-item");
-  const removeImageBtn = imageItem.querySelector(".remove-image-btn");
-  const previewContainer = imageItem.querySelector(".preview-container");
-  const imagePreview = imageItem.querySelector(".image-preview");
-  const uploadIcon = imageItem.querySelector(".upload-icon");
-  const uploadText = imageItem.querySelector(".upload-text");
+  const angles = ANGLE_REQUIREMENTS[category];
 
-  // Handle file selection
-  input.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    const slotIndex = parseInt(e.target.dataset.index);
+  if (!angles) {
+    grid.innerHTML = '';
+    if (subheader) subheader.textContent = 'Select a category to see the required photos';
+    if (msgText) msgText.textContent = 'Select a category above to see the required photos for authentication verification.';
+    if (anglesList) anglesList.innerHTML = '';
+    renderReviewImageSlots(0);
+    return;
+  }
 
-    if (file) {
-      // Validate file type
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File too large");
-        input.value = "";
-        return;
-      }
+  const requiredCount = angles.filter(a => a.type === 'required').length;
 
-      if (!["image/jpeg", "image/png"].includes(file.type)) {
-        alert("Invalid file type. Please upload a JPEG or PNG image.");
-        input.value = "";
-        return;
-      }
+  grid.innerHTML = angles.map((angle, index) => imageSlotHTML(angle, index)).join('');
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        // Find the parent image-item and update its background
-        imagePreview.src = e.target.result;
-        imagePreview.style.display = "block";
+  if (subheader) subheader.textContent = `Upload ${requiredCount} required photos for ${category}`;
+  if (msgText) msgText.textContent = `Please upload the following ${requiredCount} required photos for authentication verification:`;
+  if (anglesList) {
+    anglesList.innerHTML = angles
+      .map(angle => `<li>${angle.label}${angle.type === 'required' ? ' (required)' : ' (optional)'}</li>`)
+      .join('');
+  }
 
-        // Hide upload elements
-        uploadIcon.style.display = "none";
-        if (uploadText) {
-          uploadText.style.display = "none";
+  // Must run before wireImageInputs() -- the change listener writes into
+  // reviewImages[slotIndex] by index, so the review thumbnails need to
+  // already exist at the right count before any upload can happen.
+  renderReviewImageSlots(angles.length);
+  wireImageInputs();
+}
+
+function renderReviewImageSlots(count) {
+  const reviewGrid = document.getElementById('reviewImageGrid');
+  if (!reviewGrid) return;
+  reviewGrid.innerHTML = Array.from({ length: count }, () => `<img class="review-image" src="" alt="" />`).join('');
+}
+
+// Attaches the file-select/remove listeners to whatever .file-input elements
+// currently exist in #imageGrid -- called after every renderImageSlots(),
+// since the previous category's slots (and their listeners) were just
+// discarded along with the old innerHTML.
+function wireImageInputs() {
+  const imageInputs = document.querySelectorAll(".file-input");
+
+  imageInputs.forEach((input) => {
+    const imageItem = input.closest(".image-item");
+    const removeImageBtn = imageItem.querySelector(".remove-image-btn");
+    const imagePreview = imageItem.querySelector(".image-preview");
+    const uploadIcon = imageItem.querySelector(".upload-icon");
+    const uploadText = imageItem.querySelector(".upload-text");
+
+    // Handle file selection
+    input.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      const slotIndex = parseInt(e.target.dataset.index);
+      const reviewImages = document.querySelectorAll('.review-image');
+
+      if (file) {
+        // Validate file type
+        if (file.size > 5 * 1024 * 1024) {
+          alert("File too large");
+          input.value = "";
+          return;
         }
 
-        reviewImages[slotIndex].src = e.target.result;
+        if (!["image/jpeg", "image/png"].includes(file.type)) {
+          alert("Invalid file type. Please upload a JPEG or PNG image.");
+          input.value = "";
+          return;
+        }
 
-        // Show remove button
-        removeImageBtn.style.display = "block";
-      };
-      reader.readAsDataURL(file);
-    }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // Find the parent image-item and update its background
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = "block";
+
+          // Hide upload elements
+          uploadIcon.style.display = "none";
+          if (uploadText) {
+            uploadText.style.display = "none";
+          }
+
+          if (reviewImages[slotIndex]) {
+            reviewImages[slotIndex].src = e.target.result;
+          }
+
+          // Show remove button
+          removeImageBtn.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Remove background Image
+    removeImageBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Reset the file input
+      input.value = "";
+
+      // Reset the preview
+      imagePreview.src = "";
+      imagePreview.style.display = "none";
+
+      // Show upload elements again
+      uploadIcon.style.display = "block";
+
+      if (uploadText) {
+        uploadText.style.display = "block";
+      }
+
+      // Hide remove button
+      removeImageBtn.style.display = "none";
+    });
   });
-
-  // Remove background Image
-  removeImageBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    // Reset the file input
-    input.value = "";
-
-    // Reset the preview
-    imagePreview.src = "";
-    imagePreview.style.display = "none";
-
-    // Show upload elements again
-    uploadIcon.style.display = "block";
-
-    if (uploadText) {
-      uploadText.style.display = "block";
-    }
-    
-
-    // Hide remove button
-    removeImageBtn.style.display = "none";
-  });
-
-  
-});
+}
 
 // Bags & Leather Goods only: Hermès models are a closed, well-known list, so
 // swap the free-text Model input for a constrained dropdown when Hermès is
@@ -558,11 +555,11 @@ function initSneakerModelPicker() {
 categories.addEventListener('change', (e) => {
   const target = e.target.value;
   categorySelected = target;
-  
+
   // get form
   formLocator(categorySelected);
-
-
+  // step 3's required photo slots are driven by this same category
+  renderImageSlots(categorySelected);
 })
 
 authSubmitBtn.addEventListener('click', handleAddToCartSubmission);
@@ -581,10 +578,13 @@ addAnotherItemBtn.addEventListener('click', () => {
     tierSelection: null
   };
 
-  resetImages();
-
   categories.value = "";
   categorySelected = null;
+  // Rebuilds to the empty placeholder state -- not resetImages(), since that
+  // only clears values on whatever slots are currently rendered, leaving the
+  // previous category's (now-empty) slots sitting there instead of actually
+  // going away.
+  renderImageSlots(categorySelected);
 
   if (dynamicFormContainer) {
     dynamicFormContainer.innerHTML = "";
@@ -679,41 +679,6 @@ function clearValidationErrors() {
   });
 }
 
-function resetImages() {
-  imageInputs.forEach((input, index) => {
-    input.value = "";
-
-    const imageItem = input.closest(".image-item");
-    const imagePreview = imageItem.querySelector(".image-preview");
-    const uploadIcon = imageItem.querySelector(".upload-icon");
-    const uploadText = imageItem.querySelector(".upload-text");
-    const removeImageBtn = imageItem.querySelector(".remove-image-btn");
-
-    if (imagePreview) {
-      imagePreview.src = "";
-      imagePreview.style.display = "none";
-    }
-
-    if (uploadIcon) {
-      uploadIcon.style.display = "block";
-    }
-
-    if (uploadText) {
-      uploadText.style.display = "block";
-    }
-
-    if (removeImageBtn) {
-      removeImageBtn.style.display = "none";
-    }
-
-    if (reviewImages[index]) {
-      reviewImages[index].src = "";
-    }
-  })
-
-  console.log("✅ All image reset");
-}
-
 function collectDraftFieldValues() {
   if (!categorySelected) return {};
 
@@ -766,6 +731,7 @@ async function restoreDraftState() {
     categories.value = draft.category;
     categorySelected = draft.category;
     await formLocator(categorySelected);
+    renderImageSlots(categorySelected);
 
     Object.entries(draft.fieldValues || {}).forEach(([id, value]) => {
       const element = document.getElementById(id);
@@ -1020,7 +986,7 @@ function validateStep(stepNumber) {
 
     const imgErrorsContainer = document.querySelector('.image-section-errors');
     const images = document.querySelectorAll('.image-preview');
-    const REQUIRED_IMAGES = 5;
+    const REQUIRED_IMAGES = getRequiredAngleCount(categorySelected);
 
     let uploadedImages = 0;
     let emptyIndexes = [];
@@ -1065,6 +1031,7 @@ function validateStep(stepNumber) {
   } else if (stepNumber === 2) {
     if (!categorySelected) {
       showNotification('Please select a category', 'error')
+      return false;
     }
 
     if (!validateForm(categorySelected)) {
@@ -1374,7 +1341,7 @@ async function submitToFirebase() {
     const uploadedImages = await uploadImagesToFirebase(formData.images, user.userId, tempRequestId);
     console.log("✅ All images uploaded!")
 
-    const authRequestData = {
+    const authRequestPayload = {
       images: uploadedImages,
       price: formData.tierSelection.cost,
 
@@ -1389,30 +1356,33 @@ async function submitToFirebase() {
         type: formData.tierSelection.type,
         duration: formData.tierSelection.duration,
         cost: formData.tierSelection.cost
-      },
-
-      // Transitional status -- the AI matching step (not yet built) is
-      // responsible for advancing this to "pending_review" (confident
-      // match found) or "needs_manual_review" (no match cleared the
-      // threshold), per the planning doc's status table. "submitted" is
-      // the honest interim state between form submission and that
-      // pipeline actually running.
-      // Full enum: submitted | pending_review | needs_manual_review |
-      // needs_info | approved | rejected
-      status: "submitted",
-      userId: user.userId,
-
-      createdAt: serverTimestamp(),
-      updateAt: serverTimestamp()
+      }
     }
 
-    console.log("auth Data:",authRequestData);
+    console.log("auth Data:",authRequestPayload);
 
-    const docRef = await addDoc(collection(db, "authenticationRequests"),
-      authRequestData
-    );
+    // Routed through the server (not a direct client-side addDoc) so the
+    // required-angle-count rule actually means something -- see
+    // app.post("/authentication-requests") in server.js, which recomputes
+    // the required count for productDetails.category itself instead of
+    // trusting however many images the client claims to have uploaded.
+    // status/userId/timestamps are now set there too, not here.
+    const response = await fetch("/authentication-requests", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.idToken}`
+      },
+      body: JSON.stringify(authRequestPayload)
+    });
 
-    console.log("✅ Document created with id: ", docRef.id);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to submit authentication request");
+    }
+
+    console.log("✅ Document created with id: ", result.requestId);
 
     // Best-effort admin alert -- isolated from the submission try/catch so a
     // Resend/network failure never surfaces as a submission error to a user
@@ -1428,8 +1398,8 @@ async function submitToFirebase() {
         body: JSON.stringify({
           notificationType: "AUTH_REQUEST_QUEUED",
           metadata: {
-            itemLabel: authRequestData.productDetails.details || authRequestData.productDetails.category,
-            requestId: docRef.id
+            itemLabel: authRequestPayload.productDetails.details || authRequestPayload.productDetails.category,
+            requestId: result.requestId
           }
         })
       });
@@ -1437,7 +1407,7 @@ async function submitToFirebase() {
       console.error("Error sending admin notification for auth request:", error);
     }
 
-    return { success: true, requestId: docRef.id, images: uploadedImages }
+    return { success: true, requestId: result.requestId, images: uploadedImages }
     
   } 
   catch (error) {

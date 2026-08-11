@@ -127,9 +127,13 @@
                 <div class="seller-stat" id="sellerRatingStat" style="display: none">
                   <span class="seller-rating-stars" id="sellerRatingStars"></span>
                   <span id="sellerRating"></span>
+                  <span class="seller-review-count" id="sellerReviewCount"></span>
                 </div>
                 <div class="seller-stat">
                   <span id="sellerListingsCount">0</span> listings
+                </div>
+                <div class="seller-stat">
+                  <span id="sellerSalesCount">0</span> sales
                 </div>
               </div>
             </div>
@@ -137,7 +141,10 @@
         </div>
 
         <div class="s_prod_details">
-          <!-- Auth Badge: hidden by default, shown by product.js only when the listing's authenticated field is true -->
+          <!-- Auth Badge: hidden by default. Shown by product.js when the
+               listing is already authenticated ("Authenticity Guarantee") or
+               just eligible and will be authenticated at checkout ("Verified
+               authentic") -- text set dynamically either way. -->
            <div class="auth-badge" id="authBadge" style="display: none">
             <img src="../images/hexxo_auth_badge.png" alt="">
             <span>Authenticity Guarantee</span>
