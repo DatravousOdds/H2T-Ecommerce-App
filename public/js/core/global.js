@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs, where, query, limit, getDoc, startAfter } from '../api/firebase-client.js';
-import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, setDoc, serverTimestamp, db, doc, app } from '../api/firebase-client.js';
+import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, setDoc, serverTimestamp, db, doc, app, writeBatch, increment } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 
 // var, not let: on iOS Safari, Firebase's onAuthStateChanged callback (routed
@@ -39,8 +39,13 @@ async function getFavoritedIds(userId) {
   }
 }
 
+// Batched with the listing doc's favoritesCount update so the two never
+// drift apart from a partial-write failure -- listings/{id} is already
+// fetched for every card/product-page render, so that counter is free to
+// read there instead of a per-listing collectionGroup count query.
 async function addFavorite(userId, listingId, listingData) {
-  await setDoc(doc(db, "favorites", userId, "items", listingId), {
+  const batch = writeBatch(db);
+  batch.set(doc(db, "favorites", userId, "items", listingId), {
     listingId,
     productName: listingData.productName || "",
     listingPrice: listingData.listingPrice || 0,
@@ -49,10 +54,15 @@ async function addFavorite(userId, listingId, listingData) {
     images: listingData.images || [],
     addedAt: serverTimestamp(),
   });
+  batch.update(doc(db, "listings", listingId), { favoritesCount: increment(1) });
+  await batch.commit();
 }
 
 async function removeFavorite(userId, listingId) {
-  await deleteDoc(doc(db, "favorites", userId, "items", listingId));
+  const batch = writeBatch(db);
+  batch.delete(doc(db, "favorites", userId, "items", listingId));
+  batch.update(doc(db, "listings", listingId), { favoritesCount: increment(-1) });
+  await batch.commit();
 }
 
 
@@ -801,8 +811,20 @@ function deleteMapEntry(filters, entry) {
     }
 };
 
+// Hidden at 0 rather than showing "0" on every unfavorited card -- same
+// convention as .notification-badge (see nav.js) so a fresh listing's
+// heart button doesn't look cluttered before anyone's favorited it.
+function setFavoritesCountDisplay(countEl, count) {
+  if (!countEl) return;
+  countEl.textContent = count;
+  countEl.classList.toggle("active", count > 0);
+}
+
 function handleFavoriteClick(element, listingId, listingData) {
   const heartIcon = element.querySelector(".liked i");
+  const countEl = element.querySelector(".favorites-count");
+  let count = Number(listingData?.favoritesCount) || 0;
+  setFavoritesCountDisplay(countEl, count);
 
   // Reflect the real current state on render, not always defaulting to
   // outline -- otherwise a user's own favorites would look unfavorited
@@ -828,6 +850,8 @@ function handleFavoriteClick(element, listingId, listingData) {
     heartIcon.classList.toggle("fa-regular");
     heartIcon.classList.toggle("fa-solid");
     heartIcon.style.color = heartIcon.classList.contains("fa-solid") ? "red" : "black";
+    count += wasFavorited ? -1 : 1;
+    setFavoritesCountDisplay(countEl, count);
 
     try {
       if (wasFavorited) {
@@ -842,6 +866,8 @@ function handleFavoriteClick(element, listingId, listingData) {
       heartIcon.classList.toggle("fa-regular");
       heartIcon.classList.toggle("fa-solid");
       heartIcon.style.color = heartIcon.classList.contains("fa-solid") ? "red" : "black";
+      count += wasFavorited ? 1 : -1;
+      setFavoritesCountDisplay(countEl, count);
     }
   });
 };
@@ -1034,6 +1060,7 @@ const displayProducts = (products, containerElement) => {
             <div class="product-image">
               <div class="liked">
                 <i class="fa-regular fa-heart"></i>
+                <span class="favorites-count"></span>
               </div>
 
               <img

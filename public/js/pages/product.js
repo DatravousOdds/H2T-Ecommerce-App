@@ -28,6 +28,12 @@ const priceChange = document.getElementById('priceChange');
 const shippingNote = document.getElementById('shippingNote');
 const prodMeta = document.getElementById('prodMeta');
 const mainImage = document.getElementById('MainImg');
+// handleFavoriteClick expects the *container* of .liked (it does
+// element.querySelector(".liked i")), same as productElement on a card.
+// :not(.skeleton-item) scoping is required here for the same reason `sizes`
+// below needs it -- the loading skeleton reuses the .single-pro-image class
+// too, and a bare selector matches that (heart-less) copy first.
+const singleProImage = document.querySelector('.single-pro-image:not(.skeleton-item)');
 const smallImagesGroup = document.querySelector('.s-img-group');
 const prevImgBtn = document.getElementById('prevImgBtn');
 const nextImgBtn = document.getElementById('nextImgBtn');
@@ -336,6 +342,8 @@ async function displayProductDetails() {
         if (isOwnListing) {
             editListingBtn.href = `/seller?listingId=${productId}`;
         }
+
+        handleFavoriteClick(singleProImage, productId, data);
 
         productCategory.textContent = data.category;
         authBadge.style.display = data.authenticated ? '' : 'none';
@@ -1031,6 +1039,7 @@ function displayProducts(products) {
               <div class="product-image">
                 <div class="liked">
                   <i class="fa-regular fa-heart"></i>
+                  <span class="favorites-count"></span>
                 </div>
 
                 <img

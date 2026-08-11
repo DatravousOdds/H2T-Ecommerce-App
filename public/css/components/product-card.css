@@ -282,6 +282,31 @@
   color: #DC2A2A;
 }
 
+/* Mirrors .notification-badge's pattern (nav.js) -- small corner badge,
+   hidden until there's a count worth showing. Positioned at the bottom-right
+   of .liked's circle rather than its own top-right corner, since .liked
+   already sits flush against the card's top-right corner. */
+.favorites-count {
+  display: none;
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background-color: #DC2A2A;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 9999px;
+  min-width: 16px;
+  text-align: center;
+  border: 1px solid #fff;
+}
+
+.favorites-count.active {
+  display: block;
+}
+
 /* Auth Badge (card) */
 
 .auth-badge--card {

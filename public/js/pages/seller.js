@@ -134,6 +134,45 @@ const CATEGORY_DEFAULTS = {
     'collectibles': { length: 6, width: 4,  height: 1,  weight: 0.2 },
     'other':       { length: 12, width: 9,  height: 4,  weight: 1.0 },
 };
+
+// ShipStation's /shipments/getrates response has no delivery-time field at
+// all (just serviceName/serviceCode/shipmentCost/otherCost) -- these are each
+// carrier's own published transit-time range, keyed by serviceCode since
+// serviceName carries trademark symbols (e.g. "UPS® Ground") and isn't a
+// stable match key. Only covers the three carriers services.js's
+// requiresFundedAccount filter actually surfaces (Stamps.com/USPS, UPS,
+// FedEx) -- anything else (e.g. international/freight services) falls back
+// to DEFAULT_DELIVERY_ESTIMATE below rather than guessing.
+const DEFAULT_DELIVERY_ESTIMATE = "3-5 business days";
+const SERVICE_DELIVERY_ESTIMATES = {
+    // USPS (Stamps.com)
+    usps_priority_mail_express: "1-2 business days",
+    usps_priority_mail: "1-3 business days",
+    usps_first_class_mail: "2-5 business days",
+    usps_parcel_select: "2-8 business days",
+    usps_media_mail: "2-8 business days",
+    // UPS
+    ups_next_day_air_early_am: "1 business day",
+    ups_next_day_air: "1 business day",
+    ups_next_day_air_saver: "1 business day",
+    ups_2nd_day_air_am: "2 business days",
+    ups_2nd_day_air: "2 business days",
+    ups_3_day_select: "3 business days",
+    ups_ground: "1-5 business days",
+    // FedEx
+    fedex_first_overnight: "1 business day",
+    fedex_priority_overnight: "1 business day",
+    fedex_standard_overnight: "1 business day",
+    fedex_2day_am: "2 business days",
+    fedex_2day: "2 business days",
+    fedex_express_saver: "3 business days",
+    fedex_ground: "1-5 business days",
+    fedex_home_delivery: "1-5 business days"
+};
+
+function getDeliveryEstimate(serviceCode) {
+    return SERVICE_DELIVERY_ESTIMATES[serviceCode] || DEFAULT_DELIVERY_ESTIMATE;
+}
 let listing = {
     listingPrice: 0,
     userId: currentUser.userId,
@@ -537,11 +576,17 @@ function setDimensionsListeners() {
     const defaultsBtn = document.getElementById('defaultsBtn');
 
     defaultsBtn.addEventListener('click', () => {
+        // Same slug-parsing as collectListingInfo() -- productCategory.value
+        // is gender-prefixed ("unisex-collectibles"), the bare category is
+        // what CATEGORY_DEFAULTS and the packageCode check below key off of.
+        const category = productCategory.value.trim().split('-')[1] || 'other';
+
         const parcel = {
             "length": document.getElementById('length').value,
             "width": document.getElementById('width').value,
             "height": document.getElementById('height').value,
-            "weight": document.getElementById('weight').value
+            "weight": document.getElementById('weight').value,
+            "category": category
         }
 
         selectedParcel = parcel;
@@ -979,6 +1024,7 @@ function displayShippingCouriers(couriersArray) {
                 <div class="carrier-price">
                     <span>$${totalCharge}</span>
                     <p>est. rate</p>
+                    <p class="delivery-estimate">${getDeliveryEstimate(rate.serviceCode)}</p>
                 </div>
 
                 <div class="form-input">
@@ -1516,7 +1562,11 @@ async function fetchShippingRates(parcel) {
             length: parseFloat(parcel.length),
             width: parseFloat(parcel.width),
             height: parseFloat(parcel.height)
-        }
+        },
+        // "other" is too ambiguous a category to commit to a package type --
+        // every other category ships in a box, so declaring it gets a more
+        // accurate rate instead of ShipStation guessing from dimensions alone.
+        ...(parcel.category !== 'other' ? { packageCode: "package" } : {})
     };
 
     try {

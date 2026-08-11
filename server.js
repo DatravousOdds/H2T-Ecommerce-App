@@ -366,7 +366,7 @@ app.post('/rates/compare', async (req, res) => {
    // until the ShipStation wallet is funded -- excluded here so testing only
    // surfaces carriers that can actually complete a real label purchase.
    // Remove this filter once the wallet is funded.
-   const codes = data.filter(d => !d.requiresFundedAccount).map(d => d.code);
+   const codes = data.filter(d => d.requiresFundedAccount).map(d => d.code);
 
    const rates = codes.map(code => getRatesForCarrier(code, req.body));
    const carrierRates = await Promise.allSettled(rates);
