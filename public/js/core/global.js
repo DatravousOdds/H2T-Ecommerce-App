@@ -16,6 +16,13 @@ var cartCount = Number(localStorage.getItem('cartCount')) || 0;
  */
 var favoritedIds = new Set();
 
+// handleFavoriteClick awaits this before reading favoritedIds -- without it,
+// a page like product.html (one getProductData() fetch) can easily render
+// its heart icon before this IIFE's auth -> cart -> favorites chain below
+// resolves, so a favorited item would render unfavorited on every fresh load.
+let resolveFavoritedIdsReady;
+const favoritedIdsReady = new Promise((resolve) => { resolveFavoritedIdsReady = resolve; });
+
 // Deliberately not a top-level await: it previously caused a circular-import
 // race with cartDrawer.js that let other modules (e.g. nav.js) run before
 // currentUser/cartCount finished initializing, throwing TDZ ReferenceErrors.
@@ -24,6 +31,7 @@ var favoritedIds = new Set();
   const cartItemCount = await getCartItems(currentUser);
   setCartCount(cartItemCount.length);
   favoritedIds = await getFavoritedIds(currentUser?.userId);
+  resolveFavoritedIdsReady();
 })();
 
 async function getFavoritedIds(userId) {
@@ -820,11 +828,19 @@ function setFavoritesCountDisplay(countEl, count) {
   countEl.classList.toggle("active", count > 0);
 }
 
-function handleFavoriteClick(element, listingId, listingData) {
+async function handleFavoriteClick(element, listingId, listingData) {
   const heartIcon = element.querySelector(".liked i");
   const countEl = element.querySelector(".favorites-count");
   let count = Number(listingData?.favoritesCount) || 0;
   setFavoritesCountDisplay(countEl, count);
+
+  // Wait for the module's own favorites fetch to finish before reading
+  // favoritedIds -- callers (e.g. product.js) can easily finish their own,
+  // shorter fetch first otherwise, and would render every heart as
+  // unfavorited regardless of the real state. Attaching the click listener
+  // after this (not before) also avoids a toggle firing off the stale
+  // pre-await icon state if a user clicks in that same instant.
+  await favoritedIdsReady;
 
   // Reflect the real current state on render, not always defaulting to
   // outline -- otherwise a user's own favorites would look unfavorited
