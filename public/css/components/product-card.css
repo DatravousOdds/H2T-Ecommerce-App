@@ -310,6 +310,7 @@
 /* Auth Badge (card) */
 
 .auth-badge--card {
+  text-transform: capitalize;
   display: flex;
   align-items: center;
   gap: 0.4rem;
