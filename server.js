@@ -160,6 +160,13 @@ const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 // intial express.js
 const app = express();
 
+// Trust the first hop proxy (Render/Heroku/nginx/etc.) so req.protocol
+// reflects the client's original scheme via X-Forwarded-Proto instead of
+// always reporting 'http' -- without this, Stripe live-mode redirect URLs
+// built from req.protocol (see accountLinks.create) get rejected with
+// "Livemode requests must always be redirected via HTTPS."
+app.set("trust proxy", 1);
+
 // middlewares
 app.use(
   express.static(staticPth, {
