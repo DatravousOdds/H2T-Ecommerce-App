@@ -1315,23 +1315,23 @@ function validateProductInfo() {
 
 }
 
+// The category's full angle set (ANGLE_REQUIREMENTS) is advisory here, not a
+// submission gate -- a listing only truly needs the angle photos on file once
+// it's actually going through authentication (the standalone
+// authenticate.html flow still enforces the full set for that). At listing
+// time this only checks that at least one photo was uploaded at all;
+// renderImageSlots()'s subheader is what nudges the seller toward the
+// category's recommended angles for a smoother authentication later.
 function validateImages() {
-    if (!productCategory.value) {
-        showImagesError('Please select a category above to see which photos are required.');
-        return false;
-    }
-
     const images = document.querySelectorAll('.image-preview');
-    const angleCategory = resolveAngleCategory(productCategory.value);
-    const requiredCount = getRequiredAngleCount(angleCategory);
 
     const uploadedCount = [...images].filter(image => {
         const imageSrc = image.getAttribute('src');
         return imageSrc !== '' && imageSrc !== null;
     }).length;
 
-    if (uploadedCount < requiredCount) {
-        showImagesError(`Please upload ${requiredCount} required photo${requiredCount === 1 ? '' : 's'} for this category (currently ${uploadedCount}).`);
+    if (uploadedCount < 1) {
+        showImagesError('Please upload at least one photo of your item.');
         return false;
     }
 
@@ -1490,7 +1490,7 @@ function renderImageSlots(angleCategory) {
 
     if (photosSubheader) {
         const requiredCount = getRequiredAngleCount(angleCategory);
-        photosSubheader.textContent = `Submit ${requiredCount} required photo${requiredCount === 1 ? '' : 's'} for this category`;
+        photosSubheader.textContent = `Recommended: ${requiredCount} photo${requiredCount === 1 ? '' : 's'} for this category -- not required to list, but having them ready helps your item pass authentication faster if it's selected.`;
     }
 }
 

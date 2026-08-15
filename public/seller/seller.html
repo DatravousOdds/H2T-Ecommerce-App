@@ -75,15 +75,16 @@
         <section class="photos" id="photos">
             <div class="section-header">
               <h4>Photos</h4>
-              <p id="photosSubheader">Select a category above to see the required photos</p>
+              <p id="photosSubheader">Select a category above to see recommended photos</p>
             </div>
 
             <div class="images-grid-container">
-                <!-- Required-angle photo slots populated per-category by
-                     renderImageSlots() in seller.js -- required count/labels
-                     vary by category, same data source as the standalone
-                     authentication-request flow (angleRequirements.js). The
-                     video slot below stays static/category-independent. -->
+                <!-- Recommended-angle photo slots populated per-category by
+                     renderImageSlots() in seller.js -- same data source as the
+                     standalone authentication-request flow (angleRequirements.js),
+                     but advisory only here: seller.js's validateImages() only
+                     requires at least one photo to list, not the full set.
+                     The video slot below stays static/category-independent. -->
                 <article class="image-container video-container" id="videoContainer">
                     <input type="file" name="video" id="video" accept="video/mp4,video/quicktime,video/webm">
                     <i class="fa-solid fa-video"></i>
