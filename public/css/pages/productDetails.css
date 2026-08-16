@@ -60,7 +60,7 @@
 /* Product Details */
 .product-details-wrapper {
     display: flex;
-    gap: var(--gap-xl);
+    gap: 1rem;
     margin-bottom: 1rem;
 }
 
