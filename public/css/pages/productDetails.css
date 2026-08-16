@@ -1264,7 +1264,8 @@
     }
 
     .cart-drawer-footer {
-       max-width: 90%; 
+       max-width: 100%; 
+       padding: 1rem;
     }
 
     .offer-modal {
