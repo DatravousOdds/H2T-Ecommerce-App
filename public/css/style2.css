@@ -433,7 +433,7 @@ button.white {
 .nav-link {
   color:  var(--nav-link-color) !important;
   text-decoration: none;
-  font-size: 14px;
+  font-size: var(--font-size-base);
 }
 
 .nav-link:hover {

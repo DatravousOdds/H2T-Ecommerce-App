@@ -7728,7 +7728,7 @@ a
 
 .favorites-header h1 {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem !important;
   color: #1a1a1a;
 }
 
