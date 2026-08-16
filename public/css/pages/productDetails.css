@@ -38,7 +38,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin: 1rem;
     font-size: var(--font-sm);
     list-style: none;
     text-transform: capitalize;
@@ -134,7 +133,7 @@
 }
 
 .prod-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
     text-transform: uppercase;
     font-weight: 700;
 }
@@ -182,6 +181,24 @@
     align-items: center;
     gap: 0.5rem;
 
+}
+
+/* Size / Condition / Gender chip group */
+.prod-options-group {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header {
+    font-size: 24px;
+}
+
+.prod-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 /* Sizes */
@@ -252,7 +269,12 @@
 
 .detail-container {
     padding-bottom: 0.25rem;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #dedede;
+}
+
+.detail-container h3 {
+    font-size: var(--fs-h4);
+    font-weight: 400 !important;
 }
 
 .details-container {
@@ -305,10 +327,8 @@
     text-decoration: line-through;
 }
 
-.prod-meta {
-    font-size: 0.875rem;
-    color: #7a7a7a;
-    margin-top: 0.5rem;
+#conditionGroup .size-btn {
+    text-transform: capitalize;
 }
 
 .make-offer-btn {
@@ -1254,6 +1274,7 @@
     }
     .product-details-wrapper {
         flex-direction: column;
+        gap: 0.25rem;
     }
 
     .single-pro-image {

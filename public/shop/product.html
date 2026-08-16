@@ -19,6 +19,7 @@
       src="https://kit.fontawesome.com/854f8a6196.js"
       crossorigin="anonymous"
     ></script>
+    <link rel="stylesheet" href="../css/main.css" />
     <link rel="stylesheet" href="../css/global.css" />
     <link rel="stylesheet" href="../css/style2.css" />
     <link rel="stylesheet" href="../css/components/product-card.css">
@@ -26,6 +27,7 @@
     <link rel="stylesheet" href="../css/pages/productDetails.css">
     <link rel="stylesheet" href="../css/components/pageLoader.css">
     <link rel="stylesheet" href="../css/components/skeleton.css">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
@@ -48,283 +50,307 @@
     <!-- End of Navbar-->
 
     
-
-    <section id="prodetails" class="section-p1 product-details">
-      <nav aria-label="Breadcrumb">
-        <ol class="product-breadcrumb">
-          
-        </ol>
-      </nav>
-
-      <div class="product-details-wrapper" id="productDetailsWrapper">
-
-        <!-- Skeleton placeholders shown while displayProductDetails() fetches -->
-        <div class="single-pro-image skeleton-item" aria-hidden="true">
-          <div class="skeleton skeleton-image"></div>
-          <div class="seller-profile">
-            <span class="skeleton" style="width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;"></span>
-            <div class="seller-profile-info">
-              <div class="seller-name-row">
-                <span class="skeleton skeleton-line short"></span>
-              </div>
-              <div class="seller-stats">
-                <span class="skeleton skeleton-line medium"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="s_prod_details skeleton-item" aria-hidden="true">
-          <span class="skeleton skeleton-line short" style="width: 30%;"></span>
-          <span class="skeleton skeleton-line long" style="height: 2rem; width: 70%; margin-top: 0.5rem;"></span>
-          <div class="prod-prices">
-            <span class="skeleton skeleton-line" style="height: 1.5rem; width: 25%;"></span>
-          </div>
-          <hr/>
-          <div class="sizes">
-            <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
-            <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
-            <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
-          </div>
-          <hr/>
-          <div class="buttons-container">
-            <div class="button-group">
-              <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
-              <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
-            </div>
-            <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
-          </div>
-        </div>
-
-        <div class="single-pro-image">
-          <img src="" width="100%" id="MainImg" alt="" />
-
-          <div class="liked" id="mainImageLiked">
-            <i class="fa-regular fa-heart"></i>
-            <span class="favorites-count"></span>
-          </div>
-
-          <button type="button" class="img-slider-arrow img-slider-prev" id="prevImgBtn" aria-label="Previous image" style="display: none">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-          <button type="button" class="img-slider-arrow img-slider-next" id="nextImgBtn" aria-label="Next image" style="display: none">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-
-          <div class="s-img-group"></div>
-
-          <a href="#" class="seller-profile" id="sellerProfileLink">
-            <img src="" alt="" class="seller-profile-picture" id="sellerProfilePicture" />
-            <div class="seller-profile-info">
-              <div class="seller-name-row">
-                <span class="seller-name" id="sellerName"></span>
-                <div class="verified-tag" id="sellerVerifiedTag" title="Trusted seller on Head-To-Toes" style="display: none">
-                  <i class="fa-solid fa-shield"></i>
-                  Verified
-                </div>
-              </div>
-              <div class="seller-stats">
-                <div class="seller-stat" id="sellerRatingStat" style="display: none">
-                  <span class="seller-rating-stars" id="sellerRatingStars"></span>
-                  <span id="sellerRating"></span>
-                  <span class="seller-review-count" id="sellerReviewCount"></span>
-                </div>
-                <div class="seller-stat">
-                  <span id="sellerListingsCount">0</span> listings
-                </div>
-                <div class="seller-stat">
-                  <span id="sellerSalesCount">0</span> sales
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="s_prod_details">
-          <!-- Auth Badge: hidden by default. Shown by product.js when the
-               listing is already authenticated ("Authenticity Guarantee") or
-               just eligible and will be authenticated at checkout ("Verified
-               authentic") -- text set dynamically either way. -->
-           <div class="auth-badge" id="authBadge" style="display: none">
-            <img src="../images/hexxo_auth_badge.png" alt="">
-            <span>Authenticity Guarantee</span>
-          </div>
-
-          <p class="prod-category"></p>
-
-          <h1 class="prod-title"></h1>
-
-          <div class="prod-prices">
-            <div class="price-row">
-              <p class="prod-price" aria-label="Price"></p>
-              <p class="original-price"></p>
-              <span class="shipping-note" id="shippingNote"></span>
-            </div>
-            <div class="price-change" id="priceChange" style="display: none"></div>
-          </div>
-
-
-          <hr/>
-
-          <p class="option-label" id="size-label">Size:</p>
-          <div class="sizes" role="group"></div>
-          <p class="prod-meta" id="prodMeta"></p>
-
-          <hr/>
-
-          <div class="buttons-container">
-            <div class="button-group">
-              <a class="cta-btn make-offer-btn" id="offerBtn" href="#" role="button">Make Offer</a>
-              <a class="cta-btn atc-btn" id="addToCartBtn" href="#" role="button">
-
-                Add To Bag
-              </a>
-              <!-- Shown instead of the two buttons above when the viewer owns this listing -- toggled by product.js displayProductDetails() -->
-              <a class="cta-btn edit-listing-btn" id="editListingBtn" href="#" role="button" style="display: none">
-                Edit Listing
-              </a>
-            </div>
-            <a class="cta-btn buy-btn" id="buyBtn" role="button">Buy It Now</a>
-            <a class="cta-btn trade-btn is-disabled" aria-disabled="true" role="button">
-              Trade <span class="coming-soon-badge">Coming Soon</span>
-            </a>
-            <a class="cta-btn stu-btn is-disabled" aria-disabled="true" role="button">
-              Sell To Us <span class="coming-soon-badge">Coming Soon</span>
-            </a>
-          </div>
-
-          <div class="offer-status-panel" id="offerStatusPanel" style="display: none"></div>
-
-          <div class="seller-offers-panel" id="sellerOffersPanel" style="display: none">
-            <h3>Offers on this listing</h3>
-            <div class="seller-offers-list" id="sellerOffersList"></div>
-          </div>
-
-          <hr/>
-
-          <div class="details-container">
-
-            <div class="detail-container">
-                <button class="detail-trigger">
-                  Product Description
-                  <i class="fa-solid fa-plus"></i>
-                </button>
-                <p class="detail-text" id="detail-product">
-                  New with box: A brand-new, unused, and unworn item (including
-                  handmade items) in the original packaging (such as the original
-                  box or bag) and/or with the original tags attached.
-                </p>
-            </div>
-
-            <div class="detail-container">
-              <button class="detail-trigger">
-                Shipping & Returns
-                <i class="fa-solid fa-plus"></i>
-              </button>
-              <p class="detail-text" id="detail-shipping">
-                All orders will be shipped out within 72 hours (Monday-Friday)
-                of your purchase. You will be emailed tracking information as
-                soon as your package ships. Returns are permitted on items
-                within 16 days from the fulfillment date. Sneaker Politics does
-                not offer returns for refunds, but rather only for store credit.
-                Please visit our Returns Page for any questions about returns
-                and/or to start your return process. Socks, underwear,
-                sunglasses, release date products and items that are discounted
-                40% or more off the retail price are designated as FINAL SALE
-                and may not be returned for a refund, store credit or size
-                exchange. Visit our FAQ Page for any questions about what is
-                considered final sale.
-              </p>
-            </div>
-
-            <div class="detail-container">
-              <button class="detail-trigger">
-                Selling
-                <i class="fa-solid fa-plus"></i>
-              </button>
-              <p class="detail-text" id="detail-selling">
-                All orders will be shipped out within 72 hours (Monday-Friday)
-                of your purchase. You will be emailed tracking information as
-                soon as your package ships.
-              </p>
-            </div>
-
-            <div class="detail-container">
-              <button class="detail-trigger">
-                Payment Methods
-                <i class="fa-solid fa-plus"></i>
-              </button>
-              <p class="detail-text" id="detail-payment">
-                We accept Visa, Mastercard, American Express, PayPal, Apple Pay, and Google Pay.
-                All transactions are encrypted and processed securely.
-              </p>
-            </div>
-
-            <div class="detail-container">
-              <button class="detail-trigger">
-                Authenticity
-                <i class="fa-solid fa-plus"></i>
-              </button>
-              <p class="detail-text" id="detail-auth">
-                Every item is verified by an independent authenticator before delivery,
-                ensuring you receive only genuine products.
-              </p>
-            </div>
-        
-          </div>
-
-          <div class="sm-reviews-section">
-            <div class="review-header">
-              <h3>Recent Reviews</h3>
-              <button type="button" id="writeReviewBtn" class="write-review" style="display: none;">
-                <i class="fa-solid fa-plus"></i>
-                Write a review
-              </button>
-            </div>
+    <main class="product-details-layout">
+      <section id="prodetails" class="product-details">
+        <nav aria-label="Breadcrumb">
+          <ol class="product-breadcrumb">
             
-            <div class="review-ratings" style="display: flex">
-              <div class="stars" id="stars">
-                <span class="star" data-value="1">★</span>
-                <span class="star" data-value="2">★</span>
-                <span class="star" data-value="3">★</span>
-                <span class="star" data-value="4">★</span>
-                <span class="star" data-value="5">★</span>
+          </ol>
+        </nav>
+
+        <div class="product-details-wrapper" id="productDetailsWrapper">
+
+          <!-- Skeleton placeholders shown while displayProductDetails() fetches -->
+          <div class="single-pro-image skeleton-item" aria-hidden="true">
+            <div class="skeleton skeleton-image"></div>
+            <div class="seller-profile">
+              <span class="skeleton" style="width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;"></span>
+              <div class="seller-profile-info">
+                <div class="seller-name-row">
+                  <span class="skeleton skeleton-line short"></span>
+                </div>
+                <div class="seller-stats">
+                  <span class="skeleton skeleton-line medium"></span>
+                </div>
               </div>
-              <p class="reviews-count" id="reviewsCount"></p>
-            </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="comments">
             </div>
           </div>
 
+          <div class="s_prod_details skeleton-item" aria-hidden="true">
+            <span class="skeleton skeleton-line short" style="width: 30%;"></span>
+            <span class="skeleton skeleton-line long" style="height: 2rem; width: 70%; margin-top: 0.5rem;"></span>
+            <div class="prod-prices">
+              <span class="skeleton skeleton-line" style="height: 1.5rem; width: 25%;"></span>
+            </div>
+            <hr/>
+            <div class="sizes">
+              <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
+              <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
+              <span class="skeleton" style="width: 48px; height: 32px; border-radius: 8px;"></span>
+            </div>
+            <hr/>
+            <div class="buttons-container">
+              <div class="button-group">
+                <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
+                <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
+              </div>
+              <span class="skeleton" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm);"></span>
+            </div>
+          </div>
+
+          <div class="single-pro-image">
+            <img src="" width="100%" id="MainImg" alt="" />
+
+            <div class="liked" id="mainImageLiked">
+              <i class="fa-regular fa-heart"></i>
+              <span class="favorites-count"></span>
+            </div>
+
+            <button type="button" class="img-slider-arrow img-slider-prev" id="prevImgBtn" aria-label="Previous image" style="display: none">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button type="button" class="img-slider-arrow img-slider-next" id="nextImgBtn" aria-label="Next image" style="display: none">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <div class="s-img-group"></div>
+
+            <a href="#" class="seller-profile" id="sellerProfileLink">
+              <img src="" alt="" class="seller-profile-picture" id="sellerProfilePicture" />
+              <div class="seller-profile-info">
+                <div class="seller-name-row">
+                  <span class="seller-name" id="sellerName"></span>
+                  <div class="verified-tag" id="sellerVerifiedTag" title="Trusted seller on Head-To-Toes" style="display: none">
+                    <i class="fa-solid fa-shield"></i>
+                    Verified
+                  </div>
+                </div>
+                <div class="seller-stats">
+                  <div class="seller-stat" id="sellerRatingStat" style="display: none">
+                    <span class="seller-rating-stars" id="sellerRatingStars"></span>
+                    <span id="sellerRating"></span>
+                    <span class="seller-review-count" id="sellerReviewCount"></span>
+                  </div>
+                  <div class="seller-stat">
+                    <span id="sellerListingsCount">0</span> listings
+                  </div>
+                  <div class="seller-stat">
+                    <span id="sellerSalesCount">0</span> sales
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="s_prod_details">
+            <!-- Auth Badge: hidden by default. Shown by product.js when the
+                listing is already authenticated ("Authenticity Guarantee") or
+                just eligible and will be authenticated at checkout ("Verified
+                authentic") -- text set dynamically either way. -->
+            <div class="auth-badge" id="authBadge" style="display: none">
+              <img src="../images/hexxo_auth_badge.png" alt="">
+              <span>Authenticity Guarantee</span>
+            </div>
+
+            <p class="prod-category"></p>
+
+            <h1 class="prod-title"></h1>
+
+            <div class="prod-prices">
+              <div class="price-row">
+                <p class="prod-price" aria-label="Price"></p>
+                <p class="original-price"></p>
+                <span class="shipping-note" id="shippingNote"></span>
+              </div>
+              <div class="price-change" id="priceChange" style="display: none"></div>
+            </div>
+
+
+            <hr/>
+
+            <div class="prod-options-group">
+              <div class="prod-option">
+                <p class="option-label" id="size-label">Size:</p>
+                <div class="sizes" role="group"></div>
+              </div>
+              <div class="prod-option">
+                <p class="option-label">Condition:</p>
+                <div class="sizes" role="group" id="conditionGroup"></div>
+              </div>
+              <div class="prod-option" id="genderOption">
+                <p class="option-label">Gender:</p>
+                <div class="sizes" role="group" id="genderGroup"></div>
+              </div>
+            </div>
+
+            <hr/>
+
+            <div class="buttons-container">
+              <div class="button-group">
+                <a class="cta-btn make-offer-btn" id="offerBtn" href="#" role="button">Make Offer</a>
+                <a class="cta-btn atc-btn" id="addToCartBtn" href="#" role="button">
+
+                  Add To Bag
+                </a>
+                <!-- Shown instead of the two buttons above when the viewer owns this listing -- toggled by product.js displayProductDetails() -->
+                <a class="cta-btn edit-listing-btn" id="editListingBtn" href="#" role="button" style="display: none">
+                  Edit Listing
+                </a>
+              </div>
+              <a class="cta-btn buy-btn" id="buyBtn" role="button">Buy It Now</a>
+              <a class="cta-btn trade-btn is-disabled" aria-disabled="true" role="button">
+                Trade <span class="coming-soon-badge">Coming Soon</span>
+              </a>
+              <a class="cta-btn stu-btn is-disabled" aria-disabled="true" role="button">
+                Sell To Us <span class="coming-soon-badge">Coming Soon</span>
+              </a>
+            </div>
+
+            <div class="offer-status-panel" id="offerStatusPanel" style="display: none"></div>
+
+            <div class="seller-offers-panel" id="sellerOffersPanel" style="display: none">
+              <h2>Offers on this listing</h2>
+              <div class="seller-offers-list" id="sellerOffersList"></div>
+            </div>
+
+            <hr/>
+
+            <div class="details-container">
+
+              <div class="detail-container">
+                <h3>
+                  <button class="detail-trigger">
+                    Product Description
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </h3>
+                  <p class="detail-text" id="detail-product">
+                    New with box: A brand-new, unused, and unworn item (including
+                    handmade items) in the original packaging (such as the original
+                    box or bag) and/or with the original tags attached.
+                  </p>
+              </div>
+
+              <div class="detail-container">
+                <h3>
+                  <button class="detail-trigger">
+                    Shipping & Returns
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </h3>
+                <p class="detail-text" id="detail-shipping">
+                  All orders will be shipped out within 72 hours (Monday-Friday)
+                  of your purchase. You will be emailed tracking information as
+                  soon as your package ships. Returns are permitted on items
+                  within 16 days from the fulfillment date. Sneaker Politics does
+                  not offer returns for refunds, but rather only for store credit.
+                  Please visit our Returns Page for any questions about returns
+                  and/or to start your return process. Socks, underwear,
+                  sunglasses, release date products and items that are discounted
+                  40% or more off the retail price are designated as FINAL SALE
+                  and may not be returned for a refund, store credit or size
+                  exchange. Visit our FAQ Page for any questions about what is
+                  considered final sale.
+                </p>
+              </div>
+
+              <div class="detail-container">
+                <h3>
+                  <button class="detail-trigger">
+                    Selling
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </h3>
+                <p class="detail-text" id="detail-selling">
+                  All orders will be shipped out within 72 hours (Monday-Friday)
+                  of your purchase. You will be emailed tracking information as
+                  soon as your package ships.
+                </p>
+              </div>
+
+              <div class="detail-container">
+                <h3>
+                  <button class="detail-trigger">
+                    Payment Methods
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </h3>
+                <p class="detail-text" id="detail-payment">
+                  We accept Visa, Mastercard, American Express, PayPal, Apple Pay, and Google Pay.
+                  All transactions are encrypted and processed securely.
+                </p>
+              </div>
+
+              <div class="detail-container">
+                <h3>
+                  <button class="detail-trigger">
+                    Authenticity
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </h3>
+                <p class="detail-text" id="detail-auth">
+                  Every item is verified by an independent authenticator before delivery,
+                  ensuring you receive only genuine products.
+                </p>
+              </div>
+          
+            </div>
+
+            <div class="sm-reviews-section">
+              <div class="review-header">
+                <h3>Recent Reviews</h3>
+                <button type="button" id="writeReviewBtn" class="write-review" style="display: none;">
+                  <i class="fa-solid fa-plus"></i>
+                  Write a review
+                </button>
+              </div>
+              
+              <div class="review-ratings" style="display: flex">
+                <div class="stars" id="stars">
+                  <span class="star" data-value="1">★</span>
+                  <span class="star" data-value="2">★</span>
+                  <span class="star" data-value="3">★</span>
+                  <span class="star" data-value="4">★</span>
+                  <span class="star" data-value="5">★</span>
+                </div>
+                <p class="reviews-count" id="reviewsCount"></p>
+              </div>
+              <hr style="width: 100%; text-align: left; margin-left: 0" />
+              <div class="comments">
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
-    </section>
-    <!-- Sales Chart-->
-     <section class="section-p1">
+      </section>
+      <!-- Sales Chart-->
+      <section>
+        <hr/>
         <!-- Statical Data-->
-         <div class="stat-row">
-          <div class="stat-card">
-            <p class="stat-label">Highest Offer</p>
-            <p class="stat-val" id="highestOffer">$0.00</p>
+          <div class="chart-header">
+            <h2 class="header">Market Stats</h2>
           </div>
-          <div class="stat-card">
-            <p class="stat-label">Lowest Offer</p>
-            <p class="stat-val" id="lowestOffer">$0.00</p>
+          <div class="stat-row">
+            <div class="stat-card">
+              <p class="stat-label">Highest Offer</p>
+              <p class="stat-val" id="highestOffer"><span class="skeleton" style="width: 60px; height: 1.25em;"></span></p>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Lowest Offer</p>
+              <p class="stat-val" id="lowestOffer"><span class="skeleton" style="width: 60px; height: 1.25em;"></span></p>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">Average Sale Price</p>
+              <p class="stat-val" id="averageSalesPrice"><span class="skeleton" style="width: 60px; height: 1.25em;"></span></p>
+            </div>
+            <div class="stat-card">
+              <p class="stat-label">ValueAt</p>
+              <p class="stat-val" id="marketValue"><span class="skeleton" style="width: 60px; height: 1.25em;"></span></p>
+            </div>
           </div>
-          <div class="stat-card">
-            <p class="stat-label">Average Sale Price</p>
-            <p class="stat-val" id="averageSalesPrice">$0.00</p>
-          </div>
-          <div class="stat-card">
-            <p class="stat-label">ValueAt</p>
-            <p class="stat-val" id="marketValue">$0.00</p>
-          </div>
-         </div>
-
+          <hr/>
         <div class="header-wrapper">
           <div class="chart-header">
-            <p class="subheader">Sales Chart</p>
             <h2 class="header">Price History</h2>
           </div>
 
@@ -368,16 +394,16 @@
         </div>
 
         <hr/>
-     </section>
+      </section>
 
-    <!-- Products-->
-    <section id="product1">
-      <h2 class="pro-header">Related Products</h2>
-      <!-- Contains all product cards -->
-      <div class="pro-container" id="proContainer">
-      </div>
-    </section>
-    
+      <!-- Products-->
+      <section>
+        <h2 class="section-header">Related Products</h2>
+        <!-- Contains all product cards -->
+        <div class="pro-container" id="proContainer">
+        </div>
+      </section>
+    </main>
     <!-- Newsletter -->
     <section id="newsletter" class="section-p1">
       <div class="newstext">
@@ -447,6 +473,6 @@
     <script type="module" src="../js/core/global.js"></script>
     <script type="module" src="../js/pages/product.js"></script>
     <script type="module" src="../js/components/nav.js"></script>
-    <script src="../js/components/footer.js"></script>
+    <script type="module" src="../js/components/footer.js"></script>
   </body>
 </html>

@@ -200,7 +200,7 @@ const createUserProfile = async (user, additionalData) => {
 function initAuthForm() {
   const loader = document.querySelector(".loader");
   // select inputs
-  const submitBtn = document.querySelector(".submit-btn");
+  const submitBtn = document.getElementById("submitBtn");
   const name = document.querySelector("#name") || null;
   const email = document.querySelector("#email");
   const password = document.querySelector("#password");

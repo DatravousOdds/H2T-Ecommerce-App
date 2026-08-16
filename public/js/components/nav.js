@@ -130,10 +130,10 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuConten
       <a href="/" aria-label="Go to homepage"><img src="../images/Hexxo_Bg_Removed.png" class="logo-img" width="80" height="80"/></a>
 
       <form class="search-form" role="search">
-        <input type="text" placeholder="Search here...." class="search-input" aria-label="Search Products">
-        <button type="submit" class="search-button" aria-label="Search">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+        <div class="input-icon-wrapper input-width-full" aria-label="Search">
+          <input type="text" placeholder="Search for product..." class="search-input input-with-icon" aria-label="Search Products">
+          <i class="fa-solid fa-magnifying-glass icon-element"></i>
+        </div>
       </form>
     </div>
 

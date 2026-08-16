@@ -164,81 +164,11 @@ function renderOrders(orders) {
 }
 
 /**
- * Trend indicators compare against a FIXED calendar month-over-month
- * window, independent of whatever range the page's own filter is set to --
- * the HTML label literally says "Compared to last month," so changing what
- * it actually compares against based on the filter would make that label
- * lie. allOrders (unfiltered) is always used here, not the filtered set.
- *
  * "Pending Orders" here counts by order.status !== "succeeded" (Stripe
  * payment status), not fulfillmentStatus -- i.e. it's "awaiting payment
  * capture", a real and normally short-lived state now that orders get
  * created at checkout submit instead of only after payment succeeds.
  */
-
-function isInCalendarMonth(order, year, month) {
-  const d = toDate(order.createdAt);
-  return d.getFullYear() === year && d.getMonth() === month;
-}
-
-function percentChange(current, previous) {
-  if (previous === 0) {
-    // No baseline to compare against -- not 0% (which would imply "no
-    // change" from a real number), and not a divide-by-zero NaN either.
-    return current === 0 ? null : Infinity;
-  }
-  return ((current - previous) / previous) * 100;
-}
-
-function renderTrend(articleId, current, previous, { isCurrency = false } = {}) {
-  const trendIcon = document.querySelector(`#${articleId} .trend-icon`);
-  const trendStatus = document.querySelector(`#${articleId} .trend-status`);
-  if (!trendIcon || !trendStatus) return;
-
-  const change = percentChange(current, previous);
-
-  if (change === null) {
-    trendIcon.className = "trend-icon";
-    trendIcon.innerHTML = "";
-    trendStatus.className = "trend-status";
-    trendStatus.textContent = "No data last month";
-    return;
-  }
-
-  const isUp = change >= 0;
-  trendIcon.className = `trend-icon ${isUp ? "up" : "down"}`;
-  trendIcon.innerHTML = `<i class="fa-solid fa-arrow-trend-${isUp ? "up" : "down"}"></i>`;
-  trendStatus.className = `trend-status ${isUp ? "up" : "down"}`;
-
-  trendStatus.textContent =
-    change === Infinity
-      ? "New this month"
-      : `${isUp ? "+" : ""}${change.toFixed(1)}%`;
-}
-
-function updateTrends(allOrders) {
-  const now = new Date();
-  const thisMonthOrders = allOrders.filter((o) => isInCalendarMonth(o, now.getFullYear(), now.getMonth()));
-
-  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const lastMonthOrders = allOrders.filter((o) =>
-    isInCalendarMonth(o, lastMonthDate.getFullYear(), lastMonthDate.getMonth())
-  );
-
-  const thisMonthRevenue = thisMonthOrders.reduce((sum, o) => sum + (Number(o.subtotal) || 0), 0);
-  const lastMonthRevenue = lastMonthOrders.reduce((sum, o) => sum + (Number(o.subtotal) || 0), 0);
-
-  const thisMonthAOV = thisMonthOrders.length > 0 ? thisMonthRevenue / thisMonthOrders.length : 0;
-  const lastMonthAOV = lastMonthOrders.length > 0 ? lastMonthRevenue / lastMonthOrders.length : 0;
-
-  const thisMonthPending = thisMonthOrders.filter((o) => o.status !== "succeeded").length;
-  const lastMonthPending = lastMonthOrders.filter((o) => o.status !== "succeeded").length;
-
-  renderTrend("total-orders", thisMonthOrders.length, lastMonthOrders.length);
-  renderTrend("total-revenue", thisMonthRevenue, lastMonthRevenue, { isCurrency: true });
-  renderTrend("average-order-value", thisMonthAOV, lastMonthAOV, { isCurrency: true });
-  renderTrend("pending-orders", thisMonthPending, lastMonthPending);
-}
 
 function updateStats(orders) {
   const totalOrders = orders.length;
@@ -253,7 +183,7 @@ function updateStats(orders) {
 }
 
 function setStat(articleId, value) {
-  const el = document.querySelector(`#${articleId} .stat-number`);
+  const el = document.querySelector(`#${articleId} .stat-value`);
   if (el) el.textContent = value;
 }
 
@@ -315,7 +245,6 @@ async function refreshOrders(userId) {
   const term = searchInput ? searchInput.value.trim() : "";
 
   applyFiltersAndRender(currentOrders, range, term);
-  updateTrends(currentOrders);
 }
 
 function getOrderActionState(order) {
@@ -593,7 +522,6 @@ async function loadOrdersTab(userId) {
     wireControls(currentOrders);
     wireOrderActions(userId);
     applyFiltersAndRender(currentOrders, "all", "");
-    updateTrends(currentOrders);
   } catch (error) {
     console.error("Error loading orders tab:", error);
   }

@@ -1,0 +1,14 @@
+.content-block {
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-primary);
+    box-shadow: var(--shadow);
+}
+
+
+.content-heading {
+    font-size: 1rem;
+    font-weight: 500 !important;
+    color: var(--color-text-muted);
+}

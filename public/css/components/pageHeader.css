@@ -1,0 +1,58 @@
+/* ── Shop Page Header ───────────────────────────── */
+
+#page-header {
+  position: relative;
+  height: 40vh;
+  background-size: cover;
+  background-color: #f4f3f1;
+  background-position: top;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  padding: 14px;
+}
+
+#page-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+#page-header h2 {
+  text-transform: uppercase;
+}
+
+#page-header h2,
+#page-header p {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+}
+
+
+
+.men-header {
+  background-image: url('/images/men_banner_2.jpg');
+}
+
+.women-header {
+  background-image: url('/images/womens.jpg');
+}
+
+.accessories-header {
+  background-image: url('/images/Accessories.jpg');
+}
+
+.collectibles-header {
+  background-image: url('/images/accessories_banner_2.png');
+}
+
+.release-header {
+  background-image: url('/images/releases_banner.jpg');
+}
+
+.about-header {
+  background-image: url('/images/banner_1.jpg');
+}

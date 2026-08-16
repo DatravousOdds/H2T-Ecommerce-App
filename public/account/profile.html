@@ -14,26 +14,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
-
+    <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/profile.css" />
     <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/components/product-card.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
     <link rel="stylesheet" href="css/components/cartDrawer.css" />
     <link rel="stylesheet" href="css/components/skeleton.css" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
-      rel="stylesheet"
     />
     <link
       href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap"
@@ -45,18 +43,18 @@
     ></script>
     <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
     <title>Hexxo : Profile</title>
-    <link
+    <!-- <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
-    />
-    <link
+    /> -->
+    <!-- <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
-    />
+    /> -->
   </head>
   <body>
     <section id="header">
@@ -104,7 +102,7 @@
           <div id="profile-wrapper">
             <div id="profile-inner-wrapper">
               <!-- Profile Picture Section -->
-              <div id="pfp-data" class="pfp profile-section">
+              <div id="pfp-data" class="pfp profile-section content-block">
                 <!-- Profile Background -->
                 <div class="profile-background skeleton">
                   <!--- Background will be set via JS -->
@@ -287,8 +285,8 @@
                 </div>
               </div>
               <!-- Profile Section  -->
-              <div id="profile-data" class="pfp profile-section">
-                <div class="header-info">
+              <div id="profile-data" class="pfp profile-section content-block">
+                <div class="header-info m-bottom-md">
                   <h3>Personal Information</h3>
                   <!-- Edit Button -->
                   <div class="edit-info-header">
@@ -301,23 +299,23 @@
                 </div>
                 <!-- Skeleton placeholders shown while loadProfileData() fetches -->
                 <div class="pfp-1 skeleton-item" aria-hidden="true">
-                  <div class="input-group">
+                  <div class="form-group">
                     <label>First Name</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-group">
+                  <div class="form-group">
                     <label>Last Name</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-group">
+                  <div class="form-group">
                     <label>Email</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-group">
+                  <div class="form-group">
                     <label>Phone Number</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-group">
+                  <div class="form-group">
                     <label>Username</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
@@ -326,9 +324,10 @@
                 <!-- Personal Information Form-->
                 <div class="pfp-1">
                   <form action="#" id="personalInformation">
-                    <div class="input-group">
+                    <div class="form-group">
                       <label for="personal-fname">First Name</label>
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="fname"
                         id="personal-fname"
@@ -339,9 +338,10 @@
                       <span class="error-message" id="fnameError"></span>
                     </div>
 
-                    <div class="input-group">
+                    <div class="form-group">
                       <label for="personal-lname">Last Name</label>
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="lname"
                         id="personal-lname"
@@ -352,9 +352,10 @@
                       <span class="error-message" id="lnameError"></span>
                     </div>
 
-                    <div class="input-group">
+                    <div class="form-group">
                       <label for="personal-email">Email</label>
                       <input
+                        class="input-padding-none input-text-muted"
                         type="email"
                         name="personal-email"
                         id="personal-email"
@@ -365,9 +366,10 @@
                       <span class="error-message" id="emailError"></span>
                     </div>
 
-                    <div class="input-group">
+                    <div class="form-group">
                       <label for="personal-phoneNumber">Phone Number</label>
                       <input
+                        class="input-padding-none input-text-muted"
                         type="tel"
                         name="phoneNumber"
                         id="personal-phoneNumber"
@@ -378,9 +380,10 @@
                       <span class="error-message" id="phoneError"></span>
                     </div>
 
-                    <div class="input-group">
+                    <div class="form-group">
                       <label for="profile-username">Username</label>
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="profile-username"
                         id="profile-username"
@@ -394,14 +397,14 @@
                     <!-- Button to submit or reset form -->
                     <div id="personalInfoActionBtn" class="action-buttons">
                       <button
-                        class="button-31 save-btn"
+                        class="btn btn-primary save-btn btn-width-200"
                         id="save-personal-info"
                         type="submit"
                       >
                         Save changes
                       </button>
                       <button
-                        class="button-31 cancel-btn"
+                        class="btn btn-secondary cancel-btn btn-width-200"
                         id="cancel-personal-info"
                         type="reset"
                       >
@@ -413,7 +416,7 @@
               </div>
 
               <!-- Shipping Information-->
-              <div id="shipping-data" class="pfp profile-section">
+              <div id="shipping-data" class="pfp profile-section content-block">
                 <div class="header-info">
                   <h3>Shipping Information</h3>
                   <!-- Edit Information Button -->
@@ -426,41 +429,41 @@
                 </div>
                 <!-- Skeleton placeholders shown while loadProfileData() fetches -->
                 <div class="pfp-1 skeleton-item" aria-hidden="true">
-                  <div class="input-groups">
+                  <div class="form-group">
                     <label>First Name</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-groups">
+                  <div class="form-group">
                     <label>Last Name</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-groups">
+                  <div class="form-group">
                     <label>Country</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-groups">
+                  <div class="form-group">
                     <label>Address</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-groups">
+                  <div class="form-group">
                     <label>Address 2</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="input-groups">
+                  <div class="form-group">
                     <label>City</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
-                  <div class="form-group">
-                    <div class="input-groups">
+                  <div class="form-row">
+                    <div class="form-group">
                       <label>State/Region</label>
                       <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                     </div>
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label>Postal Code</label>
                       <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                     </div>
                   </div>
-                  <div class="input-groups">
+                  <div class="form-group">
                     <label>Phone Number</label>
                     <span class="skeleton" style="display: block; height: 44px; margin: 8px 0; border-radius: 4px;"></span>
                   </div>
@@ -469,11 +472,12 @@
                 <div class="pfp-1">
                   <!-- Shipping Form -->
                   <form action="#" id="shippingInformation">
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label for="fname"
                         >First Name <span class="required">*</span></label
                       >
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="fname"
                         id="shipping-fname"
@@ -481,13 +485,14 @@
                         value=""
                         disabled
                       />
-                      <span id="fnameError"></span>
+                      <span class="error-message" id="fnameError"></span>
                     </div>
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label for="shipping-lname"
                         >Last Name <span class="required">*</span></label
                       >
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="lname"
                         id="shipping-lname"
@@ -495,59 +500,62 @@
                         value=""
                         disabled
                       />
-                      <span id="lnameError"></span>
+                      <span class="error-message" id="lnameError"></span>
                     </div>
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label for="shipping-country"
                         >Country <span class="required">*</span></label
                       >
                       <select id="shipping-country" name="country" required>
                         <option value="">Select a country</option>
                       </select>
-                      <span id="countryError"></span>
+                      <span class="error-message" id="countryError"></span>
                     </div>
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label for="shipping-address"
                         >Address <span class="required">*</span></label
                       >
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="shipping-address"
                         id="shipping-address"
                         placeholder="Your address..."
                         disabled
                       />
-                      <span id="addressError"></span>
+                      <span class="error-message" id="addressError"></span>
                     </div>
 
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label for="shipping-address2">Address 2</label>
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="shipping-address"
                         id="shipping-address2"
                         placeholder="Your address..."
                         disabled
                       />
-                      <span id="addressTwoError"></span>
+                      <span class="error-message" id="addressTwoError"></span>
                     </div>
 
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label for="shipping-city"
                         >City <span class="required">*</span></label
                       >
                       <input
+                        class="input-padding-none input-text-muted"
                         type="text"
                         name="city"
                         id="shipping-city"
                         placeholder="Your address..."
                         disabled
                       />
-                      <span id="cityError"></span>
+                      <span class="error-message" id="cityError"></span>
                     </div>
 
-                    <div class="form-group">
-                      <div class="input-groups">
+                    <div class="form-row">
+                      <div class="form-group">
                         <label for="shipping-state"
                           >State/Region <span class="required">*</span></label
                         >
@@ -558,48 +566,50 @@
                         >
                           <option value="">Select</option>
                         </select>
-                        <span id="stateError"></span>
+                        <span class="error-message" id="stateError"></span>
                       </div>
 
-                      <div class="input-groups">
+                      <div class="form-group">
                         <label for="shipping-postal"
                           >Postal Code <span class="required">*</span></label
                         >
                         <input
+                          class="input-padding-none input-text-muted"
                           type="number"
                           name="postal"
                           id="shipping-postal"
                           placeholder="Enter zip code"
                           disabled
                         />
-                        <span id="postalError"></span>
+                        <span class="error-message" id="postalError"></span>
                       </div>
                     </div>
 
-                    <div class="input-groups">
+                    <div class="form-group">
                       <label for="shipping-phoneNumber"
                         >Phone Number <span class="required">*</span></label
                       >
                       <input
+                        class="input-padding-none input-text-muted"
                         type="tel"
                         name="phoneNumber"
                         id="shipping-phoneNumber"
                         placeholder="Enter phone number..."
                         disabled
                       />
-                      <span id="phoneError"></span>
+                      <span class="error-message" id="phoneError"></span>
                     </div>
 
                     <div class="action-buttons">
                       <button
-                        class="button-31 save-btn"
+                        class="btn btn-primary save-btn btn-width-200"
                         id="save-shipping-info"
                         type="submit"
                       >
                         Save changes
                       </button>
                       <button
-                        class="button-31 cancel-btn"
+                        class="btn btn-secondary cancel-btn btn-width-200"
                         id="cancel-shipping-info"
                         type="reset"
                       >
@@ -610,8 +620,8 @@
                 </div>
               </div>
               <!-- Reviews Content -->
-              <div id="review-content" class="profile-section">
-                <h1>Reviews</h1>
+              <div id="review-content" class="profile-section content-block">
+                <h2>Reviews</h2>
                 <hr />
 
                 <div class="review-wrapper">
@@ -1282,7 +1292,7 @@
               <!-- Hidden by default -- shown by overview.js only when
                    GET /api/connect/status reports the seller hasn't finished
                    (or hasn't started) Stripe Connect onboarding. -->
-              <section class="payout-setup-card" id="payout-setup-card" style="display: none">
+              <section class="payout-setup-card content-block" id="payout-setup-card" style="display: none">
                 <div class="payout-setup-content">
                   <h3>Set Up Payouts</h3>
                   <p id="payout-setup-status">Checking your payout account status...</p>
@@ -1290,43 +1300,23 @@
                 <button type="button" class="order-action-btn" id="payout-setup-btn">Set Up Payouts</button>
               </section>
               <section class="stat-grid" aria-label="Performance Metrics">
-                <article class="stat-card">
-                  <header class="card-header">
-                    <h2>Total Revenue</h2>
-                    <i class="fa-solid fa-dollar-sign blue"></i>
-                  </header>
+                <div class="stat-card content-block">
+                  <h3 class="stat-label">Total Revenue</h3>
                   <p class="stat-value" id="total-revenue-value"><span class="skeleton" style="display:inline-block; width:90px; height:1.1em;"></span></p>
-                  <p class="trend-indicator trend-positive" id="total-revenue-trend">
-                    <span class="skeleton" style="display:inline-block; width:140px; height:0.9em;"></span>
-                  </p>
-                </article>
-                <article class="stat-card">
-                  <header class="card-header">
-                    <h2>Active Listings</h2>
-                    <i class="fa-solid fa-box blue"></i>
-                  </header>
+                </div>
+                <div class="stat-card content-block">
+                  <h3 class="stat-label">Active Listings</h3>
                   <p class="stat-value" id="active-listing-value"><span class="skeleton" style="display:inline-block; width:50px; height:1.1em;"></span></p>
-                  <p class="trend-indicator trend-neutral" id="active-listings-trend">
-                    <span class="skeleton" style="display:inline-block; width:160px; height:0.9em;"></span>
-                  </p>
-                </article>
-                <article class="stat-card">
-                  <header class="card-header">
-                    <h2>Products Sold</h2>
-                    <i class="fa-solid fa-boxes-stacked blue"></i>
-                  </header>
-
+                </div>
+                <div class="stat-card content-block">
+                  <h3 class="stat-label">Products Sold</h3>
                   <p class="stat-value" id="product-sold-value"><span class="skeleton" style="display:inline-block; width:60px; height:1.1em;"></span></p>
-                  <!-- Never set by overview.js -- fetchProductsSold's status=='sold' query is always 0
-                       by architecture (nothing in the app writes that status yet), so there's no real
-                       trend to show. Hidden rather than faked, same convention as the Rating stat above. -->
-                  <p class="trend-indicator trend-neutral" id="products-sold-trend" style="display: none"></p>
-                </article>
+                </div>
                 <!-- HIDDEN FOR MVP: no rating data source exists yet (reviews deferred) -->
                 <!--
                 <article class="stat-card">
                   <header class="card-header">
-                    <h2>Seller Rating</h2>
+                    <h2 class="content-heading">Seller Rating</h2>
                     <i class="fa-solid fa-star rating"></i>
                   </header>
 
@@ -1339,9 +1329,9 @@
               </section>
 
               <!-- Selling Chart Section -->
-              <section class="chart-section" aria-label="Sales Overview">
+              <section class="chart-section content-block" aria-label="Sales Overview">
                 <header>
-                  <h2 class="chart-title">Sales Overview</h2>
+                  <h2 class="stat-label">Sales Overview</h2>
                 </header>
 
                 <div
@@ -1355,9 +1345,9 @@
               </section>
 
               <!-- Recent Activity Section -->
-              <div class="activity-section">
+              <div class="content-block" aria-label="Recent Activity">
                 <header class="activity-header">
-                  <h2 class="chart-title">Recent Activity</h2>
+                  <h2 class="stat-label">Recent Activity</h2>
                   <a href="#" class="view-all-link">View All</a>
                 </header>
 
@@ -1430,38 +1420,32 @@
             >
               <div class="products-overview" role="region">
                 <!-- code to display products overview -->
-                <article id="active-listings" class="stat-card">
-                  <header class="stat-header">
-                    <h2>Active Listings</h2>
-                    <i class="fa-solid fa-tag"></i>
-                  </header>
-                  <p class="stat-card-value"><span class="skeleton" style="display:inline-block; width:50px; height:1.1em;"></span></p>
-                </article>
+                <div id="active-listings" class="stat-card content-block">
+                  <h3 class="stat-label">Active Listings</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:50px; height:1.1em;"></span></p>
+                </div>
 
                 <!-- HIDDEN FOR MVP: Trade Offers / Sell to Us not in scope -->
                 <!--
                 <article id="trade-offers" class="stat-card">
                   <header class="stat-header">
-                    <h2>Trade Offers</h2>
+                    <h2 class="content-heading">Trade Offers</h2>
                     <i class="fa-solid fa-right-left"></i>
                   </header>
                   <p class="stat-card-value">24</p>
                 </article>
                 <article id="sell-to-us-requests" class="stat-card">
                   <header class="stat-header">
-                    <h2>Sell to Us Requests</h2>
+                    <h2 class="content-heading">Sell to Us Requests</h2>
                     <i class="fa-solid fa-dollar-sign"></i>
                   </header>
                   <p class="stat-card-value">12</p>
                 </article>
                 -->
-                <article id="total-sales" class="stat-card">
-                  <header class="stat-header">
-                    <h2>Total Sales</h2>
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                  </header>
-                  <p class="stat-card-value"><span class="skeleton" style="display:inline-block; width:90px; height:1.1em;"></span></p>
-                </article>
+                <div id="total-sales" class="stat-card content-block">
+                  <h3 class="stat-label">Total Sales</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:90px; height:1.1em;"></span></p>
+                </div>
               </div>
 
               <!-- Products Controls -->
@@ -1470,14 +1454,15 @@
                   <label class="visually-hidden product-search"
                     >Search products</label
                   >
-                  <div class="search-wrapper">
+                  <div class="input-icon-wrappe input-width-full">
                     <input
                       type="text"
+                      class="input-bordered input-with-icon input-width-full"
                       id="product-search"
                       placeholder="Search products"
                       aria-label="Search products"
                     />
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                      <i class="fa-solid fa-magnifying-glass icon-element"></i>
                   </div>
                 </form>
 
@@ -2450,7 +2435,7 @@
                             <label for="new-collection"
                               >Create New Collection</label
                             >
-                            <div class="input-group">
+                            <div class="form-group">
                               <input
                                 type="text"
                                 placeholder="Enter new collection name"
@@ -2627,7 +2612,7 @@
                               <label for="minimum-acceptable"
                                 >Minimum Acceptable Offer (Optional)</label
                               >
-                              <div class="input-group">
+                              <div class="form-group">
                                 <span class="currency-symbol">$</span>
                                 <input
                                   type="number"
@@ -3128,60 +3113,24 @@
                 role="region"
                 aria-label="Orders Statistics"
               >
-                <article id="total-orders" class="orders-wrapper">
-                  <h2 class="total-orders-heading">Total Orders</h2>
-                  <div class="total-orders-info">
-                    <div class="trend-indicator">
-                      <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:50px; height:1em;"></span></strong>
-                      <div class="trend-icon up">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                      </div>
-                      <span class="trend-status up"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
-                    </div>
-                  </div>
-                  <p class="default-paragraph">Compared to last month</p>
-                </article>
+                <div id="total-orders" class="stat-card content-block">
+                  <h3 class="stat-label">Total Orders</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:50px; height:1.1em;"></span></p>
+                </div>
 
-                <article id="total-revenue" class="orders-wrapper">
-                  <h2 class="revenue-heading">Total Revenue</h2>
-                  <div class="total-revenue-info">
-                    <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:70px; height:1em;"></span></strong>
-                    <div class="trend-indicator">
-                      <div class="trend-icon up">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                      </div>
-                      <span class="trend-status up"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
-                    </div>
-                  </div>
-                  <p class="default-paragraph">last month</p>
-                </article>
+                <div id="total-revenue" class="stat-card content-block">
+                  <h3 class="stat-label">Total Revenue</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:70px; height:1.1em;"></span></p>
+                </div>
 
-                <article id="average-order-value" class="orders-wrapper">
-                  <h2 class="average-orders-heading">Average Order Value</h2>
-                  <div class="average-orders-info">
-                    <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:70px; height:1em;"></span></strong>
-                    <div class="trend-indicator">
-                      <div class="trend-icon up">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                      </div>
-                      <span class="trend-status up"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
-                    </div>
-                  </div>
-                  <p class="default-paragraph">last month</p>
-                </article>
-                <article id="pending-orders" class="orders-wrapper">
-                  <h2 class="pending-orders-heading">Pending Orders</h2>
-                  <div class="pending-orders-info">
-                    <strong class="stat-number"><span class="skeleton" style="display:inline-block; width:30px; height:1em;"></span></strong>
-                    <div class="trend-indicator">
-                      <div class="trend-icon down">
-                        <i class="fa-solid fa-arrow-trend-down"></i>
-                      </div>
-                      <span class="trend-status down"><span class="skeleton" style="display:inline-block; width:30px; height:0.9em;"></span></span>
-                    </div>
-                  </div>
-                  <p class="default-paragraph">Compared to last month</p>
-                </article>
+                <div id="average-order-value" class="stat-card content-block">
+                  <h3 class="stat-label">Average Order Value</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:70px; height:1.1em;"></span></p>
+                </div>
+                <div id="pending-orders" class="stat-card content-block">
+                  <h3 class="stat-label">Pending Orders</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:30px; height:1.1em;"></span></p>
+                </div>
               </div>
               <!-- Filter Component -->
               <form
@@ -3325,7 +3274,7 @@
             <!-- Analytics Section -->
             <section id="analytics" class="content-section">
               <!-- Analytics Header -->
-              <header class="analytics-header">
+              <header class="analytics-header content-block">
                 <div class="analytics-header-container">
                   <div class="analytics-title-group">
                     <h1 class="analytics-heading">Analytics</h1>
@@ -3359,72 +3308,32 @@
               <!-- Analytics Content -->
               <section class="metrics-grid">
                 <!-- Total Revenue -->
-                <article class="metric-card" id="analytics-total-revenue">
-                  <div class="metric-header">
-                    <p class="metric-title">Total Revenue</p>
-                    <i class="fa-solid fa-dollar-sign"></i>
-                  </div>
-                  <div class="metric-value">
-                    <h1><span class="skeleton" style="display:inline-block; width:80px; height:1em;"></span></h1>
-                    <span class="metric-trend">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
-                    </span>
-                  </div>
-                  <p class="default-paragraph metric-subtitle">last month</p>
-                </article>
+                <div class="stat-card content-block" id="analytics-total-revenue">
+                  <h3 class="stat-label">Total Revenue</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:80px; height:1.1em;"></span></p>
+                </div>
                 <!-- Total Orders -->
-                <article class="metric-card" id="analytics-total-orders">
-                  <div class="metric-header">
-                    <p class="metric-title">Total Orders</p>
-                    <i class="fa-solid fa-cart-shopping"></i>
-                  </div>
-                  <div class="metric-value">
-                    <h1><span class="skeleton" style="display:inline-block; width:60px; height:1em;"></span></h1>
-                    <span class="metric-trend">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
-                    </span>
-                  </div>
-                  <p class="default-paragraph metric-subtitle">last month</p>
-                </article>
+                <div class="stat-card content-block" id="analytics-total-orders">
+                  <h3 class="stat-label">Total Orders</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:60px; height:1.1em;"></span></p>
+                </div>
                 <!-- Average Order Value -->
-                <article class="metric-card" id="analytics-average-order-value">
-                  <div class="metric-header">
-                    <p class="metric-title">Average Order Value</p>
-                    <i class="fa-solid fa-dollar-sign"></i>
-                  </div>
-                  <div class="metric-value">
-                    <h1><span class="skeleton" style="display:inline-block; width:80px; height:1em;"></span></h1>
-                    <span class="metric-trend">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
-                    </span>
-                  </div>
-                  <p class="default-paragraph metric-subtitle">last month</p>
-                </article>
+                <div class="stat-card content-block" id="analytics-average-order-value">
+                  <h3 class="stat-label">Average Order Value</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:80px; height:1.1em;"></span></p>
+                </div>
                 <!-- Active Customers   -->
-                <article class="metric-card" id="analytics-active-customers">
-                  <div class="metric-header">
-                    <p class="metric-title">Active Customers</p>
-                    <i class="fa-solid fa-user"></i>
-                  </div>
-                  <div class="metric-value">
-                    <h1><span class="skeleton" style="display:inline-block; width:50px; height:1em;"></span></h1>
-                    <span class="metric-trend">
-                      <i class="fa-solid fa-arrow-trend-up"></i>
-                      <span class="metric-trend-status"><span class="skeleton" style="display:inline-block; width:45px; height:0.9em;"></span></span>
-                    </span>
-                  </div>
-                  <p class="default-paragraph metric-subtitle">last month</p>
-                </article>
+                <div class="stat-card content-block" id="analytics-active-customers">
+                  <h3 class="stat-label">Active Customers</h3>
+                  <p class="stat-value"><span class="skeleton" style="display:inline-block; width:50px; height:1.1em;"></span></p>
+                </div>
               </section>
 
               <!-- Revenue Overview -->
-              <section class="chart-section">
+              <section class="chart-section content-block">
                 <header class="chart-header">
                   <div class="chart-title-group">
-                    <h2 class="chart-title">Revenue Overview</h2>
+                    <h2 class="stat-label">Revenue Overview</h2>
                     <span class="chart-tooltip"
                       >Track your store's revenue and growth</span
                     >
@@ -3443,10 +3352,10 @@
                 </div>
               </section>
               <!-- Sales by Category -->
-              <section class="chart-section">
+              <section class="chart-section content-block">
                 <div class="chart-header">
                   <div class="chart-title-group">
-                    <h2 class="chart-title">Sales by Category</h2>
+                    <h2 class="stat-label">Sales by Category</h2>
                     <span class="chart-tooltip"
                       >Track your store's sales by category</span
                     >
@@ -3482,11 +3391,11 @@
               </section>
 
               <!-- Order Timeline   -->
-              <section class="chart-section">
+              <section class="chart-section content-block">
                 <!-- Analytics Header -->
                 <div class="chart-header">
                   <div class="chart-title-group">
-                    <h2 class="chart-title">Order Timeline</h2>
+                    <h2 class="stat-label">Order Timeline</h2>
                     <span class="chart-tooltip"
                       >Track your store's order timeline</span
                     >
@@ -3731,7 +3640,7 @@
           </div>
 
           <!-- Cards on File -->
-          <div class="inner-wrapper" id="cards-on-file">
+          <div class="inner-wrapper content-block" id="cards-on-file">
             <h2>Cards on File</h2>
             <div id="card-list" class="card-list"></div>
           </div>
@@ -4501,7 +4410,7 @@
                           <label for="taxWithholding" class="taxWithholding"
                             >Tax Withholding</label
                           >
-                          <div class="input-group tax-withholding-container">
+                          <div class="form-group tax-withholding-container">
                             <input
                               type="number"
                               name="taxWithholding"
@@ -4572,11 +4481,7 @@
         <div class="tab" id="favorites">
           <main class="favorites-section" role="main">
             <header class="favorites-header">
-              <h1>Your Favorites</h1>
-              <p>
-                Save your favorite items here. You can find them in your
-                favorites list anytime.
-              </p>
+              <h1>Favorites</h1>
             </header>
 
             <section
@@ -4605,20 +4510,10 @@
           <section class="notification-settings">
             <!-- Notification Header -->
             <header class="settings-header">
-              <div class="icon-wrapper">
-                <i class="fa-solid fa-bell"></i>
-              </div>
-              <h1>Notification Settings</h1>
+              <h1>Notifications</h1>
             </header>
             <!-- Notification Content -->
             <div class="settings-content">
-              <header class="content-header">
-                <h2>Notification Preferences</h2>
-                <p class="default-paragraph description">
-                  Choose which notifications you'd like to receive
-                </p>
-              </header>
-
               <!-- Notification Options -->
               <div class="notification-options border-bottom">
                 <!-- Order Updates -->
@@ -5353,14 +5248,13 @@
           <section class="settings" role="main">
             <header class="settings__header">
               <h1 class="settings__title">
-                <i class="fa-solid fa-gear"></i>
                 Settings
               </h1>
             </header>
 
             <div class="settings__content">
               <!-- Security Section -->
-              <div class="settings__section">
+              <div class="content-block">
                 <header class="settings__section-header">
                   <i class="fa-solid fa-lock"></i>
                   <h2 class="settings__section-title">Security</h2>
@@ -5404,7 +5298,7 @@
               </div>
 
               <!-- Notifications Section -->
-              <div class="settings__section">
+              <div class="content-block">
                 <header class="settings__section-header">
                   <i class="fa-solid fa-bell"></i>
                   <h2 class="settings__section-title">Notifications</h2>
@@ -5477,7 +5371,7 @@
               </div>
 
               <!-- Display & Language Section -->
-              <div class="settings__section">
+              <div class="content-block">
                 <header class="settings__section-header">
                   <i class="fa-solid fa-display"></i>
                   <h2 class="settings__section-title">Display & Language</h2>
@@ -5545,7 +5439,7 @@
 
     <script type="module" src="js/pages/profile/profile.js"></script>
     
-    <script src="../js/components/footer.js"></script>
+    <script type="module" src="../js/components/footer.js"></script>
     <script type="module" src="js/components/newsletter.js"></script>
     <script type="module" src="js/components/nav.js"></script>
     <script src="../js/pages/profile/selling/selling.js"></script>

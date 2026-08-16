@@ -1,20 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap');
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #fff;
-  font-family: "roboto", sans-serif;
-}
 
 .loader {
   position: fixed;
@@ -32,29 +16,21 @@ body {
   align-items: center;
 }
 
-.logo {
-  height: 100px;
-  width: 100px;
-  object-fit: contain;
-  display: block;
-}
 
 input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
 textarea {
   display: block;
-  width: 300px;
+  width: 100%;
   height: 40px;
-  padding: 20px;
-  border-radius: 5px;
+  border-radius: 8px;
   background: #fff;
-  border: none;
+  border: 1px solid #C3C3C3;
   outline: none;
   margin: 20px 0;
-  color: #383838;
-  font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
-  font-family: "roboto", sans-serif;
-  background-color: #f5f5f5;
+  color: var(--color-text-muted);
+  font-family:var(--ui-font);
+  font-size: var(--font-size-med);
+  background-color: #F2F2F2;
 }
 
 /* Capitalizing an email visually looks wrong, but it should still match the
@@ -137,10 +113,11 @@ label a {
 }
 
 .link {
-  color: #383838;
+  color: var(--color-text-muted);
   margin-top: 1rem;
   text-decoration: none;
   text-align: center;
+  font-size: var(--fs-caption);
   display: block;
 }
 
@@ -189,22 +166,7 @@ label a {
 }
 
 @media (max-width: 820px) {
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  body {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #fff;
-    font-family: "roboto", sans-serif;
-  }
-
+ 
   .loader {
     position: fixed;
     top: 50%;
@@ -214,28 +176,9 @@ label a {
     display: none;
   }
 
-  .logo {
-    margin: 0 auto 50px;
-  }
+  
 
-  input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
-  textarea {
-    display: block;
-    width: 300px;
-    height: 40px;
-    padding: 20px;
-    border-radius: 5px;
-    background: #fff;
-    border: none;
-    outline: none;
-    margin: 20px 0;
-    /* text-transform: capitalize; */
-    color: #383838;
-    font-size: 14px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
-    font-family: "roboto", sans-serif;
-    background-color: #f5f5f5;
-  }
+  
 
   ::placeholder {
     color: #383838;
@@ -308,6 +251,7 @@ label a {
     text-transform: capitalize;
     text-align: center;
     display: block;
+    font-size: var(--fs-caption);
   }
 
   /* alert */

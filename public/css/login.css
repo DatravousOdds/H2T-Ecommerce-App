@@ -1,22 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap');
 
 body {
-  margin: 0 !important;
-  padding: 0 !important;
-  background: url(loginpageBg.jpg) !important;
-  background-size: cover !important;
-  background-position: center !important;
-  font-family: sans-serif !important;
+  min-height: 100dvh; 
 }
 
 .forgot-password-link {
   margin-top: 10px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   display: flex;
   text-align: center;
   justify-content: end;
   text-decoration: none;
-  color: #ff3f3f;
+  color: var(--color-button-primary);
 }
 
 .loader {
@@ -33,13 +28,9 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 100dvh; 
 }
 
-.login-form {
-  border-radius: 9px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
 
 .login-form h1 {
   text-align: center;
@@ -48,34 +39,41 @@ body {
 }
 
 .logo {
-  height: 100%;
-  width: 100%;
+  height: 70px;
+  width: 70px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 50px;
 }
 
-input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]),
-textarea {
-  display: block;
-  width: 300px;
-  height: 40px;
-  padding: 20px;
-  border-radius: 5px;
-  background: #fff;
-  border: none;
-  outline: none;
-  margin: 20px 0;
-  /* text-transform: capitalize; */
-  color: #383838;
-  font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
-  font-family: "roboto", sans-serif;
-  background-color: #f5f5f5;
+
+
+
+
+.other-login-divider {
+  width: 200px;
 }
 
-#email {
-  text-transform: none;
+
+/* Inset icon inside the email/password fields -- same pattern as the
+   nav search bar (.search-form/.search-input/.search-button in style2.css):
+   relative wrapper, icon absolutely positioned inside the input's own
+   left padding. */
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  padding-left: 45px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #757575;
+  font-size: 0.95rem;
+  pointer-events: none;
 }
 
 .signup-link {
@@ -116,12 +114,7 @@ textarea {
   top: -50px;
   left: calc(50% - 50px);
 }
-h1 {
-  margin: 0;
-  padding: 0 0 20px;
-  text-align: center;
-  font-size: 22px;
-}
+
 
 .loginbox p {
   margin: 0;
@@ -170,19 +163,7 @@ input[type="password"] {
 
 /* header start */
 
-#header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2px 80px;
-  /* change color later*/
-  background: #000000;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
-  z-index: 999;
-  position: sticky;
-  top: 0;
-  left: 0;
-}
+
 
 #header .logo {
   width: 100%;
@@ -241,12 +222,7 @@ input[type="password"] {
     max-width: 160px;
   }
 
-  .login-form input:not(.search-box, .checkbox, .s-checkbox, input[type="file"]) {
-    width: 85vw;
-    max-width: 340px;
-    height: 50px;
-    font-size: 16px;
-  }
+  
 
   .login-container .submit-btn {
     width: 85vw;
@@ -255,7 +231,5 @@ input[type="password"] {
     font-size: 16px;
   }
 
-  .forgot-password-link {
-    font-size: 15px;
-  }
+  
 }

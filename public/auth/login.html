@@ -15,43 +15,59 @@
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
     />
-    <link rel="stylesheet" href="css/Loginpg.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/login.css" />
     <link rel="stylesheet" href="css/signup.css" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
     <title>Hexxo : Log In</title>
   </head>
   <body>
-    <img src="images/loader.gif" class="loader" alt="" />
 
-    <div class="alert-box">
-      <img src="images/error.png" class="alert-img" alt="" />
-      <p class="alert-msg">Error message</p>
-    </div>
+    <main class="login-page-layout">
+      <img src="images/loader.gif" class="loader" alt="" />
 
-    <div class="login-container">
-      <a href="/"><img src="../images/image1.svg" class="logo" alt="" /></a>
-      <div class="login-form">
-        <input type="email" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" id="email" placeholder="Enter your email" />
-        <input
-          type="password"
-          autocomplete="off"
-          id="password"
-          placeholder="Enter your password"
-        />
-        <button class="submit-btn">Log in</button>
-        <a href="/forgot-password" class="forgot-password-link"
-          >Forgot password?</a
-        >
+      <div class="alert-box">
+        <img src="images/error.png" class="alert-img" alt="" />
+        <p class="alert-msg">Error message</p>
       </div>
-      <a href="/signup" class="link"
-        >Don't have an account? <span class="signup-link">Sign up here</span>
-      </a>
-      <div class="rights">
-        <p>
-          &copy; 2026, Hexxo etc - Ecommerce website. All rights Reserved.
-        </p>
+
+      <div class="content-block login-form">
+        <img class="logo" src="../images/Hexxo_Bg_Removed.png" alt="Hexxo Logo">
+        <h1>Welcome to Hexxo!</h1>
+        <div class="input-layout">
+          <div class="input-group">
+            <input type="email" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" id="email" placeholder="Enter your email" />
+          </div>
+          <div class="input-group">
+            <input
+              type="password"
+              autocomplete="off"
+              id="password"
+              placeholder="Enter your password"
+            />
+          </div>
+          <button class="btn btn-primary" id="submitBtn">Log in</button>
+          <a href="/forgot-password" class="forgot-password-link"
+            >Forgot password?</a
+          >
+        </div>
+        <a href="/signup" class="link"
+          >Don't have an account? <span class="signup-link">Sign up here</span>
+        </a>
+        <!-- <div class="other-login-layout">
+          <hr class="other-login-divider"/>
+          <p>Or</p>
+          <hr class="other-login-divider"/>
+        </div>
+        <div class="other-login-method">
+          <div class="content-block">
+
+          </div>
+        </div> -->
       </div>
-    </div>
+    </main>
 
     <script src="js/core/token.js"></script>
     <script type="module" src="js/auth/auth.js"></script>

@@ -1,24 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap');
+
 :root {
-  --body-text-font-sm: 1rem;
-  --body-text-font-md: 1.125rem;
-  --line-height-1: 1.5;
-  --line-height-2: 1.75; /* fixed typo: was --line-heigh1-2 */
+  --primary-font: 'Space Grotesk', sans-serif;
+  --ui-font: 'Inter', sans-serif;
 
-  /* Buttons */
-  --btn-font-size: 14px;
-  --btn-font-size-md: 1rem;
+  /* Button variants */
+  --color-button-primary: #f30c1e;
+  --color-button-secondary: #fff;
 
-  --bs-breakpoint-xs: 0;
-  --bs-breakpoint-sm: 576px;
-  --bs-breakpoint-md: 768px;
-  --bs-breakpoint-lg: 992px;
-  --bs-breakpoint-xl: 1200px;
-  --bs-breakpoint-xxl: 1400px;
+  /* Text Variants */
+  --color-text-primary: #070707;
+  --color-text-alert: #f30c1e;
+  --color-text-primary-hover: #F63747;
+  --color-text-secondary:#ffffff;
+  --color-text-muted: #7D7D7D;
+  --nav-link-color: #ffffff;
 
-  --margin-sm: 0.5rem;
-  --margin-base: 1rem;
-  --margin-lg: 1.5rem;
-  --margin-xl: 2rem;
+  /* Background variants */
+  --color-background-primary: #fff;
+  --color-background-secondary: #070707;
+  --color-background-alert: #f30c1e;
+
+  /* Border variants */
+  --color-border-primary: #e5e7eb;
+  --color-border-secondary: #fff;
+
+
+  /* Thumb variants */
+  --color-thumbnail-primary: #f30c1e;
+
+  /* Font size variants */
+  --font-size-sm: 0.75rem; /* 12px */
+  --font-size-med: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --fs-h1: 2rem;          /* 32px — hero lines */
+  --fs-h2: 1.5rem;          /* 24px — section headers */
+  --fs-product-title: 1.25rem; /* 24px — PDP <h1> */
+  --fs-h3: 1.25rem;       /* 20px — card titles, brand names */
+  --fs-h4: 1.125rem;          /* 16px — small section labels, accordion triggers */
+  --fs-cta: 1rem;         /* 16px — CTA links */
+  --fs-body: 1rem;        /* 16px — body copy */
+  --fs-body-sm: 0.875rem; /* 14px — nav, filters, size labels */
+  --fs-caption: 0.75rem;  /* 12px — captions, disclaimers */
+  --fs-price: 1.375rem;   /* 22px — product prices (18–24px range) */
+  
+  /* Status variants */ 
+  --color-status-success: #16803c;
+  --color-status-success-light: #F0FDF4;
+  --color-status-pending: #F5A624;
+  --color-status-error: #F30B1E;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* change the font-family later (find new font online)*/
 }
 
 /* Utilities */
@@ -29,6 +66,10 @@
 p {
   padding: 0;
   margin-bottom: 0 !important;  /* removed !important — too aggressive globally */
+}
+
+hr {
+  color: var(--color-text-muted) !important;
 }
 
 #product1 {
@@ -44,6 +85,7 @@ p {
 
 .pro-header-row .pro-header {
   margin: 0;
+  font-size: 1.5rem;
 }
 
 .shop-now-link {
@@ -58,238 +100,20 @@ p {
   text-decoration: underline;
 }
 
-/* ── Filter Section ─────────────────────────────── */
 
-/* Merged duplicate .filter rules */
-.filter {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  padding-bottom: 1rem;
-}
-
-.filter button {
-  text-transform: uppercase;
-}
-
-.filter-btn {
-  border: none;
-  background: transparent;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--color-text-primary);
-}
-
-.filter-btn i {
-  color: #666;
-}
-
-.filter-button {
-  border: none;
-  border-radius: 8px;
-  padding: 0.5rem;
-  cursor: pointer;
-  background-color: #dc2626;
-  color: #fff;
-  font-weight: 500;
-}
-
-.filters-display {
-  display: none;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.no-results {
-  height: 60vh;
-  width: 60vw;
-}
-
-.filters-display.active {
-  display: flex;
-}
-
-.applied-filters {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.filter-option .filter-container {
-  display: none; /* hidden by default, shown when filter button is clicked */
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.filter-option {
-  display: flex;
-  flex-direction: column;
-}
-
-.filter-container label {
-  cursor: pointer;
-  display: flex;
-  font-size: 0.875rem;
-  color: #333;
-}
-
-.filter-container input[type="checkbox"] {
-  cursor: pointer;
-  opacity: 0;
-  position: absolute;
-}
-
-.filter-container label::before {
-  content: "";
-  width: 1.3em;
-  height: 1.3em;
-  border-radius: 0.15em;
-  margin-right: 0.5em;
-  border: 1px solid #fe2828;
-}
-
-.filter-container label:hover::before {
-  background-color: #fe2828;
-  border-color: #fe2828;
-}
-
-.filter-container input[type="checkbox"]:checked + label::before {
-  background-color: #fe2828;
-  content: "\2713";
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-}
-
-.filter-list a {
-  list-style-type: none;
-}
-
-.shoe-filter-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-column-gap: 1.5rem;
-  grid-auto-rows: minmax(40px, auto);
-}
-
-.shoe-filter-container .shoe-filter {
-  padding-right: 0.5rem;
-  font-size: 0.9rem;
-}
-
-/* Show/hide animation */
-.filter-container.hidden {
-  display: none;
-}
-
-.filter-container.show {
-  animation: slideDown 0.3s ease-out;
-  display: block;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+h1, h2, h3, h4, h5, h6 {
+   font-family: var(--primary-font);
+   letter-spacing: -0.03em !important; 
+   font-weight: 600 !important;
+   margin: 0 !important;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+body, p, nav { font-family: var(--ui-font) !important; }
 
-/* ── Shop Page Header ───────────────────────────── */
 
-#page-header {
-  position: relative;
-  margin: 18px 2rem;
-  height: 40vh;
-  background-size: cover;
-  background-color: #f4f3f1;
-  background-position: top;
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  flex-direction: column;
-  padding: 14px;
-}
 
-#page-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-}
 
-h1, h2 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px !important; }
-body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
-.men-header {
-  background-image: url('../images/men_banner_2.jpg');
-}
 
-.women-header {
-  background-image: url('../images/womens.jpg');
-}
-
-.accessories-header {
-  background-image: url('../images/Accessories.jpg');
-}
-
-.collectibles-header {
-  background-image: url('../images/accessories_banner_2.png');
-}
-
-.release-header {
-  background-image: url('../images/releases_banner.jpg');
-}
-
-.about-header {
-  background-image: url('../images/banner_1.jpg');
-}
-
-/* .men-header {
-  background-image: url('../images/mens_1.jpg');
-} */
-
-#page-header h2 {
-  text-transform: uppercase;
-}
-
-#page-header h2,
-#page-header p {
-  position: relative;
-  z-index: 1;
-  color: #fff;
-}
-
-/* ── Product Page Layout ────────────────────────── */
-
-.product-page {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "filter-section main-content"
-    "pagination-section pagination-section";
-  align-items: start; /* prevent a taller filter-section from stretching main-content's row */
-  gap: 1rem 1.5rem; /* row-gap column-gap */
-  padding: 1rem 0;
-}
-
-.filter-section {
-  text-align: left;
-  grid-area: filter-section;
-}
-
-.filter-section h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-}
 
 /* Wraps results-sort + products-section so they stack via normal flex flow,
    independent of the filter sidebar's height (see grid-area above). */
@@ -320,32 +144,6 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   grid-area: pagination-section;
 }
 
-/* ── Products Grid ──────────────────────────────── */
-
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-.product-image {
-  width: 100%; /* fixed: was hardcoded 300px, breaks grid */
-  height: 300px;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 0.5rem;
-}
-
-.product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  transition: transform 0.3s ease-in-out;
-}
-
-
 /* Price trend colors */
 .price-trend.uptrend {
   color: #2e7d2e;
@@ -362,122 +160,6 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   background: #f4f3f1;
 }
 
-/* ── Sort / Filter Controls ─────────────────────── */
-
-.filter-container .pg-results {
-  font-weight: 500;
-  font-size: var(--btn-font-size);
-  display: flex;
-  align-items: center;
-}
-
-.filter-container .filter-opt {
-  display: flex;
-  align-items: center;
-  padding: 5px;
-}
-
-#product-container .filter-container {
-  display: none; /* hidden by default, shown when filter button is clicked */
-  align-items: center;
-  overflow: hidden;
-  padding: 0px 21px;
-  height: auto;
-  transition: height 0.3s ease-out;
-  width: 57%;
-  justify-content: space-between;
-  font-size: 1rem;
-}
-
-#sort-icon {
-  transition: 0.2s ease-in-out;
-}
-
-.rotate-down {
-  transform: rotate(180deg);
-}
-
-.amount-text {
-  padding-right: 0.5rem;
-}
-
-.sort-text,
-.amount-text {
-  font-weight: 500;
-}
-
-#sort-btn,
-#pg-amount-btn {
-  border: transparent;
-  font-weight: 500;
-  font-size: var(--btn-font-size);
-}
-
-.sort-data {
-  border-radius: 4px;
-  font-weight: 700;
-  padding: 5px;
-  margin: 0.23rem;
-  color: black;
-  background-color: transparent;
-  position: relative;
-}
-
-.filter-container .filter-opt .pg-data {
-  text-transform: capitalize;
-  border-radius: 4px;
-  font-weight: 700;
-  padding: 5px;
-  color: black;
-  background-color: transparent;
-}
-
-.sort-content {
-  padding: 8px 4px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  display: none;
-  flex-direction: column;
-  background-color: #fff;
-  text-align: left;
-  min-width: 160px;
-  overflow: auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: absolute;
-  right: 0;
-  z-index: 9999;
-}
-
-.sort-content.show {
-  display: flex;
-}
-
-.sort-content a {
-  text-decoration: none;
-  display: block;
-  font-weight: 500;
-  color: #333;
-  padding: 1px 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.sort-content a:hover {
-  background-color: #EDEDED;
-  color: #000;
-}
-
-.size-btn {
-  border: 1px solid #dc2626;
-  border-radius: 4px;
-  background: transparent;
-  padding: 0.5rem 1rem;
-
-}
-
-.size-btn .size-value {
-  font-weight: 500;
-}
-
 .grid-wrapper {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -490,10 +172,7 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   justify-content: space-between;
 }
 
-.btn {
-  font-weight: 700;
-  cursor: pointer;
-}
+
 
 .pg-btn {
   border: transparent;
@@ -522,100 +201,9 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   gap: 10px;
 }
 
-.pro {
-  /* display: flex; */
-  flex-direction: column;
-  align-items: flex-start;
-  cursor: pointer;
-  padding: 0.875rem;
-  transition: 0.2s ease-in-out;
-}
-
-.pro:hover {
-  transform: translateY(-5px);
-  transition: transform 0.3s ease-in-out;
-  border: 1px solid #f4f3f1;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
 #prod-card-container {
   margin: 8px 16px;
 }
-
-/* ── Breadcrumbs ────────────────────────────────── */
-
-.breadcrumbs {
-  width: 90%;
-  margin: 0 2rem;
-}
-
-.breadcrumbs .breadcrumbs-routes {
-  padding-left: 0;
-  margin-bottom: 0;
-  display: flex;
-}
-
-.breadcrumbs-routes li {
-  padding-right: 10px;
-  list-style: none;
-}
-
-.breadcrumbs-routes li a {
-  text-decoration: none;
-  color: #000;
-}
-
-/* ── Pagination ─────────────────────────────────── */
-
-#pagination {
-  padding: 0 20px;
-  margin-top: 1.5rem;
-}
-
-#pagination #pagination-links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: auto;
-  gap: 10px;
-  text-align: center;
-}
-
-#pagination a {
-  text-decoration: none;
-  background-color: transparent;
-  padding: 12px 20px;
-  border-radius: 4px;
-  border: none;
-  color: #000;
-  font-size: 16px;
-  font-weight: 500;
-  transition: 0.2s ease-in;
-}
-
-/* fixed: :selected is not valid — use .active for current page */
-#pagination a.active {
-  background-color: #202020;
-  color: #fff;
-  border: 1px solid #f4f3f1;
-}
-
-#pagination a:hover {
-  background-color: #f9f9f9;
-  color: #000;
-}
-
-#pagination a i {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.curr-pg {
-  font-weight: 700;
-  font-size: 16px;
-}
-
 
 
 /* color picker */
@@ -677,51 +265,6 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
   transform: scale(1.05);
 }
 
-.chart-empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #878787;
-}
-
-/* When the empty state renders inside a product grid, it lands in the
-   grid's first column instead of centering — span every column and
-   center the content as a flex box regardless of column count. */
-.product-grid .chart-empty-state {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 320px;
-}
-
-/* .pro-container (home page carousels) is a flex row, not a grid — without
-   this the empty state would just be a narrow flex item instead of
-   spanning and centering across the row. */
-.pro-container .chart-empty-state {
-  flex: 1 1 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 320px;
-}
-
-.chart-empty-state i {
-  font-size: 2.5rem;
-  color: #e1e1e1;
-  margin-bottom: 0.75rem;
-}
-
-.chart-empty-state h3 {
-  color: #000;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
-}
-
-.chart-empty-state p {
-  font-size: 0.875rem;
-}
 
 .no-results-cta {
   display: inline-block;
@@ -737,11 +280,6 @@ body, p, nav { font-family: 'Space Grotesk', sans-serif !important; }
 
 .no-results-cta:hover {
   transform: translateY(-2px);
-}
-
-hr {
-  margin-top: 0.875rem;
-  margin-bottom: 0.875rem;
 }
 
 .modal-overlay {
@@ -860,9 +398,9 @@ hr {
     margin: 1rem 0;
   }
 
-  #page-header {
+  /* #page-header {
     margin: 1rem;
-  }
+  } */
 
   .page-results {
     width: 100%;

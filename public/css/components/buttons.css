@@ -1,0 +1,36 @@
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    text-decoration: none;
+    font-family: var(--ui-font);
+    width: 100%;
+    font-size: var(--font-size-base);
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #f30c1e !important;
+    color: white !important;
+    transition: transform 0.2s ease-in;
+    
+}
+
+.btn-primary:hover {
+    background-color:#F63747 ;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid  var(--color-border-primary);
+  transition: transform 0.2s ease-in;
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-border-primary);
+}
+
+.btn-width-200 {
+    max-width: 200px;
+}

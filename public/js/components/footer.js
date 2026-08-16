@@ -1,10 +1,48 @@
-const createFooter = () => {
+import { db, collection, query, where, orderBy, limit, getDocs } from '../api/firebase-client.js';
+import { isReleaseLive } from '../core/global.js';
+
+// Same query/live-filter as home.js's justDropped() -- limit(7) rather than
+// 5 for the same reason: isReleaseLive() can still exclude a few (scheduled-
+// but-not-yet-live drops), so overfetching a little keeps this from
+// regularly coming up short of 5 real items.
+async function fetchNewReleases() {
+  try {
+    const q = query(
+      collection(db, "listings"),
+      where("status", "==", "active"),
+      orderBy("createdAt", "desc"),
+      limit(7)
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs
+      .filter(doc => isReleaseLive(doc.data()))
+      .slice(0, 5)
+      .map(doc => ({ id: doc.id, productName: doc.data().productName || "Untitled listing" }));
+  } catch (error) {
+    console.error("Error fetching new releases for footer:", error);
+    return [];
+  }
+}
+
+function newReleaseLinksHTML(listings) {
+  if (listings.length === 0) {
+    return `<a href="/releases">New Releases</a>`;
+  }
+  return listings
+    .map(listing => `<a href="/shop/product.html?id=${listing.id}">${listing.productName}</a>`)
+    .join('');
+}
+
+const createFooter = async () => {
   let footer = document.querySelector("footer");
+
+  const newReleases = await fetchNewReleases();
 
   footer.innerHTML = `
     <div class="col">
       <h4>New Releases</h4>
-      <a href="/releases">New Releases</a>
+      ${newReleaseLinksHTML(newReleases)}
     </div>
 
     <div class="col">

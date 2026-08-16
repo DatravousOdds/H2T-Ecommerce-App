@@ -21,54 +21,53 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/signup.css" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <img src="images/loader.gif" class="loader" alt="" />
+    <main class="login-page-layout">
+      <img src="images/loader.gif" class="loader" alt="" />
 
-    <div class="alert-box">
-      <img src="images/error.png" class="alert-img" alt="" />
-      <p class="alert-msg">Error message</p>
-    </div>
-
-    <div class="container">
-      <a href="/"><img src="../images/image1.svg" class="logo" alt="" /></a>
-      <div class="signup-form">
-        <input type="text" autocomplete="off" id="name" placeholder="Enter your name" />
-        <input type="email" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" id="email" placeholder="Enter your email" />
-        <input
-          type="password"
-          autocomplete="off"
-          id="password"
-          placeholder="Enter password"
-        />
-        <input
-          type="text"
-          autocomplete="off"
-          id="number"
-          placeholder="Enter your phone number"
-        />
-        <input type="checkbox" checked class="checkbox" id="terms-and-cond" />
-        <label for="terms-and-cond"
-          >agree to our <a href="/terms">terms and conditions</a></label
-        >
-        <br />
-        <input type="checkbox" class="checkbox" id="notification" />
-        <label for="notification"
-          >receive upcoming offers and events mails</label
-        >
-        <button class="submit-btn">Register</button>
+      <div class="alert-box">
+        <img src="images/error.png" class="alert-img" alt="" />
+        <p class="alert-msg">Error message</p>
       </div>
-      <a href="/login" class="link">Already have an account? 
-        <span class="login-link">Log in here</span></a>
-      <hr style="width: 100%; text-align: left; margin-left: 0" />
 
-      <div class="rights">
-        <p>
-          &copy; 2026, Hexxo - Ecommerce website. All rights Reserved.
-        </p>
+      <div class="content-block login-form">
+        <a class="content-header" href="/"><img src="../images/image1.svg" class="logo" alt="" /></a>
+        <div class="signup-form">
+          <input type="text" autocomplete="off" id="name" placeholder="Enter your name" />
+          <input type="email" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" id="email" placeholder="Enter your email" />
+          <input
+            type="password"
+            autocomplete="off"
+            id="password"
+            placeholder="Enter password"
+          />
+          <input
+            type="text"
+            autocomplete="off"
+            id="number"
+            placeholder="Enter your phone number"
+          />
+          <input type="checkbox" checked class="checkbox" id="terms-and-cond" />
+          <label for="terms-and-cond"
+            >agree to our <a href="/terms">terms and conditions</a></label
+          >
+          <br />
+          <input type="checkbox" class="checkbox" id="notification" />
+          <label for="notification"
+            >receive upcoming offers and events mails</label
+          >
+          <button class="btn btn-primary" id="submitBtn">Register</button>
+        </div>
+        <a href="/login" class="link">Already have an account?
+          <span class="login-link">Log in here</span></a>
+
       </div>
-    </div>
+    </main>
 
     <script src="js/core/token.js"></script>
     <script type="module" src="js/auth/auth.js"></script>

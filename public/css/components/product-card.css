@@ -62,6 +62,7 @@
 
 .listing-price {
   font-weight: 600;
+  font-size: 1.125rem;
 }
 
 .orgin-price {
@@ -74,6 +75,17 @@
   font-size: 0.8125rem;
   color: #747474;
   margin-bottom: 4px;
+}
+
+.price-list {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.product-name {
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .product-name,
@@ -89,10 +101,14 @@
 
 .pro-container {
   display: flex;
-  /* flex-basis: 100%; */
-  /* margin: 0 5rem; */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; 
+  scrollbar-width: none; /* Firefox */
+
   gap: 1.5rem;
-  padding: 20px 0;
   overflow-y: hidden;
   overflow-x: auto;
 }
@@ -104,7 +120,6 @@
 #product1 .pro {
   flex: 0 0 auto;
   width: 320px;
-  padding: 10px 12px;
   border: 3px solid transparent;
   border-radius: 9px;
   cursor: pointer;
@@ -223,6 +238,11 @@
 }
 
 
+.pro-header {
+  text-align: left;
+}
+
+
 /* Hide scrollbar (optional) */
 .pro-container::-webkit-scrollbar {
   height: 8px;
@@ -327,6 +347,29 @@
   object-fit: contain;
 }
 
+
+.product-image {
+  width: 100%; /* fixed: was hardcoded 300px, breaks grid */
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+
+.pro {
+  /* display: flex; */
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.pro:hover {
+  transform: translateY(-5px);
+  border-radius: 8px;
+}
 
 
 /* Tablet */

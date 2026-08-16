@@ -1,0 +1,32 @@
+/* Auto-hide horizontal scrollbar for the homepage's product carousels
+   (.pro-container, shared component styled always-hidden by default in
+   product-card.css) -- invisible at rest, fades in only while the user is
+   actively scrolling. home.js toggles .is-scrolling on scroll/idle.
+   Track space stays reserved the whole time so the thumb appearing/
+   disappearing never shifts layout. */
+.pro-container {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.pro-container::-webkit-scrollbar {
+    display: block;
+    height: 6px;
+}
+
+.pro-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.pro-container::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 3px;
+}
+
+.pro-container.is-scrolling {
+    scrollbar-color: #ccc transparent;
+}
+
+.pro-container.is-scrolling::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+}

@@ -14,31 +14,28 @@
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
     />
-    <link rel="stylesheet" href="css/Loginpg.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/login.css" />
     <link rel="stylesheet" href="css/signup.css" />
-    <link rel="stylesheet" href="../css/style2.css">
+    <!-- <link rel="stylesheet" href="../css/style2.css"> -->
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
     <title>Hexxo : Reset Password</title>
   </head>
   <body>
-    
+    <main class="login-page-layout">
+      <div class="content-block login-form">
+        <a href="/"><img src="./images/Hexxo_Bg_Removed.png" class="logo" alt="" /></a>
+        <form class="login-form" id="forgot-form">
+          <h1>Forgot Password?</h1>
+          <input type="email" autocomplete="email" id="email" placeholder="email Address" required/>
 
-    <div class="login-container">
-      <a href="/"><img src="./images/Hexxo_Bg_Removed.png" class="logo" alt="" /></a>
-      <form class="login-form" id="forgot-form">
-        <h1>Forgot Password?</h1>
-        <input type="email" autocomplete="email" id="email" placeholder="email Address" required/>
-        
-        <button class="submit-btn" type="submit">Reset Password</button>
-        
-      </form>
-      
-      <div class="rights">
-        <p>
-          &copy; 2026, Hexxo etc - Ecommerce website. All rights Reserved.
-        </p>
+          <button class="btn btn-primary" id="submitBtn" type="submit">Reset Password</button>
+
+        </form>
       </div>
-    </div>
+    </main>
 
     <!-- <script src="js/core/token.js"></script> -->
     <script type="module" src="js/auth/forgot-password.js"></script>

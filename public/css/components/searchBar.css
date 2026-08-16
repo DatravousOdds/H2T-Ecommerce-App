@@ -1,0 +1,15 @@
+.search-button {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  font-size: 1.2rem;
+  color: #757575;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.search-button:hover {
+  color: #333333;
+}

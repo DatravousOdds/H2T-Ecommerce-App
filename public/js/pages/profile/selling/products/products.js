@@ -308,7 +308,7 @@ function populateTable(tableId, items, rowTemplate, emptyMessage) {
 }
 
 function updateStatCard(articleId, value) {
-  const el = document.querySelector(`#${articleId} .stat-card-value`);
+  const el = document.querySelector(`#${articleId} .stat-value`);
   if (el) el.textContent = value;
 }
 

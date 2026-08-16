@@ -11,6 +11,27 @@ const cartDrawer = document.getElementById('cartDrawer');
 
 initCartDrawer();
 
+// .pro-container's scrollbar is hidden by default (product-card.css) --
+// index.css re-enables a transparent track for it and this toggles
+// .is-scrolling on/off so the thumb only fades in while the user is
+// actually scrolling, then hides again ~800ms after they stop.
+function enableAutoHideScrollbars(selector = '.pro-container') {
+  const hideTimers = new WeakMap();
+
+  document.querySelectorAll(selector).forEach((container) => {
+    container.addEventListener('scroll', () => {
+      container.classList.add('is-scrolling');
+
+      clearTimeout(hideTimers.get(container));
+      hideTimers.set(container, setTimeout(() => {
+        container.classList.remove('is-scrolling');
+      }, 800));
+    });
+  });
+}
+
+enableAutoHideScrollbars();
+
 
 
 const categories = [

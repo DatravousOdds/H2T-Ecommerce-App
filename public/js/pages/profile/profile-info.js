@@ -197,8 +197,14 @@ function initEditSaveCancel() {
     const saveBtn = section.querySelectorAll(".save-btn");
     const cancelBtn = section.querySelectorAll(".cancel-btn");
     // Email is excluded: changing it requires a Firebase Auth email update
-    // (re-authentication), not just a Firestore write, so it isn't wired up yet.
+    // (re-authentication), not just a Firestore write, so it isn't wired up yet
+    // -- stays disabled and out of the save/value-restore logic below.
     const inputs = section.querySelectorAll("input:not(#personal-email)");
+    // Same set plus email, used for the input-padding-none/input-bordered
+    // visual toggles so the (still-disabled) email field matches the rest
+    // of the form's look instead of staying visually stuck in its
+    // "read-only" state.
+    const allInputs = section.querySelectorAll("input");
     const select = section.querySelectorAll("select");
 
     select.forEach((ele) => {
@@ -227,10 +233,8 @@ function initEditSaveCancel() {
 
           formInputs.forEach((input) => {
             input.disabled = true;
-            input.style.backgroundColor = "transparent";
-            input.style.border = "none";
-            input.style.boxShadow = "none";
-            input.style.padding = "0px 0px";
+            input.classList.add("input-padding-none");
+            input.classList.remove("input-bordered");
           });
           formSelects.forEach((select) => {
             select.disabled = true;
@@ -261,9 +265,11 @@ function initEditSaveCancel() {
 
         inputs.forEach((input) => {
           input.disabled = false;
-          input.style.backgroundColor = "#e0e0e0";
-          input.style.border = "#b0b0b0";
-          input.style.padding = "12px 20px";
+        });
+
+        allInputs.forEach((input) => {
+          input.classList.remove("input-padding-none");
+          input.classList.add("input-bordered");
         });
 
         allActionButtons.forEach((action) => {
@@ -274,7 +280,13 @@ function initEditSaveCancel() {
 
     // Handle cancel button click | Profile
     cancelBtn.forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        // Both cancel buttons are type="reset" inside their <form> --
+        // without this, the browser's native form reset fires right after
+        // this handler and clobbers the manual restore below back to each
+        // input's HTML `value=""` default, instead of dataset.originalValue.
+        e.preventDefault();
+
         if (btn.id === "cancel-personal-info") {
           const personalFormIds = [
             "personal-fname",
@@ -286,14 +298,8 @@ function initEditSaveCancel() {
 
           personalFormIds.forEach((id) => {
             const input = document.getElementById(id);
-            console.log("cancel input:", input)
             if (input) {
               input.classList.remove("input-error");
-              if(input.dataset.originalValue !== undefined) {
-                input.placeholder = dataset.originalValue;
-              } else {
-                return;
-              }
             }
           });
 
@@ -363,10 +369,11 @@ function initEditSaveCancel() {
 
           }
           input.disabled = true;
-          input.style.backgroundColor = "transparent";
-          input.style.border = "none";
-          input.style.boxShadow = "none";
-          input.style.padding = "0px 0px";
+        });
+
+        allInputs.forEach((input) => {
+          input.classList.add("input-padding-none");
+          input.classList.remove("input-bordered");
         });
 
         // Hide cta buttons

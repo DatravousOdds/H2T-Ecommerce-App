@@ -1,0 +1,53 @@
+.pagination-section {
+  grid-area: pagination-section;
+}
+
+/* ── Pagination ─────────────────────────────────── */
+
+#pagination {
+  padding: 0 20px;
+  margin-top: 1.5rem;
+}
+
+#pagination #pagination-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 10px;
+  text-align: center;
+}
+
+#pagination a {
+  text-decoration: none;
+  background-color: transparent;
+  padding: 12px 20px;
+  border-radius: 4px;
+  border: none;
+  color: #000;
+  font-size: 16px;
+  font-weight: 500;
+  transition: 0.2s ease-in;
+}
+
+/* fixed: :selected is not valid — use .active for current page */
+#pagination a.active {
+  background-color: #202020;
+  color: #fff;
+  border: 1px solid #f4f3f1;
+}
+
+#pagination a:hover {
+  background-color: #f9f9f9;
+  color: #000;
+}
+
+#pagination a i {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.curr-pg {
+  font-weight: 700;
+  font-size: 16px;
+}

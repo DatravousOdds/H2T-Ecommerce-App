@@ -1,0 +1,258 @@
+/* ── Filter Section ─────────────────────────────── */
+
+/* Merged duplicate .filter rules */
+.filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding-bottom: 1rem;
+}
+
+.filter button {
+  text-transform: uppercase;
+}
+
+.filter-btn {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.filter-btn i {
+  color: #666;
+}
+
+.filter-button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  cursor: pointer;
+  background-color: #dc2626;
+  color: #fff;
+  font-weight: 500;
+}
+
+.filters-display {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.no-results {
+  height: 60vh;
+  width: 60vw;
+}
+
+.filters-display.active {
+  display: flex;
+}
+
+.applied-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-option .filter-container {
+  display: none; /* hidden by default, shown when filter button is clicked */
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.filter-option {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-container label {
+  cursor: pointer;
+  display: flex;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.filter-container input[type="checkbox"] {
+  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+}
+
+.filter-container label::before {
+  content: "";
+  width: 1.3em;
+  height: 1.3em;
+  border-radius: 0.15em;
+  margin-right: 0.5em;
+  border: 1px solid #fe2828;
+}
+
+.filter-container label:hover::before {
+  background-color: #fe2828;
+  border-color: #fe2828;
+}
+
+.filter-container input[type="checkbox"]:checked + label::before {
+  background-color: #fe2828;
+  content: "\2713";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.filter-list a {
+  list-style-type: none;
+}
+
+.shoe-filter-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 1.5rem;
+  grid-auto-rows: minmax(40px, auto);
+}
+
+.shoe-filter-container .shoe-filter {
+  padding-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Show/hide animation */
+.filter-container.hidden {
+  display: none;
+}
+
+.filter-container.show {
+  animation: slideDown 0.3s ease-out;
+  display: block;
+}
+
+.filter-section {
+  text-align: left;
+  grid-area: filter-section;
+}
+
+.filter-section h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ── Sort / Filter Controls ─────────────────────── */
+
+.filter-container .pg-results {
+  font-weight: 500;
+  font-size: var(--btn-font-size);
+  display: flex;
+  align-items: center;
+}
+
+.filter-container .filter-opt {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+#product-container .filter-container {
+  display: none; /* hidden by default, shown when filter button is clicked */
+  align-items: center;
+  overflow: hidden;
+  padding: 0px 21px;
+  height: auto;
+  transition: height 0.3s ease-out;
+  width: 57%;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+#sort-icon {
+  transition: 0.2s ease-in-out;
+}
+
+.rotate-down {
+  transform: rotate(180deg);
+}
+
+.amount-text {
+  padding-right: 0.5rem;
+}
+
+.sort-text,
+.amount-text {
+  font-weight: 500;
+}
+
+#sort-btn,
+#pg-amount-btn {
+  border: transparent;
+  font-weight: 500;
+  font-size: var(--btn-font-size);
+}
+
+.sort-data {
+  border-radius: 4px;
+  font-weight: 700;
+  padding: 5px;
+  margin: 0.23rem;
+  color: black;
+  background-color: transparent;
+  position: relative;
+}
+
+.filter-container .filter-opt .pg-data {
+  text-transform: capitalize;
+  border-radius: 4px;
+  font-weight: 700;
+  padding: 5px;
+  color: black;
+  background-color: transparent;
+}
+
+.sort-content {
+  padding: 8px 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+  background-color: #fff;
+  text-align: left;
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  right: 0;
+  z-index: 9999;
+}
+
+.sort-content.show {
+  display: flex;
+}
+
+.sort-content a {
+  text-decoration: none;
+  display: block;
+  font-weight: 500;
+  color: #333;
+  padding: 1px 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.sort-content a:hover {
+  background-color: #EDEDED;
+  color: #000;
+}

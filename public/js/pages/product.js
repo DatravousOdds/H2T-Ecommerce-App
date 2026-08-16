@@ -30,7 +30,9 @@ const productPrice = document.querySelector('.prod-price')
 const productOriginalPrice = document.querySelector('.original-price');
 const priceChange = document.getElementById('priceChange');
 const shippingNote = document.getElementById('shippingNote');
-const prodMeta = document.getElementById('prodMeta');
+const conditionGroup = document.getElementById('conditionGroup');
+const genderOption = document.getElementById('genderOption');
+const genderGroup = document.getElementById('genderGroup');
 const mainImage = document.getElementById('MainImg');
 // handleFavoriteClick expects the *container* of .liked (it does
 // element.querySelector(".liked i")), same as productElement on a card.
@@ -70,7 +72,6 @@ const cartDrawer = document.getElementById('cartDrawer');
 const addToCartBtn = document.getElementById('addToCartBtn');
 const cartDrawerBody = document.getElementById('cartDrawerBody');
 const priceHistoryFilters = document.querySelectorAll('.chart-filter-grid .filter');
-const statRow = document.querySelector('.stat-row');
 const buyBtn = document.getElementById('buyBtn');
 const salesDrawer = document.getElementById('salesDrawer');
 const salesDrawerBackdrop = document.getElementById('salesDrawerBackdrop');
@@ -440,8 +441,9 @@ async function displayProductDetails() {
         // Collectibles' "size" field holds the sub-type (e.g. "Trading
         // Cards"), not a wearable size -- show brand there instead.
         const isCollectibles = data.category === 'collectibles';
+        const sizeOrBrand = isCollectibles ? data.brand : data.size;
         sizeLabel.textContent = isCollectibles ? 'Brand:' : 'Size:';
-        sizes.innerHTML = `<button class="size-btn">${isCollectibles ? data.brand : data.size}</button>`;
+        sizes.innerHTML = `<button class="size-btn">${sizeOrBrand}</button>`;
 
         // categoryMeta only carries 'men'/'women' for gendered categories
         // (Sneakers/Shoes/Apparel) -- see seller.js's category dropdown
@@ -451,7 +453,16 @@ async function displayProductDetails() {
             : data.categoryMeta === 'women'
             ? 'W'
             : '';
-        prodMeta.textContent = [genderLetter, data.condition].filter(Boolean).join(' | ');
+
+        // Same chip styling as the Size selector above -- CSS capitalize on
+        // #conditionGroup handles the lowercase condition select values
+        // (seller.html's <select id="condition"> stores "new", "like new", etc).
+        conditionGroup.innerHTML = data.condition
+            ? `<button class="size-btn">${data.condition}</button>`
+            : '';
+
+        genderOption.style.display = genderLetter ? '' : 'none';
+        genderGroup.innerHTML = genderLetter ? `<button class="size-btn">${genderLetter}</button>` : '';
 
         setProductDescription(data);
     } catch (error) {
@@ -861,7 +872,6 @@ async function displaySalesHistory() {
 }
 
 async function displayPricingKpis() {
-    showLoader(statRow);
     try {
         const offers = await getOfferKpis();
         const average = await getAverageSalePrice();
@@ -873,8 +883,6 @@ async function displayPricingKpis() {
         document.getElementById('marketValue').textContent = `$${marketValuePrice || 0}`;
     } catch (error) {
         console.error("Error fetching pricing KPIs:", error);
-    } finally {
-        hideLoader(statRow);
     }
 }
 
