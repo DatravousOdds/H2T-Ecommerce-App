@@ -135,7 +135,7 @@
   grid-area: filter-section;
 }
 
-.filter-section h1 {
+.filter-section h2 {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 2rem !important;

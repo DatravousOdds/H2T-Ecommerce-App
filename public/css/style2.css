@@ -2588,10 +2588,6 @@ footer .rights {
   color: #000;
 }
 
-.shop-by-prices {
-  margin-bottom: 1.5rem;
-}
-
 /* Desktop (1537px and above) */
 @media (max-width: 1657px) {
   .input_box {
