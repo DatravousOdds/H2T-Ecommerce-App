@@ -2778,7 +2778,6 @@ footer .rights {
   #brands {
     flex-direction: column;
     width: 100%;
-    padding: 1rem;
     margin: 0 !important;
   }
 
@@ -3127,7 +3126,7 @@ footer .rights {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
-    margin: 3rem 1.5rem;
+    /* margin: 3rem 1.5rem; */
   }
 
   
@@ -3245,12 +3244,9 @@ footer .rights {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
-    margin: 3rem 1rem;
+    /* margin: 3rem 1rem; */
   }
 
-  #prodetails {
-    padding: 0 1rem;
-  }
 
   /* Product Details Page */
   #prodetails .s_prod_details {
