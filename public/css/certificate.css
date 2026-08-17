@@ -68,6 +68,18 @@
     font-weight: 600;
 }
 
+.certificate-qr {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-md);
+}
+
+.certificate-qr-hint {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: var(--space-xs);
+}
+
 .certificate-actions {
     margin-top: var(--space-md);
 }
@@ -88,9 +100,11 @@
 }
 
 /* Print button and any nav/footer chrome shouldn't show up on the actual
-   printed page. */
+   printed page. The QR code itself stays -- a physically printed
+   certificate should still be scannable. */
 @media print {
-    .certificate-actions {
+    .certificate-actions,
+    .certificate-qr-hint {
         display: none;
     }
 }

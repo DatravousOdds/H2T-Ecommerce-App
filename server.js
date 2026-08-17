@@ -441,6 +441,37 @@ app.post('/rates/compare', async (req, res) => {
   }
 })
 
+// Searches the KicksDB catalog by free-text title -- used by seller.js's
+// listing form to auto-suggest a cover photo when the item name matches a
+// known product. Passes KicksDB's response through as-is (data/meta shape),
+// since the frontend already reads its fields (title, image, gallery, sku,
+// categories) directly off that.
+app.get('/api/search-catalog', async (req, res) => {
+  const { query } = req.query;
+
+  if (!query || !query.trim()) {
+    return res.status(400).json({ success: false, message: "Missing search query" });
+  }
+
+  try {
+    const response = await fetch(`https://api.kicks.dev/v3/stockx/products?query=${encodeURIComponent(query)}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.KICKDB_KEY}`
+      }
+    });
+
+    if (!response.ok) {
+      return res.status(response.status).json({ success: false, message: `Catalog lookup failed (${response.status})` });
+    }
+
+    const data = await response.json();
+    return res.json(data);
+  } catch (error) {
+    console.error("Catalog search failed:", error);
+    return res.status(500).json({ success: false, message: "Catalog search failed" });
+  }
+})
+
 
 // routes
 // home route

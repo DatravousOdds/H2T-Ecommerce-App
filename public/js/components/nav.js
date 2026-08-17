@@ -2,6 +2,7 @@ import { logout, checkUserStatus } from "../auth/auth.js";
 import { getCartCount } from "../core/global.js";
 import { setupSearch } from "../pages/search.js";
 import { setupNotifications } from "../pages/notifications.js";
+import { setupQrScanner } from "./qrScanner.js";
 
 // Function to handle tabs submenu navigation
 const handleTabs = () => {
@@ -133,6 +134,9 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuConten
         <div class="input-icon-wrapper input-width-full" aria-label="Search">
           <input type="text" placeholder="Search for product..." class="search-input input-with-icon" aria-label="Search Products">
           <i class="fa-solid fa-magnifying-glass icon-element"></i>
+          <button type="button" class="qr-scan-btn" id="qrScanBtn" aria-label="Scan a certificate QR code">
+            <i class="fa-solid fa-qrcode"></i>
+          </button>
         </div>
       </form>
     </div>
@@ -488,7 +492,8 @@ const newNav =  async () => {
     setupLogoutHandlers(nav);
     setupSearch(nav);
     setupNotifications(nav);
-    
+    setupQrScanner(nav);
+
   } else {
     // No user found in session 
     console.log('⚡ No user — showing logged out nav');
@@ -503,6 +508,7 @@ const newNav =  async () => {
     setupEventListeners(nav);
     setupSearch(nav);
     setupNotifications(nav);
+    setupQrScanner(nav);
   }
   console.log("cart update..")
   updateCartCount()

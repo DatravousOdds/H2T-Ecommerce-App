@@ -68,3 +68,42 @@ export function hideLoader(containerEl) {
     delete containerEl.dataset.loaderPositioned;
   }
 }
+
+const BUTTON_DOTS_CLASS = 'button-loading-dots';
+
+// Same dots as showLoader()/showPageLoader(), shown in place of a "Load
+// More"-style button while it's loading -- for a button whose own styling
+// (e.g. .load-more-btn's red background) shouldn't show through, this hides
+// the button outright and inserts a plain sibling dots element instead of
+// trying to reskin the button itself.
+export function setButtonLoading(button, isLoading) {
+  if (!button) return;
+
+  if (isLoading) {
+    button.disabled = true;
+    button.style.display = 'none';
+
+    let dotsEl = button.nextElementSibling;
+    if (!dotsEl?.classList.contains(BUTTON_DOTS_CLASS)) {
+      dotsEl = document.createElement('div');
+      dotsEl.className = BUTTON_DOTS_CLASS;
+      dotsEl.innerHTML = `
+        <div class="page-loader-dots button-loader-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      `;
+      button.insertAdjacentElement('afterend', dotsEl);
+    }
+  } else {
+    button.disabled = false;
+    button.style.display = '';
+
+    const dotsEl = button.nextElementSibling;
+    if (dotsEl?.classList.contains(BUTTON_DOTS_CLASS)) {
+      dotsEl.remove();
+    }
+  }
+}

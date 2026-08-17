@@ -1,7 +1,7 @@
 
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, kidsRange, womenRange, mensRange, displayProducts, renderProductSkeletons } from '../core/global.js';
-import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { setButtonLoading } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { db, collection, where, query, getDocs, limit, startAfter, orderBy } from '../api/firebase-client.js';
 
@@ -170,8 +170,7 @@ picker.addEventListener("click", e => {
 });
 
 loadMoreBtn.addEventListener("click", async () => {
-  loadMoreBtn.disabled = true;
-  showLoader(productsContainer);
+  setButtonLoading(loadMoreBtn, true);
 
   try {
     const newProducts = maxPrice
@@ -189,8 +188,7 @@ loadMoreBtn.addEventListener("click", async () => {
   } catch (error) {
     console.error("Error loading more products:", error);
   } finally {
-    hideLoader(productsContainer);
-    loadMoreBtn.disabled = false;
+    setButtonLoading(loadMoreBtn, false);
     updateLoadMoreVisibility();
   }
 });

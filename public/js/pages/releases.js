@@ -1,7 +1,7 @@
 
 import { checkUserStatus } from '../auth/auth.js';
 import { loadProducts, updateResultsCount, deleteMapEntry, colors, resetFilterUI, renderFilterTags } from '../core/global.js';
-import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { setButtonLoading } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
 initCartDrawer();
@@ -305,8 +305,7 @@ function updateLoadMoreVisibility() {
 }
 
 loadMoreBtn.addEventListener("click", async () => {
-  loadMoreBtn.disabled = true;
-  showLoader(productsContainer);
+  setButtonLoading(loadMoreBtn, true);
 
   try {
     const newProducts = (await loadProducts("listingType", "release", state)).filter(isUpcoming);
@@ -316,8 +315,7 @@ loadMoreBtn.addEventListener("click", async () => {
   } catch (error) {
     console.error("Error loading more products:", error);
   } finally {
-    hideLoader(productsContainer);
-    loadMoreBtn.disabled = false;
+    setButtonLoading(loadMoreBtn, false);
     updateLoadMoreVisibility();
   }
 });

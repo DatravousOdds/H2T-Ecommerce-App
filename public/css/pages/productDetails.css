@@ -119,9 +119,14 @@
 .single-pro-image > img {
     width: 100%;
     height: auto;
-    aspect-ratio: 1 / 1;
+    /* aspect-ratio: 1 / 1; */
     border-radius: var(--radius-md);
-    object-fit: cover;
+    /* cover was center-cropping non-square photos (e.g. a ~1.4:1 catalog-
+       matched image, see seller.js's catalog search) into this 1:1 box,
+       chopping off the sides of the actual product. contain always shows
+       the whole photo, letterboxed on mismatched aspect ratios instead. */
+    object-fit: contain;
+    /* background-color: #F5F3F1; */
 }
 
 

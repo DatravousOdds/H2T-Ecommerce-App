@@ -53,8 +53,6 @@ const BRAND_GROUPS = [
     { label: "Vintage & Heritage", brands: ["Carhartt", "Champion", "Polo Ralph Lauren", "Levi's", "The North Face", "Nautica"] },
 ];
 
-
-
 const imageGridContainer = document.querySelector('.images-grid-container');
 const imagesErrorText = document.getElementById('errorText');
 const photosSubheader = document.getElementById('photosSubheader');
@@ -1141,6 +1139,13 @@ function showSavingModal() {
 }
 
 function showSuccessMessage() {
+    // The Post/Update button sits at the bottom of a long form -- without
+    // this, the success modal (a fixed overlay, visible regardless of
+    // scroll) pops up while the page is still scrolled to wherever the
+    // button was, so "List Another Item" resets into a form the user can't
+    // see without scrolling back up themselves.
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     modalOverlay.classList.add('show');
 
     const successModal = document.getElementById('successModal');

@@ -37,10 +37,24 @@ function displayCertificate(data) {
             </div>
         </dl>
 
+        <div class="certificate-qr" id="certificate-qr"></div>
+        <p class="certificate-qr-hint">Scan to reopen this certificate -- use the scan icon in the site's search bar.</p>
+
         <div class="certificate-actions">
             <button type="button" class="certificate-print-btn" onclick="window.print()">Print Certificate</button>
         </div>
     `;
+
+    // Encodes this certificate's own URL -- js/components/qrScanner.js
+    // (the site-wide scan button in the nav search bar) decodes it and
+    // navigates straight back here.
+    if (window.QRCode) {
+        new QRCode(document.getElementById("certificate-qr"), {
+            text: `${window.location.origin}/certificate.html?orderId=${data.orderId}`,
+            width: 128,
+            height: 128,
+        });
+    }
 }
 
 async function init() {

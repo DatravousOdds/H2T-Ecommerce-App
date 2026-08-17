@@ -74,3 +74,24 @@
     background-color: #dc2626;
   }
 }
+
+/* ── "Load More" button loading state ────────────────────────────────
+   setButtonLoading() (pageLoader.js) hides the button outright and inserts
+   this as its sibling instead of trying to reskin the button (its own
+   background/border would otherwise show through around the dots). Same
+   padding as .load-more-btn so the swap doesn't shift surrounding layout. */
+.button-loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+}
+
+.button-loader-dots {
+  gap: 0.4rem;
+}
+
+.button-loader-dots span {
+  width: 8px;
+  height: 8px;
+}

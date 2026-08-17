@@ -2,7 +2,7 @@ import { checkUserStatus } from '../auth/auth.js';
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc, db, doc, app } from '../api/firebase-client.js';
 import { collection, addDoc, getDocs, where, query, limit, startAfter } from '../api/firebase-client.js';
 import { loadProducts, handleFavoriteClick, mensRange, renderProductSkeletons, displayProducts, updateResultsCount, matchesPriceBuckets } from '../core/global.js';
-import { showLoader, hideLoader } from '../components/pageLoader.js';
+import { setButtonLoading } from '../components/pageLoader.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 
 initCartDrawer();
@@ -164,8 +164,7 @@ picker.addEventListener("click", e => {
 });
 
 loadMoreBtn.addEventListener("click", async () => {
-  loadMoreBtn.disabled = true;
-  showLoader(productsContainer);
+  setButtonLoading(loadMoreBtn, true);
 
   try {
     const newProducts = await loadProducts("categoryMeta", "men", state);
@@ -175,8 +174,7 @@ loadMoreBtn.addEventListener("click", async () => {
   } catch (error) {
     console.error("Error loading more products:", error);
   } finally {
-    hideLoader(productsContainer);
-    loadMoreBtn.disabled = false;
+    setButtonLoading(loadMoreBtn, false);
     updateLoadMoreVisibility();
   }
 });

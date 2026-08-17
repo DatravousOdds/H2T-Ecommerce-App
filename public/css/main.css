@@ -3,6 +3,7 @@
 @import './components/forms.css';
 @import './components/buttons.css';
 @import './components/skeleton.css';
+@import './components/pageLoader.css';
 @import 'components/pageHeader.css';
 @import './components/breadcrumb.css';
 @import './components/filters.css';
