@@ -126,6 +126,12 @@ label a {
   color: red;
 }
 
+.logo {
+  width: 75px;
+  height: auto;
+  object-fit: cover;
+}
+
 /* alert */
 .alert-box {
   width: 300px;
