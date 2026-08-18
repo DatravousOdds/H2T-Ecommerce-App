@@ -2620,6 +2620,15 @@ button:disabled {
   gap: 10px;
   width: 100%;
   max-width: 100%;
+  /* .nav-wrapper is display:flex (sidebar + this column side by side) --
+     flex items default to min-width:auto, so width/max-width:100% alone
+     don't stop this column growing past its share of the row when content
+     inside (the product table, the header button row) has a wider
+     intrinsic size. min-width:0 lets it actually shrink to fit, which is
+     what lets .table-responsive's own overflow-x:auto finally take over
+     instead of the whole column (and everything in it) stretching past
+     the viewport. */
+  min-width: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -3783,7 +3792,14 @@ h6 {
   position: absolute;
   right: 0;
   margin-top: 5px;
-  min-width: 54vw;
+  /* Was min-width: 54vw -- 54% of the full browser viewport regardless of
+     where this panel is actually anchored, which pushed it (and the page's
+     scrollable width) past the viewport edge on anything but a very wide
+     screen. A capped, non-viewport-relative width fits this panel's actual
+     content (four filter sections) and can never itself exceed the
+     viewport. */
+  width: min(560px, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
   background-color: #fff;
   border-radius: 8px;
   padding: 1rem;
@@ -4294,13 +4310,13 @@ h6 {
   color: white;
 }
 
-#orders-filters {
+/* #orders-filters {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
-}
+} */
 
 .orders-wrapper {
   background-color: white;
@@ -6124,7 +6140,6 @@ a
 /* Settings Styles */
 
 .settings {
-  max-width: 1280px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -6529,7 +6544,7 @@ a
 .modal-content {
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba (0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
@@ -7126,8 +7141,6 @@ a
   font-size: 1rem;
   font-weight: 500;
 }
-#acceptModal .offer-value
-
 
 /* Product Deletion Modal */
 #trashModal .modal-content .modal-header {
@@ -7153,6 +7166,24 @@ a
 #trashModal .modal-title {
   font-size: larger;
   font-weight: 700;
+}
+
+/* Unlike #messageModal/#tradeModal/#publishModal, .modal-body/.modal-footer
+   never got their own padding here -- the delete-confirmation text and the
+   action buttons were sitting flush against the modal's edges. Same values
+   the other modals already use. */
+#trashModal .modal-body {
+  padding: 1rem 1.5rem;
+}
+
+#trashModal .modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background-color: #f9f9f9;
+  border-radius: 0 0 8px 8px;
 }
 
 #trashModal .modal-footer .delete-btn {
@@ -7722,8 +7753,7 @@ a
 }
 
 .favorites-section {
-  margin: 0 auto;
-  max-width: 1200px;
+  width: 100%;
 }
 
 .favorites-header h1 {
@@ -8496,7 +8526,6 @@ details h3 {
 }
 
 .content-section {
-  max-width: 1200px;
   display: none;
 }
 
@@ -8538,7 +8567,12 @@ details h3 {
 .products-overview {
   margin-bottom: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  /* minmax(240px, 1fr) alone never shrinks a track below 240px even when
+     the container itself is narrower -- overflows at >=992px specifically,
+     the one range none of the responsive overrides below cover. min(240px,
+     100%) caps that floor at the container's own width so it can't force
+     an overflow at any viewport size. */
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 1.5rem;
 }
 
@@ -9021,10 +9055,6 @@ details h3 {
 }
 
 /* Notification Settings Container */
-.notification-settings {
-  max-width: 800px;
-  margin: 0 auto;
-}
 
 /* Settings Header */
 .settings-header {
@@ -9489,7 +9519,6 @@ input:checked + .slider:before {
 
 .notification-settings {
   width: 100%;
-  max-width: 1280px;
 }
 
 .share-btn-text {

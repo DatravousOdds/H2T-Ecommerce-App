@@ -4,7 +4,7 @@
     border: none;
     text-decoration: none;
     font-family: var(--ui-font);
-    width: 100%;
+    /* width: 100%; */
     font-size: var(--font-size-base);
     cursor: pointer;
 }
