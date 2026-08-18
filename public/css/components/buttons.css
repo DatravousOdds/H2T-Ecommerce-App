@@ -34,3 +34,7 @@
 .btn-width-200 {
     max-width: 200px;
 }
+
+.btn-width-full {
+    width: 100%;
+}

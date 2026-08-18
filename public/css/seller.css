@@ -73,7 +73,7 @@ section h4 {
     font-weight: bold;
     color: #333;
     margin-bottom: 0.5rem;
-    line-height: 0.5;
+    /* line-height: 0.5; */
 }
 
 section p {
