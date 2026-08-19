@@ -126,6 +126,12 @@
   color: #666;
 }
 
+/* checkout layout */
+
+.checkout-page-layout {
+  padding: 0 2rem;
+}
+
 
 /* input icon layout */
 

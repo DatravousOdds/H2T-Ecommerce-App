@@ -63,6 +63,10 @@
   margin: var(--margin-lg) var(--margin-xl) 0 !important;
 }
 
+.margin-bottom-reg {
+  margin-bottom: 1rem;
+}
+
 p {
   padding: 0;
   margin-bottom: 0 !important;  /* removed !important — too aggressive globally */

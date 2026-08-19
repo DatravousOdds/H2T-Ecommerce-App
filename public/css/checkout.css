@@ -328,7 +328,7 @@ p {
 
 .product-info-wrapper img {
     border-radius: 8px;
-    width: 150px;
+    /* width: 150px; */
 }
 
 .product-info-wrapper {
