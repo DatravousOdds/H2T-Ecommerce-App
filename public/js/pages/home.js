@@ -187,9 +187,9 @@ function updatePriceTierCounts(priceTiers, activeListings) {
   priceTiers.forEach(tierEl => {
     const maxPrice = parseFloat(tierEl.dataset.maxPrice);
     const count = activeListings.filter(
-      listing => Number(listing.originalPrice) < maxPrice
+      listing => Number(listing.listingPrice) < maxPrice
     ).length;
-
+    // console.log("Active listing", activeListings.listingPrice)
     const countEl = tierEl.querySelector('.price-tier-count');
     if (countEl) {
       countEl.textContent = `${count.toLocaleString()} listing${count === 1 ? '' : 's'}`;

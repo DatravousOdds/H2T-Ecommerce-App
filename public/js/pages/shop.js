@@ -492,26 +492,36 @@ function setState() {
 
 // Mirrors loadProducts()'s pagination shape (lastVisible/hasMore/limit 48)
 // so the same loadMoreBtn handler works for both, but queries on
-// originalPrice < maxPrice instead of an equality field -- Firestore
+// listingPrice < maxPrice instead of an equality field -- Firestore
 // doesn't let a single query mix that range filter through loadProducts()'s
 // generic where(field, "==", value) signature.
+//
+// listingPrice, not originalPrice: originalPrice is only ever set on an
+// edited listing whose price changed (see seller.js's collectListingInfo)
+// -- it's a "was $X" display value for the strikethrough/markdown badge,
+// not a field every listing has. A never-edited listing has no
+// originalPrice at all, and Firestore's "<" only matches documents where
+// the field actually exists -- filtering on it here silently excluded most
+// listings from "Under $X" regardless of what they actually cost.
+// listingPrice is what the buyer actually pays and every listing has one.
 async function loadPriceFilteredProducts(maxPrice, state) {
     const productsCollection = collection(db, "listings");
     const constraints = [
         where("status", "==", "active"),
-        where("originalPrice", "<", maxPrice),
+        where("listingPrice", "<", maxPrice),
     ];
     if (state.lastVisible) constraints.push(startAfter(state.lastVisible));
 
     const q = query(productsCollection, ...constraints, limit(48));
     const querySnapshot = await getDocs(q);
-
+    
     if (querySnapshot.empty) {
         state.hasMore = false;
         return [];
     }
 
     const docs = querySnapshot.docs;
+    console.log("docs", docs)
     state.lastVisible = docs[docs.length - 1];
     state.hasMore = docs.length === 48;
     return docs;
@@ -582,7 +592,7 @@ async function loadBrandFilteredProducts(brandSlug, state) {
 
     const q = query(productsCollection, ...constraints, limit(48));
     const querySnapshot = await getDocs(q);
-
+    console.log(querySnapshot)
     if (querySnapshot.empty) {
         state.hasMore = false;
         return [];

@@ -44,6 +44,10 @@ textarea::placeholder {
     max-width: 100% !important;
 }
 
+.input-width-5 {
+    width: 5% !important;
+}
+
 .input-text-muted {
     color: var(--color-text-muted) !important;
 }
