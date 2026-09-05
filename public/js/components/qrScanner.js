@@ -181,12 +181,12 @@ function getModalEl() {
   modal.innerHTML = `
     <div class="qr-scanner-box">
       <div class="qr-scanner-header">
-        <h2>Scan Certificate</h2>
+        <h2 id="qrScannerTitle">Scan Certificate</h2>
         <button type="button" class="modal-close" id="qrScannerClose" aria-label="Close scanner">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <p class="qr-scanner-hint">Point your camera at the QR code on your authentication certificate, or upload a saved image below.</p>
+      <p class="qr-scanner-hint" id="qrScannerHint">Point your camera at the QR code on your authentication certificate, or upload a saved image below.</p>
       <div id="qr-reader"></div>
 
       <div class="qr-scanner-divider"><span>or</span></div>
@@ -237,9 +237,14 @@ function resolveScanResult(decodedText) {
   window.location.href = `/certificate.html?orderId=${encodeURIComponent(trimmed)}`;
 }
 
-async function openScanner() {
+async function openScanner({
+  title = "Scan Certificate",
+  hint = "Point your camera at the QR code on your authentication certificate, or upload a saved image below.",
+} = {}) {
   const modal = getModalEl();
   modal.classList.add("is-open");
+  document.getElementById("qrScannerTitle").textContent = title;
+  document.getElementById("qrScannerHint").textContent = hint;
   document.getElementById("qrScannerError").hidden = true;
 
   try {
@@ -311,6 +316,8 @@ function closeScanner() {
   // was denied before it began) -- fine to ignore either way, we're closing.
   scannerInstance?.stop().catch(() => {});
 }
+
+export { openScanner };
 
 export function setupQrScanner(nav) {
   const scanBtn = nav.querySelector("#qrScanBtn");

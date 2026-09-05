@@ -1550,10 +1550,25 @@ function handleImageUpload(input) {
 
         removeImagesError();
 
-        files.forEach((file, i) => {
+        files.forEach(async (file, i) => {
             const container = emptyContainers[i];
             const preview = container.querySelector('.image-preview');
             const removeBtn = container.querySelector('.remove-image-btn');
+
+            // Compressed here, before the preview's data URL is generated --
+            // the actual Firebase upload later just reads preview.src back
+            // out (see uploadString calls), so compressing at this point is
+            // what makes the smaller file the one that ends up in Storage.
+            let uploadFile = file;
+            try {
+                uploadFile = await imageCompression(file, {
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: 1920,
+                    useWebWorker: true
+                });
+            } catch (err) {
+                console.error(`Failed to compress "${file.name}", using original:`, err);
+            }
 
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -1562,7 +1577,7 @@ function handleImageUpload(input) {
                 removeBtn.style.display = 'block';
                 container.draggable = true;
             }
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(uploadFile);
         });
     }, { once: true })
 }

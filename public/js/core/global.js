@@ -205,7 +205,7 @@ function createAuthCartItem(authRequestData) {
   };
 }
 
-// Public-facing seller info (username/profileImage/isVerified/ratings/stats),
+// Public-facing seller info (username/profileImage/isVerifiedSeller/isTrustedSeller/ratings/stats),
 // used to render OTHER users' profiles on product/seller pages -- not the
 // current user's own full profile (that's fetchUserProfile in auth.js, a
 // direct Firestore read of one's own doc). Goes through Express/Admin SDK
@@ -952,6 +952,21 @@ function renderProductSkeletons(containerElement, count = 12) {
   `).join("");
 }
 
+// Gates a photo's reveal on the image itself finishing, not just the data
+// fetch that produced its URL resolving -- without this, the browser paints
+// S3's raw (often multi-MB, unoptimized) JPEGs as bytes stream in, which is
+// the "half-loaded photo" flash. img.complete is checked first because a
+// cached image's load event can fire before this ever gets to attach a
+// listener, which would otherwise leave onReveal never called.
+function revealImageWhenLoaded(img, onReveal) {
+  if (img.complete) {
+    onReveal();
+  } else {
+    img.addEventListener('load', onReveal, { once: true });
+    img.addEventListener('error', onReveal, { once: true });
+  }
+}
+
 // Renders a 5-star row with `rating` (rounded to the nearest whole star) filled solid and the rest outlined.
 // Shared by product.js and sellerProfile.js so both seller-rating displays stay visually identical.
 function renderRatingStars(rating) {
@@ -1079,6 +1094,8 @@ const displayProducts = (products, containerElement) => {
 
             <!--- Image container-->
             <div class="product-image">
+              <div class="skeleton skeleton-image image-load-skeleton" aria-hidden="true"></div>
+
               <div class="liked">
                 <i class="fa-regular fa-heart"></i>
                 <span class="favorites-count"></span>
@@ -1086,7 +1103,7 @@ const displayProducts = (products, containerElement) => {
 
               <img
                 src="${productData.images[0].url}"
-                class="image-custom"
+                class="image-custom is-loading"
                 alt="${productData.productName}"
                 loading="lazy"
               />
@@ -1121,6 +1138,12 @@ const displayProducts = (products, containerElement) => {
 
     handleFavoriteClick(productElement, doc.id, productData);
 
+    const cardImage = productElement.querySelector('.image-custom');
+    const cardImageSkeleton = productElement.querySelector('.image-load-skeleton');
+    revealImageWhenLoaded(cardImage, () => {
+      cardImage.classList.remove('is-loading');
+      cardImageSkeleton.remove();
+    });
 
     productsContainer.appendChild(productElement);
   });
@@ -1484,6 +1507,7 @@ export {
   updateResultsCount,
   displayProducts,
   getPriceMomentum,
+  revealImageWhenLoaded,
   renderProductSkeletons,
   renderRatingStars,
   resetFilterUI,

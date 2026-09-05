@@ -263,7 +263,7 @@ function displayOrderConfirmation(orderData) {
                                     <p class="cart-item-brand">${orderData.item.brand}</p>
                                     <p class="cart-item-name">${orderData.item.name}</p>
                                     <p class="cart-item-size">Size: ${orderData.item.size}</p>
-                                    <p class="cart-item-price">$${item.listingPrice}</p>
+                                    <p class="cart-item-price">$${orderData.item.listingPrice}</p>
                                 </div>
                             
                             </div> 
@@ -287,8 +287,14 @@ function displayOrderConfirmation(orderData) {
                     <div class="order-total">
                         <div class="line-item-container">
                           <dt>Item Price:</dt>
-                          <dd>$${item.listingPrice}</dd>
+                          <dd>$${orderData.item.listingPrice}</dd>
                         </div>
+                        ${orderData.item.promoDiscountApplied ? `
+                        <div class="line-item-container promo-discount-line">
+                          <dt>Promo Discount:</dt>
+                          <dd>-$${(orderData.item.originalPrice - orderData.item.listingPrice).toFixed(2)}</dd>
+                        </div>
+                        ` : ''}
                         <div class="line-item-container">
                           <dt>Delivery Price:</dt>
                           <dd>${orderData.shippingCost === "0" ? "Free Shipping" : `$${parseFloat(orderData.shippingCost)}`}</dd>

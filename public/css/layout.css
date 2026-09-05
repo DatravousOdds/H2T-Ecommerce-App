@@ -4,6 +4,49 @@
   margin-bottom: 1rem;
 }
 
+/* A reusable, standard horizontal flex row */
+.flex-row-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: var(--gap-reg);
+  padding: 2rem 0;
+}
+
+.flex-align-start {
+  align-items: start;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom:  1.5rem;
+}
+
+.gap-lg {
+  gap: 2rem !important;
+}
+
+.border-none {
+  border: none !important;
+}
+
+.flex-row-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: var(--gap-reg);
+}
+
+.flex-start-stack-layout {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--gap-reg);
+  text-align: left;
+}
+
 /* --- Home Page Layout --- */
 .home-page-layout {
     display: flex;
@@ -25,7 +68,6 @@
 }
 
 /* favorites content layout */
-
 .favorite-tab-layout {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -40,8 +82,10 @@
   flex-direction: column;
 }
 
-.section-header {
-
+.flex-center-stack-layout {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
 
@@ -50,7 +94,8 @@
 /* login page layout */
 
 .login-page-layout {
-  margin: 14rem auto;
+  min-height: 100dvh;
+  margin: 0 auto;
   width: 100%;
   max-width: 500px;
   display: flex;
@@ -83,7 +128,30 @@
 
 
 
+/* QR code page layout */
+.qr-layout {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
 
+.qr-layout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../images/qrBanner.jpeg');
+  background-repeat: no-repeat;
+  background-position: top;
+  background-size: cover;
+  object-fit: cover;
+  filter: blur(4px) saturate(1.05);
+  transform: scale(1.05);
+  z-index: -1;
+}
 
 
 
@@ -131,6 +199,8 @@
 .checkout-page-layout {
   padding: 0 2rem;
 }
+
+
 
 
 /* input icon layout */
@@ -265,6 +335,9 @@
 
 
 hr {
+  height: 1px;
+  border: none;
+  background-color: #E5E7EB !important;
   margin-top: 0.875rem;
   margin-bottom: 0.875rem;
 }

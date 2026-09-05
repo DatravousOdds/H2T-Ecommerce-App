@@ -159,11 +159,26 @@
   --review-primary-color-dark: #0000008a;
 }
 
+#verified-img-container {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .verified-tag {
-  background-color: #000;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.verified-tag p {
+  font-size: 1rem;
+  color: var(--text-gray-500);
+  font-weight: 500;
+}
+
+.verified-badge-icon {
+    width: 35px;
+    height: auto;
 }
 
 /* CSS */
@@ -334,10 +349,10 @@ button:disabled {
 
 .wrapper-row {
   display: flex;
-  gap: 1rem;
-  display: flex;
+  gap: 0.25rem;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
 }
 
 .required {
@@ -392,7 +407,7 @@ button:disabled {
   font-weight: 500;
 }
 #username {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   /* opacity: 0.5; */
   font-weight: 500;
   text-align: center;
@@ -5802,7 +5817,7 @@ h6 {
 }
 
 .seller-auth-photos-error {
-  color: var(--color-danger, #c0392b);
+  color: var(--color-danger, #c0392b) !important;
   font-size: var(--font-size-sm);
 }
 
@@ -7389,6 +7404,15 @@ a
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
+}
+
+/* the `hidden` attribute's UA-stylesheet `display: none` loses to this
+   rule's author-stylesheet `display: grid` regardless of specificity, so
+   favorites.js's grid.hidden = true (showEmptyState/renderSkeletons) is a
+   no-op without this override -- same fix as .carousel-modal[hidden] in
+   admin-review.css. */
+.favorite-grid[hidden] {
+  display: none;
 }
 
 /* .pro's own width: 320px (product-card.css) is meant for the horizontally

@@ -132,6 +132,7 @@
 
 .product-image {
   width: 100%;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 1rem;
   position: relative;
@@ -143,7 +144,21 @@
   max-height: 300px;
   object-fit: cover;
   border-radius: 1rem;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, opacity 0.25s ease;
+}
+
+/* Hides the <img> until it finishes decoding (see revealImageWhenLoaded()
+   in global.js) so a slow/large photo never paints in half-streamed --
+   opacity (not display/visibility) keeps native lazy-loading's viewport
+   intersection check working normally. */
+.image-custom.is-loading {
+  opacity: 0;
+}
+
+.product-image .image-load-skeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
 }
 
 .pro:hover .image-custom {

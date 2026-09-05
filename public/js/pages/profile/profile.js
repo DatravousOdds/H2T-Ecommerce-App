@@ -68,11 +68,14 @@ function loadProfileDisplayData(userData) {
       `Joined ${formatFirebaseDate(userData.accountInfo.joinedDate)}`;
   }
 
-  // Verified badge = trusted seller. `.value` doesn't exist on a <div>, so this
-  // never actually showed/hid anything before - toggle visibility instead.
-  document.querySelector("#verified-tag").style.display = userData.isVerified
-    ? ""
-    : "none";
+  // Two distinct badges (see server.js's /api/sellers/:id/public-profile for
+  // the same split on the "viewing someone else" side): Verified Seller is
+  // identity verification at signup, Trusted Seller is a transaction track
+  // record. `.value` doesn't exist on a <div>, so toggle visibility instead.
+  document.querySelector("#verified-tag").style.display =
+    userData.emailVerified && userData.phoneVerified ? "" : "none";
+  document.querySelector("#trusted-tag").style.display =
+    (userData.cleanSalesCount || 0) >= 5 ? "" : "none";
 
   const stats = userData.stats || {};
   document.querySelector("#followers-count").textContent = formatFollowers(

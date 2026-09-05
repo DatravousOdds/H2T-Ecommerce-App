@@ -1,5 +1,5 @@
 import { getDoc, getDocs, deleteDoc, addDoc, query, collection, doc, db, where, orderBy, limit} from '../api/firebase-client.js';
-import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons, renderRatingStars, isReleaseLive, getPriceMomentum } from '../core/global.js';
+import { formatFirebaseDate, addToCart, createCartItemInFirebase, getSellerInfo, getUserProfile, updateResultsCount, handleFavoriteClick, getCartItems, renderProductSkeletons, renderRatingStars, isReleaseLive, getPriceMomentum, revealImageWhenLoaded } from '../core/global.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
@@ -17,6 +17,7 @@ const sellerProfileLink = document.getElementById('sellerProfileLink');
 const sellerProfilePicture = document.getElementById('sellerProfilePicture');
 const sellerName = document.getElementById('sellerName');
 const sellerVerifiedTag = document.getElementById('sellerVerifiedTag');
+const sellerTrustedTag = document.getElementById('sellerTrustedTag');
 const sellerRatingStat = document.getElementById('sellerRatingStat');
 const sellerRatingStars = document.getElementById('sellerRatingStars');
 const sellerRating = document.getElementById('sellerRating');
@@ -328,7 +329,13 @@ async function displayReviews() {
 function showImage(index) {
     if (!currentImages.length) return;
     currentImageIndex = (index + currentImages.length) % currentImages.length;
+    mainImage.classList.add('is-loading');
+    singleProImage.classList.add('is-image-loading');
     mainImage.src = currentImages[currentImageIndex].url;
+    revealImageWhenLoaded(mainImage, () => {
+        mainImage.classList.remove('is-loading');
+        singleProImage.classList.remove('is-image-loading');
+    });
 }
 
 async function displayProductDetails() {
@@ -371,7 +378,8 @@ async function displayProductDetails() {
         sellerName.textContent = sellerProfile.username || 'Unknown Seller';
         sellerProfileLink.href = `/sellerProfile?id=${data.userId}`;
 
-        sellerVerifiedTag.style.display = sellerProfile.isVerified ? '' : '/images/hexxo_auth_badge.png';
+        sellerVerifiedTag.style.display = sellerProfile.isVerifiedSeller ? '' : 'none';
+        sellerTrustedTag.style.display = sellerProfile.isTrustedSeller ? '' : 'none';
 
         // Same "hide instead of showing a fake 0/5" gate as sellerProfile.js/profile.js.
         const totalRatings = sellerProfile.ratings?.metrics?.totalRatings || 0;

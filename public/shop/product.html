@@ -99,6 +99,7 @@
           </div>
 
           <div class="single-pro-image">
+            <div class="skeleton skeleton-image image-load-skeleton" aria-hidden="true"></div>
             <img src="" width="100%" id="MainImg" alt="" />
 
             <div class="liked" id="mainImageLiked">
@@ -120,9 +121,13 @@
               <div class="seller-profile-info">
                 <div class="seller-name-row">
                   <span class="seller-name" id="sellerName"></span>
-                  <div class="verified-tag" id="sellerVerifiedTag" title="Trusted seller on Head-To-Toes" style="display: none">
-                    <i class="fa-solid fa-shield"></i>
-                    Verified
+                  <div class="verified-tag" id="sellerVerifiedTag" title="Verified seller on Head-To-Toes" style="display: none">
+                    <img src="../images/badge-verified-solid-shield.svg" alt="" class="verified-badge-icon" />
+                    <p>Verified seller</p>
+                  </div>
+                  <div class="verified-tag" id="sellerTrustedTag" title="Trusted seller on Head-To-Toes" style="display: none">
+                    <img src="../images/shield-logo.svg" alt="" class="verified-badge-icon" />
+                    <p>Trusted seller</p>
                   </div>
                 </div>
                 <div class="seller-stats">

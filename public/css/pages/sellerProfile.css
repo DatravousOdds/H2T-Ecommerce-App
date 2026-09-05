@@ -41,6 +41,11 @@
   font-weight: 600;
 }
 
+.verified-badge-icon {
+  height: 14px;
+  width: auto;
+}
+
 .seller-rating-row {
   display: flex;
   align-items: center;

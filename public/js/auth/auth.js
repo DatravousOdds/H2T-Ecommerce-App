@@ -205,6 +205,12 @@ function initAuthForm() {
   const email = document.querySelector("#email");
   const password = document.querySelector("#password");
   const number = document.querySelector("#number") || null;
+  const promoCode = document.querySelector("#promo-code") || null;
+  // Pre-fill from /qrInit's redirect (?code=...) after a QR referral scan.
+  if (promoCode) {
+    const codeParam = new URLSearchParams(window.location.search).get("code");
+    if (codeParam) promoCode.value = codeParam;
+  }
   const tac = document.querySelector("#terms-and-cond") || null;
   const noti = document.querySelector("#notification") || null;
   const signupForm = document.querySelector(".signup-form");
@@ -294,7 +300,16 @@ function initAuthForm() {
             "profileImage": "",
             "notification": noti.checked,
             "tac": tac.checked,
-            "isVerified": false,
+            // Captured as-entered, not validated against anything -- no promo
+            // code system exists yet. Just here for later attribution/discount
+            // use once one does.
+            "promoCode": promoCode?.value.trim() || "",
+            // Verified Seller badge (badge-verified-solid-shield.svg) lights up once
+            // both flip true. Nothing sets them yet -- capturing an actual email/phone
+            // verification is separate, not-yet-built work; this just gives the badge
+            // real fields to read instead of a dead flag.
+            "emailVerified": false,
+            "phoneVerified": false,
             "accountInfo": {
               "joinedDate": new Date()
             },
@@ -354,6 +369,28 @@ function initAuthForm() {
             console.error("Error sending welcome email:", error);
           }
 
+          // Server-side validated redemption -- userData.promoCode above is
+          // just what the client typed/was pre-filled, unvalidated. This is
+          // the trusted step that actually checks it against the codes
+          // collection and grants the referral perks. Best-effort, same
+          // reasoning as the welcome email: a failure here shouldn't block
+          // account creation for a user whose account was created fine.
+          if (userData.promoCode) {
+            try {
+              const idToken = await user.getIdToken();
+              await fetch("/promo-code/redeem", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${idToken}`
+                },
+                body: JSON.stringify({ code: userData.promoCode })
+              });
+            } catch (error) {
+              console.error("Error redeeming promo code:", error);
+            }
+          }
+
           showAlert("Account created successfully!", "success");
 
           sessionStorage.setItem("user", JSON.stringify({ 
@@ -366,7 +403,7 @@ function initAuthForm() {
           setTimeout(() => {
             location.replace("/");
 
-        }, 2000);
+          }, 2000);
           // Signed up
          
         } catch(error) {

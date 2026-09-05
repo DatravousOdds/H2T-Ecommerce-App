@@ -1,6 +1,6 @@
 import { collection, getDocs, db } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
-const stripe = Stripe("pk_live_51TfzCeClJc0GzijRcUvKdnm7dCkWSNuBzQMI3hgeoJsQ97IXaDCQtrLZCyuVVXiPZOWpyfGD2jfj13IpIJeQwy3X00GHsIsrzz");
+const stripe = Stripe("pk_test_51Tfwj9PHPIWBS1BJqszOAwKKlL5xCJGBsfTJhcbyWndXlUBiLbDsGhlmLCf7XGxdiFtamED8mlZxZbVKJDBu1tao004NMblLug");
 
 // Checkout intentionally skips the full nav.js component (search, cart,
 // auth dropdown, mobile menu) -- a stripped-down bar with just the logo and
@@ -429,6 +429,12 @@ function displayOrderSummary(data, isAuthPayment = false) {
               <dd>Item Price:</dd>
               <dt>$${data.price.toFixed(2)}</dt>
             </div>
+            ${data.promoDiscountApplied ? `
+            <div class="line-item-container promo-discount-line">
+              <dd>Promo Discount:</dd>
+              <dt>-$${(data.originalPrice - data.price).toFixed(2)}</dt>
+            </div>
+            ` : ''}
             <div class="line-item-container">
               <dd>Delivery Price:</dd>
               <dt>$${data.delivery}</dt>

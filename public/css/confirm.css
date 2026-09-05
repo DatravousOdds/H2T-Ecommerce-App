@@ -173,6 +173,10 @@ p {
     padding: 0.25rem 0;
 }
 
+.promo-discount-line dd {
+    color: var(--color-text-alert);
+}
+
 .details {
     display: flex;
     justify-content: space-between;

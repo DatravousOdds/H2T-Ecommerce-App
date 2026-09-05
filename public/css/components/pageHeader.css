@@ -54,5 +54,15 @@
 }
 
 .about-header {
-  background-image: url('/images/banner_1.jpg');
+  background-image: url('/images/');
+}
+
+.about-header h1 {
+  font-size: var(--font-size-base);
+  color: var(--color-button-primary);
+  z-index: 10;
+}
+
+.about-header h2 {
+  font-size: var(--fs-h1) !important;
 }

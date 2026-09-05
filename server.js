@@ -58,6 +58,65 @@ const accessKeyId = process.env.aws_access_key_id;
 const secretKeyId = process.env.aws_secret_access_key;
 const MARKETPLACE_FEE_RATE = 0.07
 const DELIVERY_CONFIRMATION_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
+// Referral perk granted at signup when a promo code validates against the
+// codes collection -- see /promo-code/redeem and handlePaymentIntentSucceeded.
+const PROMO_SELLER_FEE_WAIVER_COUNT = 5
+const PROMO_BUYER_DISCOUNT_COUNT = 5
+const PROMO_BUYER_DISCOUNT_RATE = 0.01
+
+// Affiliate commission for a shop's code (codes collection), separate from
+// and uncapped unlike the signup perks above -- tiered by that shop's total
+// redemptions (signups + purchases) so far in the current calendar month.
+// Paid out of Hexxo's own marketplaceFee revenue, never affects what the
+// buyer/seller see. maxCount is inclusive -- the redemption that crosses a
+// threshold gets the new tier's rate immediately, not the next one.
+const AFFILIATE_COMMISSION_TIERS = [
+  { maxCount: 10, rate: 0.01 },  // Bronze: 1-10/mo
+  { maxCount: 25, rate: 0.02 },  // Silver: 11-25/mo
+  { maxCount: Infinity, rate: 0.03 }  // Gold: 26+/mo
+];
+
+function getAffiliateCommissionRate(monthlyCount) {
+  return AFFILIATE_COMMISSION_TIERS.find((tier) => monthlyCount <= tier.maxCount).rate;
+}
+
+// Records one signup or purchase against a shop's code for affiliate
+// tracking/payout, tiering the commission rate off that shop's redemption
+// count so far this calendar month (see AFFILIATE_COMMISSION_TIERS). Fires
+// on every purchase by a referred buyer, not just their first
+// PROMO_BUYER_DISCOUNT_COUNT -- this is an ongoing affiliate relationship,
+// unlike the capped signup perks.
+async function recordRedemption({ actionType, shopCode, userId, saleAmount = 0, orderId = null }) {
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+
+  // Composite index on (shopCode ==, timestamp >=) required -- Firestore
+  // will log a console link to create it the first time this runs.
+  const monthlySnap = await db.collection('redemptions')
+    .where('shopCode', '==', shopCode)
+    .where('timestamp', '>=', admin.firestore.Timestamp.fromDate(monthStart))
+    .get();
+
+  // +1 counts the redemption being recorded right now, not just prior ones.
+  const commissionRate = getAffiliateCommissionRate(monthlySnap.size + 1);
+  const commissionAmount = parseFloat((saleAmount * commissionRate).toFixed(2));
+
+  await db.collection('redemptions').add({
+    actionType,
+    shopCode,
+    userid: userId,
+    saleAmount,
+    refunded: false,
+    // Not in the original schema -- added so a later refund can find and
+    // flag the specific redemption doc it corresponds to, since a shop can
+    // have multiple purchase redemptions in the same month.
+    orderId,
+    commissionRate,
+    commissionAmount,
+    timestamp: admin.firestore.FieldValue.serverTimestamp()
+  });
+}
 
 // shipstation parameters
 const shipStationKey = process.env.SHIPSTATION_KEY;
@@ -525,6 +584,10 @@ app.get("/profile", (req, res) => {
 app.get("/signup", (req, res) => {
   res.sendFile(path.join(staticPth, "auth/signup.html"));
 });
+//qr code interstitial route
+app.get("/qrInit", (req, res) => {
+  res.sendFile(path.join(staticPth, "auth/qrInit.html"));
+});
 //list product route
 app.get("/list-product", (req, res) => {
   res.sendFile(path.join(staticPth, "list-product.html"));
@@ -605,16 +668,6 @@ app.get("/sellerProfile", (req, res) => {
   res.sendFile(path.join(staticPth, "sellerProfile/sellerProfile.html"));
 });
 
-
-
-// add product
-app.get("/add-product", (req, res) => {
-  res.sendFile(path.join(staticPth, "addProduct.html"));
-});
-
-app.get("/add-product/:id", (req, res) => {
-  res.sendFile(path.join(staticPth, "addProduct.html"));
-});
 
 // get the upload link
 app.get("/s3url", (req, res) => {
@@ -801,7 +854,7 @@ app.get("/api/cart", verifyAuth, async (req, res) => {
 // reasoning as sales-history below: userProfiles docs carry stripeCustomerId
 // and shipping (home address/phone), and Security Rules can only grant/deny
 // the whole document, not individual fields. A Firestore rule permissive
-// enough for an anonymous shopper to read username/profileImage/isVerified
+// enough for an anonymous shopper to read username/profileImage/isVerifiedSeller
 // would also expose those private fields to them. Routing through the admin
 // SDK here hands back only the fields a storefront view actually needs.
 app.get("/api/sellers/:id/public-profile", async (req, res) => {
@@ -817,7 +870,13 @@ app.get("/api/sellers/:id/public-profile", async (req, res) => {
     return res.json({
       username: profile.username || "",
       profileImage: profile.profileImage || "",
-      isVerified: profile.isVerified || false,
+      // Two distinct badges: Verified Seller (badge-verified-solid-shield.svg)
+      // reflects identity verification at signup; Trusted Seller (shield-logo.svg)
+      // is earned via a track record and is derived from cleanSalesCount, which
+      // only advances through approveDeliveryAndReleasePayout -- never for a
+      // refunded or upheld-dispute order.
+      isVerifiedSeller: !!(profile.emailVerified && profile.phoneVerified),
+      isTrustedSeller: (profile.cleanSalesCount || 0) >= 5,
       ratings: profile.ratings || {},
       stats: profile.stats || {},
       websiteLinks: profile.websiteLinks || [],
@@ -2192,6 +2251,15 @@ async function approveDeliveryAndReleasePayout(order, orderId, docRef) {
     console.error(`Failed to apply delivery rating to seller profile for order ${orderId}:`, error);
   });
 
+  // Trusted Seller badge threshold (see /api/sellers/:id/public-profile).
+  // This function is the only path that reaches a clean "approved" close --
+  // direct approve or a dispute resolved in the seller's favor -- so a
+  // refunded or upheld-dispute order (handled by dispute/uphold instead)
+  // never increments this. Fire-and-forget, same pattern as salesCount below.
+  db.collection("userProfiles").doc(order.sellerId)
+    .update({ cleanSalesCount: admin.firestore.FieldValue.increment(1) })
+    .catch((error) => console.error(`Failed to increment cleanSalesCount for seller ${order.sellerId}:`, error));
+
   const payout = await releasePayoutToSeller(order, orderId);
   const itemName = order.item?.name || "your order";
 
@@ -2469,6 +2537,16 @@ app.post("/api/orders/:id/dispute/uphold", verifyAuth, async (req, res) => {
       refundId: refund.id,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
+
+    // A refunded sale shouldn't leave the shop owed commission on it -- this
+    // is the only stripe.refunds.create call site in the app right now, so
+    // this is the one place that needs to flag it.
+    try {
+      const redemptionsSnap = await db.collection("redemptions").where("orderId", "==", orderId).get();
+      await Promise.all(redemptionsSnap.docs.map((doc) => doc.ref.update({ refunded: true })));
+    } catch (err) {
+      console.error(`Failed to flag redemptions as refunded for order ${orderId}:`, err.message);
+    }
 
     // deliveryConfirmationStatus stays "disputed" -- it marks which path
     // this order took, not the money outcome. fulfillmentStatus carries the
@@ -2778,6 +2856,32 @@ app.get('/checkout/session', async (req, res) => {
     
 })
 
+// Applies referral perks (seller fee waiver + buyer discount) to a listing
+// purchase, when the seller/buyer have promo uses left on their profile.
+// Called from both /order-summary (the buyer's preview) and /tax/calculate
+// (the call that actually sets the PaymentIntent's charged amount) so the
+// quoted total and the charged total can't drift apart.
+async function computePromoPricing(listing, buyerId) {
+  const [sellerProfileSnap, buyerProfileSnap] = await Promise.all([
+    db.collection('userProfiles').doc(listing.userId).get(),
+    db.collection('userProfiles').doc(buyerId).get()
+  ]);
+
+  const sellerProfile = sellerProfileSnap.exists ? sellerProfileSnap.data() : null;
+  const promoFeeWaived = !!(sellerProfile?.promoCodeValid && sellerProfile.sellerFeeWaiversRemaining > 0);
+
+  const buyerProfile = buyerProfileSnap.exists ? buyerProfileSnap.data() : null;
+  const promoDiscountApplied = !!(buyerProfile?.promoCodeValid && buyerProfile.buyerDiscountRemaining > 0);
+
+  const listingPrice = promoDiscountApplied
+    ? listing.listingPrice * (1 - PROMO_BUYER_DISCOUNT_RATE)
+    : listing.listingPrice;
+
+  const marketplaceFee = promoFeeWaived ? 0 : MARKETPLACE_FEE_RATE * listingPrice;
+
+  return { listingPrice, marketplaceFee, promoFeeWaived, promoDiscountApplied };
+}
+
 app.post("/order-summary", verifyAuth, async(req, res) => {
     const { listingId, authRequestId } = req.body;
     // console.log('id', listingId)
@@ -2820,7 +2924,7 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
         return res.status(400).json({ success: false, message: "You can't purchase your own listing" });
       }
 
-      const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice;
+      const { listingPrice, marketplaceFee, promoDiscountApplied } = await computePromoPricing(listing, req.token.uid);
 
       // A Hexxo prepaid label's courier rate is a seller cost, not a buyer
       // one -- it's deducted from the seller's payout (see the sellerDebts
@@ -2834,11 +2938,13 @@ app.post("/order-summary", verifyAuth, async(req, res) => {
       // once the buyer enters a shipping address on the checkout page.
       return res.status(200).json({
         marketplaceFee: marketplaceFee.toFixed(2),
-        price: listing.listingPrice,
+        price: listingPrice,
+        originalPrice: listing.listingPrice,
+        promoDiscountApplied: promoDiscountApplied,
         tax: "0.00",
         taxPending: true,
         delivery: delivery,
-        total: parseFloat((marketplaceFee + delivery + listing.listingPrice).toFixed(2)),
+        total: parseFloat((marketplaceFee + delivery + listingPrice).toFixed(2)),
         authenticationEligible: isAuthenticationEligible(listing),
         authenticated: !!listing.authenticated
       })
@@ -2882,7 +2988,7 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
       return res.status(400).json({ success: false, message: "You can't purchase your own listing" });
     }
 
-    const marketplaceFee = MARKETPLACE_FEE_RATE * listing.listingPrice;
+    const { listingPrice, marketplaceFee, promoFeeWaived, promoDiscountApplied } = await computePromoPricing(listing, req.token.uid);
 
     // Same reasoning as /order-summary -- the buyer never pays the courier
     // rate, so this stays 0 regardless of shipping method.
@@ -2891,7 +2997,9 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     const calculation = await stripe.tax.calculations.create({
       currency: 'usd',
       line_items: [{
-        amount: Math.round(listing.listingPrice * 100),
+        // Taxed on what the buyer is actually being charged for the item,
+        // so a promo discount lowers the tax base along with the price.
+        amount: Math.round(listingPrice * 100),
         reference: listingId,
         tax_behavior: 'exclusive',
         tax_code: 'txcd_99999999'
@@ -2910,10 +3018,23 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     });
 
     const tax = calculation.tax_amount_exclusive / 100;
-    const total = parseFloat((marketplaceFee + delivery + tax + listing.listingPrice).toFixed(2));
+    const total = parseFloat((marketplaceFee + delivery + tax + listingPrice).toFixed(2));
 
     const currentItem = JSON.parse(paymentIntent.metadata.item);
     currentItem.salesTax = parseFloat(tax.toFixed(2));
+    // Overwrites whatever marketplaceFee the client echoed back at
+    // /create-checkout-session -- this recomputed, promo-aware value is
+    // what the order record (and its buyer/seller-facing breakdown) ends
+    // up showing, matching what total actually charges.
+    currentItem.marketplaceFee = parseFloat(marketplaceFee.toFixed(2));
+    // listingPrice was never persisted onto the order before -- confirm.js
+    // fell back to a stale sessionStorage snapshot taken before checkout,
+    // which doesn't reflect a promo discount applied here. originalPrice +
+    // promoDiscountApplied let the confirmation page show the same discount
+    // line checkout.js does, off the same authoritative source.
+    currentItem.listingPrice = parseFloat(listingPrice.toFixed(2));
+    currentItem.originalPrice = listing.listingPrice;
+    currentItem.promoDiscountApplied = promoDiscountApplied;
 
     // name/phone are carried alongside the address fields here (rather than
     // as separate metadata keys) since buildOrderDataFromPaymentIntent just
@@ -2925,7 +3046,14 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
       metadata: {
         tax_calculation_id: calculation.id,
         shipping_to: JSON.stringify({ ...address, name, phone }),
-        item: JSON.stringify(currentItem)
+        item: JSON.stringify(currentItem),
+        // Read by handlePaymentIntentSucceeded to decide whether to spend
+        // one of the seller's/buyer's promo uses -- set once here, at the
+        // point that actually determined what got charged, rather than
+        // re-checking eligibility again at capture time (which could have
+        // changed in between).
+        promo_fee_waived: String(promoFeeWaived),
+        promo_discount_applied: String(promoDiscountApplied)
       }
     });
 
@@ -3493,6 +3621,92 @@ app.post("/api/authentication-requests/:id/resubmit", verifyAuth, async (req, re
   }
 });
 
+// Validates a signup promo code against the codes collection and, only on a
+// real match, grants the referral perks (seller fee waivers + buyer discount
+// uses) on the caller's own profile. Trusted step -- req.token.uid comes from
+// verifyAuth, not anything the client sends, since userProfiles is otherwise
+// client-writable and a forged payload there could self-grant these for free.
+app.post('/promo-code/redeem', verifyAuth, async (req, res) => {
+  const code = (req.body.code || '').trim().toUpperCase();
+
+  if (!code) {
+    return res.json({ success: true, valid: false });
+  }
+
+  try {
+    const profileRef = db.collection('userProfiles').doc(req.token.uid);
+    const profileSnap = await profileRef.get();
+
+    // Already redeemed -- don't reset counters back up if some perks were
+    // already spent, and don't let this be called repeatedly to keep refilling.
+    if (profileSnap.exists && profileSnap.data().promoCodeValid) {
+      return res.json({ success: true, valid: true, alreadyRedeemed: true });
+    }
+
+    const querySnapshot = await db.collection('codes').where('code', '==', code).get();
+
+    if (querySnapshot.empty) {
+      return res.json({ success: true, valid: false });
+    }
+
+    await profileRef.set({
+      promoCode: code,
+      promoCodeValid: true,
+      sellerFeeWaiversRemaining: PROMO_SELLER_FEE_WAIVER_COUNT,
+      buyerDiscountRemaining: PROMO_BUYER_DISCOUNT_COUNT
+    }, { merge: true });
+
+    // Best-effort -- the perk grant above already succeeded, a tracking
+    // failure here shouldn't turn that into a false failure response.
+    try {
+      await recordRedemption({ actionType: 'signup', shopCode: code, userId: req.token.uid });
+    } catch (err) {
+      console.error(`Failed to record signup redemption for ${code}:`, err.message);
+    }
+
+    res.json({ success: true, valid: true });
+  } catch (error) {
+    console.error('Error redeeming promo code:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.get('/r/:code([A-Z0-9]+)', async (req, res) => {
+  const code = req.params.code;
+  try {
+    // check if code is in the code collection
+      const querySnapshot = await db.collection('codes').where('code', '==', code).get();
+      console.log("code returned:", querySnapshot.docs.map(d => d.data()));
+    
+      if (querySnapshot.empty) {
+        console.log("No documents found!")
+        res.redirect('/404');
+      } else {
+        const brand = querySnapshot.docs[0].data().brand || '';
+
+        const referralRef = db.collection('referralHits');
+
+        const existingHits = await referralRef.where('code', '==', code).limit(1).get();
+        let expireDate;
+        if (existingHits.empty) {
+          // first scan locks in the 30-day window; later scans just read it
+          const futureDateMs = Date.now() + (30 * 24 * 60 * 60 * 1000);
+          expireDate = admin.firestore.Timestamp.fromDate(new Date(futureDateMs));
+          await referralRef.add({ code: code, expireDate: expireDate });
+        } else {
+          expireDate = existingHits.docs[0].data().expireDate;
+        }
+
+        const expired = expireDate.toDate() < new Date();
+
+        res.redirect(`/qrInit?code=${code}&brand=${encodeURIComponent(brand)}&expired=${expired}`)
+      }
+  } catch (err) {
+      res.status(500).json({success: false, message: err.message})
+  }
+
+})
+
 
 /**
  * notifications/{userId}/items/{notificationId} -- same subcollection
@@ -3840,6 +4054,60 @@ async function handlePaymentIntentSucceeded(paymentData){
     }
 
     console.log(`order for payment intent ${paymentData.id} now processing`);
+
+    // Spends one of the seller's/buyer's promo uses -- decided once already,
+    // at /tax/calculate (the point that determined what actually got
+    // charged), not re-checked here. This only runs on the same "first time
+    // marking this order processing" path as everything below, so a
+    // redelivered webhook for an already-processed order can't double-spend.
+    if (paymentData.metadata.promo_fee_waived === 'true' && data.sellerId) {
+      try {
+        await db.collection('userProfiles').doc(data.sellerId).update({
+          sellerFeeWaiversRemaining: admin.firestore.FieldValue.increment(-1)
+        });
+      } catch (err) {
+        console.error(`Failed to decrement seller fee waiver for ${data.sellerId}:`, err.message);
+      }
+    }
+    if (paymentData.metadata.promo_discount_applied === 'true' && data.buyerId) {
+      try {
+        await db.collection('userProfiles').doc(data.buyerId).update({
+          buyerDiscountRemaining: admin.firestore.FieldValue.increment(-1)
+        });
+      } catch (err) {
+        console.error(`Failed to decrement buyer discount for ${data.buyerId}:`, err.message);
+      }
+    }
+
+    // Affiliate commission -- separate program from the promo perks above,
+    // and not capped like they are: fires on every purchase by a buyer who
+    // signed up under a shop's code, for as long as their profile carries
+    // that code.
+    if (data.buyerId) {
+      try {
+        const buyerProfileSnap = await db.collection('userProfiles').doc(data.buyerId).get();
+        const buyerProfile = buyerProfileSnap.exists ? buyerProfileSnap.data() : null;
+
+        if (buyerProfile?.promoCodeValid && buyerProfile.promoCode) {
+          // Same derivation trackOrder.js's computeBreakdown uses to isolate
+          // the item's own price from the full charged total.
+          const marketplaceFee = Number(data.item?.marketplaceFee || 0);
+          const salesTax = Number(data.item?.salesTax || 0);
+          const shippingCost = Number(data.shippingCost || 0);
+          const itemPrice = salePrice - shippingCost - salesTax - marketplaceFee;
+
+          await recordRedemption({
+            actionType: 'purchase',
+            shopCode: buyerProfile.promoCode,
+            userId: data.buyerId,
+            saleAmount: parseFloat(itemPrice.toFixed(2)),
+            orderId: orderRef.id
+          });
+        }
+      } catch (err) {
+        console.error(`Failed to record purchase redemption for order ${orderRef.id}:`, err.message);
+      }
+    }
 
     // Records the calculation against Stripe's own tax reporting/filing
     // records. Never blocks order processing or notifications on this --

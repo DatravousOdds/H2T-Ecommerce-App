@@ -141,6 +141,7 @@
                     class="hidden"
                   />
                   <div class="skeleton avatar-skeleton"></div>
+                  
                 </div>
                 <div id="feedback"></div>
                 <!-- Feedback for file upload -->
@@ -149,16 +150,25 @@
                   <div id="name-infor">
                     <div class="username-header">
                       <div id="wrapper-row" class="wrapper-row">
-                        <p id="username">@sara.almasi</p>
+                        <p id="username"></p>
                         <div id="verified-img-container">
                           <div
                             id="verified-tag"
                             class="verified-tag"
+                            title="Verified seller on Head-To-Toes"
+                            style="display: none"
+                          >
+                            <img src="../images/badge-verified-solid-shield.svg" alt="" class="verified-badge-icon">
+                            <p>Verified Seller</p>
+                          </div>
+                          <div
+                            id="trusted-tag"
+                            class="verified-tag"
                             title="Trusted seller on Head-To-Toes"
                             style="display: none"
                           >
-                            <i class="fa-solid fa-shield"></i>
-                            Verified
+                            <img src="../images/shield-logo.svg" alt="" class="verified-badge-icon">
+                            <p>Trusted Seller</p>
                           </div>
                         </div>
                       </div>
@@ -3217,12 +3227,12 @@
                       <input type="file" id="seller-auth-photos-input" accept="image/png, image/jpeg" multiple />
                     </label>
                     <p class="seller-auth-photos-error"></p>
-                    <button type="button" class="order-action-btn" id="seller-submit-auth-photos-btn">Submit Photos</button>
+                    <button type="button" class="order-action-btn btn btn-primary" id="seller-submit-auth-photos-btn">Submit Photos</button>
                   </div>
 
                   <div class="seller-order-action-prepaid-info">
                     <p>Prepaid shipping label purchased — <span id="seller-prepaid-carrier"></span> tracking <span id="seller-prepaid-tracking"></span></p>
-                    <button type="button" class="order-action-btn" id="seller-download-label-btn">Download Shipping Label</button>
+                    <button type="button" class="order-action-btn btn btn-primary" id="seller-download-label-btn">Download Shipping Label</button>
                   </div>
 
                   <div class="seller-order-action-ship-fields">

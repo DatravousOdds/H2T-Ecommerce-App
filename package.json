@@ -13,6 +13,7 @@
     "@google-cloud/aiplatform": "^6.8.1",
     "aws-sdk": "^2.1213.0",
     "bcrypt": "^5.1.0",
+    "browser-image-compression": "^2.0.2",
     "chart.js": "^4.5.1",
     "countries-list": "^3.1.1",
     "country-region-data": "^3.0.0",
@@ -27,6 +28,7 @@
     "nodemailer": "^6.7.8",
     "nodemon": "^2.0.19",
     "resend": "^6.18.1",
+    "sharp": "^0.35.4",
     "stripe": "^22.2.0",
     "uuid": "^9.0.0"
   },

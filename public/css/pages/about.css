@@ -1,0 +1,87 @@
+
+.icon-wrapper i {
+    font-size: var(--fs-h1);
+    color: var(--color-button-primary);
+}
+
+.content-block-body p {
+    color: var(--color-text-muted);
+    font-size: var(--fs-body-sm);
+}
+
+.content-block-header {
+    line-height: 2.3 !important;
+}
+
+.image-wrapper {
+    max-width: 750px;
+    border-radius: 8px;
+}
+
+.image-wrapper img {
+    width: 750px;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.about-us-title {
+    font-size: 2rem !important;
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
+.about-subhead::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    margin-right: 0.5rem;
+    background-color: red;
+}
+
+.kpi-banner {
+    position: relative;
+    padding: 2.5rem;
+    background-color: #070707;
+    border-radius: 8px;
+}
+
+.kpi-section {
+    position: relative;
+}
+
+.kpi-card span {
+    font-size: 4.75rem;
+    color: var(--color-button-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.kpi-card p {
+    color: var(--color-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.section-header h2 {
+    font-size: 1rem ;
+    text-transform: uppercase;
+    letter-spacing: 1.2px !important;
+    color: var(--color-button-primary);
+}
+
+.section-header span {
+    line-height: 1;
+    font-size: 3.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.section-header p {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+}

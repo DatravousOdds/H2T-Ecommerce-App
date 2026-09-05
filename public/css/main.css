@@ -15,4 +15,6 @@
 @import './components/cartDrawer.css';
 @import 'checkout.css';
 @import './components/containers.css';
+@import './pages/qrInit.css';
+@import './components/modals.css';
 

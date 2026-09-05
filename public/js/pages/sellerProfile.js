@@ -102,6 +102,7 @@ function renderSellerHeader(sellerProfile) {
   const avatarEl = document.getElementById("seller-picture");
   const usernameEl = document.getElementById("seller-username");
   const verifiedTagEl = document.getElementById("verified-tag");
+  const trustedTagEl = document.getElementById("trusted-tag");
   const ratingStatEl = document.getElementById("seller-rating-stat");
   const ratingStarsEl = document.getElementById("seller-rating-stars");
   const ratingEl = document.getElementById("seller-rating");
@@ -115,7 +116,10 @@ function renderSellerHeader(sellerProfile) {
     usernameEl.textContent = sellerProfile?.username ? `@${sellerProfile.username}` : "@unknown";
   }
   if (verifiedTagEl) {
-    verifiedTagEl.style.display = sellerProfile?.isVerified ? "" : "none";
+    verifiedTagEl.style.display = sellerProfile?.isVerifiedSeller ? "" : "none";
+  }
+  if (trustedTagEl) {
+    trustedTagEl.style.display = sellerProfile?.isTrustedSeller ? "" : "none";
   }
 
   // Same "hide instead of showing a fake 0/5" gate as profile.js's own

@@ -127,6 +127,33 @@
        the whole photo, letterboxed on mismatched aspect ratios instead. */
     object-fit: contain;
     /* background-color: #F5F3F1; */
+    transition: opacity 0.25s ease;
+}
+
+/* Gates #MainImg's reveal on the photo itself decoding (see
+   revealImageWhenLoaded() in global.js), not just displayProductDetails()'s
+   Firestore fetch resolving -- otherwise the browser paints S3's raw,
+   often multi-MB photo as bytes stream in. .single-pro-image has no fixed
+   height (it sizes to whatever photo loads, see height:auto above), so the
+   loading state borrows the same 1:1 box the pre-fetch skeleton already
+   uses -- one extra reflow into the photo's real aspect ratio once it's
+   actually ready, same as the existing skeleton-item swap already does. */
+.single-pro-image.is-image-loading {
+    aspect-ratio: 1 / 1;
+}
+
+#MainImg.is-loading {
+    opacity: 0;
+}
+
+.single-pro-image .image-load-skeleton {
+    display: none;
+    position: absolute;
+    inset: 0;
+}
+
+.single-pro-image.is-image-loading .image-load-skeleton {
+    display: block;
 }
 
 
@@ -830,21 +857,29 @@
 
 .seller-name-row {
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    align-items: flex-start;
+    flex-direction: column;
+    /* gap: 0.4rem; */
 }
 
 .verified-tag {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
-    background-color: #000;
-    color: #fff;
-    padding: 0.1rem 0.5rem;
     border-radius: 8px;
     font-size: 0.7rem;
     font-weight: 600;
     text-decoration: none;
+}
+
+.verified-tag p {
+    font-size: 0.87rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+.verified-badge-icon {
+    height: auto !important;
+    width: 25px !important;
 }
 
 .auth-badge {

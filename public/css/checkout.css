@@ -338,6 +338,10 @@ p {
     justify-content: space-between;
 }
 
+.promo-discount-line dt {
+    color: var(--color-text-alert);
+}
+
 .total-cost {
     font-size: 1.5rem;
     font-weight: 600;
