@@ -39,7 +39,7 @@ const checkingCodeContent = (code) => `
 const enableCodeContent = (brand) => `
     <div class="modal-content text-center">
         <div class="modal-header">
-            <i class="fa-solid fa-circle-check icon enabled"></i>
+            <i class="fa-solid fa-circle-check qr-icon enabled"></i>
             <h2 class="text-upper">${brand ? `${brand} x Hexxo`: "Hexxo"}</h2>
             <h1 class="text-upper">Reward enabled</h1>
             <p>Free authentication on your first purchase</p>
@@ -54,7 +54,7 @@ const enableCodeContent = (brand) => `
 const expiredCodeContent = (code, brand) => `
     <div class="modal-content text-center">
         <div class="modal-header">
-            <i class="fa-solid fa-circle-exclamation icon expired"></i>
+            <i class="fa-solid fa-circle-exclamation qr-icon expired"></i>
             <p class="expired-code">Code ${code}</p>
             <h1 class="text-upper">This code has expired</h1>
             <p>Codes from ${brand} are valid for 30 days. You can still create your account - a new code can be added any time</p>

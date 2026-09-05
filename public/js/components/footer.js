@@ -59,7 +59,7 @@ const createFooter = async () => {
     <!-- gird-container-3 -->
     <div class="col">
       <h4>Company</h4>
-      <a href="/static/about.html">About Us</a>
+      <a href="#">About Us</a>
     </div>
 
     <!-- gird-container-4 -->
