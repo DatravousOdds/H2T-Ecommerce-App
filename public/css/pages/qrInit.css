@@ -49,16 +49,16 @@
     font-size: var(--font-size-sm);
 }
 
-.icon {
+.qr-icon {
     font-size: 3rem;
     margin: 1rem;
 }
 
-.icon.expired {
+.qr-icon.expired {
     color: var(--color-primary);
 }
 
-.icon.enabled {
+.qr-icon.enabled {
     color: var(--color-status-success);
 }
 
@@ -70,6 +70,3 @@
     margin-top: 0 !important;
 }
 
-.enabled-icon {
-
-}
