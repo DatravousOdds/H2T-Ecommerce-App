@@ -115,7 +115,7 @@ async function renderCart(currentUser) {
     
       <div class="cart-drawer-body" id="cartDrawerBody">
         <!-- cart items will go here -->
-        ${items.length ? items.map(item => item.itemType === 'authentication' ? authTemplate(item) : cartTemplate(item)).join('') : 'Cart is empty!'}
+        ${items.length ? items.map(item => item.itemType === 'authentication' ? authTemplate(item) : cartTemplate(item)).join('') : 'Bag is empty!'}
       </div>
     
       <div class="cart-drawer-footer">
