@@ -1,10 +1,10 @@
-# H2T-Ecommerce-App
+# Hexxo-Ecommerce-App
 
 A full-stack e-commerce platform built with JavaScript, Node.js, Express.js, and Firebase. This all-in-one marketplace connects sneaker and streetwear enthusiasts, allowing users to buy, sell, and trade.
 
 ## Overview
 
-H2T (Head to Toe) is a modern e-commerce platform designed specifically for sneaker and streetwear enthusiasts. Our platform provides a seamless experience for buying, selling, and discovering the latest in street fashion.
+Hexxo is a modern e-commerce platform designed specifically for sneaker and streetwear enthusiasts. Our platform provides a seamless experience for buying, selling, and discovering the latest in street fashion.
 
 ### Built With
 * HTML
