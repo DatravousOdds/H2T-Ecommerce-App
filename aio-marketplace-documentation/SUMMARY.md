@@ -11,6 +11,8 @@
     * [Tools & Technologies](projects/business-email-setup/tools-and-technologies.md)
   * [Landing Page](projects/landing-page.md)
   * [Personal Portfolio](projects/personal-portfolio.md)
+  * [Analytical Dashboard](projects/analytical-dashboard.md)
+  * [Reports](projects/reports.md)
   * [H2T Ecommerce Store](projects/h2t-ecommerce-store/README.md)
     * [User Guide](projects/h2t-ecommerce-store/user-guide/README.md)
       * [Features Overview](projects/h2t-ecommerce-store/user-guide/features-overview/README.md)
