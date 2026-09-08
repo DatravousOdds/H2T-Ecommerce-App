@@ -3,9 +3,10 @@ description: >-
   This section covers the implementation of token-based authentication in our
   e-commerce application. We use tokens to maintain user sessions and verify
   user identity after login.
+icon: square-binary
 ---
 
-# Token-Based Authentication Implementation
+# Token-Based Auth
 
 ## Why Token-Based Authentication?
 

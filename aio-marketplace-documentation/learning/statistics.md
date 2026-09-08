@@ -1,6 +1,7 @@
 ---
 description: This provides all the notes and tips learned from statistics learning
 icon: magnifying-glass-chart
+coverY: 0
 ---
 
 # Statistics
