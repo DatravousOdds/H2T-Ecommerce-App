@@ -12,6 +12,7 @@
   * [Landing Page](projects/landing-page.md)
   * [Personal Portfolio](projects/personal-portfolio.md)
   * [Analytical Dashboard](projects/analytical-dashboard.md)
+  * [Dashboard Public API](projects/dashboard-public-api.md)
   * [Reports](projects/reports.md)
   * [H2T Ecommerce Store](projects/h2t-ecommerce-store/README.md)
     * [User Guide](projects/h2t-ecommerce-store/user-guide/README.md)
