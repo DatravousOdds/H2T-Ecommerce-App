@@ -79,6 +79,7 @@
 
 .price-list {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.125rem;
 }
@@ -177,6 +178,26 @@
 
 .product-grid .pro {
   width: 100% !important;
+}
+
+/* Grid cards: the photo tile keeps a fixed shape instead of a fixed 300px height, so the
+   description sits directly under the photo (a taller box left a gap under any photo
+   shorter than it). The tile is still capped at the old 300px, and the photo fills it:
+   layout.css's `.product-image img { height: auto }` and this file's
+   `.image-custom { max-height: 300px }` would otherwise stop the photo short of the tile,
+   hence the scoped overrides. */
+.product-grid .product-image {
+  height: auto;
+  max-height: 300px;
+  aspect-ratio: 4 / 5;
+  /* global.css centres the photo in a flex box on tablets, which would float it away
+     from the description again */
+  display: block;
+}
+
+.product-grid .product-image .image-custom {
+  height: 100%;
+  max-height: none;
 }
 
 
