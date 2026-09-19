@@ -1,0 +1,11 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+site:
+  title: AIO Marketplace
+  structure:
+    - type: space
+      key: space-1
+      title: Documentation
+      path: aio-marketplace-documentation
+      default: true
+      content:
+        directory: ./aio-marketplace-documentation
