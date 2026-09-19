@@ -17,7 +17,7 @@ currentUser = await checkUserStatus();
 const authSubmitBtn = document.getElementById('submitAuthBtn');
 const payNowBtn = document.getElementById('payNowBtn');
 // categories selection functionality
-const categories = document.getElementById('categories');
+const categoryCards = document.querySelectorAll('.category-card');
 const dynamicFormContainer = document.getElementById('dynamic-form-container');
 let categorySelected;
 
@@ -37,67 +37,60 @@ const backBtn = document.querySelectorAll(".back-btn");
 const formSteps = document.querySelectorAll(".form-step");
 
 const validationRules = {
-      'Trading Cards': 
+      'Trading Cards':
       [
+        // Card name, year, card number, edition, condition/grade and grading
+        // company are intentionally not collected -- the AI detects them from
+        // the photos.
         {id: 'card-brand', name: 'Brand', required: true },
-        {id: 'card-name', name: 'Card Name', required: true },
-        {id: 'card-set', name: 'Set', required: true },
-        {id: 'card-year', name: 'Year', required: true, type: 'number' },
-        {id: 'card-condition', name: 'Condition', required: true },
 
-        // Other details
-        {id: 'card-number', name: 'Card Number', required: false },
-        {id: 'card-edition', name: 'Card Edition', required: false },
-        {id: 'card-grading-company', name: 'Card Grading Company', required: false },
-
+        // card-model is the Model picker's hidden input (the kind of product:
+        // Graded Singles, Booster Box...). The field is only shown when the brand
+        // has a curated model list and is required whenever it's showing -- see
+        // initBrandModelToggle().
+        {id: 'card-model', name: 'Model', required: () => document.getElementById('card-model-field')?.style.display !== 'none' },
       ],
-      'Apparel': 
+      'Apparel':
       [
+        // Item type, size, condition, color, material and style are intentionally
+        // not collected -- the AI detects them from the photos.
         {id: 'apparel-brand', name: 'Brand', required: true },
-        {id: 'apparel-type', name: 'Item Type', required: true },
-        {id: 'apparel-size', name: 'Size', required: true },
-        {id: 'apparel-condition', name: 'Condition', required: true },
-        {id: 'apparel-color', name: 'Color', required: true, type: 'text'},
 
-        // Other details
-        {id: 'apparel-material', name: 'Material', required: false, type: 'text'},
-        {id: 'apparel-style', name: 'Style', required: false, type: 'text'},
-
+        // apparel-model is the Model picker's hidden input. The field is only
+        // shown once the server has a cached model list for the brand and is
+        // required whenever it's showing -- see initBrandModelToggle().
+        {id: 'apparel-model', name: 'Model', required: () => document.getElementById('apparel-model-field')?.style.display !== 'none' },
       ],
       'Sneakers':
       [
         {id: 'sneaker-brand', name: 'Brand', required: true },
-        // Only required when the selected brand actually has a closed model
-        // list (SNEAKER_MODELS_BY_BRAND) -- e.g. required once Jordan is
-        // picked, but skippable for a brand with no model list defined yet.
-        {id: 'sneaker-model', name: 'Model', required: () => !!SNEAKER_MODELS_BY_BRAND[document.getElementById('sneaker-brand')?.value] },
+        // Always optional -- "Skip selecting a model" lets the user move on
+        // even when the selected brand has a closed model list.
+        {id: 'sneaker-model', name: 'Model', required: false },
       ],
       'Bags & Leather Goods':
       [
-        // Required fields
-        {id: 'bags-type', name: 'Item Type', required: true },
+        // Item type, size, color/material and condition are intentionally not
+        // collected -- the AI detects them from the photos.
         {id: 'bags-brand', name: 'Brand', required: true },
-        {id: 'bags-condition', name: 'Condition', required: true },
 
-        // Other details -- bags-model resolves to whichever element currently
-        // carries that id (free-text or the Hermès dropdown), swapped by
-        // initBagsBrandModelToggle() based on the selected brand. Only
-        // required when Hermès's closed model list is what's showing.
-        {id: 'bags-model', name: 'Model', required: () => document.getElementById('bags-brand')?.value === 'Hermès' },
-        {id: 'bags-color', name: 'Color', required: false },
-        {id: 'bags-size', name: 'Size', required: false },
+        // bags-model is the Model picker's hidden input. The field is only
+        // shown once a model list exists for the brand (Hermès: curated,
+        // others: live from KicksDB) and is required whenever it's showing --
+        // see initBrandModelToggle().
+        {id: 'bags-model', name: 'Model', required: () => document.getElementById('bags-model-field')?.style.display !== 'none' },
       ],
       'Luxury Shoes':
       [
-        // Required fields
+        // Size, color and condition are intentionally not collected -- the AI
+        // detects them from the photos.
         {id: 'luxury-shoes-brand', name: 'Brand', required: true },
-        // luxury-shoes-model resolves to whichever element currently carries
-        // that id (free-text or the Jordan/Nike collab dropdown), swapped by
-        // initLuxuryShoesBrandModelToggle() based on the selected brand.
-        {id: 'luxury-shoes-model', name: 'Model', required: true },
-        {id: 'luxury-shoes-size', name: 'Size', required: true },
-        {id: 'luxury-shoes-color', name: 'Color', required: true },
-        {id: 'luxury-shoes-condition', name: 'Condition', required: true },
+
+        // luxury-shoes-model is the Model picker's hidden input. The field is
+        // only shown once a model list exists for the brand (Jordan/Nike:
+        // curated, others: live from KicksDB) and is required whenever it's
+        // showing -- see initBrandModelToggle().
+        {id: 'luxury-shoes-model', name: 'Model', required: () => document.getElementById('luxury-shoes-model-field')?.style.display !== 'none' },
       ]
 }
 
@@ -109,66 +102,94 @@ const forms = {
   "Luxury Shoes": "/authenticator/templates/luxury-shoes-form.html"
 }
 
-// Only Jordan and Nike have a closed list of eligible collab styles within
-// Luxury Shoes -- every other brand in that category keeps free-text Model.
-const LUXURY_SHOES_MODELS_BY_BRAND = {
-  "Jordan": [
-    "Dior Jordan 1 Retro High",
-    "Dior Jordan 1 Retro Low",
-    "Off-White x Air Jordan 1 Retro High OG 'Chicago'",
-    "Off-White x Air Jordan 1 Retro High OG 'UNC'",
-    "Off-White x Air Jordan 1 Retro High OG 'White'"
-  ],
-  "Nike": [
-    "Air Yeezy 'Blink'",
-    "Air Yeezy 'Net'",
-    "Air Yeezy 'Zen'",
-    "Air Yeezy 2 NRG 'Pure Platinum'",
-    "Air Yeezy 2 NRG 'Solar Red'",
-    "Air Yeezy 2 SP 'Red October'",
-    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White",
-    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Black",
-    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Black Metallic Silver",
-    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Metallic Gold",
-    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Green",
-    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Red",
-    "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Royal",
-    "NikeCraft Mars Yard Shoe 1.0",
-    "NikeCraft Mars Yard Shoe 2.0"
-  ]
+// Brand lists and curated model lists live in catalogData.json so the browser
+// and the cache seed script (scripts/seedCatalogCache.js) read one source. If it
+// can't be loaded the pickers just come up empty -- the rest of the flow works.
+let catalogData = {
+  sneakers: { brands: [], curated: {} },
+  bags: { brands: [], curated: {} },
+  'luxury-shoes': { brands: [], curated: {} },
+  apparel: { brands: [], curated: {} },
+  'trading-cards': { brands: [], curated: {} }
+};
+try {
+  const response = await fetch(new URL('../core/catalogData.json', import.meta.url));
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  // merged onto the defaults so a kind missing from an older cached copy is just empty
+  catalogData = { ...catalogData, ...(await response.json()) };
+} catch (error) {
+  console.error('Could not load the brand/model lists:', error);
+}
+
+const SNEAKER_BRANDS = catalogData.sneakers.brands;
+const SNEAKER_MODELS_BY_BRAND = catalogData.sneakers.curated;
+const BAGS_BRANDS = catalogData.bags.brands;
+const HERMES_MODELS = catalogData.bags.curated['Hermès'] || [];
+const LUXURY_SHOES_BRANDS = catalogData['luxury-shoes'].brands;
+const LUXURY_SHOES_MODELS_BY_BRAND = catalogData['luxury-shoes'].curated;
+const APPAREL_BRANDS = catalogData.apparel.brands;
+const TRADING_CARD_BRANDS = catalogData['trading-cards'].brands;
+const TRADING_CARD_MODELS_BY_BRAND = catalogData['trading-cards'].curated;
+
+// Brand logos come from Logo.dev, looked up by domain. This is Logo.dev's
+// *publishable* key (pk_...), which is designed to ship in client code -- its
+// secret keys are the ones that must never appear here.
+//
+// Domain, not company name: name lookup is fuzzy and returns the wrong company
+// for ambiguous brands ("Jordan" -> a law firm, "Palace" -> "Mundo Palace").
+// Every domain below was checked by eye. Brands left out get their letter
+// avatar instead of a wrong logo:
+//   - Jordan: every Jordan domain redirects to Nike's swoosh
+//   - READYMADE: readymade.jp returns an unrelated logo
+//   - GV Gallery, Saint Michael, Sp5der: no logo found
+//   - Magic: The Gathering returns Wizards of the Coast's "W" (the publisher,
+//     not the game) and Soccer would return FIFA (the governing body)
+// The looser ones (Denim Tears, Travis Scott, Vale Forever) resolved but
+// weren't confirmable, so eyeball them.
+const LOGO_DEV_TOKEN = 'pk_UO6L-oMIRFCIgDxX6J5DQQ';
+const BRAND_LOGO_DOMAINS = {
+  "Adidas": "adidas.com", "Asics": "asics.com", "Converse": "converse.com",
+  "Hoka": "hoka.com", "New Balance": "newbalance.com", "Nike": "nike.com",
+  "On": "on.com", "Reebok": "reebok.com", "Salomon": "salomon.com",
+  "Saucony": "saucony.com", "Vans": "vans.com", "Veja": "veja-store.com",
+  "Chanel": "chanel.com", "Dior": "dior.com", "Goyard": "goyard.com",
+  "Hermès": "hermes.com", "Balenciaga": "balenciaga.com",
+  "Bottega Veneta": "bottegaveneta.com", "Burberry": "burberry.com",
+  "Celine": "celine.com", "Chloé": "chloe.com",
+  "Christian Louboutin": "christianlouboutin.com",
+  "Dolce & Gabbana": "dolcegabbana.com", "D&G": "dolcegabbana.com",
+  "D&G Beachwear": "dolcegabbana.com", "Fendi": "fendi.com",
+  "Givenchy": "givenchy.com", "Gucci": "gucci.com", "Loewe": "loewe.com",
+  "Louis Vuitton": "louisvuitton.com", "Prada": "prada.com",
+  "Saint Laurent": "ysl.com", "Salvatore Ferragamo": "ferragamo.com",
+  "Valentino": "valentino.com", "Miu Miu": "miumiu.com", "BAPE": "bape.com",
+  "Coach": "coach.com", "Denim Tears": "denimtears.com",
+  "Eric Emanuel": "ericemanuel.com", "Fear of God Essentials": "fearofgod.com",
+  "Hellstar": "hellstar.com", "MCM": "mcmworldwide.com",
+  "Off White": "off---white.com", "Off-White": "off---white.com",
+  "Alexander McQueen": "alexandermcqueen.com", "Chrome Hearts": "chromehearts.com",
+  "Canada Goose": "canadagoose.com", "Moncler": "moncler.com", "Skylrk": "skylrk.com",
+  "Pokémon": "pokemon.com", "Yu-Gi-Oh!": "yugioh-card.com", "Baseball (MLB)": "mlb.com",
+  "Basketball (NBA)": "nba.com", "Football (NFL)": "nfl.com",
+  "Palace": "palaceskateboards.com",
+  "Polo Ralph Lauren": "ralphlauren.com", "Stussy": "stussy.com",
+  "Supreme": "supreme.com", "The North Face": "thenorthface.com",
+  "Travis Scott": "travisscott.com", "Vale Forever": "valeforever.com"
 };
 
-// Closed list -- these are the only brands Hexxo currently authenticates
-// sneakers for. Rendered as buttons by initSneakerBrandPicker() rather than
-// a native <select>, per the searchable brand-picker design.
-const SNEAKER_BRANDS = [
-  "Adidas", "Asics", "Converse", "Hoka", "Jordan", "New Balance", "Nike",
-  "On", "Reebok", "Salomon", "Saucony", "Vans", "Veja"
-];
+// fallback=404 so a domain with no logo fails cleanly (the card keeps its
+// letter avatar) instead of Logo.dev's default black-and-white monogram.
+const logoDomainByBrand = new Map(
+  Object.entries(BRAND_LOGO_DOMAINS).map(([brand, domain]) => [brand.toLowerCase(), domain])
+);
 
-// Per-brand closed model lists for the standalone Model picker
-// (initSneakerModelPicker) -- empty for a brand just means that picker shows
-// its "No matches found" empty state until a list is added here, same as
-// every other brand today.
-const SNEAKER_MODELS_BY_BRAND = {
-  "Jordan": [
-    "Jordan 1", "Jordan 2", "Jordan 3", "Jordan 4", "Jordan 5", "Jordan 6",
-    "Jordan 7", "Jordan 8", "Jordan 9", "Jordan 10", "Jordan 11", "Jordan 12",
-    "Jordan 13", "Jordan 14", "Jordan 15", "Jordan 1 Low", "Other"
-  ],
-  "Converse": ["Chuck 1970s", "Other"],
-  "Asics": ["Gel-1130", "Gel-NYC", "Gel-Kayano", "Other"],
-  "Adidas": [
-    "Samba", "Handball", "Campus", "Gazelle", "Taekwondo", "SL 72", "Superstar",
-    "Adizero", "Fear of God", "AE 1", "Harden", "Forum", "Stan Smith", "NMD",
-    "Ultra Boost", "Tobacco", "Country", "Bermuda", "Italia SPZL", "SL83 SPZL",
-    "Response CL", "Human Race", "Ozweego", "Manchester", "Wimberly SPZL",
-    "Helvellyn SPZL", "adiFOM", "D.O.N.", "Dame", "Mad liinfinity", "XLG Runner",
-    "Orketro Bape", "Palos Hills", "Radlander", "Nite Jogger", "Iniki", "EQT",
-    "Ivy Park", "Raf Simons", "Basketball", "Running", "Skateboarding", "Soccer",
-    "Other"
-  ]
-};
+function brandLogoUrl(brand) {
+  // case-insensitive: the brand lists spell some differently ("Fear of God ESSENTIALS")
+  const domain = logoDomainByBrand.get(brand.toLowerCase());
+  return domain
+    ? `https://img.logo.dev/${domain}?token=${LOGO_DEV_TOKEN}&size=128&format=png&fallback=404`
+    : null;
+}
 
 let formData = {
   images: [],
@@ -225,8 +246,6 @@ function imageSlotHTML(angle, index) {
 function renderImageSlots(category) {
   const grid = document.getElementById('imageGrid');
   const subheader = document.getElementById('imageUploadSubheader');
-  const msgText = document.getElementById('imageUploadMsgText');
-  const anglesList = document.getElementById('requiredAnglesList');
   if (!grid) return;
 
   const angles = ANGLE_REQUIREMENTS[category];
@@ -234,8 +253,6 @@ function renderImageSlots(category) {
   if (!angles) {
     grid.innerHTML = '';
     if (subheader) subheader.textContent = 'Select a category to see the required photos';
-    if (msgText) msgText.textContent = 'Select a category above to see the required photos for authentication verification.';
-    if (anglesList) anglesList.innerHTML = '';
     renderReviewImageSlots(0);
     return;
   }
@@ -245,12 +262,6 @@ function renderImageSlots(category) {
   grid.innerHTML = angles.map((angle, index) => imageSlotHTML(angle, index)).join('');
 
   if (subheader) subheader.textContent = `Upload ${requiredCount} required photos for ${category}`;
-  if (msgText) msgText.textContent = `Please upload the following ${requiredCount} required photos for authentication verification:`;
-  if (anglesList) {
-    anglesList.innerHTML = angles
-      .map(angle => `<li>${angle.label}${angle.type === 'required' ? ' (required)' : ' (optional)'}</li>`)
-      .join('');
-  }
 
   // Must run before wireImageInputs() -- the change listener writes into
   // reviewImages[slotIndex] by index, so the review thumbnails need to
@@ -346,220 +357,477 @@ function wireImageInputs() {
   });
 }
 
-// Bags & Leather Goods only: Hermès models are a closed, well-known list, so
-// swap the free-text Model input for a constrained dropdown when Hermès is
-// selected -- every other brand keeps free text since there's no equivalent
-// closed list for them. Both elements share the name="model" attribute, but
-// only one at a time carries id="bags-model" so collectProductData/
-// validateForm's generic getElementById(rule.id) lookup keeps working
-// unmodified regardless of which variant is showing.
-function initBagsBrandModelToggle() {
-  const brandSelect = document.getElementById('bags-brand');
-  const modelText = document.getElementById('bags-model');
-  const modelHermes = document.getElementById('bags-model-hermes');
-  if (!brandSelect || !modelText || !modelHermes) return;
+// Model data comes from the server (GET /api/<kind>-models), which answers
+// from a Firestore cache of KicksDB results -- the browser never triggers a
+// KicksDB request itself (the free plan allows only 1,000 a month; see
+// services/catalogModels.js). For a brand with no curated list the response
+// IS the model list; for a curated brand it's a photo table for those names.
+// Cached per kind+brand for the life of the page; a failed lookup is dropped
+// from the cache so the next pick retries.
+const MODEL_OTHER = 'Other';
+const brandModelsCache = new Map();
 
-  const syncModelField = () => {
-    const isHermes = brandSelect.value === 'Hermès';
+// A curated model list has names but no photos. Pairs each name with its photo
+// from the brand's cached photo table (one request for the whole brand); a name
+// with no cached photo just keeps its letter avatar.
+async function withPhotos(kind, brand, names) {
+  const table = await fetchBrandModels(kind, brand);
+  const photoFor = new Map(table.map(({ name, image }) => [name.toLowerCase(), image]));
+  return names.map(name => ({ name, image: photoFor.get(name.toLowerCase()) }));
+}
 
-    if (isHermes) {
-      modelText.style.display = 'none';
-      modelText.removeAttribute('id');
-      modelHermes.style.display = '';
-      modelHermes.id = 'bags-model';
-    } else {
-      modelHermes.style.display = 'none';
-      modelHermes.removeAttribute('id');
-      modelText.style.display = '';
-      modelText.id = 'bags-model';
+function fetchBrandModels(kind, brand) {
+  const cacheKey = `${kind}:${brand}`;
+
+  if (!brandModelsCache.has(cacheKey)) {
+    const request = (async () => {
+      const idToken = await auth.currentUser?.getIdToken();
+      const res = await fetch(`/api/${kind}-models?brand=${encodeURIComponent(brand)}`, {
+        headers: { Authorization: `Bearer ${idToken}` }
+      });
+      if (!res.ok) throw new Error(`Model lookup failed (${res.status})`);
+      return (await res.json()).data || [];
+    })().catch(() => {
+      brandModelsCache.delete(cacheKey);
+      return [];
+    });
+    brandModelsCache.set(cacheKey, request);
+  }
+  return brandModelsCache.get(cacheKey);
+}
+
+// The brand -> model wiring shared by every category with brand and model
+// screens. The Model field (a card picker) is filled per brand -- from `curated`
+// when it has a list for that brand, otherwise from the server's cached list via
+// fetchBrandModels(kind, brand) -- and only shown once a list exists. No list
+// (nothing cached for the brand, or the lookup failed) means no Model field at
+// all, and a Model field that is showing is required.
+//
+// - Curated lists get their photos from the server's cache (withPhotos) unless
+//   `photos` is false. They are closed, so they get no "Other" card.
+// - Live lists get an "Other" card so an item missing from a partial list
+//   doesn't block the user.
+// - A category with no `kind` has no live source (Trading Cards): a brand
+//   without a curated list simply has no Model field.
+//
+// The picker's hidden input permanently owns its id so validateForm/
+// collectProductData's generic getElementById(rule.id) lookup always finds an
+// element. A model belongs to one brand, so any brand change clears it.
+function initBrandModelToggle({ brandId, modelId, modelFieldId, modelPicker, kind, curated = {}, photos = true }) {
+  const brandInput = document.getElementById(brandId);
+  const modelField = document.getElementById(modelFieldId);
+  const modelInput = document.getElementById(modelId);
+  if (!brandInput || !modelField || !modelInput || !modelPicker) return;
+
+  // Tells the Step 2 screen controller whether a model screen exists for this brand.
+  const announce = (count) => modelField.dispatchEvent(
+    new CustomEvent('models-ready', { bubbles: true, detail: { count } })
+  );
+
+  const syncModelField = async () => {
+    const brand = brandInput.value;
+
+    if (modelInput.value) {
+      modelInput.value = '';
+      // lets the model picker deselect its highlighted card
+      modelInput.dispatchEvent(new Event('change', { bubbles: true }));
     }
+    modelField.style.display = 'none';
+    if (!brand) return;
+
+    let models;
+    if (curated[brand]) {
+      models = photos ? await withPhotos(kind, brand, curated[brand]) : curated[brand];
+      // the user may have picked another brand while this was loading -- that
+      // newer run announces its own result
+      if (brandInput.value !== brand) return;
+    } else if (!kind) {
+      return announce(0);
+    } else {
+      const derived = await fetchBrandModels(kind, brand);
+      if (brandInput.value !== brand) return;
+      if (derived.length === 0) return announce(0);
+      models = [...derived, MODEL_OTHER];
+    }
+
+    modelPicker.setItems(models);
+    modelField.style.display = '';
+    announce(models.length);
   };
 
-  brandSelect.addEventListener('change', syncModelField);
+  brandInput.addEventListener('change', syncModelField);
   syncModelField();
 }
 
-// Luxury Shoes only: Jordan and Nike each have their own closed list of
-// eligible collab styles (see LUXURY_SHOES_MODELS_BY_BRAND above) -- every
-// other brand in this category keeps free-text Model, same reasoning as
-// Hermès in Bags. Unlike the Bags toggle, the dropdown's options are rebuilt
-// per-brand here since two different brands each need their own list rather
-// than one fixed list.
-function initLuxuryShoesBrandModelToggle() {
-  const brandSelect = document.getElementById('luxury-shoes-brand');
-  const modelText = document.getElementById('luxury-shoes-model');
-  const modelSelect = document.getElementById('luxury-shoes-model-select');
-  if (!brandSelect || !modelText || !modelSelect) return;
+// Puts a photo in a card's icon circle in place of its letter avatar. The
+// URL is assigned as a DOM property (never spliced into an HTML string), so a
+// value from an external API can't break out of an attribute.
+function showCardPhoto(card, url) {
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = '';
+  img.loading = 'lazy';
 
-  const syncModelField = () => {
-    const models = LUXURY_SHOES_MODELS_BY_BRAND[brandSelect.value];
-
-    if (models) {
-      modelSelect.innerHTML = '<option value="">Select model...</option>' +
-        models.map(model => `<option value="${model}">${model}</option>`).join('');
-
-      modelText.style.display = 'none';
-      modelText.removeAttribute('id');
-      modelSelect.style.display = '';
-      modelSelect.id = 'luxury-shoes-model';
-    } else {
-      modelSelect.style.display = 'none';
-      modelSelect.removeAttribute('id');
-      modelText.style.display = '';
-      modelText.id = 'luxury-shoes-model';
-    }
-  };
-
-  brandSelect.addEventListener('change', syncModelField);
-  syncModelField();
+  const icon = card.querySelector('.brand-option-icon');
+  icon.classList.add('has-photo');
+  icon.replaceChildren(img);
 }
 
-// Sneakers' brand field is a custom searchable button-picker rather than a
-// native <select> (matches the Figma "Frame 10" mockup). Single step only --
-// Model is a separate standalone picker below it (initSneakerModelPicker),
-// not a drill-down within this widget. Whichever brand is clicked is
-// written into the #sneaker-brand hidden input, so collectProductData/
-// validateForm/draft save-restore all keep working unmodified via their
-// existing getElementById('sneaker-brand') lookup.
-function initSneakerBrandPicker() {
-  const searchInput = document.getElementById('sneaker-brand-search');
-  const optionList = document.getElementById('sneaker-brand-options');
-  const hiddenInput = document.getElementById('sneaker-brand');
+// Same idea for a brand's logo. The <img> goes in straight away (so the browser
+// can lazy-load it), and if it fails to load -- Logo.dev answers 404 for a
+// domain it has no logo for -- the letter avatar comes back.
+function showCardLogo(card, url) {
+  const icon = card.querySelector('.brand-option-icon');
+  const letter = icon.textContent;
+
+  const img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.addEventListener('error', () => {
+    icon.classList.remove('has-logo');
+    icon.textContent = letter;
+  });
+  img.src = url;
+
+  icon.classList.add('has-logo');
+  icon.replaceChildren(img);
+}
+
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, ch => (
+  { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+));
+
+// Generic searchable brand card picker -- replaces a native brand <select>
+// with the same icon-card grid Sneakers uses. The clicked brand is written
+// to a hidden input that keeps the old select's id, so validateForm,
+// collectProductData and draft save/restore keep reading `.value` unchanged.
+//
+// Unlike Sneakers' picker, a click dispatches a plain 'change' event on the
+// hidden input, because other code (e.g. initBrandModelToggle) listens
+// for 'change' on the brand element exactly as it did on the <select>. The
+// listener below therefore only resyncs visuals (never re-dispatches) --
+// otherwise click -> change -> listener -> change would loop forever. That
+// same listener is what makes a draft restore (which sets .value and
+// dispatches 'change') light up the right card.
+//
+// `brands` entries are plain names or { name, image } -- the latter (model
+// lists from the server's cache) already know their photo. Names may come from
+// an external API, so everything is HTML-escaped when rendered.
+//
+// Optional `logo: name => url | null` shows a brand logo on cards that have
+// no photo (see showCardLogo); a null keeps the letter avatar.
+//
+// Returns { setItems(items) } so a caller can swap the whole list later (e.g.
+// when the selected brand changes); undefined if the markup isn't present.
+function initBrandCardPicker({ searchId, listId, hiddenId, brands, logo }) {
+  const searchInput = document.getElementById(searchId);
+  const optionList = document.getElementById(listId);
+  const hiddenInput = document.getElementById(hiddenId);
   if (!searchInput || !optionList || !hiddenInput) return;
 
-  function renderOptions(names, selectedValue) {
-    optionList.innerHTML = names.map(name => `
-      <button type="button" class="brand-option${name === selectedValue ? ' selected' : ''}" data-value="${name}">
-        ${name}
+  const toItem = (entry) => (typeof entry === 'string' ? { name: entry } : entry);
+  let items = brands.map(toItem);
+
+  function renderOptions(list, selectedValue) {
+    optionList.innerHTML = list.map(({ name }) => `
+      <button type="button" class="brand-option${name === selectedValue ? ' selected' : ''}" data-value="${escapeHtml(name)}" aria-pressed="${name === selectedValue}">
+        <span class="brand-option-icon">${escapeHtml(name.charAt(0).toUpperCase())}</span>
+        <span class="brand-option-name">${escapeHtml(name)}</span>
+        <span class="brand-option-check"><i class="fa-solid fa-check"></i></span>
       </button>
     `).join('') || `<p class="brand-option-empty">No matches found.</p>`;
+
+    const cards = [...optionList.querySelectorAll('.brand-option')];
+    list.forEach(({ name, image }, i) => {
+      if (image) return showCardPhoto(cards[i], image);
+
+      const logoUrl = logo?.(name);
+      if (logoUrl) showCardLogo(cards[i], logoUrl);
+    });
   }
 
-  // Does NOT dispatch 'change' -- only an external set (draft restore) needs
-  // the resync listener below to run. Having every in-widget click dispatch
-  // 'change' too would just trigger that same listener, which calls back
-  // into selectValue() -- a self-triggering loop for no reason, since the
-  // visuals are already updated right here.
-  //
-  // Does dispatch a *custom* 'sneaker-brand-selected' event -- this is what
-  // initSneakerModelPicker() listens for to know which brand's model list
-  // to show.
-  function selectValue(value) {
-    hiddenInput.value = value;
-
-    [...optionList.children].forEach(btn => {
-      btn.classList.toggle('selected', btn.dataset.value === value);
+  function syncSelected(value) {
+    optionList.querySelectorAll('.brand-option').forEach(btn => {
+      const isSelected = btn.dataset.value === value;
+      btn.classList.toggle('selected', isSelected);
+      btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
     });
-
-    hiddenInput.dispatchEvent(new CustomEvent('sneaker-brand-selected', { bubbles: true, detail: { brand: value } }));
   }
 
   optionList.addEventListener('click', (e) => {
     const btn = e.target.closest('.brand-option');
     if (!btn) return;
-    selectValue(btn.dataset.value);
+
+    hiddenInput.value = btn.dataset.value;
+    syncSelected(hiddenInput.value);
+    hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
   });
 
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim().toLowerCase();
-    renderOptions(SNEAKER_BRANDS.filter(name => name.toLowerCase().includes(query)), hiddenInput.value);
+    renderOptions(items.filter(({ name }) => name.toLowerCase().includes(query)), hiddenInput.value);
   });
 
-  // Draft restore sets #sneaker-brand's value directly and dispatches
-  // 'change' (see restoreDraftState) -- resync the visible picker so the
-  // right button shows as selected instead of silently drifting out of
-  // sync with the hidden input.
-  hiddenInput.addEventListener('change', () => {
-    if (hiddenInput.value) selectValue(hiddenInput.value);
-  });
+  hiddenInput.addEventListener('change', () => syncSelected(hiddenInput.value));
 
-  // Bakes hiddenInput's current value (empty at this point -- formLocator
-  // just injected fresh HTML) into the initial render's selected state.
-  renderOptions(SNEAKER_BRANDS, hiddenInput.value);
+  renderOptions(items, hiddenInput.value);
+
+  return {
+    setItems(newItems) {
+      items = newItems.map(toItem);
+      searchInput.value = '';
+      renderOptions(items, hiddenInput.value);
+    }
+  };
 }
 
-// Standalone second picker for Sneakers' Model, same button+search widget
-// as the brand picker but not a drill-down within it -- Brand stays captured
-// in #sneaker-brand no matter what's picked here. Its option list is
-// SNEAKER_MODELS_BY_BRAND[currently selected brand], refreshed whenever the
-// brand picker fires 'sneaker-brand-selected' (live user pick) or
-// #sneaker-brand fires a plain 'change' (draft restore). Empty for every
-// brand today -- renders the "No matches found" empty state until per-brand
-// model lists are added there.
+// Standalone second picker for Sneakers' Model -- the shared card picker
+// (initBrandCardPicker) with its list swapped whenever the brand changes:
+// brands with a hand-curated SNEAKER_MODELS_BY_BRAND entry use it (photos added
+// by withPhotos), every other brand gets the server's cached list via
+// fetchBrandModels (plus an "Other" card, like the curated lists have). A brand
+// with no list at all -- nothing cached, or the lookup failed -- hides the whole
+// Model field. Model is
+// always optional (validationRules['Sneakers']); the Skip button clears it.
+//
+// Brand stays captured in #sneaker-brand no matter what's picked here. The
+// list refreshes whenever #sneaker-brand fires 'change' (a brand click, or a
+// draft restore).
 function initSneakerModelPicker() {
   const fieldWrapper = document.getElementById('sneaker-model-field');
   const searchInput = document.getElementById('sneaker-model-search');
-  const optionList = document.getElementById('sneaker-model-options');
   const hiddenInput = document.getElementById('sneaker-model');
   const brandHiddenInput = document.getElementById('sneaker-brand');
-  if (!fieldWrapper || !searchInput || !optionList || !hiddenInput || !brandHiddenInput) return;
+  const skipBtn = document.getElementById('sneaker-model-skip');
+  if (!fieldWrapper || !searchInput || !hiddenInput || !brandHiddenInput) return;
 
-  function currentModels() {
-    return SNEAKER_MODELS_BY_BRAND[brandHiddenInput.value] || [];
-  }
+  // Starts empty -- refreshForNewBrand fills it.
+  const picker = initBrandCardPicker({
+    searchId: 'sneaker-model-search',
+    listId: 'sneaker-model-options',
+    hiddenId: 'sneaker-model',
+    brands: []
+  });
+  if (!picker) return;
 
-  function renderOptions(names, selectedValue) {
-    optionList.innerHTML = names.map(name => `
-      <button type="button" class="brand-option${name === selectedValue ? ' selected' : ''}" data-value="${name}">
-        ${name}
-      </button>
-    `).join('') || `<p class="brand-option-empty">No matches found.</p>`;
-  }
+  async function modelsForBrand(brand) {
+    if (SNEAKER_MODELS_BY_BRAND[brand]) return withPhotos('sneaker', brand, SNEAKER_MODELS_BY_BRAND[brand]);
 
-  function selectValue(value) {
-    hiddenInput.value = value;
-
-    [...optionList.children].forEach(btn => {
-      btn.classList.toggle('selected', btn.dataset.value === value);
-    });
+    const derived = await fetchBrandModels('sneaker', brand);
+    return derived.length ? [...derived, 'Other'] : [];
   }
 
   // A brand change invalidates whatever model was picked for the previous
-  // brand -- clears the field rather than leaving a stale model attached to
-  // a different brand. Also shows/hides the whole field (not just an empty
-  // option list) depending on whether this brand has any models at all,
-  // via the CSS transition on .model-field-hidden.
-  function refreshForNewBrand() {
-    hiddenInput.value = '';
-    searchInput.value = '';
+  // brand, so it clears first. The field stays hidden until the new list is
+  // known (via the CSS transition on .model-field-hidden).
+  async function refreshForNewBrand() {
+    const brand = brandHiddenInput.value;
 
-    const models = currentModels();
-    renderOptions(models, '');
+    if (hiddenInput.value) {
+      hiddenInput.value = '';
+      // lets the picker deselect its highlighted card
+      hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    fieldWrapper.classList.add('model-field-hidden');
+    if (!brand) return;
+
+    const models = await modelsForBrand(brand);
+    // the user may have picked another brand while a live list was loading
+    if (brandHiddenInput.value !== brand) return;
+
+    picker.setItems(models);
     fieldWrapper.classList.toggle('model-field-hidden', models.length === 0);
+    // tells the Step 2 screen controller whether a model screen exists for this brand
+    fieldWrapper.dispatchEvent(new CustomEvent('models-ready', { bubbles: true, detail: { count: models.length } }));
   }
 
-  optionList.addEventListener('click', (e) => {
-    const btn = e.target.closest('.brand-option');
-    if (!btn) return;
-    selectValue(btn.dataset.value);
+  skipBtn?.addEventListener('click', () => {
+    if (hiddenInput.value) {
+      hiddenInput.value = '';
+      hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    // re-render the full list in case a search had narrowed it
+    searchInput.value = '';
+    searchInput.dispatchEvent(new Event('input'));
   });
 
-  searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim().toLowerCase();
-    renderOptions(currentModels().filter(name => name.toLowerCase().includes(query)), hiddenInput.value);
-  });
-
-  brandHiddenInput.addEventListener('sneaker-brand-selected', refreshForNewBrand);
   brandHiddenInput.addEventListener('change', refreshForNewBrand);
-
-  // Draft restore sets #sneaker-model directly and dispatches 'change' after
-  // #sneaker-brand's own restore already ran refreshForNewBrand() above --
-  // resync the visible selection now that the correct brand's options exist.
-  hiddenInput.addEventListener('change', () => {
-    if (hiddenInput.value) selectValue(hiddenInput.value);
-  });
 
   refreshForNewBrand();
 }
 
-categories.addEventListener('change', (e) => {
-  const target = e.target.value;
-  categorySelected = target;
+// ---- Step 2 detail screens: category -> brand -> model, one at a time ----
+//
+// The category grid is one screen; the injected template's sections marked
+// data-screen="brand" / "model" are the others. Exactly one is visible at a
+// time (via .screen-hidden), which leaves each section's own visibility rules
+// alone -- e.g. the model field still hides itself when a brand has no models.
+// Every hidden input (#sneaker-brand, #bags-model, ...) stays in the DOM the
+// whole time, so validation, draft save/restore and collectProductData keep
+// reading `.value` exactly as before.
+const categoryScreen = document.getElementById('category-screen');
+const detailsNav = document.getElementById('detailsNav');
+const detailsBackBtn = document.getElementById('detailsBackBtn');
+const detailsBreadcrumb = document.getElementById('detailsBreadcrumb');
 
-  // get form
-  formLocator(categorySelected);
-  // step 3's required photo slots are driven by this same category
-  renderImageSlots(categorySelected);
+// Hidden-input ids behind each category's brand/model pickers, plus the model
+// field's wrapper, whose own visibility says whether the chosen brand has any
+// models. A category missing here has no brand/model screens yet and shows its
+// whole form right under the category grid, as it always did.
+const CATEGORY_FIELDS = {
+  'Sneakers': { brand: 'sneaker-brand', model: 'sneaker-model', modelField: 'sneaker-model-field' },
+  'Bags & Leather Goods': { brand: 'bags-brand', model: 'bags-model', modelField: 'bags-model-field' },
+  'Luxury Shoes': { brand: 'luxury-shoes-brand', model: 'luxury-shoes-model', modelField: 'luxury-shoes-model-field' },
+  'Apparel': { brand: 'apparel-brand', model: 'apparel-model', modelField: 'apparel-model-field' },
+  'Trading Cards': { brand: 'card-brand', model: 'card-model', modelField: 'card-model-field' }
+};
+
+let currentDetailScreen = 'category';
+// While a draft is being restored, its field events must not move the user
+// between screens -- showRestoredScreen() picks the right one afterwards.
+let restoringDraft = false;
+
+const detailScreens = () => [...new Set(
+  [...dynamicFormContainer.querySelectorAll('[data-screen]')].map(el => el.dataset.screen)
+)];
+const fieldValue = (id) => document.getElementById(id)?.value || '';
+
+function modelScreenAvailable() {
+  const field = document.getElementById(CATEGORY_FIELDS[categorySelected]?.modelField);
+  return !!field && field.style.display !== 'none' && !field.classList.contains('model-field-hidden');
+}
+
+function renderBreadcrumb() {
+  const fields = CATEGORY_FIELDS[categorySelected];
+  if (!fields) return;
+
+  const brand = fieldValue(fields.brand);
+  const model = fieldValue(fields.model);
+  const parts = [{ label: categorySelected, screen: 'category' }];
+  // the screen you're on always shows, even before anything is chosen there
+  if (brand || currentDetailScreen === 'brand') parts.push({ label: brand || 'Choose a brand', screen: 'brand' });
+  if (model || currentDetailScreen === 'model') parts.push({ label: model || 'Choose a model', screen: 'model' });
+
+  detailsBreadcrumb.replaceChildren(...parts.flatMap((part, i) => {
+    const crumb = document.createElement('button');
+    crumb.type = 'button';
+    crumb.className = 'details-crumb';
+    crumb.dataset.screen = part.screen;
+    crumb.textContent = part.label;
+    if (part.screen === currentDetailScreen) crumb.setAttribute('aria-current', 'step');
+    if (i === 0) return [crumb];
+
+    const separator = document.createElement('span');
+    separator.className = 'details-crumb-separator';
+    separator.setAttribute('aria-hidden', 'true');
+    separator.textContent = '›';
+    return [separator, crumb];
+  }));
+}
+
+function showDetailScreen(name) {
+  currentDetailScreen = name;
+  const onCategory = name === 'category';
+
+  categoryScreen.classList.toggle('screen-hidden', !onCategory);
+  dynamicFormContainer.classList.toggle('screen-hidden', onCategory);
+  detailsNav.classList.toggle('screen-hidden', onCategory);
+  dynamicFormContainer.querySelectorAll('[data-screen]').forEach(el => {
+    el.classList.toggle('screen-hidden', el.dataset.screen !== name);
+  });
+
+  if (!onCategory) renderBreadcrumb();
+}
+
+// Called once a category's template has loaded.
+function enterCategoryFlow() {
+  const screens = detailScreens();
+
+  if (screens.length === 0) {
+    currentDetailScreen = 'category';
+    categoryScreen.classList.remove('screen-hidden');
+    dynamicFormContainer.classList.remove('screen-hidden');
+    detailsNav.classList.add('screen-hidden');
+    return;
+  }
+
+  showDetailScreen(screens[0]);
+}
+
+// After a draft restore: land on the furthest screen the draft reaches. A live
+// model list that hasn't arrived yet advances the user on its own later (see
+// the 'models-ready' listener).
+function showRestoredScreen() {
+  const screens = detailScreens();
+  if (screens.length === 0) return enterCategoryFlow();
+
+  const fields = CATEGORY_FIELDS[categorySelected];
+  const target = fields && fieldValue(fields.brand) && modelScreenAvailable() ? 'model' : 'brand';
+  showDetailScreen(screens.includes(target) ? target : screens[0]);
+}
+
+detailsBackBtn.addEventListener('click', () => {
+  const order = ['category', ...detailScreens()].filter(name => name !== 'model' || modelScreenAvailable());
+  const index = order.indexOf(currentDetailScreen);
+  showDetailScreen(order[Math.max(index - 1, 0)]);
+});
+
+detailsBreadcrumb.addEventListener('click', (e) => {
+  const crumb = e.target.closest('.details-crumb');
+  if (crumb && crumb.dataset.screen !== currentDetailScreen) showDetailScreen(crumb.dataset.screen);
+});
+
+// Keep the breadcrumb in step with what's chosen: the pickers dispatch 'change'
+// on their hidden input.
+dynamicFormContainer.addEventListener('change', () => {
+  if (currentDetailScreen !== 'category') renderBreadcrumb();
+});
+
+// The brand pickers' model lists load asynchronously (a live KicksDB lookup for
+// most brands), so "brand chosen" alone can't say where to go next. Each
+// category's model toggle announces the outcome with 'models-ready': a list
+// exists -> the model screen; none -> stay put (or move on to a later screen if
+// the category has one).
+dynamicFormContainer.addEventListener('models-ready', (e) => {
+  if (restoringDraft || currentDetailScreen !== 'brand') return;
+
+  const fields = CATEGORY_FIELDS[categorySelected];
+  if (!fields || !fieldValue(fields.brand)) return;
+
+  const screens = detailScreens();
+  const next = e.detail.count > 0 ? 'model' : screens[screens.indexOf('model') + 1];
+  if (next && next !== 'brand') showDetailScreen(next);
+});
+
+function setCategorySelection(category) {
+  categorySelected = category || null;
+
+  categoryCards.forEach(card => {
+    const isSelected = card.dataset.category === categorySelected;
+    card.classList.toggle('selected', isSelected);
+    card.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+  });
+}
+
+categoryCards.forEach(card => {
+  card.addEventListener('click', async () => {
+    const category = card.dataset.category;
+
+    // Re-picking the category you're already in keeps whatever brand/model
+    // you'd chosen and just goes back into it.
+    if (category === categorySelected && dynamicFormContainer.children.length > 0) {
+      enterCategoryFlow();
+      return;
+    }
+
+    setCategorySelection(category);
+    // step 3's required photo slots are driven by this same category
+    renderImageSlots(categorySelected);
+
+    await formLocator(category);
+    // another card may have been clicked while the template was loading
+    if (categorySelected === category) enterCategoryFlow();
+  });
 })
 
 authSubmitBtn.addEventListener('click', handleAddToCartSubmission);
@@ -578,8 +846,7 @@ addAnotherItemBtn.addEventListener('click', () => {
     tierSelection: null
   };
 
-  categories.value = "";
-  categorySelected = null;
+  setCategorySelection(null);
   // Rebuilds to the empty placeholder state -- not resetImages(), since that
   // only clears values on whatever slots are currently rendered, leaving the
   // previous category's (now-empty) slots sitting there instead of actually
@@ -589,6 +856,7 @@ addAnotherItemBtn.addEventListener('click', () => {
   if (dynamicFormContainer) {
     dynamicFormContainer.innerHTML = "";
   }
+  showDetailScreen('category');
 
   tierContainers.forEach(tier => {
     tier.classList.remove('selected');
@@ -728,27 +996,35 @@ async function restoreDraftState() {
   }
 
   if (draft.category && forms[draft.category]) {
-    categories.value = draft.category;
-    categorySelected = draft.category;
-    await formLocator(categorySelected);
-    renderImageSlots(categorySelected);
+    // keeps the restored fields' events from moving the user between screens
+    restoringDraft = true;
 
-    Object.entries(draft.fieldValues || {}).forEach(([id, value]) => {
-      const element = document.getElementById(id);
-      if (!element) return;
+    try {
+      setCategorySelection(draft.category);
+      await formLocator(categorySelected);
+      renderImageSlots(categorySelected);
 
-      element.value = value;
-      // Same reasoning as fillFormFieldsFromListing -- setting .value
-      // directly doesn't fire 'change', which the sneaker brand-picker
-      // relies on to resync its visible selected button after a restore.
-      element.dispatchEvent(new Event('change', { bubbles: true }));
-    });
+      Object.entries(draft.fieldValues || {}).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (!element) return;
 
-    // Restoring the DOM fields isn't enough -- formData.productDetails is
-    // only ever set inside validateStep(2), which a restored draft may skip
-    // (currentStep is capped at 3 below). Rebuild it here so a refresh past
-    // step 2 doesn't submit with an undefined productCategory.
-    formData.productDetails = collectProductData(categorySelected);
+        element.value = value;
+        // Same reasoning as fillFormFieldsFromListing -- setting .value
+        // directly doesn't fire 'change', which the sneaker brand-picker
+        // relies on to resync its visible selected button after a restore.
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+
+      // Restoring the DOM fields isn't enough -- formData.productDetails is
+      // only ever set inside validateStep(2), which a restored draft may skip
+      // (currentStep is capped at 3 below). Rebuild it here so a refresh past
+      // step 2 doesn't submit with an undefined productCategory.
+      formData.productDetails = collectProductData(categorySelected);
+    } finally {
+      restoringDraft = false;
+    }
+
+    showRestoredScreen();
   }
 
   if (draft.additionalComments) {
@@ -1206,11 +1482,105 @@ function formLocator(category) {
     .then(html => {
       dynamicFormContainer.innerHTML = html;
       if (category === 'Bags & Leather Goods') {
-        initBagsBrandModelToggle();
+        initBrandCardPicker({
+          searchId: 'bags-brand-search',
+          listId: 'bags-brand-options',
+          hiddenId: 'bags-brand',
+          brands: BAGS_BRANDS,
+          logo: brandLogoUrl
+        });
+        // Starts empty -- initBrandModelToggle fills it whenever the brand
+        // changes (curated list for Hermès, the server's cached list otherwise).
+        const bagModelPicker = initBrandCardPicker({
+          searchId: 'bags-model-search',
+          listId: 'bags-model-options',
+          hiddenId: 'bags-model',
+          brands: []
+        });
+        initBrandModelToggle({
+          brandId: 'bags-brand',
+          modelId: 'bags-model',
+          modelFieldId: 'bags-model-field',
+          modelPicker: bagModelPicker,
+          kind: 'bag',
+          curated: { 'Hermès': HERMES_MODELS }
+        });
       } else if (category === 'Luxury Shoes') {
-        initLuxuryShoesBrandModelToggle();
+        initBrandCardPicker({
+          searchId: 'luxury-shoes-brand-search',
+          listId: 'luxury-shoes-brand-options',
+          hiddenId: 'luxury-shoes-brand',
+          brands: LUXURY_SHOES_BRANDS,
+          logo: brandLogoUrl
+        });
+        // Starts empty -- initBrandModelToggle fills it whenever the brand changes.
+        const luxuryModelPicker = initBrandCardPicker({
+          searchId: 'luxury-shoes-model-search',
+          listId: 'luxury-shoes-model-options',
+          hiddenId: 'luxury-shoes-model',
+          brands: []
+        });
+        initBrandModelToggle({
+          brandId: 'luxury-shoes-brand',
+          modelId: 'luxury-shoes-model',
+          modelFieldId: 'luxury-shoes-model-field',
+          modelPicker: luxuryModelPicker,
+          kind: 'luxury-shoe',
+          curated: LUXURY_SHOES_MODELS_BY_BRAND
+        });
+      } else if (category === 'Apparel') {
+        initBrandCardPicker({
+          searchId: 'apparel-brand-search',
+          listId: 'apparel-brand-options',
+          hiddenId: 'apparel-brand',
+          brands: APPAREL_BRANDS,
+          logo: brandLogoUrl
+        });
+        // Starts empty -- initBrandModelToggle fills it whenever the brand changes.
+        const apparelModelPicker = initBrandCardPicker({
+          searchId: 'apparel-model-search',
+          listId: 'apparel-model-options',
+          hiddenId: 'apparel-model',
+          brands: []
+        });
+        initBrandModelToggle({
+          brandId: 'apparel-brand',
+          modelId: 'apparel-model',
+          modelFieldId: 'apparel-model-field',
+          modelPicker: apparelModelPicker,
+          kind: 'apparel'
+        });
+      } else if (category === 'Trading Cards') {
+        initBrandCardPicker({
+          searchId: 'card-brand-search',
+          listId: 'card-brand-options',
+          hiddenId: 'card-brand',
+          brands: TRADING_CARD_BRANDS,
+          logo: brandLogoUrl
+        });
+        // Starts empty -- initBrandModelToggle fills it whenever the brand changes.
+        const cardModelPicker = initBrandCardPicker({
+          searchId: 'card-model-search',
+          listId: 'card-model-options',
+          hiddenId: 'card-model',
+          brands: []
+        });
+        initBrandModelToggle({
+          brandId: 'card-brand',
+          modelId: 'card-model',
+          modelFieldId: 'card-model-field',
+          modelPicker: cardModelPicker,
+          curated: TRADING_CARD_MODELS_BY_BRAND,
+          photos: false
+        });
       } else if (category === 'Sneakers') {
-        initSneakerBrandPicker();
+        initBrandCardPicker({
+          searchId: 'sneaker-brand-search',
+          listId: 'sneaker-brand-options',
+          hiddenId: 'sneaker-brand',
+          brands: SNEAKER_BRANDS,
+          logo: brandLogoUrl
+        });
         initSneakerModelPicker();
       }
     })

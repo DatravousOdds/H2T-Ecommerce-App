@@ -38,6 +38,8 @@ function isRestrictedCourierRate(rate) {
 const { initializeFirebase, getDb, getAdmin } = require("./firebase");
 const { verifyAuth } = require("./middleware/auth.js");
 const { matchAuthenticationRequest } = require("./services/matching.js");
+const { readCachedModels } = require("./services/catalogModels.js");
+const { kicksFetch } = require("./services/kicksdb.js");
 
 // Initialize Firebase
 const { admin, db } = initializeFirebase();
@@ -80,6 +82,75 @@ function getAffiliateCommissionRate(monthlyCount) {
   return AFFILIATE_COMMISSION_TIERS.find((tier) => monthlyCount <= tier.maxCount).rate;
 }
 
+async function creditShopCommission(orderId) {
+  const redemptionsSnap = await db.collection('redemptions')
+    .where('orderId', '==', orderId)
+    .where('refunded', '==', false)
+    .where('commissionSettled', '==', false)
+    .get();
+
+  if (redemptionsSnap.empty) {
+    console.log(`No uncredited redemptions found for order ${orderId}`);
+    return;
+  }
+
+  const redemptionRef = redemptionsSnap.docs[0].ref;
+  const now = new Date();
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+  await db.runTransaction(async (transaction) => {
+    // transaction.get() needs the DocumentReference, not the QuerySnapshot
+    // from above -- re-reading this specific doc here (instead of trusting
+    // the query result) is what protects against a concurrent call (e.g.
+    // two payout retries firing close together) double-crediting the same
+    // commission: if a second call's transaction commits after this one,
+    // Firestore retries it against fresh data and it'll see the flag below
+    // already flipped.
+    const freshRedemptionSnap = await transaction.get(redemptionRef);
+    const redemption = freshRedemptionSnap.data();
+
+    if (!redemption || redemption.commissionSettled || redemption.refunded) {
+      console.log(`Commission for order ${orderId} already settled or refunded, skipping.`);
+      return;
+    }
+
+    const commissionCents = Math.round(parseFloat(redemption.commissionAmount || 0) * 100);
+
+    if (commissionCents > 0) {
+      const bucketRef = db.collection('shopCommissionBuckets').doc(`${redemption.shopCode}_${month}`);
+      const bucketSnap = await transaction.get(bucketRef);
+
+      if (!bucketSnap.exists) {
+        // Last day of `month` at end-of-day, +30 days -- asking for day 0 of
+        // *next* month gives JS Date "the day before the 1st", i.e. the last
+        // day of this one.
+        const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        const dueAt = new Date(lastDayOfMonth.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+        transaction.set(bucketRef, {
+          shopCode: redemption.shopCode,
+          month,
+          amountCents: commissionCents,
+          status: 'open',
+          dueAt: admin.firestore.Timestamp.fromDate(dueAt),
+          payoutTransferId: null,
+          payoutHoldReason: null,
+          lastError: null,
+          paidAt: null,
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      } else {
+        transaction.update(bucketRef, { amountCents: admin.firestore.FieldValue.increment(commissionCents) });
+      }
+    }
+
+    transaction.update(redemptionRef, {
+      commissionSettled: true,
+      settledAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+  });
+}
+
 // Records one signup or purchase against a shop's code for affiliate
 // tracking/payout, tiering the commission rate off that shop's redemption
 // count so far this calendar month (see AFFILIATE_COMMISSION_TIERS). Fires
@@ -114,6 +185,7 @@ async function recordRedemption({ actionType, shopCode, userId, saleAmount = 0, 
     orderId,
     commissionRate,
     commissionAmount,
+    commissionSettled: false,
     timestamp: admin.firestore.FieldValue.serverTimestamp()
   });
 }
@@ -513,11 +585,7 @@ app.get('/api/search-catalog', async (req, res) => {
   }
 
   try {
-    const response = await fetch(`https://api.kicks.dev/v3/stockx/products?query=${encodeURIComponent(query)}`, {
-      headers: {
-        'Authorization': `Bearer ${process.env.KICKDB_KEY}`
-      }
-    });
+    const response = await kicksFetch(`https://api.kicks.dev/v3/stockx/products?query=${encodeURIComponent(query)}`, process.env.KICKDB_KEY);
 
     if (!response.ok) {
       return res.status(response.status).json({ success: false, message: `Catalog lookup failed (${response.status})` });
@@ -526,11 +594,40 @@ app.get('/api/search-catalog', async (req, res) => {
     const data = await response.json();
     return res.json(data);
   } catch (error) {
+    // calls are paused after a 401/429 from KicksDB -- see services/kicksdb.js
+    if (error.paused) return res.status(503).json({ success: false, message: "Catalog is temporarily unavailable" });
+
     console.error("Catalog search failed:", error);
     return res.status(500).json({ success: false, message: "Catalog search failed" });
   }
 })
 
+// Models (or, for brands with a curated list, a name -> photo table) for one
+// brand, from the Firestore cache the seed script fills -- see
+// services/catalogModels.js. Never calls KicksDB: its free plan is a hard cap of
+// 1,000 requests a month, so browsing must not spend any. Returns
+// { data: [{ name, image }] }; an empty array just means nothing is cached for
+// that brand yet. Behind verifyAuth like the other authenticated-flow routes.
+const brandModelsRoute = (label, kind) => async (req, res) => {
+  const { brand } = req.query;
+
+  if (typeof brand !== 'string' || !brand.trim() || brand.length > 60) {
+    return res.status(400).json({ success: false, message: "Missing or invalid brand" });
+  }
+
+  try {
+    const data = await readCachedModels(kind, brand.trim());
+    return res.json({ success: true, data });
+  } catch (error) {
+    console.error(`${label} model lookup failed:`, error.message);
+    return res.status(500).json({ success: false, message: `${label} model lookup failed` });
+  }
+};
+
+app.get('/api/bag-models', verifyAuth, brandModelsRoute('Bag', 'bags'));
+app.get('/api/sneaker-models', verifyAuth, brandModelsRoute('Sneaker', 'sneakers'));
+app.get('/api/luxury-shoe-models', verifyAuth, brandModelsRoute('Luxury shoe', 'luxury-shoes'));
+app.get('/api/apparel-models', verifyAuth, brandModelsRoute('Apparel', 'apparel'));
 
 // routes
 // home route
@@ -1818,42 +1915,73 @@ async function settleSellerDebts(debts, amountCents) {
   await batch.commit();
 }
 
-// Attempts the actual transfer to the seller's Connect account and records
-// the outcome on a payouts/{orderId} doc. Created lazily here, at the
-// moment a release is actually attempted -- not eagerly when the order is
-// delivered -- since before this point "held" is fully expressed by
-// Orders.deliveryConfirmationStatus alone. Failure here doesn't throw: a
-// seller with an unfinished Connect account is an expected, retriable
-// case, not a 500.
+
 async function releasePayoutToSeller(order, orderId) {
+  try {
+    await creditShopCommission(orderId);
+  } catch (err) {
+    console.error(`Failed to credit shop commission for order ${orderId}:`, err.message);
+  }
+
   const payoutRef = db.collection("payouts").doc(orderId);
   const grossAmountCents = calculateSellerPayoutCents(order);
 
   const { debts, totalCents: outstandingDebtCents } = await getOutstandingSellerDebts(order.sellerId);
   const debtAppliedCents = Math.min(grossAmountCents, outstandingDebtCents);
-  const netAmountCents = grossAmountCents - debtAppliedCents;
+  const afterDebtCents = grossAmountCents - debtAppliedCents;
   const debtApplied = (debtAppliedCents / 100).toFixed(2);
 
-  // Outstanding debt covers the whole payout -- nothing left to actually
-  // send, so there's no Stripe call to make and no failure mode to retry.
-  // Safe to settle immediately since this doesn't depend on an external
-  // system succeeding.
+  // Debt has first claim on the gross payout -- it existed before this
+  // order -- and only what's left after that goes toward Stripe's cut on
+  // waived orders (see handlePaymentIntentSucceeded, which is the only
+  // place stripeFeeCents gets set). Clamped at 0: if debt already used up
+  // nearly the whole payout, Hexxo eats whatever fee doesn't fit rather
+  // than clawing back more than the seller was ever owed.
+  const stripeFeeCents = order.promoFeeWaived ? (order.stripeFeeCents || 0) : 0;
+  const netAmountCents = Math.max(0, afterDebtCents - stripeFeeCents);
+  const stripeFeeApplied = (Math.min(stripeFeeCents, afterDebtCents) / 100).toFixed(2);
+
+  // Outstanding debt (and/or, on a waived order, Stripe's fee) covers the
+  // whole payout -- nothing left to actually send, so there's no Stripe
+  // transfer to make and no failure mode to retry. Safe to settle debt
+  // immediately since that doesn't depend on an external system succeeding.
   if (netAmountCents === 0) {
-    await settleSellerDebts(debts, debtAppliedCents);
-    const absorbed = {
-      orderId,
-      sellerId: order.sellerId,
-      amount: "0.00",
-      debtApplied,
-      status: "absorbed_by_debt",
-      stripeTransferId: null,
-      payoutHoldReason: null,
-      lastError: null,
-      attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
-      transferredAt: admin.firestore.FieldValue.serverTimestamp()
-    };
-    await payoutRef.set(absorbed);
-    return absorbed;
+    try {
+      await settleSellerDebts(debts, debtAppliedCents);
+      const absorbed = {
+        orderId,
+        sellerId: order.sellerId,
+        amount: "0.00",
+        debtApplied,
+        stripeFeeApplied,
+        status: afterDebtCents === 0 ? "absorbed_by_debt" : "absorbed_by_fee",
+        stripeTransferId: null,
+        payoutHoldReason: null,
+        lastError: null,
+        availableAt: null,
+        attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+        transferredAt: admin.firestore.FieldValue.serverTimestamp()
+      };
+      await payoutRef.set(absorbed);
+      return absorbed;
+    } catch (debtSettlementError) {
+      const failure = {
+        orderId,
+        sellerId: order.sellerId,
+        amount: "0.00",
+        debtApplied,
+        stripeFeeApplied,
+        status: "failed",
+        stripeTransferId: null,
+        payoutHoldReason: "debt_settlement_error",
+        lastError: debtSettlementError.message,
+        availableAt: null,
+        attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+        transferredAt: null
+      };
+      await payoutRef.set(failure);
+      return failure;
+    }
   }
 
   const sellerSnap = await db.collection("userProfiles").doc(order.sellerId).get();
@@ -1865,10 +1993,37 @@ async function releasePayoutToSeller(order, orderId) {
       sellerId: order.sellerId,
       amount: (netAmountCents / 100).toFixed(2),
       debtApplied,
+      stripeFeeApplied,
       status: "failed",
       stripeTransferId: null,
       payoutHoldReason: "connect_account_not_ready",
       lastError: null,
+      availableAt: null,
+      attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
+      transferredAt: null
+    };
+    await payoutRef.set(failure);
+    return failure;
+  }
+
+  // Stripe holds a charge's funds in a pending balance for a period before
+  // they roll into available -- transfers can only draw from available.
+  // availableAt was captured once at checkout time (handlePaymentIntentSucceeded),
+  // so this is a plain field comparison, not a live Stripe call: skip the
+  // doomed transfer attempt entirely instead of eating a guaranteed
+  // balance_insufficient error every time this runs before that date.
+  if (order.availableAt && order.availableAt.toMillis() > Date.now()) {
+    const failure = {
+      orderId,
+      sellerId: order.sellerId,
+      amount: (netAmountCents / 100).toFixed(2),
+      debtApplied,
+      stripeFeeApplied,
+      status: "failed",
+      stripeTransferId: null,
+      payoutHoldReason: "funds_pending",
+      lastError: null,
+      availableAt: order.availableAt,
       attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
       transferredAt: null
     };
@@ -1892,10 +2047,12 @@ async function releasePayoutToSeller(order, orderId) {
       sellerId: order.sellerId,
       amount: (netAmountCents / 100).toFixed(2),
       debtApplied,
+      stripeFeeApplied,
       status: "transferred",
       stripeTransferId: transfer.id,
       payoutHoldReason: null,
       lastError: null,
+      availableAt: null,
       attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
       transferredAt: admin.firestore.FieldValue.serverTimestamp()
     };
@@ -1903,15 +2060,22 @@ async function releasePayoutToSeller(order, orderId) {
     return success;
 
   } catch (stripeError) {
+    // balance_insufficient here (despite the funds_pending check above
+    // already having passed) means the platform's pooled balance is short
+    // for reasons beyond this specific charge -- other pending payouts
+    // likely consumed what it contributed. Distinct from other Stripe
+    // errors since there's no reliable availableAt to attach to it.
     const failure = {
       orderId,
       sellerId: order.sellerId,
       amount: (netAmountCents / 100).toFixed(2),
       debtApplied,
+      stripeFeeApplied,
       status: "failed",
       stripeTransferId: null,
-      payoutHoldReason: "stripe_error",
+      payoutHoldReason: stripeError.code === "balance_insufficient" ? "insufficient_balance" : "stripe_error",
       lastError: stripeError.message,
+      availableAt: null,
       attemptedAt: admin.firestore.FieldValue.serverTimestamp(),
       transferredAt: null
     };
@@ -1919,6 +2083,101 @@ async function releasePayoutToSeller(order, orderId) {
     return failure;
   }
 }
+
+// Net-30 sweep for shop affiliate commissions -- pays out every
+// shopCommissionBuckets doc whose accrual month closed at least 30 days ago
+// (dueAt already encodes that, see creditShopCommission) and hasn't been
+// paid yet. There's no cron/scheduled-job mechanism anywhere else in this
+// codebase, so this is meant to be triggered manually for now, or by an
+// external scheduler once hosting is decided -- hence a plain admin-gated
+// endpoint instead of a background job.
+//
+// Safe to call repeatedly, including two overlapping calls: each bucket is
+// claimed via a transaction (status -> "processing") before the Stripe call,
+// so a second run that reaches the same bucket while the first is still
+// mid-transfer skips it instead of double-transferring. A bucket that fails
+// goes back to "failed" (not "processing") with its amountCents untouched,
+// so the next run retries it -- that's why the query below includes both
+// "open" and "failed", not just "open".
+app.post('/api/admin/affiliate-payouts/run', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: "Admin only" });
+  }
+
+  try {
+    const now = admin.firestore.Timestamp.now();
+
+    // Composite index on (status in, dueAt <=) required -- Firestore will
+    // log a console link to create it the first time this runs.
+    const dueSnap = await db.collection('shopCommissionBuckets')
+      .where('status', 'in', ['open', 'failed'])
+      .where('dueAt', '<=', now)
+      .get();
+
+    const results = { paid: [], failed: [], skipped: [] };
+
+    for (const bucketDoc of dueSnap.docs) {
+      const bucketRef = bucketDoc.ref;
+      const { shopCode, amountCents } = bucketDoc.data();
+
+      const claimed = await db.runTransaction(async (tx) => {
+        const freshSnap = await tx.get(bucketRef);
+        const fresh = freshSnap.data();
+        if (!fresh || fresh.status === 'paid' || fresh.status === 'processing') return false;
+        tx.update(bucketRef, { status: 'processing' });
+        return true;
+      });
+
+      if (!claimed) {
+        results.skipped.push({ shopCode, reason: 'claimed_by_concurrent_run' });
+        continue;
+      }
+
+      try {
+        const codesSnap = await db.collection('codes').where('code', '==', shopCode).limit(1).get();
+        const ownerId = codesSnap.empty ? null : codesSnap.docs[0].data().ownerId;
+
+        if (!ownerId) {
+          await bucketRef.update({ status: 'failed', payoutHoldReason: 'no_owner_linked', lastError: null });
+          results.failed.push({ shopCode, reason: 'no_owner_linked' });
+          continue;
+        }
+
+        const ownerSnap = await db.collection('userProfiles').doc(ownerId).get();
+        const owner = ownerSnap.data() || {};
+
+        if (!owner.stripeConnectAccountId || !owner.connectPayoutsEnabled) {
+          await bucketRef.update({ status: 'failed', payoutHoldReason: 'connect_account_not_ready', lastError: null });
+          results.failed.push({ shopCode, reason: 'connect_account_not_ready' });
+          continue;
+        }
+
+        const transfer = await stripe.transfers.create({
+          amount: amountCents,
+          currency: 'usd',
+          destination: owner.stripeConnectAccountId
+        });
+
+        await bucketRef.update({
+          status: 'paid',
+          payoutTransferId: transfer.id,
+          payoutHoldReason: null,
+          lastError: null,
+          paidAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+        results.paid.push({ shopCode, amountCents, transferId: transfer.id });
+
+      } catch (bucketError) {
+        await bucketRef.update({ status: 'failed', payoutHoldReason: 'stripe_error', lastError: bucketError.message });
+        results.failed.push({ shopCode, reason: 'stripe_error', message: bucketError.message });
+      }
+    }
+
+    res.json({ success: true, ...results });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // Server-mediated on purpose, not a direct client Firestore query like
 // authentication-review.js uses for its own list -- `orders` deliberately
@@ -4022,6 +4281,36 @@ async function handlePaymentIntentSucceeded(paymentData){
     const salePrice = paymentData.amount / 100;
     const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
 
+    // Waived orders have no marketplaceFee for Hexxo to absorb Stripe's cut
+    // from, so the fee has to come out of the seller's payout instead (see
+    // calculateSellerPayoutCents). Captured once here, at the only point
+    // this is knowable without a live Stripe call, rather than looked up
+    // again on every payout attempt/retry.
+    //
+    // Also captures availableAt (when this charge's funds clear Stripe's
+    // pending balance) for every order, waived or not -- releasePayoutToSeller
+    // needs this to avoid attempting a transfer before the money has
+    // actually cleared, and a plain field comparison there is cheaper than
+    // a live Stripe lookup on every payout attempt/retry.
+    const feeWaived = paymentData.metadata.promo_fee_waived === 'true';
+    let stripeFeeCents = null;
+    let availableAt = null;
+
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentData.id, {
+        expand: ['latest_charge.balance_transaction']
+      });
+      const balanceTransaction = paymentIntent.latest_charge?.balance_transaction;
+      if (feeWaived) {
+        stripeFeeCents = balanceTransaction?.fee ?? null;
+      }
+      if (balanceTransaction?.available_on) {
+        availableAt = admin.firestore.Timestamp.fromMillis(balanceTransaction.available_on * 1000);
+      }
+    } catch (err) {
+      console.error(`Failed to retrieve balance transaction for payment intent ${paymentData.id}:`, err.message);
+    }
+
     let data;
     let orderRef;
 
@@ -4038,6 +4327,9 @@ async function handlePaymentIntentSucceeded(paymentData){
       await orderRef.update({
         status: paymentData.status,
         fulfillmentStatus: 'processing',
+        promoFeeWaived: feeWaived,
+        stripeFeeCents,
+        availableAt,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       });
     } else {
@@ -4049,7 +4341,10 @@ async function handlePaymentIntentSucceeded(paymentData){
       orderRef = await db.collection('orders').add({
         ...data,
         status: paymentData.status,
-        fulfillmentStatus: 'processing'
+        fulfillmentStatus: 'processing',
+        promoFeeWaived: feeWaived,
+        stripeFeeCents,
+        availableAt
       });
     }
 
@@ -4060,7 +4355,7 @@ async function handlePaymentIntentSucceeded(paymentData){
     // charged), not re-checked here. This only runs on the same "first time
     // marking this order processing" path as everything below, so a
     // redelivered webhook for an already-processed order can't double-spend.
-    if (paymentData.metadata.promo_fee_waived === 'true' && data.sellerId) {
+    if (feeWaived && data.sellerId) {
       try {
         await db.collection('userProfiles').doc(data.sellerId).update({
           sellerFeeWaiversRemaining: admin.firestore.FieldValue.increment(-1)
@@ -4070,6 +4365,7 @@ async function handlePaymentIntentSucceeded(paymentData){
       }
     }
     if (paymentData.metadata.promo_discount_applied === 'true' && data.buyerId) {
+      
       try {
         await db.collection('userProfiles').doc(data.buyerId).update({
           buyerDiscountRemaining: admin.firestore.FieldValue.increment(-1)

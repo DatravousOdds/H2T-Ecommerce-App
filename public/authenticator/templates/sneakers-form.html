@@ -1,11 +1,11 @@
 <!-- Sneakers Form (Your Original) -->
             <div class="form-wrapper" id="sneakers-form" data-category="sneaker" style="display: block;">
-              <div class="form-input">
-                <label id="sneaker-brand-picker-label" for="sneaker-brand-search">Choose a brand <span class="required">*</span></label>
+              <div class="form-input" data-screen="brand">
+                <label id="sneaker-brand-picker-label" for="sneaker-brand-search">Choose a brand</label>
 
-                <!-- Custom picker, not a native <select> -- initSneakerBrandPicker() in
-                     authenticate.js renders the brand buttons and filters them against the
-                     search box. Whichever brand is clicked is written into the hidden
+                <!-- Custom picker, not a native <select> -- initBrandCardPicker() in
+                     authenticate.js renders the brand cards (with logos) and filters them
+                     against the search box. Whichever brand is clicked is written into the hidden
                      #sneaker-brand input below, which is the only thing the rest of the
                      form (collectProductData, validateForm, draft save/restore) reads. -->
                 <div class="brand-picker" id="sneaker-brand-picker">
@@ -29,7 +29,7 @@
               <!-- Hidden entirely (not just an empty option list) when the selected
                    brand has no entry in SNEAKER_MODELS_BY_BRAND -- toggled with a
                    smooth transition by initSneakerModelPicker() in authenticate.js. -->
-              <div class="form-input model-field-transition model-field-hidden" id="sneaker-model-field">
+              <div class="form-input model-field-transition model-field-hidden" id="sneaker-model-field" data-screen="model">
                 <label id="sneaker-model-picker-label" for="sneaker-model-search">Choose a model</label>
 
                 <!-- Same button+search widget as the brand picker above, but as a
@@ -51,6 +51,11 @@
 
                   <div class="brand-option-list" id="sneaker-model-options"></div>
                 </div>
+
+                <!-- Model is always optional (see validationRules['Sneakers'] in
+                     authenticate.js) -- this lets the user move on even when the
+                     selected brand has a closed model list. -->
+                <button type="button" class="skip-model-btn" id="sneaker-model-skip">Skip selecting a model</button>
 
                 <input type="hidden" id="sneaker-model" name="model" />
               </div>

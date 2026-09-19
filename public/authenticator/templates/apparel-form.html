@@ -2,167 +2,53 @@
             <!-- Apparel Form -->
             <!-- ============================================ -->
             <div class="form-wrapper" id="apparel-form" data-category="apparel" style="display: block;">
-              <div class="form-input-row">
-                <div class="form-input">
-                  <label for="apparel-brand">Brand <span class="required">*</span></label>
-                  <!-- Closed list -- these are the only brands Hexxo currently authenticates
-                       apparel for. -->
-                  <select name="brand" id="apparel-brand" required aria-required="true">
-                    <option value="">Select brand...</option>
-                    <optgroup label="Iconic Luxury Houses">
-                      <option value="Chanel">Chanel</option>
-                      <option value="Chrome Hearts">Chrome Hearts</option>
-                      <option value="Hermès">Hermès</option>
-                      <option value="Louis Vuitton">Louis Vuitton</option>
-                    </optgroup>
-                    <optgroup label="Luxury & Designer">
-                      <option value="Burberry">Burberry</option>
-                      <option value="Canada Goose">Canada Goose</option>
-                      <option value="Dior">Dior</option>
-                      <option value="Gucci">Gucci</option>
-                      <option value="Miu Miu">Miu Miu</option>
-                      <option value="Moncler">Moncler</option>
-                      <option value="Off-White">Off-White</option>
-                      <option value="Prada">Prada</option>
-                      <option value="Saint Laurent">Saint Laurent</option>
-                      <option value="Supreme">Supreme</option>
-                      <option value="The North Face">The North Face</option>
-                    </optgroup>
-                    <optgroup label="Contemporary & Streetwear">
-                      <option value="BAPE">BAPE</option>
-                      <option value="Denim Tears">Denim Tears</option>
-                      <option value="Eric Emanuel">Eric Emanuel</option>
-                      <option value="Fear of God ESSENTIALS">Fear of God ESSENTIALS</option>
-                      <option value="GV Gallery">GV Gallery</option>
-                      <option value="Hellstar">Hellstar</option>
-                      <option value="Nike">Nike</option>
-                      <option value="Palace">Palace</option>
-                      <option value="Polo Ralph Lauren">Polo Ralph Lauren</option>
-                      <option value="Readymade">Readymade</option>
-                      <option value="Saint Michael">Saint Michael</option>
-                      <option value="Skylrk">Skylrk</option>
-                      <option value="Sp5der">Sp5der</option>
-                      <option value="Stussy">Stussy</option>
-                      <option value="Travis Scott">Travis Scott</option>
-                      <option value="Vale Forever">Vale Forever</option>
-                    </optgroup>
-                  </select>
+              <div class="form-input" data-screen="brand">
+                <label id="apparel-brand-picker-label" for="apparel-brand-search">Brand</label>
+
+                <!-- Closed list (APPAREL_BRANDS, from public/js/core/catalogData.json) -- these
+                     are the only brands Hexxo currently authenticates apparel for. Rendered as
+                     cards by initBrandCardPicker(); the clicked brand is written into the hidden
+                     #apparel-brand input, which validation and draft restore read. -->
+                <div class="brand-picker" id="apparel-brand-picker">
+                  <div class="brand-search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input
+                      type="text"
+                      id="apparel-brand-search"
+                      class="brand-search-input input-bordered input-width-full"
+                      placeholder="Search brand"
+                      autocomplete="off"
+                    />
+                  </div>
+
+                  <div class="brand-option-list" id="apparel-brand-options"></div>
                 </div>
-                <div class="form-input">
-                  <label for="apparel-type">Item Type <span class="required">*</span></label>
-                  <select name="itemType" id="apparel-type" required aria-required="true">
-                    <option value="">Select type...</option>
-                    <optgroup label="Tops">
-                      <option value="t-shirt">T-Shirt</option>
-                      <option value="long-sleeve">Long Sleeve Shirt</option>
-                      <option value="polo">Polo Shirt</option>
-                      <option value="tank-top">Tank Top</option>
-                      <option value="hoodie">Hoodie</option>
-                      <option value="sweatshirt">Sweatshirt</option>
-                      <option value="sweater">Sweater</option>
-                      <option value="jersey">Jersey</option>
-                    </optgroup>
-                    <optgroup label="Outerwear">
-                      <option value="jacket">Jacket</option>
-                      <option value="coat">Coat</option>
-                      <option value="windbreaker">Windbreaker</option>
-                      <option value="vest">Vest</option>
-                    </optgroup>
-                    <optgroup label="Bottoms">
-                      <option value="pants">Pants</option>
-                      <option value="jeans">Jeans</option>
-                      <option value="shorts">Shorts</option>
-                      <option value="joggers">Joggers</option>
-                      <option value="sweatpants">Sweatpants</option>
-                    </optgroup>
-                    <optgroup label="Other">
-                      <option value="dress">Dress</option>
-                      <option value="skirt">Skirt</option>
-                      <option value="jumpsuit">Jumpsuit</option>
-                      <option value="other">Other</option>
-                    </optgroup>
-                  </select>
-                </div>
+
+                <input type="hidden" id="apparel-brand" name="brand" />
               </div>
 
-              <div class="form-input-row">
+              <!-- Item type, size, condition, color, material and style are intentionally not
+                   collected -- the AI detects them from the photos. Model is filled per brand
+                   by initBrandModelToggle() from the server's cached list; the field stays
+                   hidden until a list exists for the chosen brand. -->
+              <div class="form-input-row" id="apparel-model-field" style="display: none" data-screen="model">
                 <div class="form-input">
-                  <label for="apparel-size">Size <span class="required">*</span></label>
-                  <select name="size" id="apparel-size" required aria-required="true">
-                    <option value="">Select size...</option>
-                    <optgroup label="Standard Sizes">
-                      <option value="XXS">XXS</option>
-                      <option value="XS">XS</option>
-                      <option value="S">S (Small)</option>
-                      <option value="M">M (Medium)</option>
-                      <option value="L">L (Large)</option>
-                      <option value="XL">XL</option>
-                      <option value="XXL">XXL</option>
-                      <option value="3XL">3XL</option>
-                      <option value="4XL">4XL</option>
-                    </optgroup>
-                    <optgroup label="Numeric Sizes">
-                      <option value="28">28</option>
-                      <option value="30">30</option>
-                      <option value="32">32</option>
-                      <option value="34">34</option>
-                      <option value="36">36</option>
-                      <option value="38">38</option>
-                      <option value="40">40</option>
-                    </optgroup>
-                  </select>
-                </div>
-                <div class="form-input">
-                  <label for="apparel-condition">Condition <span class="required">*</span></label>
-                  <select
-                    name="condition"
-                    id="apparel-condition"
-                    class="condition-select"
-                    required
-                    aria-required="true"
-                  >
-                    <option value="">Select condition...</option>
-                    <option value="new-with-tags">New with Tags</option>
-                    <option value="new-without-tags">New without Tags</option>
-                    <option value="like-new">Like New</option>
-                    <option value="excellent">Excellent</option>
-                    <option value="good">Good</option>
-                    <option value="fair">Fair</option>
-                    <option value="worn">Well Worn</option>
-                  </select>
-                </div>
-              </div>
+                  <label for="apparel-model-search">Model <span class="required">*</span></label>
+                  <div class="brand-picker" id="apparel-model-picker">
+                    <div class="brand-search-wrapper">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <input
+                        type="text"
+                        id="apparel-model-search"
+                        class="brand-search-input input-bordered input-width-full"
+                        placeholder="Search model"
+                        autocomplete="off"
+                      />
+                    </div>
 
-              <div class="form-input-row">
-                <div class="form-input">
-                  <label for="apparel-color">Color <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    id="apparel-color"
-                    name="color"
-                    placeholder="e.g., Black, Navy Blue, Multi"
-                    required
-                    aria-required="true"
-                  />
+                    <div class="brand-option-list" id="apparel-model-options"></div>
+                  </div>
+                  <input type="hidden" id="apparel-model" name="model" />
                 </div>
-                <div class="form-input">
-                  <label for="apparel-material">Material</label>
-                  <input
-                    type="text"
-                    id="apparel-material"
-                    name="material"
-                    placeholder="e.g., Cotton, Polyester, Wool"
-                  />
-                </div>
-              </div>
-
-              <div class="form-input">
-                <label for="apparel-style">Style/Collection</label>
-                <input
-                  type="text"
-                  id="apparel-style"
-                  name="style"
-                  placeholder="e.g., Box Logo, Travis Scott Collab"
-                />
               </div>
             </div>

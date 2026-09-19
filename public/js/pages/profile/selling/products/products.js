@@ -38,7 +38,8 @@ const listBtn = document.getElementById('list-products-btn').addEventListener('c
  */
 
 const EMPTY_ROW = (colspan, message) =>
-  `<tr><td colspan="${colspan}" class="default-paragraph" style="text-align:center; padding: 24px;">${message}</td></tr>`;
+  `<tr><td colspan="${colspan}" class="default-paragraph" style="text-align:center; padding: 24px !important;">
+${message}</td></tr>`;
 
 function firstImageUrl(listing) {
   return listing.images && listing.images[0] && listing.images[0].url

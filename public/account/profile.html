@@ -1601,14 +1601,15 @@
                   </div>
                   -->
                   <div class="list-products">
-                    <button
-                      type="button"
+                    <a
+                      href="../seller/seller.html"
                       id="list-products-btn"
                       class="btn-add btn btn-primary"
+                      aria-label="List a new product for sale"
                     >
-                      <i class="fa-solid fa-plus"></i>
+                      <i class="fa-solid fa-plus" aria-hidden="true"></i>
                       List Products
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -3238,11 +3239,11 @@
                   <div class="seller-order-action-ship-fields">
                     <label>
                       Tracking Number
-                      <input type="text" id="seller-tracking-number" />
+                      <input type="text" id="seller-tracking-number" class="input-width-full input-bordered" />
                     </label>
                     <label>
                       Carrier
-                      <input type="text" id="seller-shipping-carrier" placeholder="e.g. USPS, UPS, FedEx" />
+                      <input type="text" id="seller-shipping-carrier" class="input-width-full input-bordered" placeholder="e.g. USPS, UPS, FedEx" />
                     </label>
                   </div>
 
@@ -3274,7 +3275,7 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td colspan="6" class="default-paragraph" style="text-align:center; padding: 24px;">
+                      <td colspan="6" class="default-paragraph" style="text-align:center; padding: 24px !important;">
                         Loading authentication requests...
                       </td>
                     </tr>

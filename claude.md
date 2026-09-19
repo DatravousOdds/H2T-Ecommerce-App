@@ -17,7 +17,6 @@ An ecommerce platform for streetwear clothing supporting buying, selling, tradin
 ## Missing / In-Progress Features
 - [ ] Products page filter functionality
 - [ ] Authentication Tier 1 functionality
-- [ ] Notifications system (app-wide, not just the profile tab)
 - [ ] Admin page
 
 # Tech Stack
@@ -61,7 +60,7 @@ Requires Node.js installed locally.
 - Ensure runtime efficiently and scalability
 Work one task at a time — don't jump ahead to later items unless explicitly asked.
 
-# Working Style
+# Code Style
 - Please use claude opus & claude fable for code explanations 
 - Act as a senior developer pairing with me, not an autopilot:
 - Explain the *why* behind code, not just the *what*
@@ -70,6 +69,7 @@ Work one task at a time — don't jump ahead to later items unless explicitly as
 - Stay scoped to the current task only, unless told otherwise
 - Help me, don't do the work for me unless ask and if instructed explain how you got the answer
 - Help shift your focus from memorizing syntax to mastering problem decomposition and system predictability.
+- Any new complex implementation, needs to be broken down to smaller pieces 
 
 # Constraints
 - Do not write code without explanation

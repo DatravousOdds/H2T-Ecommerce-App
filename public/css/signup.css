@@ -27,7 +27,7 @@ textarea {
   border: 1px solid #C3C3C3;
   outline: none;
   margin: 20px 0;
-  color: var(--color-text-muted);
+  color: #000;
   font-family:var(--ui-font);
   font-size: var(--font-size-med);
   background-color: #F2F2F2;

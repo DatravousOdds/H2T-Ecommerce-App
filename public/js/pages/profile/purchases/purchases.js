@@ -285,7 +285,7 @@ function buildOrderDetailsHTML(order) {
          </div>
          <div class="delivery-confirmation-comment">
            <label for="delivery-confirmation-comment-input">Leave a comment (optional)</label>
-           <textarea id="delivery-confirmation-comment-input" placeholder="Leave a comment (optional)"></textarea>
+           <textarea id="delivery-confirmation-comment-input" class="input-width-full input-bordered" placeholder="Leave a comment (optional)"></textarea>
          </div>
          <div class="delivery-confirmation-photos">
            <input type="file" id="delivery-confirmation-photo-input" accept="image/jpeg,image/png" multiple hidden />

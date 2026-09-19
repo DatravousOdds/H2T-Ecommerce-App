@@ -263,7 +263,7 @@ function displayOrderConfirmation(orderData) {
                                     <p class="cart-item-brand">${orderData.item.brand}</p>
                                     <p class="cart-item-name">${orderData.item.name}</p>
                                     <p class="cart-item-size">Size: ${orderData.item.size}</p>
-                                    <p class="cart-item-price">$${orderData.item.listingPrice}</p>
+                                    <p class="cart-item-price">$${orderData.item.originalPrice}</p>
                                 </div>
                             
                             </div> 

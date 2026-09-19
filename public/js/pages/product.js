@@ -528,7 +528,7 @@ async function setOfferModalData() {
         </div>
         <div class="offer-input">
           <label for="offerInput">Your offer</label>
-          <input type="number" id="offerInput" value="">
+          <input class="input-bordered" type="number" id="offerInput" value="">
         </div>
         <div class="offer-suggestions" aria-label="Quick offer suggestion">
           <button type="button" class="offer-suggestion" data-value="">

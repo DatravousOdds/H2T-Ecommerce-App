@@ -1,0 +1,150 @@
+{
+  "sneakers": {
+    "_note": "Closed list -- the only brands Hexxo authenticates sneakers for. `curated` maps a brand to its hand-maintained model list; brands without an entry get theirs from the Firestore cache (see services/catalogModels.js).",
+    "brands": [
+      "Adidas", "Asics", "Converse", "Hoka", "Jordan", "New Balance", "Nike", "On",
+      "Reebok", "Salomon", "Saucony", "Vans", "Veja"
+    ],
+    "curated": {
+      "Jordan": [
+        "Jordan 1", "Jordan 2", "Jordan 3", "Jordan 4", "Jordan 5", "Jordan 6",
+        "Jordan 7", "Jordan 8", "Jordan 9", "Jordan 10", "Jordan 11", "Jordan 12",
+        "Jordan 13", "Jordan 14", "Jordan 15", "Jordan 1 Low", "Other"
+      ],
+      "Converse": [
+        "Chuck 1970s", "Other"
+      ],
+      "Asics": [
+        "Gel-1130", "Gel-NYC", "Gel-Kayano", "Other"
+      ],
+      "Adidas": [
+        "Samba", "Handball", "Campus", "Gazelle", "Taekwondo", "SL 72", "Superstar",
+        "Adizero", "Fear of God", "AE 1", "Harden", "Forum", "Stan Smith", "NMD",
+        "Ultra Boost", "Tobacco", "Country", "Bermuda", "Italia SPZL", "SL83 SPZL",
+        "Response CL", "Human Race", "Ozweego", "Manchester", "Wimberly SPZL",
+        "Helvellyn SPZL", "adiFOM", "D.O.N.", "Dame", "Mad liinfinity", "XLG Runner",
+        "Orketro Bape", "Palos Hills", "Radlander", "Nite Jogger", "Iniki", "EQT",
+        "Ivy Park", "Raf Simons", "Basketball", "Running", "Skateboarding", "Soccer",
+        "Other"
+      ],
+      "Nike": [
+        "Air Force", "Dunk", "SB Dunk", "Kobe 6", "Air Max", "Zoom Vomero", "Kobe 5",
+        "Kobe 4", "P-6000", "Shox", "Cortez", "V2K", "Kobe 8", "Sabrina", "Book 1",
+        "Ja", "Blazer", "Kobe 9", "Kobe 10", "Kobe 11", "Kobe 7", "Kobe 1", "Kobe AD",
+        "Kobe 2", "Kobe 3", "Other Kobe", "KD", "LeBron", "Foamposite", "Air VaporMax",
+        "Hot Step", "MIND 001 Slide", "Air DT Max '96", "LD Waffle", "Air Yeezy",
+        "Cactus Plant Flea Market", "Air Tech", "Huarache", "Presto", "ACG",
+        "Air Humara", "Air Flightposite", "Sacai", "CITY", "Mac Attack", "Killshot",
+        "Air Trainer", "Roshe Run", "Air Terra", "Undercover", "Comme Des Garcons",
+        "Tailwind", "Daybreak", "React Element", "Zoomx", "Free RN", "Air Monarch",
+        "Kwondo", "PG", "Giannis", "Basketball", "Fear Of God", "Stranger Things",
+        "OBJ", "Other"
+      ],
+      "Vans": [
+        "Old Skool", "Sk8-Hi", "Era", "Other"
+      ],
+      "Hoka": [
+        "Bondi", "Clifton", "Mafate", "Tor Ultra", "Mach", "Anacapa", "Kaha GTX",
+        "Rincon", "Restore TC", "Other"
+      ]
+    }
+  },
+  "bags": {
+    "_note": "Closed list -- the only brands Hexxo authenticates bags & leather goods for, in the order the old <select> listed them (iconic houses, luxury/designer, contemporary/streetwear). Hermes is the only brand with a closed model list.",
+    "brands": [
+      "Chanel", "Dior", "Goyard", "Hermès", "Balenciaga", "Bottega Veneta", "Burberry",
+      "Celine", "Chloé", "Christian Louboutin", "Dolce & Gabbana", "D&G",
+      "D&G Beachwear", "Fendi", "Givenchy", "Gucci", "Loewe", "Louis Vuitton", "Prada",
+      "Saint Laurent", "Salvatore Ferragamo", "Valentino", "Miu Miu", "BAPE", "Coach",
+      "Denim Tears", "Eric Emanuel", "Fear of God Essentials", "GV Gallery", "Hellstar",
+      "MCM", "Off White", "Palace", "Polo Ralph Lauren", "READYMADE", "Saint Michael",
+      "Sp5der", "Stussy", "Supreme", "The North Face", "Travis Scott", "Vale Forever"
+    ],
+    "curated": {
+      "Hermès": [
+        "24/24", "Birkin", "Bolide", "Constance", "Constance Élan", "Constance Wallet",
+        "HAC (Haut à Courroies)", "Hac a Dos", "Jypsière", "Kelly Wallet", "Kelly Cut",
+        "Kelly Dépêches", "Kelly Lakis", "Kelly Pochette", "Kelly Relax",
+        "Kelly Retourne", "Kelly Sellier", "Kelly Voyage", "Lindy", "Picotin", "Roulis",
+        "Shoulder Birkin", "Shoulder Kelly", "So Kelly"
+      ]
+    }
+  },
+  "luxury-shoes": {
+    "_note": "Closed list -- the only brands Hexxo authenticates luxury/collab shoes for. Jordan and Nike are here only for their designer collabs (Dior, Off-White, Louis Vuitton, Air Yeezy, NikeCraft); everyday Jordan/Nike releases go under Sneakers. Those two are the only brands with a curated model list.",
+    "brands": [
+      "Alexander McQueen", "Balenciaga", "Chanel", "Christian Louboutin", "Dior",
+      "Gucci", "Jordan", "Louis Vuitton", "Nike", "Off-White"
+    ],
+    "curated": {
+      "Jordan": [
+        "Dior Jordan 1 Retro High", "Dior Jordan 1 Retro Low",
+        "Off-White x Air Jordan 1 Retro High OG 'Chicago'",
+        "Off-White x Air Jordan 1 Retro High OG 'UNC'",
+        "Off-White x Air Jordan 1 Retro High OG 'White'"
+      ],
+      "Nike": [
+        "Air Yeezy 'Blink'", "Air Yeezy 'Net'", "Air Yeezy 'Zen'",
+        "Air Yeezy 2 NRG 'Pure Platinum'", "Air Yeezy 2 NRG 'Solar Red'",
+        "Air Yeezy 2 SP 'Red October'",
+        "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White",
+        "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Black",
+        "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Black Metallic Silver",
+        "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh Metallic Gold",
+        "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Green",
+        "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Red",
+        "Louis Vuitton Nike Air Force 1 Low By Virgil Abloh White Royal",
+        "NikeCraft Mars Yard Shoe 1.0", "NikeCraft Mars Yard Shoe 2.0"
+      ]
+    }
+  },
+  "apparel": {
+    "_note": "Closed list -- the only brands Hexxo authenticates apparel for, in the order the old <select> listed them (iconic luxury houses, luxury/designer, contemporary/streetwear). No curated model lists: every brand gets its models from the Firestore cache.",
+    "brands": [
+      "Chanel", "Chrome Hearts", "Hermès", "Louis Vuitton", "Burberry", "Canada Goose",
+      "Dior", "Gucci", "Miu Miu", "Moncler", "Off-White", "Prada", "Saint Laurent",
+      "Supreme", "The North Face", "BAPE", "Denim Tears", "Eric Emanuel",
+      "Fear of God ESSENTIALS", "GV Gallery", "Hellstar", "Nike", "Palace",
+      "Polo Ralph Lauren", "Readymade", "Saint Michael", "Skylrk", "Sp5der", "Stussy",
+      "Travis Scott", "Vale Forever"
+    ],
+    "curated": {}
+  },
+  "trading-cards": {
+    "_note": "The game or league is the brand; the Model screen picks the kind of product (Graded Singles, Booster Box...). `curated` maps a brand to its hand-maintained model list. There is no live data source for cards, so a brand with no entry simply has no Model screen. Names are shown as written and stored as the Brand value.",
+    "brands": [
+      "Pokémon", "Yu-Gi-Oh!", "Magic: The Gathering", "Baseball (MLB)",
+      "Basketball (NBA)", "Football (NFL)", "Soccer", "Other Sports",
+      "Other Trading Card Game"
+    ],
+    "curated": {
+      "Pokémon": [
+        "Graded Singles", "Ungraded Singles", "Booster Box", "Booster Pack"
+      ],
+      "Yu-Gi-Oh!": [
+        "Graded Singles", "Ungraded Singles"
+      ],
+      "Magic: The Gathering": [
+        "Graded Singles", "Ungraded Singles"
+      ],
+      "Baseball (MLB)": [
+        "Graded Singles", "Ungraded Singles"
+      ],
+      "Basketball (NBA)": [
+        "Graded Singles", "Ungraded Singles"
+      ],
+      "Football (NFL)": [
+        "Graded Singles", "Ungraded Singles"
+      ],
+      "Soccer": [
+        "Graded Singles", "Ungraded Singles"
+      ],
+      "Other Sports": [
+        "Graded Singles", "Ungraded Singles"
+      ],
+      "Other Trading Card Game": [
+        "Graded Singles", "Ungraded Singles"
+      ]
+    }
+  }
+}

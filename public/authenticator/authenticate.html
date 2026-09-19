@@ -182,7 +182,7 @@
             
             
             <div class="form-actions">
-            <button class="next-btn">
+            <button type="button" class="next-btn">
               Next <i class="fas fa-arrow-right"></i>
             </button>
           </div>
@@ -226,22 +226,11 @@
               ></textarea>
             </div>
 
-            <!-- Message -->
-            <!-- List populated per-category by renderImageSlots() -- mirrors
-                 whatever angles imageGrid above is currently asking for. -->
-            <div class="message-wrapper" role="alert">
-              <i class="fa-solid fa-circle-exclamation"></i>
-              <h4 class="msg-text" id="imageUploadMsgText">
-                Select a category above to see the required photos for
-                authentication verification.
-              </h4>
-              <ul id="requiredAnglesList"></ul>
-            </div>
             <div class="form-actions">
-              <button type="button" class="back-btn">
+              <button type="button" class="back-btn btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back
               </button>
-              <button class="next-btn">
+              <button type="button" class="next-btn">
               Next <i class="fas fa-arrow-right"></i>
               </button>
           </div>
@@ -274,18 +263,50 @@
               Product Details
             </h2>
 
+            <!-- Back + breadcrumb for the brand/model screens -- driven by the
+                 detail-screen controller in authenticate.js; hidden on the category screen. -->
+            <div class="details-nav screen-hidden" id="detailsNav">
+              <button type="button" class="details-back-btn btn-secondary" id="detailsBackBtn">
+                <i class="fas fa-arrow-left"></i> Back
+              </button>
+              <nav class="details-breadcrumb" id="detailsBreadcrumb" aria-label="Your selection"></nav>
+            </div>
+
+            <!-- Category screen: shown first, hidden once a category with brand/model
+                 screens is chosen. -->
+            <div id="category-screen">
             <div class="form-input-row">
               <div class="form-input">
-                <label for="categories">Category</label>
-                <select name="categories" id="categories" class="categories">
-                  <option value="">Select category...</option>
-                  <option value="Trading Cards">Trading Cards</option>
-                  <option value="Apparel">Apparel</option>
-                  <option value="Sneakers">Sneakers</option>
-                  <option value="Bags & Leather Goods">Bags & Leather Goods</option>
-                  <option value="Luxury Shoes">Luxury Shoes</option>
-                </select>
+                <label id="category-label">Category</label>
+                <div class="category-grid" id="categoryGrid" role="group" aria-labelledby="category-label">
+                  <button type="button" class="category-card" data-category="Trading Cards" aria-pressed="false">
+                    <span class="category-icon"><i class="fa-solid fa-clone"></i></span>
+                    <span class="category-name">Trading Cards</span>
+                    <span class="category-check"><i class="fa-solid fa-check"></i></span>
+                  </button>
+                  <button type="button" class="category-card" data-category="Apparel" aria-pressed="false">
+                    <span class="category-icon"><i class="fa-solid fa-shirt"></i></span>
+                    <span class="category-name">Apparel</span>
+                    <span class="category-check"><i class="fa-solid fa-check"></i></span>
+                  </button>
+                  <button type="button" class="category-card" data-category="Sneakers" aria-pressed="false">
+                    <span class="category-icon"><i class="fa-solid fa-person-running"></i></span>
+                    <span class="category-name">Sneakers</span>
+                    <span class="category-check"><i class="fa-solid fa-check"></i></span>
+                  </button>
+                  <button type="button" class="category-card" data-category="Bags & Leather Goods" aria-pressed="false">
+                    <span class="category-icon"><i class="fa-solid fa-bag-shopping"></i></span>
+                    <span class="category-name">Bags &amp; Leather Goods</span>
+                    <span class="category-check"><i class="fa-solid fa-check"></i></span>
+                  </button>
+                  <button type="button" class="category-card" data-category="Luxury Shoes" aria-pressed="false">
+                    <span class="category-icon"><i class="fa-solid fa-shoe-prints"></i></span>
+                    <span class="category-name">Luxury Shoes</span>
+                    <span class="category-check"><i class="fa-solid fa-check"></i></span>
+                  </button>
+                </div>
               </div>
+            </div>
             </div>
 
             <!-- Dynamic form container -->
@@ -387,14 +408,14 @@
             <!-- Terms and Conditions -->
             <div class="term-section">
               <div class="checkbox-group">
-                <input type="checkbox" id="terms1" name="terms1" required />
+                <input type="checkbox" id="terms1" name="terms1" class="input-width-5" required />
                 <label for="terms1"
                   >I confirm all provided information and images are accurate
                   and truthful.</label
                 >
               </div>
               <div class="checkbox-group">
-                <input type="checkbox" id="terms2" name="terms2" required />
+                <input type="checkbox" id="terms2" name="terms2" class="input-width-5" required />
                 <label for="terms2"
                   >I understand that the authentication process will begin
                   once payment is confirmed.</label
@@ -403,7 +424,7 @@
             </div>
             <!-- -->
             <div class="form-actions">
-              <button type="button" class="back-btn">
+              <button type="button" class="back-btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back
               </button>
               <div class="primary-actions">

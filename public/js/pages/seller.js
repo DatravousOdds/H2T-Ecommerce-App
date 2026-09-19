@@ -972,7 +972,7 @@ function renderSizeOptions(category) {
                         <label for="sku">SKU</label>
                         <div class="char-counter" id="skuCounter">0/100</div>
                     </div>
-                    <input type="text" id="${field.name}" name="${field.name}" placeholder="Enter product sku" />
+                    <input type="text" id="${field.name}" class="input-width-full input-bordered" name="${field.name}" placeholder="Enter product sku" />
                     <p class="errorText" id="error-sku"></p>
                 `;
                 const inputContainer = document.createElement("div");
