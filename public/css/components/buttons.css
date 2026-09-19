@@ -25,11 +25,12 @@
   color: var(--color-text-primary) !important;
   background-color: transparent !important;
   border: 1px solid  var(--color-border-primary) !important;
-  transition: transform 0.2s ease-in !important;
+  transition: transform 0.2s ease-in, background-color 0.2s ease-in !important;
 }
 
 .btn-secondary:hover {
-    background-color: var(--color-border-primary) !important;
+    background-color: #F8F8F8 !important;
+    transform: translateY(-1px);
 }
 
 .btn-width-200 {

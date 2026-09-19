@@ -1259,6 +1259,11 @@ select {
 
 @media (max-width: 480px) {
 
+  .progress-steps::after, .progress-steps::before {
+    top: 15px;
+  }
+
+
   .tier-text {
     text-align: center;
   }
