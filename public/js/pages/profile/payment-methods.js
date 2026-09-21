@@ -31,7 +31,7 @@
 import { auth } from "../../api/firebase-client.js";
 import { notification, openPopupMenu, closePopupMenu } from "./ui-helpers.js";
 
-const STRIPE_PUBLISHABLE_KEY = "pk_test_51Tfwj9PHPIWBS1BJqszOAwKKlL5xCJGBsfTJhcbyWndXlUBiLbDsGhlmLCf7XGxdiFtamED8mlZxZbVKJDBu1tao004NMblLug";
+const STRIPE_PUBLISHABLE_KEY = "pk_live_51TfzCeClJc0GzijRcUvKdnm7dCkWSNuBzQMI3hgeoJsQ97IXaDCQtrLZCyuVVXiPZOWpyfGD2jfj13IpIJeQwy3X00GHsIsrzz";
 const API_BASE = "/api/payment-methods";
 const CARD_LIST_SELECTOR = ".card-list";
 const MODAL_ID = "add-card-modal";
