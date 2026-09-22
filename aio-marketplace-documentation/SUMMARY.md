@@ -36,6 +36,7 @@
   * [Token-Based Auth](documentation/token-based-auth.md)
   * [What are APIs?](documentation/what-are-apis.md)
 * [Learning](learning/README.md)
+  * [React](learning/react.md)
   * [Books](learning/books/README.md)
     * [48 Laws Of Power](learning/books/48-laws-of-power.md)
     * [Introduction to Algorithms](learning/books/introduction-to-algorithms.md)
