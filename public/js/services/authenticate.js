@@ -1,5 +1,5 @@
 import { getStorage, ref, uploadString, getDownloadURL, deleteDoc } from '../api/firebase-client.js';
-import { db, doc, getDocs, query, where, auth } from '../api/firebase-client.js';
+import { db, doc, getDoc, getDocs, query, where, auth } from '../api/firebase-client.js';
 import { checkUserStatus } from '../auth/auth.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
 import { getUserCartCount, updateCartCount } from '../commerce/cart.js';
@@ -12,6 +12,27 @@ initCartDrawer();
 
 let currentUser = null;
 currentUser = await checkUserStatus();
+
+// New accounts get one free Tier 1 (QuickCheck) authentication, granted
+// server-side right after signup (see /send/update's ACCOUNT_CREATED handler
+// in server.js). Deliberately bypasses fetchUserProfile's sessionStorage
+// cache: that grant can easily land after some earlier page's
+// checkUserStatus() call already cached a profile snapshot without it (nav.js
+// runs on every page), and this is the one page where that staleness would
+// actually cost the user something -- a mistakenly-skipped free check. This
+// is purely a UI/routing decision, not a security check: the redeem route
+// re-verifies eligibility itself from Firestore regardless of what this says,
+// so a stale false-positive here just falls through to the normal paid flow.
+let hasFreeAuthCheck = false;
+if (currentUser?.userId) {
+  try {
+    const profileSnap = await getDoc(doc(db, "userProfiles", currentUser.userId));
+    const profile = profileSnap.exists() ? profileSnap.data() : {};
+    hasFreeAuthCheck = !!(profile.freeAuthCheckAvailable && !profile.freeAuthCheckUsed);
+  } catch (error) {
+    console.error("Error checking free authentication check eligibility:", error);
+  }
+}
 
 // auth form
 const authSubmitBtn = document.getElementById('submitAuthBtn');
@@ -1418,6 +1439,33 @@ async function handlePayNowSubmission() {
   try {
     const { requestId, authRequestData } = await createAuthenticationRequest();
 
+    // New accounts get one free Tier 1 (QuickCheck) authentication -- redeem
+    // it here instead of going to checkout, since a $0 Stripe PaymentIntent
+    // isn't possible. hasFreeAuthCheck only decides which path to try first;
+    // the server re-verifies eligibility itself (ownership, tier, an actually
+    // unused credit) inside redeem-free-check, so a stale/false positive here
+    // just falls through to the normal Pay Now flow below rather than
+    // blocking the user.
+    if (hasFreeAuthCheck && authRequestData.tierSelection?.type === 'QuickCheck') {
+      try {
+        const idToken = await auth.currentUser.getIdToken();
+        const redeemResponse = await fetch(`/authentication-requests/${requestId}/redeem-free-check`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${idToken}` }
+        });
+
+        if (redeemResponse.ok) {
+          clearDraftState();
+          window.location.href = `/authenticator/authenticate-results.html?authRequestId=${requestId}`;
+          return;
+        }
+
+        console.warn("Free check redemption was not applied -- falling back to Pay Now.");
+      } catch (error) {
+        console.error("Error redeeming free authentication check:", error);
+      }
+    }
+
     // Skip the cart entirely -- stash the same item shape addToCart()
     // would have stored, then hand off to checkout.js the same way
     // cart.js's per-item Checkout button does for a product listing.
@@ -1453,7 +1501,7 @@ function displayReviewData(data) {
         ).join('')}
     </div>
   `
-  reviewTier.innerHTML = createReviewTierHTML(data.tierSelection);
+  reviewTier.innerHTML = createReviewTierHTML(data.tierSelection, hasFreeAuthCheck);
 
   
 }
@@ -1590,7 +1638,13 @@ function formLocator(category) {
     });
 }
 
-function createReviewTierHTML(tierData) {
+// isFreeCheck is true only when this account's welcome credit will actually
+// apply (Tier 1/QuickCheck + an unused credit -- see hasFreeAuthCheck above).
+// Shown here so the user understands why Pay Now won't ask for payment,
+// rather than that just silently happening.
+function createReviewTierHTML(tierData, isFreeCheck) {
+  const freeWithCredit = isFreeCheck && tierData.type === 'QuickCheck';
+
   return `
   <div class="review-header">
     <h3>Authentication Tier</h3>
@@ -1609,11 +1663,14 @@ function createReviewTierHTML(tierData) {
         <p>${tierData.duration}</p>
       </div>
     </div>
-    
+
     <div class="tier-cost">
-      <span>$${tierData.cost.toFixed(2)}</span>
+      ${freeWithCredit
+        ? `<span class="tier-cost-free"><s>$${tierData.cost.toFixed(2)}</s> FREE (welcome credit)</span>`
+        : `<span>$${tierData.cost.toFixed(2)}</span>`
+      }
     </div>
-  </div>         
+  </div>
 `;
 }
 

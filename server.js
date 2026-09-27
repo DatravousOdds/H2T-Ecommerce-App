@@ -200,9 +200,19 @@ const resendClient = new resend.Resend(process.env.RESEND_API_KEY);
 // Best-effort notifications to the site owner (new sale / signup / auth
 // request queued). Never throws -- callers fire this without awaiting so a
 // Resend hiccup can't block a webhook or an API response.
+//
+// AUTH_REVIEW_EMAIL is a second recipient cc'd only on AUTH_REQUEST_QUEUED
+// (the authentication reviewer), separate from ADMIN_EMAIL which every other
+// notification type still uses alone.
 async function sendAdminNotification(notificationType, data) {
-  if (!process.env.ADMIN_EMAIL) {
-    console.warn(`ADMIN_EMAIL not set, skipping ${notificationType} admin notification`);
+  const recipients = [process.env.ADMIN_EMAIL];
+  if (notificationType === 'AUTH_REQUEST_QUEUED' && process.env.AUTH_REVIEW_EMAIL) {
+    recipients.push(process.env.AUTH_REVIEW_EMAIL);
+  }
+  const to = recipients.filter(Boolean);
+
+  if (to.length === 0) {
+    console.warn(`No admin email configured, skipping ${notificationType} admin notification`);
     return;
   }
 
@@ -212,7 +222,7 @@ async function sendAdminNotification(notificationType, data) {
 
     await resendClient.emails.send({
       from: 'noreply@hexxo.store',
-      to: process.env.ADMIN_EMAIL,
+      to,
       subject: template.subject,
       html: template.html
     });
@@ -354,7 +364,28 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
 
 app.use(express.json());
 
+// New accounts get one free Tier 1 (QuickCheck) authentication. Granted here
+// -- server-side, the first time ACCOUNT_CREATED fires for a uid -- rather
+// than by the signup client writing the flag itself, since that write would
+// be just as easy for the client to repeat after the credit is redeemed. The
+// transaction makes the grant a one-time thing per account: once either field
+// exists (granted, or already used), every later call is a no-op, so a
+// retried/duplicate ACCOUNT_CREATED call can't re-arm a spent credit.
+// freeAuthCheckUsed is set only by the redemption route below, never here.
+async function grantFreeAuthCheckIfEligible(uid) {
+  const profileRef = db.collection('userProfiles').doc(uid);
 
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(profileRef);
+    const data = snap.exists ? snap.data() : {};
+
+    if (data.freeAuthCheckAvailable !== undefined || data.freeAuthCheckUsed !== undefined) {
+      return;
+    }
+
+    tx.set(profileRef, { freeAuthCheckAvailable: true }, { merge: true });
+  });
+}
 
 
 app.post('/send/update', verifyAuth, async (req, res) => {
@@ -381,6 +412,15 @@ app.post('/send/update', verifyAuth, async (req, res) => {
 
     if (notificationType === 'ACCOUNT_CREATED') {
       sendAdminNotification('NEW_SIGNUP', { firstName: userRecord.displayName, email: userRecord.email });
+
+      // Isolated from the welcome-email try/catch above -- a credit-grant
+      // failure shouldn't surface as a "failed to send email" error to a user
+      // whose account (and welcome email) were actually fine.
+      try {
+        await grantFreeAuthCheckIfEligible(req.token.uid);
+      } catch (error) {
+        console.error(`Failed to grant free auth check to ${req.token.uid}:`, error);
+      }
     }
 
     res.json({ success: true });
@@ -3700,6 +3740,77 @@ app.post("/authentication-requests", verifyAuth, async (req, res) => {
     return res.status(200).json({ success: true, requestId: docRef.id });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Redeems a new account's one-time free Tier 1 (QuickCheck) authentication
+// (see grantFreeAuthCheckIfEligible above /send/update). Skips Stripe
+// entirely -- a $0 PaymentIntent isn't possible -- and goes straight to the
+// same "mark paid, kick off matching, notify" sequence
+// handleAuthPaymentSucceeded runs after a real Stripe payment. Every check
+// (ownership, tier, unused credit) is re-verified here from Firestore, never
+// trusted from the client -- same rigor /create-checkout-session's
+// isAuthPayment branch already uses for its own eligibility check.
+app.post("/authentication-requests/:id/redeem-free-check", verifyAuth, async (req, res) => {
+  const requestId = req.params.id;
+  const requestRef = db.collection("authenticationRequests").doc(requestId);
+  const profileRef = db.collection("userProfiles").doc(req.token.uid);
+
+  try {
+    let request;
+
+    const redeemed = await db.runTransaction(async (tx) => {
+      const [requestSnap, profileSnap] = await Promise.all([tx.get(requestRef), tx.get(profileRef)]);
+
+      if (!requestSnap.exists) {
+        throw Object.assign(new Error("Authentication request not found"), { status: 404 });
+      }
+
+      request = requestSnap.data();
+
+      if (request.userId !== req.token.uid) {
+        throw Object.assign(new Error("Not authorized for this request"), { status: 403 });
+      }
+
+      if (request.paid) {
+        return false; // already paid (e.g. a retried call) -- no-op, not an error
+      }
+
+      if (request.tierSelection?.type !== "QuickCheck") {
+        throw Object.assign(new Error("The free check only applies to Tier 1 (QuickCheck)"), { status: 400 });
+      }
+
+      const profile = profileSnap.exists ? profileSnap.data() : {};
+
+      if (!profile.freeAuthCheckAvailable || profile.freeAuthCheckUsed) {
+        throw Object.assign(new Error("No free authentication check available"), { status: 403 });
+      }
+
+      tx.update(requestRef, { paid: true, paidVia: "free_credit" });
+      tx.set(profileRef, { freeAuthCheckUsed: true }, { merge: true });
+      return true;
+    });
+
+    if (redeemed) {
+      await matchAuthenticationRequest(requestId);
+
+      const item = { name: authRequestItemLabel(request.productDetails) };
+
+      await createNotification(
+        req.token.uid,
+        "authentication",
+        "Payment Confirmed",
+        `Your ${item.name} is now queued for authentication review.`,
+        "/profile?tab=selling&subtab=authentication"
+      );
+
+      await notifyAdminsOfReviewableRequest(item);
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(`Error redeeming free auth check for request ${requestId}:`, error);
+    return res.status(error.status || 500).json({ success: false, message: error.message });
   }
 });
 
