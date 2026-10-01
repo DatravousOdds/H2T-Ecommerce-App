@@ -1,3 +1,15 @@
+/* Sticky footer: body fills the viewport and <main> absorbs leftover height,
+   so short review queues don't leave blank space below the footer. */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body > main {
+  flex: 1 0 auto;
+}
+
 .content-header {
   margin: 1rem 2rem;
 }
