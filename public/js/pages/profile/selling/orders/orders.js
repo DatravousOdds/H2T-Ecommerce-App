@@ -156,7 +156,7 @@ function renderOrders(orders) {
   if (!tbody) return;
 
   if (orders.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="default-paragraph" style="text-align:center; padding: 24px;">No orders match this view.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="default-paragraph" style="text-align:center; padding: 24px !important;">No orders match this view.</td></tr>`;
     return;
   }
 

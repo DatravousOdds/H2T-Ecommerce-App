@@ -96,7 +96,7 @@ function renderRequests(requests) {
   if (!tbody) return;
 
   if (requests.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="default-paragraph" style="text-align:center; padding: 24px;">No authentication requests yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="default-paragraph" style="text-align:center; padding: 24px !important;">No authentication requests yet.</td></tr>`;
     return;
   }
 

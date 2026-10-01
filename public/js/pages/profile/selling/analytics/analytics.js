@@ -110,9 +110,21 @@ function wireControls(allOrders) {
   }
 }
 
+// Neither failure path below used to touch the DOM at all -- the static
+// skeleton markup (profile.html) was left in place forever with no visible
+// sign anything had gone wrong. This is what "the skeleton keeps rendering"
+// actually was: not a loop, just a dead end with no fallback state.
+function showFallbackMetrics() {
+  setMetric("analytics-total-revenue", "--");
+  setMetric("analytics-total-orders", "--");
+  setMetric("analytics-average-order-value", "--");
+  setMetric("analytics-active-customers", "--");
+}
+
 async function loadAnalyticsTab(userId) {
   if (!userId) {
     console.error("loadAnalyticsTab: no userId provided");
+    showFallbackMetrics();
     return;
   }
 
@@ -122,7 +134,13 @@ async function loadAnalyticsTab(userId) {
     updateMetrics(allOrders);
   } catch (error) {
     console.error("Error loading analytics tab:", error);
+    showFallbackMetrics();
   }
 }
 
-await loadAnalyticsTab(currentUser.userId);
+// currentUser can resolve to null/false (checkUserStatus() returns that for
+// a logged-out session) -- currentUser.userId on that would throw here,
+// uncaught, before loadAnalyticsTab's own try/catch (and its userId guard)
+// ever runs. ?. turns that into the same "no userId provided" fallback path
+// above instead of a silent crash that leaves the skeleton in place forever.
+await loadAnalyticsTab(currentUser?.userId);
