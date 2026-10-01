@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="css/components/newsletter.css" />
     <link rel="stylesheet" href="css/components/cartDrawer.css"/>
     <link rel="stylesheet" href="css/pages/index.css" />
+    <link rel="stylesheet" href="css/components/homeHero.css" />
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,139 +73,166 @@
     </section>
     <!-- End of Navbar-->
 
-    <section id="hero">
-      <div class="slider-container">
-        <!-- Navigation Arrows -->
-        <button class="slider-arrow prev-arrow">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <button class="slider-arrow next-arrow">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-
-        <!-- Slides -->
-        <div class="slides">
-          <!-- Slide 1-->
-          <div
-            class="slide active"
-            style="
-              background-image: url(./images/hero_2.jpg);
-              background-size: cover;
-              background-position: top;
-              background-repeat: no-repeat;
-            "
-          >
-            <div class="hero-text">
-              <div class="hero-text-container">
-                <div class="main-headline">
-                  <div class="m-hL">
-                    <h1 style="color: white; font-weight: 700">
-                      Hexxo. Your Style, Half the Price.
-                    </h1>
-                    <h2>
-                      
-                    </h2>
-                    <a href="/mens" class="cta-button">Shop Now</a>
-                  </div>
-                </div>
-                <div class="sub-headline">
-                  <div class="sub-h">
-                    
-                  </div>
-                </div>
-              </div>
+    <section
+      class="home-hero"
+      aria-roledescription="carousel"
+      aria-label="Hexxo highlights"
+    >
+      <div class="home-hero__stage">
+        <!-- Slide A: photo hero + proof strip -->
+        <div
+          class="home-hero__slide home-hero__slide--photo is-active"
+          role="group"
+          aria-roledescription="slide"
+          aria-label="1 of 3"
+        >
+          <div class="home-hero__photo-content">
+            <div class="home-hero__eyebrow">
+              <span class="home-hero__eyebrow-bar" aria-hidden="true"></span>
+              <span>Buy · Sell · Authenticate · Cash out</span>
+            </div>
+            <h1 class="home-hero__title home-hero__title--xl">
+              Run your whole resell business in one app.
+            </h1>
+            <p class="home-hero__body">
+              List it, check it, ship it, get paid. No juggling a
+              marketplace, a legit-check group chat, and a
+              payout spreadsheet.
+            </p>
+            <div class="home-hero__actions">
+              <a href="/list-product" class="home-hero__btn home-hero__btn--primary">List an item →</a>
+              <a href="/shop" class="home-hero__btn home-hero__btn--ghost">Shop the market</a>
             </div>
           </div>
-
-          <!-- Slide 2 -->
-          <div
-            class="slide"
-            style="
-              background-image: url(./images/hero_4.jpg);
-              background-size: cover;
-              background-position: top;
-              background-repeat: no-repeat;
-            "
-          >
-            <div class="hero-text">
-              <div class="hero-text-container">
-                <div class="main-headline">
-                  <div class="m-hL">
-                    <h1>Premium Streetwear Collection</h1>
-                    <a href="/mens" class="cta-button">Explore Now</a>
-                  </div>
-                </div>
-                <div class="sub-headline">
-                  <div class="sub-h">
-                    
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Slide 3 -->
-          <div
-            class="slide"
-            style="
-              background-image: url(./images/hero_5.jpg);
-              background-size: cover;
-              background-position: top;
-              background-repeat: no-repeat;
-            "
-          >
-            <div class="hero-text">
-              <div class="hero-text-container">
-                <div class="main-headline">
-                  <div class="m-hL">
-                    <h1>New Arrivals Weekly</h1>
-                    <h2>Stay ahead of the trends</h2>
-                    <a href="/mens" class="cta-button">View Latest</a>
-                  </div>
-                </div>
-                <div class="sub-headline">
-                  <div class="sub-h">
-                    
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ul class="home-hero__proof">
+            <li><span class="home-hero__stat">24h</span><span>authentication turnaround</span></li>
+            <li><span class="home-hero__stat">0%</span><span>listing fees</span></li>
+            <li><span class="home-hero__stat">$4.99</span><span>Ship fast, with prepaid labels</span></li>
+            <li><span class="home-hero__stat">48h</span><span>payouts after delivery</span></li>
+          </ul>
         </div>
 
-        <!-- Slide Indicators -->
-        <div class="slide-indicators"></div>
-      </div>
-      <!-- <div class="hero-text">
-        <div class="hero-text-container">
-          <div class="main-headline" style="flex-grow: 1">
-            <div class="m-hL">
-              <h1 style="color: white; font-weight: 700">
-                Step Up Your Style With Unbeatable Deals
-              </h1>
-              <br />
-              <h2 style="color: white">
-                Discover premium shoes and apparel at half the price!
+        <!-- Slide B: split hero + feature cards -->
+        <div
+          class="home-hero__slide home-hero__slide--split"
+          role="group"
+          aria-roledescription="slide"
+          aria-label="2 of 3"
+          aria-hidden="true"
+          inert
+        >
+          <div class="home-hero__split-copy">
+            <span class="home-hero__eyebrow home-hero__eyebrow--brand">One platform · one flow</span>
+            <h2 class="home-hero__title home-hero__title--md">
+              Four apps' worth of work. One place to do it.
+            </h2>
+            <div class="home-hero__actions home-hero__actions--center">
+              <a href="/seller" class="home-hero__btn home-hero__btn--primary">Start selling</a>
+              <span class="home-hero__note">Free to join. No listing fees.</span>
+            </div>
+            <ul class="home-hero__features">
+              <li class="home-hero__feature">
+                <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                <span class="home-hero__feature-title">Fast listings</span>
+                <span class="home-hero__feature-detail">Scan, price against live comps, publish.</span>
+              </li>
+              <li class="home-hero__feature">
+                <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                <span class="home-hero__feature-title">Authenticated in 24h</span>
+                <span class="home-hero__feature-detail">Tier-1 in-house check on every item.</span>
+              </li>
+              <li class="home-hero__feature">
+                <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+                <span class="home-hero__feature-title">Prepaid labels</span>
+                <span class="home-hero__feature-detail">$4.99 flat per item, printed in-app.</span>
+              </li>
+              <li class="home-hero__feature">
+                <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                <span class="home-hero__feature-title">Real-time pricing</span>
+                <span class="home-hero__feature-detail">Live market comps on every listing.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="home-hero__split-photo" aria-hidden="true"></div>
+        </div>
+
+        <!-- Slide C: seller sign-up offer -->
+        <div
+          class="home-hero__slide home-hero__slide--offer"
+          role="group"
+          aria-roledescription="slide"
+          aria-label="3 of 3"
+          aria-hidden="true"
+          inert
+        >
+          <div class="home-hero__offer-grid">
+            <div class="home-hero__offer-copy">
+              <div class="home-hero__eyebrow home-hero__eyebrow--brand">
+                <i class="fa-solid fa-tag" aria-hidden="true"></i>
+                <span>Seller launch offer</span>
+              </div>
+              <h2 class="home-hero__title home-hero__title--lg">
+                Your first 5 sales are on us.
               </h2>
-              <br />
-              <a href="/mens">See All</a>
+              <p class="home-hero__body home-hero__body--sm">
+                Sign up, list your item and keep the full payout on your first
+                five sales. Zero listing fees.
+              </p>
+              <form class="home-hero__signup" novalidate>
+                <label for="heroSignupEmail" class="visually-hidden">Email address</label>
+                <input
+                  type="email"
+                  id="heroSignupEmail"
+                  name="email"
+                  class="home-hero__input"
+                  placeholder="Enter your email"
+                  autocomplete="email"
+                  aria-describedby="heroSignupError"
+                  required
+                />
+                <button type="submit" class="home-hero__btn home-hero__btn--primary">Sign up free</button>
+              </form>
+              <p id="heroSignupError" class="home-hero__error" role="alert" hidden></p>
+              <span class="home-hero__note">
+                New seller accounts only. Already have one?
+                <a href="/login" class="home-hero__login-link">Log in →</a>
+              </span>
             </div>
-          </div>
 
-          <div class="sub-headline">
-            <div class="sub-h">
-              <h3>
-                At Head-To-Toe, we make it easy for you to find and afford the
-                best in footwear and fashion. Explore our selection of new,
-                reconditioned, and used items, all at the lowest fees possible.
-                Sell your products to us, and take advantage of our sneaker
-                cleaning services for a small fee. Elevate your wardrobe without
-                breaking the bank!
-              </h3>
+            <div class="home-hero__offer-card">
+              <span class="home-hero__offer-label">Your welcome offer</span>
+              <div class="home-hero__offer-headline">
+                <span class="home-hero__offer-number">0%</span>
+                <span class="home-hero__offer-caption">listing fees on your first 5 sales</span>
+              </div>
+              <ol class="home-hero__slots">
+                <li><span class="home-hero__slot-num">1</span><span class="home-hero__slot-tag">Free</span></li>
+                <li><span class="home-hero__slot-num">2</span><span class="home-hero__slot-tag">Free</span></li>
+                <li><span class="home-hero__slot-num">3</span><span class="home-hero__slot-tag">Free</span></li>
+                <li><span class="home-hero__slot-num">4</span><span class="home-hero__slot-tag">Free</span></li>
+                <li><span class="home-hero__slot-num">5</span><span class="home-hero__slot-tag">Free</span></li>
+              </ol>
+              <ul class="home-hero__steps">
+                <li><i class="fa-solid fa-user-plus" aria-hidden="true"></i>Create your seller account</li>
+                <li><i class="fa-solid fa-camera" aria-hidden="true"></i>List your first item</li>
+                <li><i class="fa-solid fa-sack-dollar" aria-hidden="true"></i>Keep 100% of the payout</li>
+              </ul>
+              <span class="home-hero__disclaimer">Payment processing fees apply.</span>
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
+
+      <!-- Controls (dots are generated by heroCarousel.js, one per slide) -->
+      <div class="home-hero__controls">
+        <button type="button" class="home-hero__arrow" data-hero-prev aria-label="Previous slide">
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <div class="home-hero__dots" data-hero-dots></div>
+        <button type="button" class="home-hero__arrow" data-hero-next aria-label="Next slide">
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
     </section>
 
     <main class="home-page-layout">
@@ -260,7 +288,7 @@
               <p class="banner-eyebrow">SELL · TRADE · EARN</p>
               <h2>Got heat? List in 90 seconds.</h2>
               <h2>Cash out or trade up.</h2>
-              <p>Authenticated in 24h. 0% fees under $200. +15% bonus on trade credit</p>
+              <p>Authenticated in 24h. 0% listing fees + free authentication checking top brands</p>
             </div>
             <div class="banner-cta-buttons">
               <a href="/seller" class="btn-primary">List an item →</a>
@@ -471,6 +499,7 @@
     <script type="module" src="js/components/newsletter.js"></script>
     <script type="module" src="js/components/footer.js"></script>
     <script type="module" src="js/pages/home.js"></script>
+    <script type="module" src="js/components/heroCarousel.js"></script>
     <script type="module" src="js/pages/search.js"></script>
     <script>
       // sidebar
