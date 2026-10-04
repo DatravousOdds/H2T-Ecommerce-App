@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Only lists standalone content pages with a fixed URL. Product listings
-  (/products/:id) and seller profiles (/sellerProfile) are excluded --
+  (/products/:id) and seller profiles (/sellerProfile) are excluded:
   they're rendered client-side from Firestore data, so a static sitemap
   can't enumerate them. Generating that list would need a server-side job
   that queries Firestore for active listings; out of scope for this pass.
@@ -64,6 +64,11 @@
   </url>
   <url>
     <loc>https://hexxo.store/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://hexxo.store/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>

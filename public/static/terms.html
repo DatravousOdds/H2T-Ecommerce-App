@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="../css/style2.css" />
 <link rel="stylesheet" href="../css/components/newsletter.css" />
 <link rel="stylesheet" href="../css/components/cartDrawer.css"/>
+<link rel="stylesheet" href="/css/legal.css" />
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,224 +28,6 @@
       src="https://kit.fontawesome.com/854f8a6196.js"
       crossorigin="anonymous"
     ></script>
-
-<style>
-  /* ============ TOKENS ============ */
-  :root {
-    --primary-red: #e80e0e;
-    --primary-black: #000000;
-    --primary-white: #ffffff;
-    --light-gray: #f8f8f8;
-    --medium-gray: #888888;
-    --dark-gray: #333333;
-    --dark-black: #1e1e1e;
-    --border-soft: #ececec;
-
-    --brand-blackToDark: linear-gradient(90deg, #000000 0%, #333333 100%);
-    --main-gradient: linear-gradient(180deg, #e80e0e 0%, #000000 100%);
-
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --transition: 0.2s ease;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: "Poppins", sans-serif;
-    color: var(--dark-black);
-    background: var(--primary-white);
-    -webkit-font-smoothing: antialiased;
-  }
-  a { color: inherit; text-decoration: none; }
-  ul { list-style: none; }
-  img { display: block; max-width: 100%; }
-
-  /* ============ HERO ============ */
-  .hero {
-    background: var(--main-gradient);
-    color: var(--primary-white);
-    padding: 56px 24px 48px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at 85% 20%, rgba(255,255,255,0.08), transparent 55%);
-  }
-  .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
-  .eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
-    text-transform: uppercase; color: #ffd2d2;
-    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
-    padding: 6px 14px; border-radius: 999px; margin-bottom: 18px;
-  }
-  .hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.1; margin-bottom: 14px; }
-  .hero p { color: #f1d8d8; font-size: 1rem; max-width: 620px; line-height: 1.6; }
-  .hero-meta {
-    margin-top: 26px; display: flex; flex-wrap: wrap; gap: 22px;
-    font-size: 0.85rem; color: #ffe7e7;
-  }
-  .hero-meta strong { color: var(--primary-white); font-weight: 600; }
-
-  /* ============ LAYOUT ============ */
-  .page-wrap {
-    max-width: 1100px; margin: 0 auto;
-    display: grid; grid-template-columns: 240px 1fr; gap: 48px;
-    padding: 48px 24px 96px;
-  }
-  @media (max-width: 860px) { .page-wrap { grid-template-columns: 1fr; } }
-
-  /* ----- TOC sidebar (signature element) ----- */
-  .toc-wrap { display: none; }
-  @media (max-width: 860px) { .toc-wrap { display: block; margin-bottom: 8px; } }
-  .toc-select {
-    width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
-    border: 1px solid var(--border-soft); font-family: inherit; font-size: 0.9rem;
-    background: var(--light-gray); color: var(--dark-black);
-  }
-
-  .toc {
-    position: sticky; top: 96px;
-    display: none;
-    flex-direction: column;
-    border-left: 2px solid var(--border-soft);
-    max-height: calc(100vh - 130px);
-    overflow-y: auto;
-  }
-  @media (min-width: 861px) { .toc { display: flex; } }
-  .toc a {
-    padding: 9px 18px;
-    font-size: 0.85rem;
-    color: var(--medium-gray);
-    border-left: 2px solid transparent;
-    margin-left: -2px;
-    transition: color var(--transition), border-color var(--transition);
-    display: flex; gap: 10px;
-  }
-  .toc a .num { color: #c8c8c8; font-weight: 700; font-size: 0.75rem; }
-  .toc a:hover { color: var(--dark-black); }
-  .toc a.active {
-    color: var(--primary-red); border-left-color: var(--primary-red); font-weight: 600;
-  }
-  .toc a.active .num { color: var(--primary-red); }
-
-  /* ----- Content ----- */
-  .home-page-layout { min-width: 0; }
-  .notice {
-    background: var(--light-gray);
-    border: 1px solid var(--border-soft);
-    border-left: 3px solid var(--primary-red);
-    border-radius: var(--radius-sm);
-    padding: 16px 18px;
-    font-size: 0.85rem;
-    color: var(--dark-gray);
-    line-height: 1.6;
-    margin-bottom: 40px;
-  }
-  .notice strong { color: var(--dark-black); }
-
-  section.term {
-    padding-bottom: 36px;
-    margin-bottom: 36px;
-    border-bottom: 1px solid var(--border-soft);
-    scroll-margin-top: 100px;
-  }
-  section.term:last-of-type { border-bottom: none; }
-  .term-head {
-    display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px;
-  }
-  .term-badge {
-    flex-shrink: 0;
-    width: 34px; height: 34px;
-    background: var(--primary-black);
-    color: var(--primary-white);
-    border-radius: 50%;
-    display: grid; place-items: center;
-    font-size: 0.8rem; font-weight: 700;
-  }
-  .term h2 { font-size: 1.25rem; font-weight: 700; color: var(--primary-black); }
-  .term p, .term li {
-    font-size: 0.92rem; line-height: 1.75; color: var(--dark-gray);
-    margin-bottom: 12px;
-  }
-  .term ul.bullets { margin: 8px 0 12px 0; padding-left: 4px; }
-  .term ul.bullets li { display: flex; gap: 10px; margin-bottom: 8px; }
-  .term ul.bullets li::before {
-    content: "—"; color: var(--primary-red); flex-shrink: 0; font-weight: 700;
-  }
-  .term .tier-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
-    gap: 12px; margin: 14px 0;
-  }
-  .tier-card {
-    border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
-    padding: 14px 16px;
-  }
-  .tier-card .tier-name { font-weight: 700; color: var(--primary-black); font-size: 0.85rem; margin-bottom: 4px; }
-  .tier-card p { margin: 0; font-size: 0.8rem; color: var(--medium-gray); }
-  .term a.inline-link { color: var(--primary-red); font-weight: 600; }
-  .term a.inline-link:hover { text-decoration: underline; }
-
-  .back-to-top {
-    position: fixed; bottom: 28px; right: 28px;
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--primary-black); color: var(--primary-white);
-    border: none; cursor: pointer; display: grid; place-items: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-    opacity: 0; pointer-events: none;
-    transition: opacity var(--transition), background var(--transition);
-    z-index: 150;
-  }
-  .back-to-top.show { opacity: 1; pointer-events: auto; }
-  .back-to-top:hover { background: var(--primary-red); }
-
-  /* ============ FOOTER ============ */
-  footer {
-    background: var(--brand-blackToDark);
-    color: var(--primary-white);
-    padding: 56px 24px 32px;
-    font-family: "Poppins", sans-serif;
-  }
-  .footer-container {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
-    max-width: 1200px; margin: 0 auto;
-  }
-  @media (max-width: 991px) { .footer-container { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 576px) { .footer-container { grid-template-columns: 1fr; } }
-  .footer-logo { display: flex; flex-direction: column; gap: 10px; }
-  .footer-logo p { font-size: 0.82rem; color: #aaa; line-height: 1.6; }
-  .footer-social h3, .footer-links h3, .footer-contact h3 {
-    font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--primary-white);
-  }
-  .footer-social .social-icons { display: flex; gap: 14px; }
-  .footer-social .social-icons a {
-    color: var(--primary-white); font-size: 1.2rem; transition: color var(--transition);
-  }
-  .footer-social .social-icons a:hover { color: var(--primary-red); }
-  .footer-links li { margin-bottom: 10px; }
-  .footer-links a { color: #ccc; font-size: 0.88rem; transition: color var(--transition); }
-  .footer-links a:hover { color: var(--primary-red); }
-  .footer-contact p { color: #ccc; font-size: 0.88rem; line-height: 1.7; margin-bottom: 4px; }
-  .footer-contact a { color: var(--primary-white); }
-  .footer-contact a:hover { color: var(--primary-red); }
-  .footer-bottom {
-    max-width: 1200px; margin: 40px auto 0; padding-top: 20px;
-    border-top: 1px solid #2a2a2a; font-size: 0.78rem; color: #888;
-    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
-  }
-
-  /* Print */
-  @media print {
-    .navbar, footer, .back-to-top, .toc, .toc-wrap { display: none !important; }
-    .hero { background: none; color: var(--primary-black); padding: 0 0 24px; }
-    .hero::after { display: none; }
-    .hero p, .eyebrow, .hero-meta { color: var(--dark-gray) !important; }
-    .page-wrap { grid-template-columns: 1fr; padding: 0; }
-  }
-</style>
 </head>
 <body>
 
@@ -322,7 +105,7 @@
 
     <section class="term" id="s1">
       <div class="term-head"><div class="term-badge">01</div><h2>Acceptance of Terms</h2></div>
-      <p>By creating an account, browsing listings, or using any part of Hexxo (the "Platform," "we," "us"), you agree to be bound by these Terms &amp; Agreements ("Terms") and our Privacy Policy. If you don't agree, please don't use the Platform.</p>
+      <p>By creating an account, browsing listings, or using any part of Hexxo (the "Platform," "we," "us"), you agree to be bound by these Terms &amp; Agreements ("Terms") and our <a href="/privacy" class="inline-link">Privacy Policy</a>. If you don't agree, please don't use the Platform.</p>
       <p>We may update these Terms from time to time as described in Section 16. Continuing to use Hexxo after an update means you accept the revised Terms.</p>
     </section>
 
@@ -421,7 +204,7 @@
 
     <section class="term" id="s15">
       <div class="term-head"><div class="term-badge">15</div><h2>Governing Law &amp; Dispute Resolution</h2></div>
-      <p>These Terms are governed by the laws of the state in which Hexxo is incorporated, without regard to conflict-of-law principles. <em>Texas, Tarrant County</em></p>
+      <p>These Terms are governed by the laws of the State of Texas, without regard to conflict-of-law principles. Any dispute arising from these Terms or your use of the Platform will be brought in the state or federal courts located in Tarrant County, Texas.</p>
     </section>
 
     <section class="term" id="s16">
@@ -431,7 +214,7 @@
 
     <section class="term" id="s17">
       <div class="term-head"><div class="term-badge">17</div><h2>Contact Us</h2></div>
-      <p>Questions about these Terms? Reach us at <a href="mailto:legal@hexxo.com" class="inline-link">legal@hexxo.com</a>.</p>
+      <p>Questions about these Terms? Reach us at <a href="mailto:legal@hexxo.store" class="inline-link">legal@hexxo.store</a>.</p>
     </section>
 
   </main>
@@ -440,72 +223,16 @@
 <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
 
 <!-- ============ FOOTER ============ -->
-<!-- newsletter -->
-<section id="newsletter" class="section-p1">
-    <div class="newstext">
-      <!-- change later, look at planning sheet -->
-      <h4>Sign Up for Newsletter</h4>
-      <!-- change later, look at planning sheet -->
-      <p>
-        Get E-mail updates about latest shop and <span>special offers</span>
-      </p>
-    </div>
-    <div id="newsletter-form" class="form">
-      <input id="newsletter-email" type="email" placeholder="Your email address" />
-      <button type="submit" id="newsletter-submit" class="normal">Sign Up</button>
-    </div>
-  </section>
+<!-- newsletter.js renders the signup form into this section -->
+<section id="newsletter" class="section-p1"></section>
 
-  <!-- footer -->
-  <footer></footer>
-  <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
-  </div>
+<footer></footer>
+<div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart"></div>
 
-    <script>
-    // Mobile section jump
-    document.getElementById('tocSelect').addEventListener('change', function () {
-        document.getElementById(this.value).scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-
-    // Scrollspy for sticky TOC
-    const tocLinks = Array.from(document.querySelectorAll('#toc a'));
-    const sections = tocLinks.map(l => document.getElementById(l.dataset.target));
-
-    const setActive = (id) => {
-        tocLinks.forEach(l => l.classList.toggle('active', l.dataset.target === id));
-    };
-
-    const spy = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-        if (entry.isIntersecting) setActive(entry.target.id);
-        });
-    }, { rootMargin: '-110px 0px -70% 0px', threshold: 0 });
-
-    sections.forEach(s => s && spy.observe(s));
-
-    // Back to top button
-    const backToTop = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => {
-        backToTop.classList.toggle('show', window.scrollY > 480);
-    });
-    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-    </script>
-
-    <script type="module" src="../js/components/cartDrawer.js"></script>
-    <script type="module" src="../js/components/nav.js"></script>
-    <script type="module" src="../js/components/footer.js"></script>
-    <script type="module" src="../js/pages/home.js"></script>
-    <script>
-        // sidebar
-        $(function () {
-        $(".nav-btn-dd").click(function () {
-            $("#menu").addClass("active");
-        });
-        $(".close-btn").click(function () {
-            $("#menu").removeClass("active");
-        });
-        });
-    </script>
+<script type="module" src="/js/components/nav.js"></script>
+<script type="module" src="/js/components/footer.js"></script>
+<script type="module" src="/js/components/newsletter.js"></script>
+<script type="module" src="/js/pages/legal.js"></script>
 
 </body>
 </html>

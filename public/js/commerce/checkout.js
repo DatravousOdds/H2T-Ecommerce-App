@@ -485,6 +485,10 @@ function displayOrderSummary(data, isAuthPayment = false) {
               <div class="spinner hidden" id="spinner"></div>
               <span id="button-text">${isAuthPayment ? "Pay now" : "Enter shipping address to continue"}</span>
             </button>
+            <p class="checkout-legal">
+              By placing your order, you agree to our <a href="/terms" target="_blank" rel="noopener">Terms</a>
+              and acknowledge our <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+            </p>
             <div id="payment-message" class="hidden"></div>
     `;
 

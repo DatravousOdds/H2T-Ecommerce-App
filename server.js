@@ -703,6 +703,11 @@ app.get("/terms", (req, res) => {
   res.sendFile(path.join(staticPth, "static/terms.html"));
 });
 
+// privacy policy route
+app.get("/privacy", (req, res) => {
+  res.sendFile(path.join(staticPth, "static/privacy.html"));
+});
+
 //login route
 app.get("/login", (req, res) => {
   res.sendFile(path.join(staticPth, 'auth/login.html'));

@@ -108,6 +108,20 @@ p {
     box-shadow: 0 0 10px 0 rgba(248, 45, 45, 0.9);
 }
 
+/* Notice at collection, shown under the pay button */
+.checkout-legal {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: #6b7280;
+    text-align: center;
+}
+
+.checkout-legal a {
+    color: inherit;
+    text-decoration: underline;
+}
+
 .place-order-btn:hover {
     background-color: rgba(216, 72, 72, 0.9);
     transform: translateY(-4px);

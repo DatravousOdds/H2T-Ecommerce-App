@@ -67,6 +67,7 @@ const createFooter = async () => {
       <h4>Help</h4>
       <a href="/contact">Contact Us</a>
       <a href="/terms">Terms of Service</a>
+      <a href="/privacy">Privacy Policy</a>
     </div>
 
     <div class="col">
