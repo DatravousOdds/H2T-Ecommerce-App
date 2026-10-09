@@ -94,11 +94,15 @@ function statusPill(text) {
 }
 
 // Label/value rows in a soft panel -- used for order refs and admin details.
-function detailCard(rows) {
+// spaceBetween: label pinned left, value pinned right (the email-safe version
+// of justify-content: space-between -- flexbox isn't reliable in mail clients).
+function detailCard(rows, { spaceBetween = false } = {}) {
+  const labelWidth = spaceBetween ? '' : ' width:38%;';
+  const valueAlign = spaceBetween ? ' align="right"' : '';
   const body = rows.map(([label, value], i) => `
       <tr>
-        <td style="padding:12px 16px; ${i ? `border-top:1px solid ${BRAND.border};` : ''} font:500 13px/1.4 ${BRAND.uiFont}; color:${BRAND.muted}; width:38%; vertical-align:top;">${label}</td>
-        <td style="padding:12px 16px; ${i ? `border-top:1px solid ${BRAND.border};` : ''} font:600 14px/1.4 ${BRAND.uiFont}; color:${BRAND.ink}; word-break:break-word;">${value}</td>
+        <td style="padding:12px 16px; ${i ? `border-top:1px solid ${BRAND.border};` : ''} font:500 13px/1.4 ${BRAND.uiFont}; color:${BRAND.muted};${labelWidth} vertical-align:top;">${label}</td>
+        <td${valueAlign} style="padding:12px 16px; ${i ? `border-top:1px solid ${BRAND.border};` : ''} font:600 14px/1.4 ${BRAND.uiFont}; color:${BRAND.ink}; word-break:break-word;${spaceBetween ? ' text-align:right;' : ''}">${value}</td>
       </tr>`).join('');
   return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px; background:${BRAND.panel}; border:1px solid ${BRAND.border}; border-radius:8px; border-collapse:separate;">${body}
@@ -275,7 +279,7 @@ const notificationTemplates = {
       <div style="margin:0 0 20px;">${statusPill('Order confirmed')}</div>
       ${heading('Thanks for your order.')}
       ${paragraph(`Hi ${escapeHtml(firstName)}, your order is locked in. We'll email you again as soon as it ships.`)}
-      ${detailCard([['Order number', `#${escapeHtml(orderId)}`]])}
+      ${detailCard([['Order number', `#${escapeHtml(orderId)}`]], { spaceBetween: true })}
       ${orderTable(orderDetails)}
       ${button('Track your order', `${SITE_URL}/track-order`)}
       ${supportNote()}
