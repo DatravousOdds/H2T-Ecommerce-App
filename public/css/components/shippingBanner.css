@@ -1,0 +1,76 @@
+/* Free-shipping announcement strip, sits between the nav and the home hero.
+   Background is a darker red than the hero's #f30c1e so white 14px text
+   clears WCAG AA contrast (~5.9:1). */
+
+.shipping-banner {
+  --ship-red: #c8102e;
+  --ship-red-hover: #a00d24;
+
+  background: var(--ship-red);
+  color: #fff;
+}
+
+.shipping-banner__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  font: 500 14px/1.4 Inter, sans-serif;
+  text-align: center;
+}
+
+.shipping-banner__message {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.shipping-banner__message i {
+  font-size: 16px;
+}
+
+.shipping-banner__message strong {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.shipping-banner__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.shipping-banner__link:hover {
+  color: #fff;
+  text-decoration-thickness: 2px;
+}
+
+.shipping-banner__link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (max-width: 480px) {
+  .shipping-banner__inner {
+    padding: 4px 16px;
+    font-size: 13px;
+  }
+
+  /* Drop the secondary clause on phones so the strip stays one line + link. */
+  .shipping-banner__detail {
+    display: none;
+  }
+}
