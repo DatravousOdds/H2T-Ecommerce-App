@@ -1,99 +1,134 @@
-/* Free-shipping announcement strip, sits between the nav and the home hero.
+/* Free-shipping announcement ticker, sits between the nav and the home hero.
    Off-white so it reads as separate from the black hero instead of a second
-   red block competing with the hero's #f30c1e CTAs; red is kept to the icon. */
+   red block competing with the hero's #f30c1e CTAs; red is kept to the icon.
+
+   Loop: the track holds two identical groups and slides left by exactly one
+   group width (-50% of the track), then snaps back, so the seam is invisible.
+   Each group is at least as wide as the viewport (min-width: 100%), so there
+   is never empty space on wide screens. */
 
 .shipping-banner {
   --ship-red: #c8102e;
   --ship-ink: #070707;
+  --ship-duration: 40s;
 
   background: #f4f4f2;
   color: var(--ship-ink);
   border-bottom: 1px solid #e2e2df;
+  overflow: hidden;
 }
 
-.shipping-banner__inner {
+/* The whole strip is the tap target -- a link inside moving text would be
+   hard to hit on a phone. */
+.shipping-banner__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.shipping-banner__link:hover {
+  color: inherit;
+}
+
+.shipping-banner__link:focus-visible {
+  outline: 2px solid var(--ship-ink);
+  outline-offset: -3px;
+}
+
+.shipping-banner__track {
+  display: flex;
+  width: max-content;
+  min-width: 200%;
+  animation: shipping-banner-scroll var(--ship-duration) linear infinite;
+}
+
+/* Let people stop it to read (or tap) it. */
+.shipping-banner:hover .shipping-banner__track,
+.shipping-banner__link:focus-visible .shipping-banner__track {
+  animation-play-state: paused;
+}
+
+.shipping-banner__group {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-around;
+  min-width: 50%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shipping-banner__item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 16px;
-  font: 500 14px/1.4 Inter, sans-serif;
-  text-align: center;
-}
-
-.shipping-banner__message {
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
-  margin: 0;
+  min-height: 44px;
+  padding: 0 32px;
+  font: 500 14px/1.4 Inter, sans-serif;
+  white-space: nowrap;
 }
 
-.shipping-banner__message i {
+.shipping-banner__item i {
   font-size: 16px;
   color: var(--ship-red);
 }
 
-.shipping-banner__message strong {
+.shipping-banner__item strong {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.shipping-banner__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-  min-height: 44px;
-  padding: 0 4px;
-  color: var(--ship-ink);
+.shipping-banner__cta {
+  margin-left: 4px;
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
-  white-space: nowrap;
 }
 
-.shipping-banner__link:hover {
+.shipping-banner__link:hover .shipping-banner__cta {
   color: var(--ship-red);
-  text-decoration-thickness: 2px;
 }
 
-.shipping-banner__link:focus-visible {
-  outline: 2px solid var(--ship-ink);
-  outline-offset: 2px;
-  border-radius: 2px;
+@keyframes shipping-banner-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 @media (max-width: 480px) {
-  .shipping-banner__inner {
-    flex-wrap: nowrap;
+  .shipping-banner {
+    --ship-duration: 28s;
+  }
+
+  .shipping-banner__item {
     gap: 8px;
-    padding: 0 12px;
+    padding: 0 20px;
     font-size: 13px;
-  }
-
-  .shipping-banner__message {
-    gap: 6px;
-  }
-
-  .shipping-banner__message strong {
-    letter-spacing: 0.02em;
-  }
-
-  /* "Free shipping over $150" on phones so message + link fit on one line. */
-  .shipping-banner__detail {
-    display: none;
   }
 }
 
-@media (max-width: 360px) {
-  .shipping-banner__inner {
-    font-size: 12px;
+/* No motion: show one centered, static copy of the message. */
+@media (prefers-reduced-motion: reduce) {
+  .shipping-banner__track {
+    width: 100%;
+    min-width: 0;
+    animation: none;
   }
 
-  .shipping-banner__message i {
+  .shipping-banner__group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .shipping-banner__group + .shipping-banner__group,
+  .shipping-banner__item + .shipping-banner__item {
     display: none;
+  }
+
+  .shipping-banner__item {
+    white-space: normal;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
   }
 }
