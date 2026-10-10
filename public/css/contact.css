@@ -1,117 +1,655 @@
-/* Contact page hero */
-.contact-header {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-    url("../images/BGcontactpage.jpg");
-  background-size: cover;
-  background-position: center;
-  width: 100%;
-  height: 40vh;
+/* Brand red #f30c1e is 4.30:1 on white -- under the 4.5:1 WCAG AA minimum
+   for normal-size text. Use the design palette's darker red (6.47:1) for red
+   *text* on light backgrounds; the bright red stays for fills and for text
+   on the black hero, where it passes (4.68:1). This file only loads on the
+   contact page, so :root here is effectively page-scoped. */
+:root {
+  --contact-red-text: #b91c1c;
+}
+
+/* ---------- Shared bits ---------- */
+.contact-eyebrow {
+  margin: 0;
+  font-size: var(--font-size-med);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--contact-red-text);
+}
+
+.contact-hero .contact-eyebrow {
+  color: var(--color-text-alert);
+}
+
+/* ---------- Hero ---------- */
+.contact-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  min-height: 360px;
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+}
+
+/* Left padding tracks the 1200px container's *content* edge (its outer edge
+   + its own 2rem padding) so the hero text lines up with the sections below,
+   while the black background still runs full-bleed. */
+.contact-hero__text {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 14px;
+  gap: 16px;
+  padding: 56px 2rem 56px max(2rem, calc((100vw - 1200px) / 2 + 2rem));
 }
 
-.contact-header h1 {
-  color: #fff;
+.contact-breadcrumb {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #9a9a9a;
 }
 
-.contact-header p {
-  color: #fff;
-  margin-top: 8px;
-}
-
-#breadcrumb {
-  padding: 1rem 2rem;
-  background-color: #f5f5f5;
-  margin-bottom: 1rem;
-}
-
-#breadcrumb a {
-  color: #333;
+.contact-breadcrumb a {
+  color: #9a9a9a;
   text-decoration: none;
-  font-weight: 500;
 }
 
-#breadcrumb a:hover {
-  color: var(--color-button-primary);
+.contact-breadcrumb a:hover {
+  opacity: 0.8;
 }
 
-#breadcrumb .breadcrumb-separator {
-  margin: 0 0.5rem;
-  color: #666;
-}
-
-#breadcrumb .breadcrumb-current {
-  color: var(--color-button-primary);
-  font-weight: 600;
-}
-
-/* Contact form + FAQ */
-#contact-wrapper {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-}
-
-#form-details {
-  flex: 1 1 55%;
-  padding: 40px;
-  background-color: var(--color-background-primary);
-  border: 1px solid #F2F2F2;
-  border-radius: 8px;
-  /* box-shadow: 0px 4px 16px hsl(208 20% 79% / 1); */
-}
-
-#form-details form {
-  width: 100% !important;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-#form-details form span {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--color-button-primary);
-  letter-spacing: 1px;
-}
-
-#form-details form h2 {
-  font-size: 26px;
-  line-height: 35px;
-  padding: 10px 0 20px;
-}
-
-#form-details form input,
-#form-details form textarea {
-  width: 100%;
-  padding: 12px 15px;
-  outline: none;
-  margin-bottom: 20px;
-  border: 1px solid #e1e1e1;
-  border-radius: 12px;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 14px;
-  transition: border-color 0.2s ease-in-out;
-}
-
-#form-details form input:focus,
-#form-details form textarea:focus {
-  border-color: var(--color-button-primary);
-}
-
-#form-details form button {
-  width: 100% !important;
-  background-color: var(--color-button-primary);
+.contact-breadcrumb [aria-current="page"] {
   color: var(--color-text-secondary);
 }
 
-#form-details form button:disabled {
+.contact-hero__title {
+  margin: 0;
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: inherit;
+}
+
+.contact-hero__sub {
+  margin: 0;
+  max-width: 30em;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: #d4d4d4;
+  text-wrap: pretty;
+}
+
+.contact-hero__media {
+  position: relative;
+}
+
+.contact-hero__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Brand edge-blend: fades the photo into the black text panel. */
+.contact-hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--color-background-secondary), transparent 45%);
+}
+
+@media (max-width: 768px) {
+  .contact-hero {
+    grid-template-columns: 1fr;
+  }
+
+  /* Image on top as a short banner; text below keeps full width. */
+  .contact-hero__media {
+    order: -1;
+    height: 180px;
+  }
+
+  .contact-hero__media::after {
+    background: linear-gradient(to top, var(--color-background-secondary), transparent 60%);
+  }
+
+  .contact-hero__text {
+    padding: 32px 1rem 40px;
+  }
+
+  .contact-hero__title {
+    font-size: 2.25rem;
+  }
+
+  .contact-hero__sub {
+    font-size: 1rem;
+  }
+}
+
+/* ---------- Content column ---------- */
+.contact-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 72px 2rem 96px;
+}
+
+.contact-h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.contact-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-muted {
+  margin: 0;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: #666;
+}
+
+.contact-muted--sm {
+  font-size: var(--font-size-med);
+}
+
+/* ---------- Info + form grid ---------- */
+/* auto-fit + min(100%, 360px): two columns when there's room for both at
+   360px, one column otherwise -- no breakpoint needed. The min() stops the
+   360px floor from overflowing on phones narrower than that. */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 56px;
+  align-items: start;
+}
+
+.contact-reach {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.contact-methods {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact-method {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.contact-method:last-child {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.contact-method__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f4f3f1;
+  color: var(--color-text-primary);
+}
+
+.contact-method__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-method__title {
+  font-weight: 600;
+}
+
+.contact-method__desc {
+  font-size: var(--font-size-med);
+  color: #666;
+}
+
+/* Primary tap target on phones (call / email / directions). 10px of vertical
+   padding takes the ~20px text line to a 40px touch area; the negative
+   margins cancel that padding visually so the row layout doesn't shift.
+   align-self keeps the hit area to the text width instead of the full row. */
+.contact-method__action {
+  align-self: flex-start;
+  padding: 10px 0;
+  margin: -6px 0 -10px;
+  font-size: var(--font-size-med);
+  font-weight: 600;
+  color: var(--contact-red-text);
+  text-decoration: none;
+  overflow-wrap: anywhere; /* long email on narrow screens */
+}
+
+.contact-method__action:hover {
+  opacity: 0.8;
+}
+
+/* ---------- Form card ---------- */
+.contact-card {
+  padding: 32px;
+  background: var(--color-background-primary);
+  border-radius: 12px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 16px 40px rgba(0, 0, 0, 0.06);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Same [hidden] override issue as .contact-success below. */
+.contact-form[hidden] {
+  display: none;
+}
+
+.contact-form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.contact-field label {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* .contact-form prefix is deliberate: components/forms.css has a global
+   input:not(..., input[type="file"]) rule worth (0,1,2) -- a :not() takes
+   the specificity of its most specific argument. Two classes (0,2,1) beat it
+   without resorting to !important. */
+.contact-form .contact-field input,
+.contact-form .contact-field select,
+.contact-form .contact-field textarea {
+  display: block;
+  width: 100%;
+  max-width: none;
+  box-shadow: none;
+  padding: 12px 15px;
+  font: 14px/1.5 var(--ui-font);
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.contact-field input:focus,
+.contact-field select:focus,
+.contact-field textarea:focus {
+  border-color: var(--color-text-alert);
+}
+
+/* Fields flagged by JS after a failed submit. */
+.contact-form .contact-field [aria-invalid="true"] {
+  border-color: var(--color-text-alert);
+}
+
+.contact-field textarea {
+  resize: vertical;
+}
+
+/* Native select arrow differs per browser; hide it and draw our own icon.
+   pointer-events: none lets clicks on the icon fall through to the select. */
+.contact-select {
+  position: relative;
+}
+
+/* Must match the boosted base field rule's specificity (and come after it),
+   or its padding-right loses and the text runs under the chevron. */
+.contact-form .contact-select select {
+  appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.contact-select i {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #757575;
+  pointer-events: none;
+}
+
+.contact-field__error {
+  font-size: var(--font-size-sm);
+  color: var(--contact-red-text);
+}
+
+.contact-field__error:empty {
+  display: none;
+}
+
+/* Message error sits left, counter pinned right even when there's no error. */
+.contact-field__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--font-size-sm);
+  color: #757575;
+}
+
+.contact-field__meta .contact-field__error:empty {
+  display: block;
+}
+
+.contact-form__alert {
+  margin: 0;
+  padding: 10px 15px;
+  font-size: var(--font-size-med);
+  color: var(--contact-red-text);
+  background: #fdeaea;
+  border: 1px solid #f5b8b8;
+  border-radius: 8px;
+}
+
+.contact-form__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contact-form__note {
+  font-size: var(--font-size-sm);
+  color: #757575;
+}
+
+/* ---------- Buttons ---------- */
+.contact-btn {
+  font-family: var(--ui-font);
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-btn--primary {
+  padding: 1rem 2rem;
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  background: var(--color-button-primary);
+  border: none;
+}
+
+.contact-btn--primary:hover {
+  background: #b91c1c;
+}
+
+.contact-btn--primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.contact-btn--ghost {
+  padding: 0.75rem 1.5rem;
+  font-size: var(--font-size-med);
+  color: var(--color-text-primary);
+  background: transparent;
+  border: 1px solid #e1e1e1;
+}
+
+.contact-btn--ghost:hover {
+  border-color: var(--color-text-primary);
+}
+
+.contact-btn:focus-visible {
+  outline: 2px solid var(--color-text-alert);
+  outline-offset: 2px;
+}
+
+/* ---------- Success state ---------- */
+.contact-success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px 0;
+}
+
+/* The flex display above would override the [hidden] attribute. */
+.contact-success[hidden] {
+  display: none;
+}
+
+.contact-success__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  font-size: 22px;
+  border-radius: 50%;
+  color: var(--color-status-success);
+  background: var(--color-status-success-light);
+}
+
+.contact-success h2:focus {
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .contact-container {
+    padding: 48px 1rem 64px;
+  }
+
+  .contact-card {
+    padding: 24px;
+  }
+
+  .contact-form__footer .contact-btn--primary {
+    width: 100%;
+  }
+}
+
+/* ---------- FAQ ---------- */
+.contact-faq {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 56px;
+  align-items: start; /* without this the intro stretches and sticky has no room to move */
+  margin-top: 96px;
+}
+
+/* top: 112px = 80px sticky nav + 32px breathing room. */
+.contact-faq__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 112px;
+}
+
+.contact-h2--lg {
+  font-size: 2.875rem;
+  line-height: 1.17;
+}
+
+.contact-search {
+  position: relative;
+  max-width: 360px;
+}
+
+.contact-search i {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  font-size: var(--font-size-med);
+  color: #757575;
+  pointer-events: none;
+}
+
+/* Same global forms.css conflict as .contact-form inputs above. */
+.contact-faq .contact-search input {
+  width: 100%;
+  max-width: none;
+  box-shadow: none;
+  padding: 12px 15px 12px 40px;
+  font: 14px var(--ui-font);
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+  border: 1px solid #e1e1e1;
+  border-radius: 999px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.contact-search input:focus {
+  border-color: var(--color-text-alert);
+}
+
+.contact-faq__list {
+  border-top: 1px solid #e5e7eb;
+}
+
+.contact-faq__item {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.contact-faq__q {
+  margin: 0;
+  font: inherit;
+}
+
+.contact-faq__toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 22px 0;
+  font: 600 16px/1.4 var(--ui-font);
+  color: var(--color-text-primary);
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.contact-faq__toggle:focus-visible {
+  outline: 2px solid var(--color-text-alert);
+  outline-offset: 2px;
+}
+
+.contact-faq__chip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  border-radius: 50%;
+  color: var(--color-text-primary);
+  background: #f4f3f1;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Open/closed look is driven by aria-expanded, so JS only flips one
+   attribute and the visual state can never disagree with the a11y state. */
+.contact-faq__toggle[aria-expanded="true"] .contact-faq__chip {
+  color: var(--color-text-secondary);
+  background: var(--color-button-primary);
+}
+
+/* Hover feedback before the click. Wrapped in (hover: hover) so touch
+   screens don't keep a "stuck" hover color after a tap. */
+@media (hover: hover) {
+  .contact-faq__toggle:hover .contact-faq__chip {
+    background: #e8e6e3;
+  }
+
+  .contact-faq__toggle[aria-expanded="true"]:hover .contact-faq__chip {
+    background: var(--contact-red-text);
+  }
+}
+
+/* Two-class selectors so these beat Font Awesome's own .fa-solid display
+   rule, which the kit injects after this stylesheet loads. */
+.contact-faq__chip .contact-faq__icon-open,
+.contact-faq__toggle[aria-expanded="true"] .contact-faq__chip .contact-faq__icon-closed {
+  display: none;
+}
+
+.contact-faq__toggle[aria-expanded="true"] .contact-faq__chip .contact-faq__icon-open {
+  display: inline-block;
+}
+
+.contact-faq__a p {
+  margin: 0;
+  padding: 0 44px 22px 0;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: #666;
+  text-wrap: pretty;
+}
+
+/* Never display:none -- a live region must stay rendered before its text
+   changes or screen readers skip the announcement. Empty, it's 0px tall. */
+.contact-faq__empty {
+  margin: 0;
+  font-size: var(--font-size-med);
+  color: #666;
+}
+
+.contact-faq__empty:not(:empty) {
+  padding: 22px 0;
+}
+
+/* The grid collapses to one column below ~760px (2 x 320px + 56px gap +
+   container padding). Stacked, a sticky intro would sit on top of the
+   questions while scrolling, so turn it off. */
+@media (max-width: 760px) {
+  .contact-faq {
+    gap: 32px;
+    margin-top: 64px;
+  }
+
+  .contact-faq__intro {
+    position: static;
+  }
+
+  .contact-h2--lg {
+    font-size: 2.25rem;
+  }
+
+  .contact-search {
+    max-width: none;
+  }
+
+  .contact-faq__a p {
+    padding-right: 0;
+  }
 }
 
 /* Off-screen, not display:none -- a display:none/hidden field is a well-known
@@ -124,192 +662,4 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
-}
-
-.contact-form-status {
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-bottom: 16px;
-}
-
-.contact-form-status.success {
-  background: #eafbea;
-  color: #1a7a1a;
-  border: 1px solid #b7e6b7;
-}
-
-.contact-form-status.error {
-  background: #fdeaea;
-  color: var(--color-button-primary, #f30c1e);
-  border: 1px solid #f5b8b8;
-}
-
-.faqs-styles {
-  flex: 1 1 40%;
-  flex-direction: column !important;
-  padding: 40px;
-  background-color: var(--color-background-primary);
-  border: 1px solid #F2F2F2;
-  border-radius: 8px;
-  /* box-shadow: 0px 4px 16px hsl(208 20% 79% / 1); */
-}
-
-.faqs-title {
-  text-align: left;
-  font-size: 26px;
-  padding-bottom: 20px;
-}
-
-.faqs-section hr {
-  border: none;
-  border-top: 1px solid #C3C3C3;
-  margin: 0;
-}
-
-.faqs-detail-styles {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  gap: 10px;
-}
-
-.faqs-detail-styles h6 {
-  line-height: 24px;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.faqs-detail-styles a {
-  text-decoration: none;
-  text-transform: capitalize;
-  color: var(--color-text-primary);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.faqs-detail-styles div {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.faqs-detail-styles i {
-  color: var(--color-button-primary);
-}
-
-.faqs-detail-styles a:hover {
-  color: var(--color-button-primary);
-}
-
-/* Contact info cards */
-#info-section {
-  margin-top: 20px;
-}
-
-#contact-info {
-  display: flex;
-  justify-content: space-around;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-#contact-info .info-container {
-  min-width: 250px;
-  width: 400px;
-  padding: 40px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  border: 1px solid #C3C3C3;
-  border-radius: 8px;
-  /* box-shadow: 0px 4px 16px hsl(208 20% 79% / 1); */
-}
-
-.info-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-
-.info-icon i {
-  font-size: 1.5rem;
-  color: var(--color-button-primary);
-}
-
-.info-container h2 {
-  font-size: 22px;
-  margin-bottom: 4px;
-}
-
-.info-container p {
-  color: var(--color-text-muted);
-  line-height: 1.4;
-  text-align: center;
-}
-
-.info-container .info-detail {
-  color: var(--color-text-primary);
-  font-weight: 600;
-  margin-top: 6px;
-}
-
-@media (max-width: 1024px) {
-  #contact-info .info-container {
-    width: 100%;
-  }
-}
-
-@media (max-width: 992px) {
-  #contact-wrapper {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #contact-info {
-    padding: 32px 39px;
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-  }
-
-  #form-details {
-    width: 90%;
-  }
-
-  .faqs-styles {
-    width: 90%;
-  }
-}
-
-@media (max-width: 768px) {
-  .contact-header p {
-    font-size: 14px;
-  }
-
-  #form-details {
-    width: 100%;
-    padding: 24px;
-  }
-
-  .faqs-styles {
-    width: 100%;
-    padding: 24px;
-  }
-
-  #contact-info {
-    flex-direction: column;
-  }
-
-  #contact-info .info-container {
-    width: 100%;
-  }
 }
