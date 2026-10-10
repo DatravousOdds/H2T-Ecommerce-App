@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="css/components/cartDrawer.css"/>
     <link rel="stylesheet" href="css/pages/index.css" />
     <link rel="stylesheet" href="css/components/homeHero.css" />
+    <link rel="stylesheet" href="css/components/shippingBanner.css" />
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,6 +61,60 @@
   </head>
 
   <body>
+    <!-- Free shipping banner: announcement ticker above the navbar. The
+         visible track is aria-hidden (its text repeats to make the loop
+         seamless); the link's aria-label gives screen readers one copy. -->
+    <aside class="shipping-banner" aria-label="Shipping offer">
+      <a href="/shop" class="shipping-banner__link" aria-label="Free shipping on orders over $150. Shop now">
+        <div class="shipping-banner__track" aria-hidden="true">
+          <ul class="shipping-banner__group">
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+          </ul>
+          <ul class="shipping-banner__group">
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+            <li class="shipping-banner__item">
+              <i class="fa-solid fa-truck-fast" aria-hidden="true"></i>
+              Free shipping on orders over $150
+            </li>
+            <li class="shipping-banner__item shipping-banner__item--cta">Shop now →</li>
+          </ul>
+        </div>
+      </a>
+    </aside>
+
     <!-- Navbar -->
     <section id="header">
       <nav></nav>
