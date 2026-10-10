@@ -1,3 +1,12 @@
+/* Brand red #f30c1e is 4.30:1 on white -- under the 4.5:1 WCAG AA minimum
+   for normal-size text. Use the design palette's darker red (6.47:1) for red
+   *text* on light backgrounds; the bright red stays for fills and for text
+   on the black hero, where it passes (4.68:1). This file only loads on the
+   contact page, so :root here is effectively page-scoped. */
+:root {
+  --contact-red-text: #b91c1c;
+}
+
 /* ---------- Shared bits ---------- */
 .contact-eyebrow {
   margin: 0;
@@ -5,6 +14,10 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  color: var(--contact-red-text);
+}
+
+.contact-hero .contact-eyebrow {
   color: var(--color-text-alert);
 }
 
@@ -18,14 +31,15 @@
   overflow: hidden;
 }
 
-/* Left padding tracks the 1200px content column so the hero text lines up
-   with the sections below, while the black background still runs full-bleed. */
+/* Left padding tracks the 1200px container's *content* edge (its outer edge
+   + its own 2rem padding) so the hero text lines up with the sections below,
+   while the black background still runs full-bleed. */
 .contact-hero__text {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 16px;
-  padding: 56px 2rem 56px max(2rem, calc((100vw - 1200px) / 2));
+  padding: 56px 2rem 56px max(2rem, calc((100vw - 1200px) / 2 + 2rem));
 }
 
 .contact-breadcrumb {
@@ -119,7 +133,7 @@
 .contact-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 72px 2rem 0;
+  padding: 72px 2rem 96px;
 }
 
 .contact-h2 {
@@ -208,11 +222,17 @@
   color: #666;
 }
 
+/* Primary tap target on phones (call / email / directions). 10px of vertical
+   padding takes the ~20px text line to a 40px touch area; the negative
+   margins cancel that padding visually so the row layout doesn't shift.
+   align-self keeps the hit area to the text width instead of the full row. */
 .contact-method__action {
-  margin-top: 4px;
+  align-self: flex-start;
+  padding: 10px 0;
+  margin: -6px 0 -10px;
   font-size: var(--font-size-med);
   font-weight: 600;
-  color: var(--color-text-alert);
+  color: var(--contact-red-text);
   text-decoration: none;
   overflow-wrap: anywhere; /* long email on narrow screens */
 }
@@ -323,7 +343,7 @@
 
 .contact-field__error {
   font-size: var(--font-size-sm);
-  color: var(--color-text-alert);
+  color: var(--contact-red-text);
 }
 
 .contact-field__error:empty {
@@ -347,7 +367,7 @@
   margin: 0;
   padding: 10px 15px;
   font-size: var(--font-size-med);
-  color: var(--color-text-alert);
+  color: var(--contact-red-text);
   background: #fdeaea;
   border: 1px solid #f5b8b8;
   border-radius: 8px;
@@ -440,7 +460,7 @@
 
 @media (max-width: 768px) {
   .contact-container {
-    padding: 48px 1rem 0;
+    padding: 48px 1rem 64px;
   }
 
   .contact-card {
@@ -560,6 +580,18 @@
 .contact-faq__toggle[aria-expanded="true"] .contact-faq__chip {
   color: var(--color-text-secondary);
   background: var(--color-button-primary);
+}
+
+/* Hover feedback before the click. Wrapped in (hover: hover) so touch
+   screens don't keep a "stuck" hover color after a tap. */
+@media (hover: hover) {
+  .contact-faq__toggle:hover .contact-faq__chip {
+    background: #e8e6e3;
+  }
+
+  .contact-faq__toggle[aria-expanded="true"]:hover .contact-faq__chip {
+    background: var(--contact-red-text);
+  }
 }
 
 /* Two-class selectors so these beat Font Awesome's own .fa-solid display
