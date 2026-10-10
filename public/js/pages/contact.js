@@ -134,7 +134,10 @@ async function sendMessage(values) {
             message: values.message,
             website: values.website,
         }),
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        // Optional call: AbortSignal.timeout is Safari 16+ / Chrome 103+.
+        // On older browsers this is undefined, so the request just has no
+        // timeout instead of throwing and blocking every submit.
+        signal: AbortSignal.timeout?.(REQUEST_TIMEOUT_MS),
     });
 
     // A proxy/crash can return an HTML error page, so don't assume JSON.
