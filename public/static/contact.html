@@ -121,7 +121,10 @@
         </div>
 
         <div class="contact-card">
-          <form id="contact-form" class="contact-form" novalidate>
+          <!-- method="post": if contact.js fails to load, the browser's fallback
+               submit must not put name/email/message in the URL (and from there
+               into history, logs, and Analytics page_location). -->
+          <form id="contact-form" class="contact-form" method="post" novalidate>
             <div class="contact-heading">
               <h2 class="contact-h2">Send us a message</h2>
               <p class="contact-muted contact-muted--sm">Goes straight to datravousodds@gmail.com. We'll reply to the email you enter.</p>
