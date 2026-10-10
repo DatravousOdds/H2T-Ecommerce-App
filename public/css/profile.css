@@ -10659,3 +10659,84 @@ input:checked + .slider:before {
     gap: 15rem;
   }
 }
+/* ---------- Seller dashboard: products toolbar (Filter + List an item) ----------
+   Kept last so it wins over the older stacked-column rules for
+   .products-header / .action-buttons / .list-products in the media queries
+   above. Root bug: #list-products-btn was laid out inline, so its padding
+   spilled out of its 20px-tall wrapper and overlapped the Filter button on
+   phones. Both buttons now share one height and are true flex boxes. */
+
+.products-header .action-buttons {
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.products-header .filter-btn,
+#list-products-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.products-header .filter-btn {
+  color: var(--color-text-primary, #070707);
+}
+
+#list-products-btn {
+  /* Brand red from global.css; --primary-red is redefined to #ef4444
+     further up this file. */
+  background-color: var(--color-button-primary, #f30c1e) !important;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+#list-products-btn:hover {
+  background-color: #b91c1c !important;
+}
+
+#list-products-btn:focus-visible,
+.products-header .filter-btn:focus-visible {
+  outline: 2px solid var(--color-text-primary, #070707);
+  outline-offset: 2px;
+}
+
+/* Phones: one row -- Filter on the left, the primary action filling the rest
+   of the row on the right (thumb side). */
+@media (max-width: 767.98px) {
+  .products-header .action-buttons {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .products-header .filter-opt,
+  .products-header .filter-data-container {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  .products-header .filter-btn {
+    width: auto;
+  }
+
+  .products-header .list-products {
+    display: flex;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  #list-products-btn {
+    width: 100%;
+  }
+}
