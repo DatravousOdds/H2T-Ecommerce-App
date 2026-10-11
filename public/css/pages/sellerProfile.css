@@ -1,43 +1,110 @@
+/* ---------------------------------------------------------------------------
+   Header: banner -> overlapping avatar + actions -> name/bio/stats.
+   Same banner + ringed-avatar treatment as the owner's own account page
+   (profile.css .profile-background / #profile-picture), so a seller looks
+   the same to shoppers as they do to themselves.
+   --------------------------------------------------------------------------- */
+
+/* Text colors that pass WCAG AA (4.5:1) on white at this page's 12-14px
+   sizes. The global --color-text-muted (#7D7D7D) is ~4.1:1 and brand red
+   ~4.3:1, both short. This file only loads on this page, so :root here is
+   effectively page-scoped and the global tokens stay untouched (same
+   approach and red value as the contact page redesign, PR #5). */
+:root {
+  --seller-muted-text: #6b6b6b; /* ~5.3:1 */
+  --seller-red-text: #b91c1c;   /* ~6.5:1 */
+}
+
 .seller-header {
+  margin-top: var(--gap-lg, 1.5rem);
+}
+
+/* Branded fallback -- "no banner set" is a normal end state, so it should
+   look deliberate rather than empty. */
+.seller-banner {
+  height: 220px;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(243, 12, 30, 0.35), transparent 55%),
+    linear-gradient(135deg, var(--color-background-secondary, #070707) 0%, #1c1c1c 100%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.seller-banner.has-image {
+  background-color: var(--color-background-secondary, #070707);
+}
+
+/* --avatar-overlap is how far the avatar pulls up into the banner. The
+   actions are pushed down by that same amount, so the Follow button always
+   starts below the banner no matter how the avatar and button sizes
+   change -- bottom-aligning them only cleared the banner by coincidence. */
+.seller-identity-row {
+  --avatar-overlap: 56px;
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gap-reg, 1rem);
+  padding: 0 1.5rem;
+  margin-top: calc(-1 * var(--avatar-overlap));
 }
 
 .seller-avatar {
-  width: 80px;
-  height: 80px;
+  width: 112px;
+  height: 112px;
   border-radius: 50%;
   object-fit: cover;
+  border: 4px solid var(--color-background-primary, #fff);
+  background-color: var(--color-background-primary, #fff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.seller-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm, 0.5rem);
+  padding-top: calc(var(--avatar-overlap) + var(--gap-xs, 0.75rem));
 }
 
 .seller-header-info {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  padding: 0 1.5rem;
+  margin-top: var(--gap-xs, 0.75rem);
 }
 
 .seller-username-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: var(--gap-sm, 0.5rem);
 }
 
 .seller-username {
   margin: 0;
+  font-size: var(--fs-h1, 2rem);
+  line-height: 1.15;
+  color: var(--color-text-primary, #070707);
+  overflow-wrap: anywhere;
+}
+
+.seller-username .skeleton-line {
+  width: 220px;
+  height: 1.75rem;
 }
 
 .verified-tag {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background-color: #000;
-  color: #fff;
-  padding: 0.2rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  background-color: var(--color-background-secondary, #070707);
+  color: var(--color-text-secondary, #fff);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: var(--fs-caption, 0.75rem);
   font-weight: 600;
 }
 
@@ -50,7 +117,8 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  color: #706f6f;
+  color: var(--seller-muted-text);
+  font-size: var(--fs-body-sm, 0.875rem);
 }
 
 .seller-rating-stars {
@@ -63,29 +131,53 @@
 }
 
 .seller-rating-stars .fa-regular.fa-star {
-  color: #d0d0d0;
+  color: var(--color-border-primary, #e5e7eb);
 }
 
-.seller-follow-stats {
+.seller-bio {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--color-text-primary, #070707);
+  font-size: var(--fs-body-sm, 0.875rem);
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+/* Plain stats, not buttons -- there's no followers/following list to open
+   yet, so nothing here should look clickable. Each stat is its own column
+   (number over label, divider between) so the row reads as four distinct
+   figures instead of one run-on line, and can't wrap mid-row on phones. */
+.seller-stats {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  margin: var(--gap-sm, 0.5rem) 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.seller-follow-stat {
-  border: 1px solid #d9d9d9;
-  background-color: #fff;
-  color: #000;
-  padding: 0.4rem 0.9rem;
-  border-radius: var(--border-radius-sm, 8px);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
+.seller-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0 1.5rem;
+  border-left: 1px solid var(--color-border-primary, #e5e7eb);
 }
 
-.seller-follow-stat:hover {
-  background-color: #f5f5f5;
+.seller-stats li:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.seller-stats strong {
+  color: var(--color-text-primary, #070707);
+  font-size: var(--fs-h4, 1.125rem);
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.seller-stats span {
+  color: var(--seller-muted-text);
+  font-size: var(--fs-body-sm, 0.875rem);
 }
 
 .seller-website-links {
@@ -98,15 +190,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  color: #000;
+  color: var(--color-text-primary, #070707);
   text-decoration: none;
-  font-size: 0.875rem;
+  font-size: var(--fs-body-sm, 0.875rem);
   font-weight: 600;
-  transition: 0.2s ease;
-}
-
-.seller-website-links .website-link:hover {
-  color: #706f6f;
+  transition: color 0.2s ease;
 }
 
 .seller-website-links .shopify {
@@ -125,98 +213,359 @@
   color: #f59400;
 }
 
-.follow-btn {
-  border: 2px solid #000;
-  background-color: #000;
-  color: #fff;
-  padding: 0.65rem 1.25rem;
-  border-radius: var(--border-radius-sm, 8px);
-  font-weight: 600;
+/* ---------------------------------------------------------------------------
+   Follow + secondary actions
+   --------------------------------------------------------------------------- */
+
+.follow-btn,
+.seller-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 120px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  font-size: var(--fs-body-sm, 0.875rem);
+  font-weight: 700;
+  text-decoration: none;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 
-.follow-btn:hover {
-  transform: translateY(-2px);
+.follow-btn {
+  border: 2px solid var(--color-background-secondary, #070707);
+  background-color: var(--color-background-secondary, #070707);
+  color: var(--color-text-secondary, #fff);
 }
 
 .follow-btn.is-following {
-  background-color: #fff;
-  color: #000;
+  background-color: var(--color-background-primary, #fff);
+  border-color: var(--color-border-primary, #e5e7eb);
+  color: var(--color-text-primary, #070707);
 }
 
+.follow-btn .unfollow-label {
+  display: none;
+}
+
+/* "Following" -> "Unfollow" preview. Keyboard focus gets it everywhere;
+   pointer hover only on devices that really hover (the (hover: hover) block
+   below), so a tap on a phone doesn't leave it stuck on. Both skip
+   .just-toggled, set by sellerProfile.js right after a follow lands so the
+   confirmation isn't instantly replaced by a red "Unfollow". */
+.follow-btn.is-following:not(.just-toggled):focus-visible {
+  border-color: var(--seller-red-text);
+  color: var(--seller-red-text);
+}
+
+.follow-btn.is-following:not(.just-toggled):focus-visible .follow-label {
+  display: none;
+}
+
+.follow-btn.is-following:not(.just-toggled):focus-visible .unfollow-label {
+  display: inline;
+}
+
+.follow-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Initial placeholder until the real follow state is known: a neutral pill
+   with the label hidden, so it never claims "Follow" for someone who
+   already follows. */
+.follow-btn.is-pending {
+  opacity: 1;
+  cursor: default;
+  background-color: #f3f4f6;
+  border-color: #f3f4f6;
+  color: transparent;
+}
+
+.seller-secondary-btn {
+  border: 2px solid var(--color-border-primary, #e5e7eb);
+  background-color: var(--color-background-primary, #fff);
+  color: var(--color-text-primary, #070707);
+}
+
+@media (hover: hover) {
+  .follow-btn:not(.is-following):not(:disabled):hover {
+    background-color: #2a2a2a;
+    border-color: #2a2a2a;
+  }
+
+  .follow-btn.is-following:not(.just-toggled):not(:disabled):hover {
+    border-color: var(--seller-red-text);
+    color: var(--seller-red-text);
+  }
+
+  .follow-btn.is-following:not(.just-toggled):not(:disabled):hover .follow-label {
+    display: none;
+  }
+
+  .follow-btn.is-following:not(.just-toggled):not(:disabled):hover .unfollow-label {
+    display: inline;
+  }
+
+  .seller-secondary-btn:hover {
+    border-color: var(--color-text-primary, #070707);
+  }
+
+  .seller-website-links .website-link:hover {
+    color: var(--seller-muted-text);
+  }
+
+  .seller-listing-tile:hover .seller-listing-media img {
+    transform: scale(1.04);
+  }
+}
+
+.follow-btn:focus-visible,
+.seller-secondary-btn:focus-visible,
+.seller-listing-tile:focus-visible {
+  outline: 2px solid var(--color-text-primary, #070707);
+  outline-offset: 3px;
+}
+
+.follow-error {
+  margin: var(--gap-sm, 0.5rem) 1.5rem 0;
+  text-align: right;
+  color: var(--seller-red-text);
+  font-size: var(--fs-body-sm, 0.875rem);
+}
+
+/* ---------------------------------------------------------------------------
+   Listings
+   --------------------------------------------------------------------------- */
+
 .seller-listings-section {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
+}
+
+.seller-listings-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--gap-sm, 0.5rem) var(--gap-reg, 1rem);
+  padding-bottom: var(--gap-reg, 1rem);
+  border-bottom: 1px solid var(--color-border-primary, #e5e7eb);
+}
+
+.seller-listings-header {
+  margin: 0;
+  font-size: var(--fs-h2, 1.5rem);
+}
+
+.seller-listings-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--seller-muted-text);
+  font-size: var(--fs-body-sm, 0.875rem);
 }
 
 .seller-listings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem var(--gap-med, 1.25rem);
+  margin-top: var(--gap-lg, 1.5rem);
 }
 
 .seller-listing-tile {
-  display: block;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  color: var(--color-text-primary, #070707);
   text-decoration: none;
-  border-radius: var(--border-radius-sm, 8px);
-  overflow: hidden;
+  border-radius: 12px;
 }
 
-.seller-listing-tile img {
+.seller-listing-media {
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #f3f4f6;
+}
+
+.seller-listing-media img {
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
+  transition: transform 0.25s ease;
+}
+
+.seller-listing-media .skeleton-image {
+  border-radius: 0;
+}
+
+.seller-listing-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.seller-listing-brand {
+  color: var(--seller-muted-text);
+  font-size: var(--fs-caption, 0.75rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seller-listing-name {
+  font-size: var(--fs-body-sm, 0.875rem);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seller-listing-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-sm, 0.5rem);
+  margin-top: 0.15rem;
 }
 
 .seller-listing-price {
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
-  background-color: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--border-radius-sm, 8px);
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-align: right;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
-.seller-listing-shipping {
-  display: block;
-  font-weight: 400;
-  font-size: 0.6875rem;
-  color: #d1d5db;
+.seller-listing-size {
+  color: var(--seller-muted-text);
+  font-size: var(--fs-caption, 0.75rem);
+  white-space: nowrap;
 }
 
-.seller-listings-empty {
-  color: #706f6f;
+/* Empty + error states -- same icon/heading/copy shape as the shop grid's
+   .chart-empty-state. */
+.seller-listings-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-sm, 0.5rem);
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--seller-muted-text);
 }
 
+.seller-listings-state i {
+  font-size: 2rem;
+}
+
+.seller-listings-state h1,
+.seller-listings-state h3 {
+  margin: 0;
+  color: var(--color-text-primary, #070707);
+  font-size: var(--fs-h4, 1.125rem);
+}
+
+.seller-listings-state p {
+  margin: 0;
+  max-width: 36ch;
+  font-size: var(--fs-body-sm, 0.875rem);
+}
+
+.seller-not-found {
+  margin-top: var(--gap-lg, 1.5rem);
+}
+
+.seller-not-found .seller-secondary-btn {
+  margin-top: var(--gap-sm, 0.5rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seller-listing-media img,
+  .follow-btn,
+  .seller-secondary-btn {
+    transition: none;
+  }
+
+  .seller-listing-tile:hover .seller-listing-media img {
+    transform: none;
+  }
+}
 
 @media (max-width: 768px) {
-  .seller-header {
-    flex-direction: column;
+  /* main.home-page-layout already supplies a 16px gutter at this width;
+     the global .section-p1 padding on top of it doubled the side gutter and
+     left ~120px between the header and the listings. */
+  .seller-header.section-p1,
+  .seller-listings-section.section-p1 {
+    padding: 0;
+  }
+
+  /* Four equal columns spanning the width, framed top and bottom, so the
+     row stays on one line down to ~320px and reads as its own band. */
+  .seller-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: var(--gap-xs, 0.75rem);
+    padding: var(--gap-xs, 0.75rem) 0;
+    border-top: 1px solid var(--color-border-primary, #e5e7eb);
+    border-bottom: 1px solid var(--color-border-primary, #e5e7eb);
+  }
+
+  .seller-stats li,
+  .seller-stats li:first-child {
     align-items: center;
+    padding: 0 0.25rem;
     text-align: center;
   }
 
+  .seller-stats span {
+    font-size: var(--fs-caption, 0.75rem);
+  }
+
+  .seller-listings-section {
+    margin-top: 2rem;
+  }
+
+  .seller-banner {
+    height: 140px;
+    border-radius: 8px;
+  }
+
+  .seller-identity-row {
+    --avatar-overlap: 44px;
+    padding: 0 0.75rem;
+  }
+
+  .seller-avatar {
+    width: 88px;
+    height: 88px;
+  }
+
   .seller-header-info {
-    margin-top: 0.5rem;
-    align-items: center;
+    padding: 0 0.75rem;
   }
 
-  .seller-follow-stats {
-    justify-content: center;
-  }
-
-  .seller-website-links {
-    justify-content: center;
+  .follow-error {
+    margin: var(--gap-sm, 0.5rem) 0.75rem 0;
   }
 
   .seller-username {
-    font-size: 1.25rem;
+    font-size: var(--fs-h2, 1.5rem);
+  }
+
+  .follow-btn,
+  .seller-secondary-btn {
+    min-width: 0;
+    padding: 0 1.1rem;
+  }
+
+  .seller-listings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem var(--gap-xs, 0.75rem);
   }
 }
