@@ -345,7 +345,13 @@ async function initSellerProfilePage() {
 
   const [sellerProfile, currentUser] = await Promise.all([
     getUserProfile(sellerId),
-    checkUserStatus(),
+    // This is a public page, so a failed viewer-profile load (checkUserStatus
+    // rejects if fetchUserProfile throws) degrades to "signed out" instead of
+    // rejecting the whole Promise.all and freezing the page on skeletons.
+    checkUserStatus().catch((error) => {
+      console.error("Error checking viewer auth on seller profile:", error);
+      return null;
+    }),
   ]);
 
   // Not `!sellerProfile.username`: signup creates profiles with
@@ -354,11 +360,14 @@ async function initSellerProfilePage() {
   // profile comes back as {}, so emptiness is the real "not found" signal
   // -- a username-less seller still gets their page and listings.
   if (!sellerProfile || Object.keys(sellerProfile).length === 0) {
+    // Nothing below is visible in this state, so skip the listings query
+    // and follow-state read entirely.
     renderSellerNotFound();
-  } else {
-    renderSellerHeader(sellerProfile);
-    renderSellerWebsiteLinks(sellerProfile);
+    return;
   }
+
+  renderSellerHeader(sellerProfile);
+  renderSellerWebsiteLinks(sellerProfile);
   await loadSellerListings(sellerId, listingsGrid);
 
   const isOwnProfile = currentUser?.userId === sellerId;
@@ -382,20 +391,32 @@ async function initSellerProfilePage() {
     if (isOwnProfile) {
       followBtn.style.display = "none";
     } else {
-      if (currentUser?.userId) {
-        const alreadyFollowing = await isFollowing(currentUser.userId, sellerId);
+      try {
+        const alreadyFollowing = currentUser?.userId
+          ? await isFollowing(currentUser.userId, sellerId)
+          : false;
         setFollowButtonState(followBtn, alreadyFollowing);
-      } else {
-        setFollowButtonState(followBtn, false);
+        wireFollowButton(
+          followBtn,
+          currentUser?.userId,
+          sellerId,
+          document.getElementById("seller-followers-count"),
+          sellerProfile?.stats?.followers || 0
+        );
+        markFollowButtonReady(followBtn);
+      } catch (error) {
+        // e.g. offline or permission-denied. Falling back to "Follow" would
+        // mislead an existing follower -- toggleFollow re-reads before
+        // writing, so their click would actually unfollow. Hide the button
+        // and say why rather than leave the placeholder spinning forever.
+        console.error("Error loading follow state:", error);
+        followBtn.style.display = "none";
+        const followErrorEl = document.getElementById("follow-error");
+        if (followErrorEl) {
+          followErrorEl.textContent = "Couldn't load follow status. Refresh to try again.";
+          followErrorEl.hidden = false;
+        }
       }
-      wireFollowButton(
-        followBtn,
-        currentUser?.userId,
-        sellerId,
-        document.getElementById("seller-followers-count"),
-        sellerProfile?.stats?.followers || 0
-      );
-      markFollowButtonReady(followBtn);
     }
   }
 }
