@@ -82,7 +82,10 @@
                      requires at least one photo to list, not the full set.
                      The video slot below stays static/category-independent. -->
                 <article class="image-container video-container" id="videoContainer">
-                    <input type="file" name="video" id="video" accept="video/mp4,video/quicktime,video/webm">
+                    <!-- accept="video/*" (not a MIME list) is what makes Android offer
+                         "Camcorder" alongside the gallery/files picker; the
+                         actual format check happens in handleVideoUpload(). -->
+                    <input type="file" name="video" id="video" accept="video/*">
                     <i class="fa-solid fa-video"></i>
                     <span>Add 1 video (optional, max 30s)</span>
                     <video class="video-preview" muted playsinline controls style="display: none;"></video>
