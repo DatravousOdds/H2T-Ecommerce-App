@@ -22,11 +22,17 @@ function firstImageUrl(listing) {
     : "/images/HypebeastBG.jpeg";
 }
 
-// Listing fields are seller-typed text going into innerHTML below.
+// Listing fields are seller-typed text going into innerHTML below, some of
+// it inside quoted attributes (alt/src/href). The textContent->innerHTML
+// trick used elsewhere only escapes & < >, not quotes, so a product named
+// `x" onload="...` would break out of alt="" -- escape quotes too.
 function escapeHtml(value) {
-  const div = document.createElement("div");
-  div.textContent = value;
-  return div.innerHTML;
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function listingTile(listing) {
@@ -40,9 +46,9 @@ function listingTile(listing) {
   // Free shipping is stated once in the section heading (sellerProfile.html)
   // rather than repeated on every tile.
   return `
-    <a class="seller-listing-tile" href="/shop/product.html?id=${listing.id}">
+    <a class="seller-listing-tile" href="/shop/product.html?id=${encodeURIComponent(listing.id)}">
       <div class="seller-listing-media">
-        <img src="${firstImageUrl(listing)}" alt="${name}" loading="lazy" />
+        <img src="${escapeHtml(firstImageUrl(listing))}" alt="${name}" loading="lazy" />
       </div>
       <div class="seller-listing-info">
         ${listing.brand ? `<span class="seller-listing-brand">${escapeHtml(listing.brand)}</span>` : ""}
@@ -210,7 +216,8 @@ function renderSellerHeader(sellerProfile) {
 }
 
 // getUserProfile returns {} for a 404 (bad/deleted id) and for a failed
-// request alike, so the copy covers both. Swaps the whole page body for a
+// request alike, so the copy covers both. (A real profile with no username
+// yet isn't this case -- it renders normally as "@unknown".) Swaps the whole page body for a
 // clear dead end instead of an "@unknown" profile with a live Follow button.
 function renderSellerNotFound() {
   const headerEl = document.querySelector(".seller-header");
@@ -341,7 +348,12 @@ async function initSellerProfilePage() {
     checkUserStatus(),
   ]);
 
-  if (!sellerProfile?.username) {
+  // Not `!sellerProfile.username`: signup creates profiles with
+  // username: "" (auth.js) until the user sets one, and the endpoint returns
+  // the full object for every existing profile. Only a missing/failed
+  // profile comes back as {}, so emptiness is the real "not found" signal
+  // -- a username-less seller still gets their page and listings.
+  if (!sellerProfile || Object.keys(sellerProfile).length === 0) {
     renderSellerNotFound();
   } else {
     renderSellerHeader(sellerProfile);
