@@ -61,8 +61,13 @@ body:has(> footer) {
 body:has(> footer) > main {
   flex: 1 0 auto;
   /* Flex items with margin: 0 auto shrink to their content instead of
-     stretching; width: 100% restores block behavior (max-width still caps it). */
+     stretching. stretch fills the row minus main's own margins, like a normal
+     block (width: 100% would overflow mains with side margins, e.g. trade).
+     max-width still caps it. Browsers use the last value they support. */
   width: 100%;
+  width: -moz-available;
+  width: -webkit-fill-available;
+  width: stretch;
 }
 
 /* Pages without a <main> wrapper: push the newsletter + footer to the bottom. */
