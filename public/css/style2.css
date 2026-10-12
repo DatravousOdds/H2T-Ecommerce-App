@@ -49,6 +49,27 @@ body {
   overflow-x: hidden;
 }
 
+/* Sticky footer: on pages with a footer, body becomes a column that fills the
+   viewport and <main> absorbs the leftover height, so short pages don't leave
+   blank space below the footer. Scoped with :has() so footer-less pages
+   (login, checkout, etc.) keep normal block layout. */
+body:has(> footer) {
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(> footer) > main {
+  flex: 1 0 auto;
+  /* Flex items with margin: 0 auto shrink to their content instead of
+     stretching; width: 100% restores block behavior (max-width still caps it). */
+  width: 100%;
+}
+
+/* Pages without a <main> wrapper: push the newsletter + footer to the bottom. */
+body:has(> footer):not(:has(> main)) > #newsletter {
+  margin-top: auto;
+}
+
 /* Utility Classes */
 .uppercase {
   text-transform: uppercase;
