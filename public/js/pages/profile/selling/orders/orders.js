@@ -5,6 +5,8 @@ import {
   auth,
   collection,
   db,
+  doc,
+  getDoc,
   getDocs,
   query,
   where,
@@ -238,13 +240,41 @@ function wireControls(allOrders) {
 // duplicate listeners each time.
 async function refreshOrders(userId) {
   currentOrders = await fetchSellerOrders(userId);
+  rerenderCurrentOrders();
+}
 
+function rerenderCurrentOrders() {
   const rangeSelect = document.getElementById("orders-filter");
   const searchInput = document.querySelector("#orders-filters .search-bar input");
   const range = rangeSelect ? rangeSelect.value : "all";
   const term = searchInput ? searchInput.value.trim() : "";
 
   applyFiltersAndRender(currentOrders, range, term);
+}
+
+// The table is a page-load snapshot, and ShipStation's tracking webhook can
+// move an order to "shipped" (carrier's first scan) after that -- so the one
+// order being opened is re-read right before its actions are shown, rather
+// than offering Mark Shipped/Cancel off stale status. Falls back to the
+// cached copy if the read fails: the server re-checks status inside a
+// transaction regardless, so a stale menu is a UX gap, not a correctness one.
+async function fetchFreshOrder(cached) {
+  try {
+    const snap = await getDoc(doc(db, "orders", cached.docId));
+    if (!snap.exists()) return cached;
+
+    const fresh = { ...snap.data(), docId: snap.id };
+    const index = currentOrders.findIndex((o) => o.docId === fresh.docId);
+    if (index !== -1) currentOrders[index] = fresh;
+
+    // Keep the table row's status badge in sync with what the menu shows.
+    if (fresh.fulfillmentStatus !== cached.fulfillmentStatus) rerenderCurrentOrders();
+
+    return fresh;
+  } catch (error) {
+    console.error("Couldn't refresh order before opening its actions:", error);
+    return cached;
+  }
 }
 
 function getOrderActionState(order) {
@@ -281,7 +311,11 @@ function openOrderActionMenu(order) {
   const isPrepaid = Boolean(order.shipstationShipmentId);
 
   menu.querySelector(".seller-order-action-item-name").textContent = order.item?.name || "Item";
-  menu.querySelector(".seller-order-action-status").textContent = `Status: ${status}`;
+  // shippedSource is set server-side by markOrderShipped -- "carrier" means
+  // the package's first carrier scan marked it shipped, not the seller.
+  const carrierConfirmed = status === "shipped" && order.shippedSource === "carrier";
+  menu.querySelector(".seller-order-action-status").textContent =
+    `Status: ${status}${carrierConfirmed ? " · confirmed by carrier scan" : ""}`;
   menu.querySelector(".seller-order-action-ship-fields").style.display = canShip && !isPrepaid ? "flex" : "none";
 
   const prepaidInfo = menu.querySelector(".seller-order-action-prepaid-info");
@@ -443,13 +477,13 @@ function wireOrderActions(userId) {
   const submitAuthPhotosBtn = document.getElementById("seller-submit-auth-photos-btn");
 
   if (table) {
-    table.addEventListener("click", (e) => {
+    table.addEventListener("click", async (e) => {
       const viewBtn = e.target.closest(".action-button.view");
       if (!viewBtn) return;
 
       const docId = viewBtn.closest("tr")?.dataset.docId;
       const order = currentOrders.find((o) => o.docId === docId);
-      if (order) openOrderActionMenu(order);
+      if (order) openOrderActionMenu(await fetchFreshOrder(order));
     });
   }
 
@@ -477,7 +511,20 @@ function wireOrderActions(userId) {
       }
 
       try {
-        await patchOrder(docId, { fulfillmentStatus: "shipped", trackingNumber, shippingCarrier });
+        const result = await patchOrder(docId, { fulfillmentStatus: "shipped", trackingNumber, shippingCarrier });
+
+        // Already shipped by the time this click landed (most often the
+        // carrier's scan beat a menu left open) -- the server made no
+        // change. Re-open on fresh data instead of closing, so the seller
+        // sees *why* nothing happened ("confirmed by carrier scan") rather
+        // than a menu that just vanishes.
+        if (result.alreadyShipped) {
+          await refreshOrders(userId);
+          const fresh = currentOrders.find((o) => o.docId === docId);
+          if (fresh) openOrderActionMenu(fresh);
+          return;
+        }
+
         closeOrderActionMenu();
         await refreshOrders(userId);
       } catch (error) {

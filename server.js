@@ -5,17 +5,13 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const jwt = require("jsonwebtoken");
-const easyship = require('@api/easyship');
 const resend = require("resend")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
-const { getRatesForCarrier, createLabel } = require('./services/shipstation');
+const { getRatesForCarrier, createLabel, toV2LabelId, getLabelTracking } = require('./services/shipstation');
+const { TRACK_EVENT_RESOURCE_TYPE, DELIVERED, parseLabelId, planTrackingUpdate } = require('./services/shipstationTracking');
+const { verifyShipstationWebhook } = require('./services/shipstationWebhookAuth');
 const { templateBuilder } = require('./services/emailTemplates');
-easyship.auth(process.env.EASYSHIP_KEY);
-if (process.env.EASYSHIP_KEY?.startsWith('sand_')) {
-    easyship.server('https://public-api-sandbox.easyship.com');
-}
 
 // Hexxo only lists clothing/accessories, so USPS's restricted-content rate
 // classes (media mail and its close relatives) are never legitimate for a
@@ -362,6 +358,167 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
   response.sendStatus(200);
 });
 
+// ShipStation API V2 tracking webhook (event `track_event_v2`, registered via
+// POST /v2/environment/webhooks). Registered before express.json() for the
+// same reason as Stripe's above: signature verification needs the exact raw
+// bytes. `type: '*/*'` so the body stays a Buffer regardless of the
+// Content-Type ShipStation sends.
+//
+// Response codes matter here -- ShipStation retries a non-2xx up to twice
+// (~30 min apart) and then drops the event. So: 2xx for anything a retry
+// can't fix (unknown label, non-tracking event), 5xx only for our own
+// transient failures (Firestore, the fetch-back below) where a retry helps.
+app.post('/webhooks/shipstation', express.raw({ type: '*/*' }), async (req, res) => {
+  const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : '';
+
+  const auth = await verifyShipstationWebhook(req.headers, rawBody, {
+    expectedToken: process.env.SHIPSTATION_WEBHOOK_TOKEN
+  }).catch((err) => ({ ok: false, status: 500, reason: err.message }));
+
+  if (!auth.ok) {
+    console.error(`ShipStation webhook rejected (${auth.status}): ${auth.reason}`);
+    return res.sendStatus(auth.status);
+  }
+  if (!auth.signed) {
+    // See the TEMPORARY note in shipstationWebhookAuth.js -- once this stops
+    // appearing in logs for real deliveries, signatures can be required.
+    console.warn('ShipStation webhook accepted without signature headers (shared token only)');
+  }
+
+  let event;
+  try {
+    event = JSON.parse(rawBody);
+  } catch {
+    return res.sendStatus(400);
+  }
+
+  if (event?.resource_type !== TRACK_EVENT_RESOURCE_TYPE) {
+    return res.sendStatus(200);
+  }
+
+  const labelId = parseLabelId(event.resource_url);
+  const data = event.data;
+  if (!labelId || !data?.status_code) {
+    console.error('ShipStation tracking webhook missing label id or status_code:', event.resource_url);
+    return res.sendStatus(400);
+  }
+
+  try {
+    const snapshot = await db.collection('orders').where('shipstationLabelId', '==', labelId).limit(1).get();
+    if (snapshot.empty) {
+      // Labels bought outside this app (or before shipstationLabelId existed)
+      // -- nothing of ours to update, and a retry won't change that.
+      console.warn(`ShipStation tracking webhook: no order for label ${labelId}`);
+      return res.sendStatus(200);
+    }
+
+    await handleShipstationTrackingUpdate(snapshot.docs[0].ref, labelId, data);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(`Failed to process ShipStation tracking webhook for label ${labelId}:`, err);
+    res.sendStatus(500);
+  }
+});
+
+async function handleShipstationTrackingUpdate(orderRef, labelId, data) {
+  // 1. Record the tracking snapshot and claim one-off notifications in one
+  //    transaction -- two deliveries for the same order racing each other
+  //    can't both see "not yet notified" and both notify.
+  const plan = await db.runTransaction(async (tx) => {
+    const order = (await tx.get(orderRef)).data();
+
+    // The label id matched, so this should never trip -- but if it ever
+    // does, writing another package's tracking onto this order is worse
+    // than dropping the event.
+    if (data.tracking_number && order.trackingNumber && data.tracking_number !== order.trackingNumber) {
+      return { mismatch: true, orderTracking: order.trackingNumber };
+    }
+
+    const plan = planTrackingUpdate({
+      fulfillmentStatus: order.fulfillmentStatus,
+      lastTrackingEventAtMs: order.lastTrackingEventAt?.toMillis?.() ?? null,
+      outForDeliveryNotified: Boolean(order.outForDeliveryNotifiedAt)
+    }, data);
+
+    if (!plan.stale) {
+      tx.update(orderRef, {
+        ...plan.snapshot,
+        ...(plan.notifyOutForDelivery ? { outForDeliveryNotifiedAt: admin.firestore.FieldValue.serverTimestamp() } : {}),
+        trackingUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    return { ...plan, order };
+  });
+
+  if (plan.mismatch) {
+    console.error(`ShipStation tracking for label ${labelId} has tracking_number ${data.tracking_number}, order has ${plan.orderTracking} -- ignored`);
+    return;
+  }
+
+  // 2. Status transitions. Both helpers are forward-only and no-op when the
+  //    order is already there, so a retried delivery is safe to re-run.
+  if (plan.ship) {
+    await markOrderShipped(orderRef, { source: 'carrier' });
+  }
+
+  if (plan.deliver) {
+    // Delivery starts the buyer's confirmation window and with it the
+    // seller's payout clock, so it's confirmed against ShipStation directly
+    // rather than trusted from the payload alone. A throw here (timeout,
+    // 5xx) propagates to a 500, and ShipStation's retry tries again.
+    const confirmed = await getLabelTracking(labelId);
+    if (DELIVERED.has(confirmed?.status_code)) {
+      // A package can go from label-created to delivered with no scan
+      // reaching us in between -- ship first so delivered always follows
+      // shipped (and shippedAt exists).
+      await markOrderShipped(orderRef, { source: 'carrier' });
+      await markOrderDelivered(orderRef, { source: 'carrier' });
+    } else {
+      console.warn(`ShipStation webhook said ${data.status_code} for ${labelId}, but /track reports ${confirmed?.status_code} -- not marking delivered`);
+    }
+  }
+
+  // 3. One-off notifications, only ever after the transaction committed
+  //    (transaction callbacks can re-run; notifications must not).
+  const { order } = plan;
+  const itemName = order.item?.name || "your item";
+
+  if (plan.notifyOutForDelivery) {
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Out for Delivery",
+      `Your order for ${itemName} is out for delivery today.`,
+      "/profile?tab=purchases"
+    );
+  }
+
+  if (plan.notifyAttention) {
+    const { kind, description } = plan.notifyAttention;
+    const detail = description ? ` (${description})` : "";
+    const title = kind === "attempt" ? "Delivery Attempted" : "Shipping Issue";
+
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      title,
+      kind === "attempt"
+        ? `The carrier tried to deliver your order for ${itemName} but couldn't complete it${detail}. Check tracking for next steps.`
+        : `There's a problem with the delivery of your order for ${itemName}${detail}. Check tracking for details.`,
+      "/profile?tab=purchases"
+    );
+    await createNotification(
+      order.sellerId,
+      "order_status",
+      title,
+      kind === "attempt"
+        ? `Delivery of your sale ${itemName} was attempted but not completed${detail}.`
+        : `The carrier reported a problem delivering your sale ${itemName}${detail}.`,
+      "/profile?tab=selling"
+    );
+  }
+}
+
 app.use(express.json());
 
 // New accounts get one free Tier 1 (QuickCheck) authentication. Granted here
@@ -497,76 +654,6 @@ app.post('/send/contact', async (req, res) => {
     return res.status(500).json({ success: false, message: 'Failed to send message. Please try again.' });
   }
 });
-
-app.post('/webhooks/easyship', async (req, res) => {
-  const signature = req.headers['x-easyship-signature'];
-  if (!signature) {
-    return res.sendStatus(401);
-  }
-
-  try {
-    jwt.verify(signature, process.env.EASYSHIP_WEBHOOK_SECRET, { algorithms: ['HS256'] });
-  } catch (err) {
-    console.error("Easyship webhook signature verification failed:", err.message);
-    return res.sendStatus(401);
-  }
-
-  const event = req.body;
-  console.log("Received Easyship webhook:", JSON.stringify(event));
-
-  if (event?.event_type !== 'shipment.tracking.status.changed') {
-    return res.sendStatus(200);
-  }
-
-  const shipment = event.data;
-  const shipmentId = shipment?.easyship_shipment_id;
-  const deliveryStatus = shipment?.status;
-
-  if (!shipmentId || deliveryStatus?.toLowerCase() !== 'delivered') {
-    return res.sendStatus(200);
-  }
-
-  try {
-    const snapshot = await db.collection('orders').where('easyshipShipmentId', '==', shipmentId).limit(1).get();
-    if (snapshot.empty) {
-      console.error(`No order found for Easyship shipment ${shipmentId}`);
-      return res.sendStatus(200);
-    }
-
-    const orderDoc = snapshot.docs[0];
-    const order = orderDoc.data();
-
-    // Already delivered (duplicate webhook delivery) or somehow not shipped
-    // yet -- either way, nothing to do. Not an error: Easyship's own docs
-    // don't promise exactly-once delivery.
-    if (order.fulfillmentStatus !== 'shipped') {
-      return res.sendStatus(200);
-    }
-
-    const deliveredAt = new Date();
-    await orderDoc.ref.update({
-      fulfillmentStatus: 'delivered',
-      deliveredAt,
-      deliveryConfirmationDeadlineAt: new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS),
-      deliveryConfirmationStatus: 'required',
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-
-    await createNotification(
-      order.buyerId,
-      "order_status",
-      "Order Delivered",
-      `Your order for ${order.item?.name || "your item"} has been delivered.`,
-      "/profile?tab=purchases"
-    );
-
-    res.sendStatus(200);
-  } catch (err) {
-    console.error("Failed to process Easyship webhook:", err);
-    res.sendStatus(500);
-  }
-});
-
 
 app.get('/carriers', async (req, res) => {
   try {
@@ -1593,11 +1680,10 @@ app.put("/users/:id", verifyAuth, async (req, res) => {
 // Sellers can never self-declare "delivered" -- that used to let a seller
 // start the buyer's 3-day delivery-confirmation window (deliveredAt) with a
 // single click, regardless of whether the item had actually arrived.
-// "delivered" is now only set from ground truth: the /webhooks/easyship
-// route below (for orders with a purchased label, order.easyshipShipmentId
-// set) or the buyer confirming receipt themselves via
-// BUYER_FULFILLMENT_TRANSITIONS (for self-ship orders, where no carrier
-// webhook exists to source that truth from).
+// "delivered" is only set from ground truth: the buyer confirming receipt
+// themselves via BUYER_FULFILLMENT_TRANSITIONS (and, once the ShipStation
+// V2 tracking webhook is live, the carrier's own delivery scan for
+// prepaid-label orders).
 const SELLER_FULFILLMENT_TRANSITIONS = {
   shipped: ["pending", "processing"]
 };
@@ -1605,6 +1691,116 @@ const SELLER_FULFILLMENT_TRANSITIONS = {
 const BUYER_FULFILLMENT_TRANSITIONS = {
   delivered: ["shipped"]
 };
+
+// The only two places an order moves to shipped/delivered. Callers (seller
+// PUT, buyer PUT, carrier webhooks) can race each other -- e.g. a seller on
+// a stale page clicking Mark Shipped seconds after the carrier's first scan
+// already did -- so the status check and the write happen inside one
+// transaction: whichever lands second sees the first's write and no-ops
+// instead of double-writing.
+//
+// Notifications are sent *after* the transaction, never inside it --
+// Firestore re-runs a transaction's callback when it hits contention, so
+// anything inside can execute more than once. Only the call whose result is
+// "shipped"/"delivered" (the one that actually made the transition) notifies.
+//
+// Both return { result, order }, result being one of:
+//   "shipped" | "delivered"                   -- this call made the transition
+//   "already_shipped" | "already_delivered"   -- someone else got there first
+//   "not_allowed"                             -- can't move there from current status
+//   "not_found"
+async function markOrderShipped(orderRef, { trackingNumber, shippingCarrier, source }) {
+  const outcome = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(orderRef);
+    if (!snap.exists) return { result: "not_found", order: null };
+
+    const order = snap.data();
+    if (order.fulfillmentStatus === "shipped") return { result: "already_shipped", order };
+    if (!SELLER_FULFILLMENT_TRANSITIONS.shipped.includes(order.fulfillmentStatus)) {
+      return { result: "not_allowed", order };
+    }
+
+    tx.update(orderRef, {
+      fulfillmentStatus: "shipped",
+      // A carrier scan doesn't carry new tracking info for prepaid orders --
+      // it's already on the order from label purchase -- so only overwrite
+      // when the caller actually supplied it (the self-ship seller path).
+      ...(trackingNumber !== undefined ? { trackingNumber } : {}),
+      ...(shippingCarrier !== undefined ? { shippingCarrier } : {}),
+      shippedAt: admin.firestore.FieldValue.serverTimestamp(),
+      shippedSource: source,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    return { result: "shipped", order };
+  });
+
+  if (outcome.result === "shipped") {
+    const { order } = outcome;
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Order Shipped",
+      `Your order for ${order.item?.name || "your item"} has shipped (tracking #${trackingNumber ?? order.trackingNumber}).`,
+      "/profile?tab=purchases"
+    );
+  }
+
+  return outcome;
+}
+
+async function markOrderDelivered(orderRef, { source }) {
+  const outcome = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(orderRef);
+    if (!snap.exists) return { result: "not_found", order: null };
+
+    const order = snap.data();
+    if (order.fulfillmentStatus === "delivered") return { result: "already_delivered", order };
+    if (!BUYER_FULFILLMENT_TRANSITIONS.delivered.includes(order.fulfillmentStatus)) {
+      return { result: "not_allowed", order };
+    }
+
+    // Plain Dates, not FieldValue.serverTimestamp() -- the deadline has to
+    // be computed from deliveredAt in the same write, and a serverTimestamp
+    // sentinel can't be used for arithmetic.
+    const deliveredAt = new Date();
+    tx.update(orderRef, {
+      fulfillmentStatus: "delivered",
+      deliveredAt,
+      deliveryConfirmationDeadlineAt: new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS),
+      deliveryConfirmationStatus: "required",
+      deliverySource: source,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    return { result: "delivered", order };
+  });
+
+  if (outcome.result === "delivered") {
+    const { order } = outcome;
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Order Delivered",
+      `Your order for ${order.item?.name || "your item"} has been delivered.`,
+      "/profile?tab=purchases"
+    );
+
+    // Seller only hears about carrier-confirmed deliveries -- a buyer's own
+    // "Mark as Received" already implies the buyer is engaged, while a
+    // carrier scan is the seller's first signal the 3-day confirmation
+    // window (and so their payout clock) has started.
+    if (source === "carrier") {
+      await createNotification(
+        order.sellerId,
+        "order_status",
+        "Order Delivered",
+        `Your sale of ${order.item?.name || "your item"} was delivered. The buyer now has 3 days to confirm receipt.`,
+        "/profile?tab=selling"
+      );
+    }
+  }
+
+  return outcome;
+}
 
 app.put("/orders/:id", verifyAuth, async (req, res) => {
   const data = req.body;
@@ -1638,60 +1834,77 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       return res.status(409).json({ success: false, message: "Order is locked!" })
     }
 
-    const updatedData = {};
-
+    // Seller marking shipped. Both prepaid-label and self-ship orders
+    // converge here (a prepaid label being generated deliberately doesn't
+    // set fulfillmentStatus itself -- see purchaseShippingLabel's call
+    // site). Role-specific input checks stay here; the status check itself
+    // lives in markOrderShipped's transaction, since order above is a
+    // pre-transaction read that a carrier webhook may have already outrun.
     if (isSeller && data.fulfillmentStatus !== undefined) {
-      const allowedFrom = SELLER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus];
-
-      if (!allowedFrom) {
+      if (!SELLER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus]) {
         return res.status(400).json({ success: false, message: `Sellers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
-      }
-      if (!allowedFrom.includes(order.fulfillmentStatus)) {
-        return res.status(409).json({ success: false, message: `Cannot mark "${data.fulfillmentStatus}" from "${order.fulfillmentStatus}"` });
       }
       if (!data.trackingNumber) {
         return res.status(400).json({ success: false, message: "Tracking number is required to mark an order shipped" });
       }
 
-      updatedData.fulfillmentStatus = data.fulfillmentStatus;
-      updatedData.trackingNumber = data.trackingNumber;
-      updatedData.shippingCarrier = data.shippingCarrier;
-      // Both prepaid-label and self-ship orders converge on this same
-      // branch to actually mark "shipped" (a prepaid label being generated
-      // deliberately doesn't set fulfillmentStatus itself -- see
-      // purchaseShippingLabel's call site) -- so this is the one place that
-      // needs to stamp it. Nothing else on the order doc records a
-      // per-stage timestamp for this transition otherwise.
-      updatedData.shippedAt = admin.firestore.FieldValue.serverTimestamp();
+      const { result, order: current } = await markOrderShipped(docRef.ref, {
+        trackingNumber: data.trackingNumber,
+        shippingCarrier: data.shippingCarrier,
+        source: "seller"
+      });
+
+      if (result === "shipped") {
+        return res.status(200).json({ update: true, message: "Update successful" });
+      }
+      if (result === "already_shipped") {
+        // Already shipped with a *different* tracking number means the
+        // seller is trying to change it, not just double-clicking -- a
+        // silent 200 would make them think the new number was saved.
+        if (current.trackingNumber && current.trackingNumber !== data.trackingNumber) {
+          return res.status(409).json({ success: false, message: "This order was already marked shipped with a different tracking number." });
+        }
+        // Same intent already satisfied (most often: the carrier's first
+        // scan beat a stale page's click) -- succeed without re-writing or
+        // re-notifying the buyer.
+        return res.status(200).json({
+          update: false,
+          alreadyShipped: true,
+          shippedSource: current.shippedSource || null,
+          message: current.shippedSource === "carrier"
+            ? "Already marked shipped by the carrier's scan."
+            : "Order was already marked shipped."
+        });
+      }
+      if (result === "not_found") {
+        return res.status(404).json({ success: false, message: "Document not found!" });
+      }
+      return res.status(409).json({ success: false, message: `Cannot mark "shipped" from "${current.fulfillmentStatus}"` });
     }
 
-    // Buyer-confirmed delivery -- only reachable when there's no Easyship
-    // shipment to source ground truth from instead (self-ship listings, or a
-    // prepaid listing whose label purchase failed and the seller had to ship
-    // manually). Orders with a real Easyship shipment are only ever moved to
-    // "delivered" by /webhooks/easyship below.
+    // Buyer-confirmed delivery -- currently open to every order. Once the
+    // ShipStation tracking webhook is live, prepaid-label orders get blocked
+    // here so only the carrier's delivery scan can mark them delivered.
     if (isBuyer && data.fulfillmentStatus !== undefined) {
-      const allowedFrom = BUYER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus];
-
-      if (!allowedFrom) {
+      if (!BUYER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus]) {
         return res.status(400).json({ success: false, message: `Buyers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
       }
-      if (!allowedFrom.includes(order.fulfillmentStatus)) {
-        return res.status(409).json({ success: false, message: `Cannot mark "${data.fulfillmentStatus}" from "${order.fulfillmentStatus}"` });
-      }
-      if (order.easyshipShipmentId) {
-        return res.status(409).json({ success: false, message: "This order's delivery is tracked automatically and can't be confirmed manually." });
-      }
 
-      // Plain Dates, not FieldValue.serverTimestamp() -- the deadline has to
-      // be computed from deliveredAt in the same write, and a serverTimestamp
-      // sentinel can't be used for arithmetic client-side.
-      const deliveredAt = new Date();
-      updatedData.fulfillmentStatus = "delivered";
-      updatedData.deliveredAt = deliveredAt;
-      updatedData.deliveryConfirmationDeadlineAt = new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS);
-      updatedData.deliveryConfirmationStatus = "required";
+      const { result, order: current } = await markOrderDelivered(docRef.ref, { source: "buyer" });
+
+      if (result === "delivered") {
+        return res.status(200).json({ update: true, message: "Update successful" });
+      }
+      if (result === "already_delivered") {
+        return res.status(200).json({ update: false, alreadyDelivered: true, message: "Order was already marked delivered." });
+      }
+      if (result === "not_found") {
+        return res.status(404).json({ success: false, message: "Document not found!" });
+      }
+      return res.status(409).json({ success: false, message: `Cannot mark "delivered" from "${current.fulfillmentStatus}"` });
     }
+
+    const updatedData = {};
 
     if(isAdmin) {
       if (data.status !== undefined) {
@@ -1707,28 +1920,6 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       ...updatedData,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-
-    const itemName = order.item?.name || "your item";
-
-    if (updatedData.fulfillmentStatus === "shipped") {
-      await createNotification(
-        order.buyerId,
-        "order_status",
-        "Order Shipped",
-        `Your order for ${itemName} has shipped (tracking #${data.trackingNumber}).`,
-        "/profile?tab=purchases"
-      );
-    }
-
-    if (updatedData.fulfillmentStatus === "delivered") {
-      await createNotification(
-        order.buyerId,
-        "order_status",
-        "Order Delivered",
-        `Your order for ${itemName} has been delivered.`,
-        "/profile?tab=purchases"
-      );
-    }
 
     res.status(200).json({ update: true, message: "Update successful"});
 
@@ -2407,7 +2598,7 @@ app.post("/api/admin/order-authentications/:orderId/decision", verifyAuth, async
       // Triggers the existing payment_intent.succeeded webhook unchanged --
       // that's what actually flips fulfillmentStatus to "processing",
       // records the tax transaction, bumps listing sale stats, AND already
-      // purchases a real EasyShip label unconditionally for prepaid-shipping
+      // purchases a real ShipStation label unconditionally for prepaid-shipping
       // listings (purchaseShippingLabel, called from inside that same
       // webhook) -- none of that is duplicated here. authenticationStatus is
       // set directly here (not left to the webhook) so the seller's
@@ -2988,18 +3179,34 @@ app.delete("/orders/:id", verifyAuth, async (req, res) => {
       // Cancellation is only meaningful before the item has actually shipped
       // -- once it's shipped/delivered/already cancelled, "cancel" no longer
       // makes sense as an action.
+      //
+      // Checked inside a transaction, not against `order` above: a carrier
+      // webhook can move the order to "shipped" between that read and this
+      // write, and cancelling a package that's already with the carrier
+      // would refund an item that's on its way to the buyer.
       const cancellable = ['pending', 'processing'];
-      const isCancellable = cancellable.includes(order.fulfillmentStatus);
+      const cancelledBy = isAdmin ? "admin" : isSeller ? "seller" : "buyer";
 
-      if (isCancellable) {
-        const cancelledBy = isAdmin ? "admin" : isSeller ? "seller" : "buyer";
+      const { cancelled, currentStatus } = await db.runTransaction(async (tx) => {
+        const fresh = (await tx.get(docRef.ref)).data();
+        if (!cancellable.includes(fresh.fulfillmentStatus)) {
+          return { cancelled: false, currentStatus: fresh.fulfillmentStatus };
+        }
 
-        await docRef.ref.update({
+        tx.update(docRef.ref, {
           fulfillmentStatus: "cancelled",
           cancelledBy,
           ...(isAdmin && reason ? { cancellationReason: reason } : {}),
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        })
+        });
+        return { cancelled: true, currentStatus: "cancelled" };
+      });
+
+      if (!cancelled && currentStatus === "shipped") {
+        return res.status(409).json({ success: false, message: "This order has already shipped and can't be cancelled." });
+      }
+
+      if (cancelled) {
 
         const itemName = order.item?.name || "your item";
         const message = isAdmin && reason
@@ -3343,8 +3550,7 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     // name/phone are carried alongside the address fields here (rather than
     // as separate metadata keys) since buildOrderDataFromPaymentIntent just
     // JSON.parses this whole blob into buyerShippingAddress -- that's what
-    // the EasyShip shipment-create call will read contact_name/contact_phone
-    // off of later.
+    // purchaseShippingLabel reads the ship-to name/phone off of later.
     await stripe.paymentIntents.update(paymentIntentId, {
       amount: Math.round(total * 100),
       metadata: {
@@ -4298,12 +4504,9 @@ async function handlePaymentIntentAuthorized(paymentData) {
 // any failure instead of swallowing it, so the caller can notify the seller
 // rather than silently leaving an order with no label and no tracking number.
 //
-// Returns `shipstationShipmentId`, deliberately NOT `easyshipShipmentId` --
-// the buyer-confirms-delivery path (PUT /orders/:id) only blocks a buyer's
-// self-confirm when `easyshipShipmentId` is set, since ShipStation has no
-// delivered webhook to source that ground truth from instead. Keeping this
-// field under a different name lets these orders fall into the same
-// buyer-self-confirms flow as self-ship orders, on purpose.
+// Returns `shipstationShipmentId` -- V1's numeric shipment id. ShipStation
+// API V2 addresses the same label as "se-{shipmentId}" (see toV2LabelId in
+// services/shipstation.js), which is how V2 tracking finds these orders.
 async function purchaseShippingLabel(order, listing) {
   const shipping = listing.shipping;
   if (!shipping || typeof shipping !== 'object' || !shipping.carrierCode || !shipping.serviceCode) {
@@ -4368,7 +4571,7 @@ async function purchaseShippingLabel(order, listing) {
   }
 
   // ShipStation returns the label as a base64 PDF directly in the response
-  // (no hosted URL like EasyShip gave us) -- upload it to our own Storage
+  // (no hosted URL) -- upload it to our own Storage
   // bucket so the rest of the app can keep treating shippingLabelUrl as a
   // plain link, same as before.
   const labelBuffer = Buffer.from(label.labelData, 'base64');
@@ -4383,7 +4586,11 @@ async function purchaseShippingLabel(order, listing) {
     trackingNumber: label.trackingNumber,
     shippingCarrier: shipping.carrierCode,
     shippingLabelUrl,
-    shipstationShipmentId: label.shipmentId
+    shipstationShipmentId: label.shipmentId,
+    // What /webhooks/shipstation looks orders up by. Normalized to V2's
+    // "se-" form here so that once label purchase itself moves to V2 (which
+    // returns label_id directly), the webhook side needs no change.
+    shipstationLabelId: toV2LabelId(label.shipmentId)
   };
 }
 
@@ -4590,6 +4797,7 @@ async function handlePaymentIntentSucceeded(paymentData){
               shippingCarrier: label.shippingCarrier,
               shippingLabelUrl: label.shippingLabelUrl,
               shipstationShipmentId: label.shipstationShipmentId,
+              shipstationLabelId: label.shipstationLabelId,
               labelGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 

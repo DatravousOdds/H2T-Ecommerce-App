@@ -43,4 +43,66 @@ async function createLabel(labelDetails) {
 
 }
 
-module.exports = { getRatesForCarrier, createLabel }
+// --- ShipStation API V2 ---
+// V2 is a different API from V1 above: its own base URL, and a single
+// `api-key` header instead of Basic auth. Tracking + webhooks only exist
+// here, so this is used alongside V1 until label purchase/rates migrate too.
+const V2_BASE_URL = 'https://api.shipstation.com';
+
+// The tracking webhook gives ShipStation 10s to get a 2xx back from us, and
+// the webhook handler calls getLabelTracking() before marking an order
+// delivered -- bounded below that budget so a slow ShipStation response
+// can't make us miss it.
+const V2_TIMEOUT_MS = 8000;
+
+async function v2Request(path, { method = 'GET', body } = {}) {
+
+    const request = await fetch(`${V2_BASE_URL}${path}`, {
+    method,
+    headers: {
+        'Content-Type': "application/json",
+        'api-key': process.env.SHIPSTATION_V2_API_KEY
+    },
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(V2_TIMEOUT_MS)
+    })
+
+    if(!request.ok) {
+        const errorBody = await request.text().catch(() => '');
+        throw new Error(`ShipStation V2 ${method} ${path} - status: ${request.status} - ${errorBody}`)
+    }
+
+    // Some V2 endpoints (e.g. webhook delete) return 204 with no body.
+    if (request.status === 204) return null;
+
+    return await request.json();
+
+}
+
+// V1's numeric shipmentId is the same label as V2's "se-{shipmentId}" --
+// confirmed live against a real V1-purchased label. Lets orders bought
+// through V1 be tracked through V2 without re-purchasing anything.
+function toV2LabelId(shipmentId) {
+    if (shipmentId === undefined || shipmentId === null || shipmentId === '') return null;
+    const id = String(shipmentId);
+    return id.startsWith('se-') ? id : `se-${id}`;
+}
+
+async function getLabelTracking(labelId) {
+    return await v2Request(`/v2/labels/${encodeURIComponent(labelId)}/track`);
+}
+
+async function listWebhooks() {
+    return await v2Request('/v2/environment/webhooks');
+}
+
+// headers: optional [{ key, value }] that ShipStation sends back on every
+// delivery -- used to carry a shared secret our webhook route can check.
+async function createWebhook({ name, event, url, headers }) {
+    return await v2Request('/v2/environment/webhooks', {
+        method: 'POST',
+        body: { name, event, url, headers }
+    });
+}
+
+module.exports = { getRatesForCarrier, createLabel, toV2LabelId, getLabelTracking, listWebhooks, createWebhook }
