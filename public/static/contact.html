@@ -60,123 +60,272 @@
       <!-- END OF NAVBAR -->
     </section>
 
-    <main class="home-page-layout">
-    <section id="page-header" class="contact-header">
-      <h1>Let's Get In Touch</h1>
-      <p>Or just reach out manually at datravousodds@gmail.com</p>
-    </section>
+    <!-- No .home-page-layout: its 2rem padding would inset the full-bleed
+         hero; .contact-container handles this page's content width. -->
+    <main>
+    <header class="contact-hero">
+      <div class="contact-hero__text">
+        <nav class="contact-breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Contact</span>
+        </nav>
+        <p class="contact-eyebrow">Support · Selling · Authentication</p>
+        <h1 class="contact-hero__title">Got a question? We reply in under 24h.</h1>
+        <p class="contact-hero__sub">Order stuck, payout pending, or a pair you want checked? Message us or give us a call.</p>
+      </div>
+      <div class="contact-hero__media">
+        <img src="/images/hero_4.jpg" alt="" fetchpriority="high" />
+      </div>
+    </header>
 
-    <section id="breadcrumb">
-      <a href="/">Home</a>
-      <span class="breadcrumb-separator">></span>
-      <span class="breadcrumb-current">Contact Us</span>
-    </section>
+    <div class="contact-container">
+      <section class="contact-grid" aria-labelledby="contact-reach-title">
+        <div class="contact-reach">
+          <div class="contact-heading">
+            <h2 id="contact-reach-title" class="contact-h2">Other ways to reach us</h2>
+            <p class="contact-muted">Pick whatever's fastest for you.</p>
+          </div>
 
-    <section class="section-p1">
-      <div id="contact-wrapper" class="contact-wrapper">
-        <div id="form-details">
-          <form id="contact-form" novalidate>
-            <span>LEAVE A MESSAGE</span>
-            <h2>We love to hear from you</h2>
-            <p class="contact-form-status" id="contactFormStatus" style="display: none;"></p>
-            <input type="text" name="name" id="contact-name" placeholder="Your Name" required />
-            <input type="email" name="email" id="contact-email" placeholder="E-mail" required />
-            <input type="text" name="subject" id="contact-subject" placeholder="Subject" required />
-            <textarea
-              name="message"
-              id="contact-message"
-              cols="30"
-              rows="10"
-              placeholder="Your Message"
-              required
-            ></textarea>
+          <ul class="contact-methods">
+            <!-- TODO: confirm support hours -->
+            <li class="contact-method">
+              <span class="contact-method__icon"><i class="fa-solid fa-phone" aria-hidden="true"></i></span>
+              <div class="contact-method__body">
+                <span class="contact-method__title">Call us</span>
+                <span class="contact-method__desc">Mon–Fri, 8am–10pm CT</span>
+                <a class="contact-method__action" href="tel:+16823137002">(682) 313-7002</a>
+              </div>
+            </li>
+            <li class="contact-method">
+              <span class="contact-method__icon"><i class="fa-solid fa-envelope" aria-hidden="true"></i></span>
+              <div class="contact-method__body">
+                <span class="contact-method__title">Email</span>
+                <span class="contact-method__desc">Prefer your own inbox? Write us directly.</span>
+                <a class="contact-method__action" href="mailto:datravousodds@gmail.com">datravousodds@gmail.com</a>
+              </div>
+            </li>
+            <!-- TODO: confirm address (design uses 9112 Saddlehorn Dr; old page had 8314 Medlock Dr) -->
+            <li class="contact-method">
+              <span class="contact-method__icon"><i class="fa-solid fa-location-dot" aria-hidden="true"></i></span>
+              <div class="contact-method__body">
+                <span class="contact-method__title">Visit us</span>
+                <span class="contact-method__desc">9112 Saddlehorn Drive<br />Fort Worth, TX 76116</span>
+                <a
+                  class="contact-method__action"
+                  href="https://maps.google.com/?q=9112+Saddlehorn+Drive+Fort+Worth+TX+76116"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >Get directions <span aria-hidden="true">→</span></a>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="contact-card">
+          <!-- method="post": if contact.js fails to load, the browser's fallback
+               submit must not put name/email/message in the URL (and from there
+               into history, logs, and Analytics page_location). -->
+          <form id="contact-form" class="contact-form" method="post" novalidate>
+            <div class="contact-heading">
+              <h2 class="contact-h2">Send us a message</h2>
+              <p class="contact-muted contact-muted--sm">Goes straight to our support team. We'll reply to the email you enter.</p>
+            </div>
+
+            <div class="contact-form__row">
+              <div class="contact-field">
+                <label for="contact-name">Full name</label>
+                <input type="text" name="name" id="contact-name" placeholder="Jordan Smith" autocomplete="name" required aria-describedby="contact-name-error" />
+                <span class="contact-field__error" id="contact-name-error"></span>
+              </div>
+              <div class="contact-field">
+                <label for="contact-email">Email</label>
+                <input type="email" name="email" id="contact-email" placeholder="you@email.com" autocomplete="email" required aria-describedby="contact-email-error" />
+                <span class="contact-field__error" id="contact-email-error"></span>
+              </div>
+            </div>
+
+            <div class="contact-form__row">
+              <div class="contact-field">
+                <label for="contact-topic">Topic</label>
+                <div class="contact-select">
+                  <select name="topic" id="contact-topic">
+                    <option>Order issue</option>
+                    <option>Authentication</option>
+                    <option>Selling / payouts</option>
+                    <option>Returns &amp; refunds</option>
+                    <option>Account</option>
+                    <option>Partnerships</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                </div>
+              </div>
+              <div class="contact-field">
+                <label for="contact-order">Order # (optional)</label>
+                <input type="text" name="order" id="contact-order" placeholder="HX-104882" maxlength="40" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="contact-field">
+              <label for="contact-message">Message</label>
+              <textarea
+                name="message"
+                id="contact-message"
+                rows="6"
+                maxlength="1000"
+                placeholder="Tell us what's going on…"
+                required
+                aria-describedby="contact-message-error contact-message-count"
+              ></textarea>
+              <div class="contact-field__meta">
+                <span class="contact-field__error" id="contact-message-error"></span>
+                <span id="contact-message-count">0/1000</span>
+              </div>
+            </div>
+
             <!-- Honeypot -- hidden from real visitors via CSS, left blank by
                  them, but a naive bot filling every field will populate it. -->
-            <input type="text" name="website" id="contact-website" class="contact-honeypot" tabindex="-1" autocomplete="off" />
-            <button type="submit" class="normal" id="contact-submit-btn">Submit</button>
-          </form>
-        </div>
+            <input type="text" name="website" id="contact-website" class="contact-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-        <div id="faqs-details" class="faqs-styles">
-          <h1 class="faqs-title">Common FAQs</h1>
-          <hr style="width: 100%; text-align: left; margin-left: 0" />
-          <div class="faqs-section form-details">
-            <div class="faqs-detail-styles">
-              <h6>Is there a free trail available?</h6>
-              <div>
-                <a href="#">Read more</a>
-                <i class="fa-solid fa-circle-info"></i>
-              </div>
+            <p class="contact-form__alert" id="contact-form-alert" role="alert" hidden></p>
+
+            <div class="contact-form__footer">
+              <span class="contact-form__note">Typical reply: under 24h</span>
+              <button type="submit" class="contact-btn contact-btn--primary" id="contact-submit-btn">
+                <span class="contact-btn__label">Send message</span> <span aria-hidden="true">→</span>
+              </button>
             </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="faqs-detail-styles">
-              <h6>How do I sell on H2T?</h6>
-              <div>
-                <a href="#">Read more</a>
-                <i class="fa-solid fa-circle-info"></i>
-              </div>
-            </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="faqs-detail-styles">
-              <h6>Can I cancel my order?</h6>
-              <div>
-                <a href="#">Read more</a>
-                <i class="fa-solid fa-circle-info"></i>
-              </div>
-            </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="faqs-detail-styles">
-              <h6>What is consider valid for authentication?</h6>
-              <div>
-                <a href="#">Read more</a>
-                <i class="fa-solid fa-circle-info"></i>
-              </div>
-            </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="faqs-detail-styles">
-              <h6>Is there a free trail available?</h6>
-              <div>
-                <a href="#">Read more</a>
-                <i class="fa-solid fa-circle-info"></i>
-              </div>
-            </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
-            <div class="faqs-detail-styles">
-              <h6>What is a seller rate?</h6>
-              <div>
-                <a href="#">Read more</a>
-                <i class="fa-solid fa-circle-info"></i>
-              </div>
-            </div>
-            <hr style="width: 100%; text-align: left; margin-left: 0" />
+          </form>
+
+          <div class="contact-success" id="contact-success" hidden>
+            <span class="contact-success__icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+            <h2 class="contact-h2" id="contact-success-title" tabindex="-1">Message sent.</h2>
+            <p class="contact-muted">
+              Thanks, <span id="contact-success-name"></span>. We'll reply to
+              <strong id="contact-success-email"></strong> within 24h.
+            </p>
+            <button type="button" class="contact-btn contact-btn--ghost" id="contact-reset-btn">Send another message</button>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="info-section" class="">
-      <div id="contact-info">
-        <div class="info-container">
-          <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
-          <h2>Phone</h2>
-          <p>Our team is on standby 24/7</p>
-          <p class="info-detail">1+ (682) - 313 - 7002</p>
+      <section class="contact-faq" aria-labelledby="contact-faq-title">
+        <div class="contact-faq__intro">
+          <p class="contact-eyebrow">FAQ</p>
+          <h2 id="contact-faq-title" class="contact-h2 contact-h2--lg">Frequently asked questions.</h2>
+          <p class="contact-muted">Quick answers before you write in.</p>
+          <div class="contact-search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input
+              type="search"
+              id="contact-faq-search"
+              placeholder="Search questions"
+              aria-label="Search frequently asked questions"
+              aria-controls="contact-faq-list"
+              autocomplete="off"
+            />
+          </div>
         </div>
 
-        <div class="info-container">
-          <div class="info-icon"><i class="fa-solid fa-map-pin"></i></div>
-          <h2>Office</h2>
-          <p>Our team is on standby 24/7</p>
-          <p class="info-detail">8314 Medlock Drive Apt 511</p>
+        <!-- TODO: confirm FAQ facts and figures for items 2-6 (fees, timelines,
+             return window). Item 1 (authentication) confirmed by the owner. -->
+        <div class="contact-faq__list" id="contact-faq-list">
+          <div class="contact-faq__item">
+            <h3 class="contact-faq__q">
+              <button type="button" class="contact-faq__toggle" id="faq-q-1" aria-expanded="true" aria-controls="faq-a-1">
+                <span>How does Hexxo authenticate items?</span>
+                <span class="contact-faq__chip" aria-hidden="true">
+                  <i class="fa-solid fa-plus contact-faq__icon-closed"></i>
+                  <i class="fa-solid fa-minus contact-faq__icon-open"></i>
+                </span>
+              </button>
+            </h3>
+            <div class="contact-faq__a" id="faq-a-1" role="region" aria-labelledby="faq-q-1">
+              <p>Every Tier 1 item gets a two-step check. First, our AI reviews the item's photos against brand and construction references. Then a Hexxo authenticator reviews the result and makes the final call, so no item passes on AI alone. It's fast, and every item is verified end to end before it ships to you.</p>
+            </div>
+          </div>
+
+          <div class="contact-faq__item">
+            <h3 class="contact-faq__q">
+              <button type="button" class="contact-faq__toggle" id="faq-q-2" aria-expanded="false" aria-controls="faq-a-2">
+                <span>What are the seller fees?</span>
+                <span class="contact-faq__chip" aria-hidden="true">
+                  <i class="fa-solid fa-plus contact-faq__icon-closed"></i>
+                  <i class="fa-solid fa-minus contact-faq__icon-open"></i>
+                </span>
+              </button>
+            </h3>
+            <div class="contact-faq__a" id="faq-a-2" role="region" aria-labelledby="faq-q-2" hidden>
+              <p>Listing is free. Sales under $200 carry 0% fees; above that, a flat 8% applies. Payouts hit your account after the buyer receives the item.</p>
+            </div>
+          </div>
+
+          <div class="contact-faq__item">
+            <h3 class="contact-faq__q">
+              <button type="button" class="contact-faq__toggle" id="faq-q-3" aria-expanded="false" aria-controls="faq-a-3">
+                <span>How long does shipping take?</span>
+                <span class="contact-faq__chip" aria-hidden="true">
+                  <i class="fa-solid fa-plus contact-faq__icon-closed"></i>
+                  <i class="fa-solid fa-minus contact-faq__icon-open"></i>
+                </span>
+              </button>
+            </h3>
+            <div class="contact-faq__a" id="faq-a-3" role="region" aria-labelledby="faq-q-3" hidden>
+              <p>Sellers have 2 business days to ship to us. After authentication, buyers usually receive orders in 5–7 business days total.</p>
+            </div>
+          </div>
+
+          <div class="contact-faq__item">
+            <h3 class="contact-faq__q">
+              <button type="button" class="contact-faq__toggle" id="faq-q-4" aria-expanded="false" aria-controls="faq-a-4">
+                <span>What if my item fails authentication?</span>
+                <span class="contact-faq__chip" aria-hidden="true">
+                  <i class="fa-solid fa-plus contact-faq__icon-closed"></i>
+                  <i class="fa-solid fa-minus contact-faq__icon-open"></i>
+                </span>
+              </button>
+            </h3>
+            <div class="contact-faq__a" id="faq-a-4" role="region" aria-labelledby="faq-q-4" hidden>
+              <p>You get a full refund, including shipping. The seller is notified and the item is returned to them.</p>
+            </div>
+          </div>
+
+          <div class="contact-faq__item">
+            <h3 class="contact-faq__q">
+              <button type="button" class="contact-faq__toggle" id="faq-q-5" aria-expanded="false" aria-controls="faq-a-5">
+                <span>Can I return an item?</span>
+                <span class="contact-faq__chip" aria-hidden="true">
+                  <i class="fa-solid fa-plus contact-faq__icon-closed"></i>
+                  <i class="fa-solid fa-minus contact-faq__icon-open"></i>
+                </span>
+              </button>
+            </h3>
+            <div class="contact-faq__a" id="faq-a-5" role="region" aria-labelledby="faq-q-5" hidden>
+              <p>All sales are final once authenticated, unless the item arrives damaged or not as described. Open a request within 3 days of delivery.</p>
+            </div>
+          </div>
+
+          <div class="contact-faq__item">
+            <h3 class="contact-faq__q">
+              <button type="button" class="contact-faq__toggle" id="faq-q-6" aria-expanded="false" aria-controls="faq-a-6">
+                <span>When is Trade launching?</span>
+                <span class="contact-faq__chip" aria-hidden="true">
+                  <i class="fa-solid fa-plus contact-faq__icon-closed"></i>
+                  <i class="fa-solid fa-minus contact-faq__icon-open"></i>
+                </span>
+              </button>
+            </h3>
+            <div class="contact-faq__a" id="faq-a-6" role="region" aria-labelledby="faq-q-6" hidden>
+              <p>Trade is on the roadmap after launch. Follow us on socials to hear first.</p>
+            </div>
+          </div>
+
+          <!-- Always in the DOM so screen readers announce text changes. -->
+          <p class="contact-faq__empty" id="contact-faq-empty" role="status"></p>
         </div>
-        <div class="info-container">
-          <div class="info-icon"><i class="fa-regular fa-envelope"></i></div>
-          <h2>Chat with us</h2>
-          <p>Our team is on standby 24/7</p>
-          <p class="info-detail">datravousodds@gmail.com</p>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
+
     </main>
 
     <section id="newsletter" class="section-p1">
@@ -198,6 +347,6 @@
 
     <script type="module" src="../js/components/nav.js"></script>
     <script type="module" src="../js/components/footer.js"></script>
-    <script src="../js/pages/contact.js"></script>
+    <script type="module" src="../js/pages/contact.js"></script>
   </body>
 </html>
