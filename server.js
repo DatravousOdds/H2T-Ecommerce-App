@@ -806,6 +806,7 @@ app.get("/api/about-stats", async (req, res) => {
     res.status(500).json({ success: false, message: "Stats unavailable" });
   }
 });
+
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));

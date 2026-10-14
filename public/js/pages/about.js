@@ -65,12 +65,23 @@ const initKpis = async () => {
     return;
   }
 
-  const cells = [...band.querySelectorAll("[data-kpi]")];
-  const run = () => cells.forEach((el) => countUp(el, Number(stats[el.dataset.kpi]) || 0));
+  // Screen readers can read the band without scrolling it into view, so they
+  // get the final value right away; the animated digits are aria-hidden.
+  const counters = [...band.querySelectorAll("[data-kpi]")].map((el) => {
+    const target = Number(stats[el.dataset.kpi]) || 0;
+    const shown = document.createElement("span");
+    shown.setAttribute("aria-hidden", "true");
+    shown.textContent = "0";
+    const spoken = document.createElement("span");
+    spoken.className = "visually-hidden";
+    spoken.textContent = formatKpi(target);
+    el.replaceChildren(shown, spoken);
+    return { shown, target };
+  });
+  const run = () => counters.forEach(({ shown, target }) => countUp(shown, target));
 
   if (!("IntersectionObserver" in window)) return run();
 
-  cells.forEach((el) => { el.textContent = "0"; });
   const observer = new IntersectionObserver((entries) => {
     if (!entries.some((entry) => entry.isIntersecting)) return;
     observer.disconnect();
