@@ -766,6 +766,46 @@ app.get("/brands", (req, res) => {
 app.get("/about", (req, res) => {
   res.sendFile(path.join(staticPth, "static/about.html"));
 });
+
+// Public aggregate counts for the About page KPI band. Cached in memory so
+// page views don't each cost Firestore reads; the in-flight promise is shared
+// so a burst of requests after expiry triggers one refresh, not many.
+// shortcut: select() reads every user/active-listing doc on each refresh
+// (firestore 5.x has no count()); upgrade firebase-admin to >=11.4 for
+// count() aggregations, or keep a counters doc, once these collections grow.
+const ABOUT_STATS_TTL_MS = 60 * 60 * 1000;
+let aboutStatsCache = { data: null, expiresAt: 0, pending: null };
+
+async function loadAboutStats() {
+  const [users, listings] = await Promise.all([
+    db.collection("userProfiles").select().get(),
+    db.collection("listings").where("status", "==", "active").select("brand").get(),
+  ]);
+  const brands = new Set(
+    listings.docs
+      .map((doc) => String(doc.get("brand") || "").trim().toLowerCase())
+      .filter(Boolean)
+  );
+  return { users: users.size, listings: listings.size, brands: brands.size };
+}
+
+app.get("/api/about-stats", async (req, res) => {
+  if (aboutStatsCache.data && Date.now() < aboutStatsCache.expiresAt) {
+    return res.json(aboutStatsCache.data);
+  }
+  try {
+    aboutStatsCache.pending ||= loadAboutStats();
+    const data = await aboutStatsCache.pending;
+    aboutStatsCache = { data, expiresAt: Date.now() + ABOUT_STATS_TTL_MS, pending: null };
+    res.json(data);
+  } catch (error) {
+    aboutStatsCache.pending = null;
+    console.error("About stats failed:", error);
+    // Serve the last good numbers rather than nothing if a refresh fails.
+    if (aboutStatsCache.data) return res.json(aboutStatsCache.data);
+    res.status(500).json({ success: false, message: "Stats unavailable" });
+  }
+});
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));

@@ -1,87 +1,921 @@
+/* About page. Loads only on /about, so :root here is effectively
+   page-scoped (same approach as contact.css).
 
-.icon-wrapper i {
-    font-size: var(--fs-h1);
-    color: var(--color-button-primary);
+   Brand red #f30c1e is 4.30:1 on white, under the 4.5:1 WCAG AA minimum for
+   normal-size text. Small red *text* on light backgrounds uses the darker
+   red (6.47:1); the bright red stays for icons, fills, borders and for text
+   on black, where it passes. */
+:root {
+  --about-red-text: #b91c1c;
+  --about-ink: var(--color-text-primary, #070707);
+  --about-body: #4a4a4a;
+  --about-muted: #757575;
+  --about-fill: #f4f3f1;
+  --about-divider: var(--color-border-primary, #e5e7eb);
+  --about-display: 'Bebas Neue', sans-serif;
+  --about-label: 'Space Grotesk', sans-serif;
+  --about-gutter: 40px;
+  --about-card-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 10px 24px rgba(0, 0, 0, 0.1),
+    0 28px 56px rgba(0, 0, 0, 0.1);
 }
 
-.content-block-body p {
-    color: var(--color-text-muted);
-    font-size: var(--fs-body-sm);
+/* ---------- Shared bits ---------- */
+.about {
+  background: #fff;
+  color: var(--about-ink);
 }
 
-.content-block-header {
-    line-height: 2.3 !important;
+.about-container {
+  max-width: 1366px;
+  margin: 0 auto;
+  padding-left: var(--about-gutter);
+  padding-right: var(--about-gutter);
 }
 
-.image-wrapper {
-    max-width: 750px;
-    border-radius: 8px;
+/* Bebas Neue ships one weight (400). Asking for 700 makes the browser
+   fake-bold it, which smears the letterforms, so headings stay at 400.
+   !important: global.css (via main.css) forces letter-spacing -0.03em and
+   weight 600 on every h1-h6 with !important; only another !important wins.
+   Scoped to these classes so other pages keep the global heading style. */
+.about-heading,
+.about-hero__title,
+.about-value__title,
+.about-quote,
+.about-kpi__value,
+.about-card__title,
+.about-card__stat,
+.about-phone__logo {
+  font-family: var(--about-display);
+  font-weight: 400 !important;
+  letter-spacing: 2px !important;
+  color: var(--about-ink);
 }
 
-.image-wrapper img {
-    width: 750px;
-    height: 500px;
-    object-fit: cover;
-    border-radius: 8px;
+.about-heading {
+  margin: 0;
+  font-size: 3.5rem;
+  line-height: 1;
 }
 
-.about-us-title {
-    font-size: 2rem !important;
-    line-height: 1.5;
-    text-transform: uppercase;
+.about-eyebrow {
+  display: block;
+  font: 600 0.875rem/1.2 var(--about-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--about-red-text);
 }
 
-.about-subhead::before {
-    content: "";
-    display: inline-block;
-    width: 4px;
-    height: 16px;
-    margin-right: 0.5rem;
-    background-color: red;
+/* Over a photo, red text can't reliably reach 4.5:1 (it's only 4.68:1 even
+   on pure black), so the hero eyebrow is white and the brand red moves to a
+   short rule in front of it. */
+.about-eyebrow--on-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-.kpi-banner {
+.about-eyebrow--on-dark::before {
+  content: "";
+  width: 24px;
+  height: 2px;
+  background: var(--color-button-primary);
+}
+
+/* style2.css forces Inter on every <p> with !important, so body copy is
+   Inter (the site's UI font); Space Grotesk is used on spans/labels. */
+.about-body {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--about-body);
+  text-wrap: pretty;
+}
+
+.about-body--muted {
+  color: var(--about-muted);
+}
+
+/* ---------- Hero ---------- */
+.about-hero {
+  position: relative;
+  height: 480px;
+  overflow: hidden;
+  background: var(--color-background-secondary);
+}
+
+.about-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scrim as a pseudo-element so the markup stays a single image. */
+.about-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.about-hero__content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 80px;
+}
+
+.about-hero__content .about-eyebrow {
+  margin-bottom: 20px;
+}
+
+.about-hero__title {
+  margin: 0;
+  max-width: 900px;
+  font-size: 5.5rem;
+  line-height: 0.98;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.about-hero__sub {
+  margin: 24px 0 0;
+  max-width: 640px;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  text-wrap: pretty;
+}
+
+/* Same pattern as .contact-breadcrumb, recolored for a photo background.
+   Left edge tracks the 1366px container's content edge so it lines up with
+   the sections below. */
+.about-breadcrumb {
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  left: max(var(--about-gutter), calc((100% - 1366px) / 2 + var(--about-gutter)));
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.about-breadcrumb a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+}
+
+.about-breadcrumb a:hover {
+  color: #fff;
+}
+
+.about-breadcrumb a:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.about-breadcrumb [aria-current="page"] {
+  color: #fff;
+}
+
+.about-ctas--hero {
+  justify-content: center;
+  margin-top: 32px;
+}
+
+/* ---------- Value props ---------- */
+.about-values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  padding-top: 88px;
+  padding-bottom: 72px;
+  border-bottom: 1px solid var(--about-divider);
+}
+
+.about-value {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.about-value__icon {
+  font-size: 28px;
+  color: var(--color-button-primary);
+}
+
+.about-value__title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.about-value__body {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--about-muted);
+}
+
+/* ---------- Split sections (Our Story, Mission) ---------- */
+.about-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  padding-top: 88px;
+  padding-bottom: 88px;
+}
+
+.about-split--start {
+  align-items: start;
+}
+
+.about-split--center {
+  align-items: center;
+}
+
+.about-split__text {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.about-split--start .about-split__text {
+  padding-top: 8px;
+}
+
+.about-split__media {
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--about-fill);
+}
+
+.about-split__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The story text runs ~140px taller than the photo; sticking the photo
+   below the sticky nav keeps it beside the copy instead of leaving a gap.
+   No effect in the 1-column mobile layout (the cell is only as tall as
+   the photo). */
+.about-split__media--story {
+  position: sticky;
+  top: 100px;
+  height: 520px;
+}
+
+.about-split__media--mission {
+  height: 460px;
+}
+
+.about-quote {
+  margin: 8px 0;
+  padding-left: 22px;
+  border-left: 3px solid var(--color-button-primary);
+  font-size: 2.5rem;
+  line-height: 1.05;
+}
+
+.about-lead {
+  font-size: 1.375rem;
+  line-height: 1.55;
+  color: var(--about-ink);
+  text-wrap: pretty;
+}
+
+/* ---------- CTAs ---------- */
+.about-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.about-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-family: var(--ui-font);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.about-btn--primary {
+  color: #fff;
+  background: var(--color-button-primary);
+  border: 1px solid transparent;
+}
+
+.about-btn--primary:hover {
+  color: #fff;
+  background: #b91c1c;
+}
+
+.about-btn--ghost {
+  color: var(--about-ink);
+  background: transparent;
+  border: 1px solid #e1e1e1;
+}
+
+.about-btn--ghost:hover {
+  color: var(--about-ink);
+  border-color: var(--about-ink);
+}
+
+/* Ghost variant for the photo hero: the light-gray border of --ghost would
+   disappear against the dark scrim. */
+.about-btn--ghost-dark {
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.about-btn--ghost-dark:hover {
+  color: #fff;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.about-btn:focus-visible {
+  outline: 2px solid var(--color-text-alert);
+  outline-offset: 2px;
+}
+
+/* A red ring is hard to see over the hero photo. */
+.about-hero .about-btn:focus-visible {
+  outline-color: #fff;
+}
+
+/* ---------- KPI band ---------- */
+.about-kpis {
+  background: var(--color-background-secondary);
+  padding: 72px var(--about-gutter);
+}
+
+.about-kpis__grid {
+  max-width: 1366px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* <dt> comes first in the markup so screen readers announce the label with
+   the number; column-reverse puts the number on top visually. */
+.about-kpi {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  text-align: center;
+}
+
+.about-kpi + .about-kpi {
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.about-kpi__value {
+  margin: 0;
+  font-size: 4.75rem;
+  line-height: 1;
+  color: var(--color-button-primary);
+  font-variant-numeric: tabular-nums; /* steady width while counting up */
+}
+
+.about-kpi__label {
+  margin: 0;
+  font: 500 1rem/1.4 var(--about-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---------- Inside the app ---------- */
+.about-showcase {
+  padding: 96px var(--about-gutter) 104px;
+  overflow: hidden; /* rotated cards must never cause horizontal scroll */
+}
+
+.about-showcase__header {
+  max-width: 1366px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.about-showcase__sub {
+  margin-bottom: 8px;
+  max-width: 560px;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--about-muted);
+  text-wrap: pretty;
+}
+
+.about-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 720px;
+  margin: 24px auto 0;
+}
+
+.about-stage__backdrop {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background: var(--about-fill);
+  transform: translate(-50%, -50%);
+}
+
+/* Phone mock */
+.about-phone {
+  position: absolute;
+  left: 50%;
+  top: 40px;
+  width: 320px;
+  height: 640px;
+  padding: 10px;
+  border-radius: 44px;
+  background: #070707;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 12px 28px rgba(0, 0, 0, 0.12),
+    0 32px 64px rgba(0, 0, 0, 0.16);
+}
+
+.about-phone__screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 34px;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.about-phone__status {
+  height: 44px;
+  flex-shrink: 0;
+  background: #070707;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
+
+.about-phone__notch {
+  width: 96px;
+  height: 22px;
+  border-radius: 999px;
+  background: #000;
+}
+
+.about-phone__appbar {
+  padding: 18px 18px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.about-phone__logo {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.about-phone__actions {
+  display: flex;
+  gap: 14px;
+  font-size: 15px;
+  color: var(--about-ink);
+}
+
+.about-phone__featured {
+  margin: 14px 18px 0;
+  height: 150px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--about-fill);
+}
+
+.about-phone__featured img,
+.about-phone__item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-phone__tabs {
+  margin: 16px 18px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.about-phone__tab {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--about-fill);
+  font: 500 0.75rem/1 var(--about-label);
+  color: var(--about-ink);
+}
+
+.about-phone__tab--active {
+  background: var(--color-button-primary);
+  color: #fff;
+}
+
+.about-phone__grid {
+  margin: 16px 18px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.about-phone__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.about-phone__item img {
+  height: 96px;
+  border-radius: 8px;
+  background: var(--about-fill);
+}
+
+.about-phone__name {
+  font: 500 0.8125rem/1.2 var(--about-label);
+  color: var(--about-ink);
+}
+
+.about-phone__price {
+  font: 400 0.75rem/1.2 var(--about-label);
+  color: var(--about-muted);
+}
+
+.about-phone__tabbar {
+  margin-top: auto;
+  height: 58px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--about-divider);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 16px;
+  color: var(--about-muted);
+}
+
+.about-phone__tabbar-active {
+  color: var(--color-button-primary);
+}
+
+/* Feature cards: positioned off the phone's center line (not the stage
+   edges), so clearance from the phone stays constant at any stage width. */
+.about-cards {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-card {
+  position: absolute;
+  width: 226px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--about-card-shadow);
+}
+
+.about-card--tl {
+  right: calc(50% + 172px);
+  top: 92px;
+  transform: rotate(-5deg);
+}
+
+.about-card--bl {
+  right: calc(50% + 172px);
+  bottom: 40px;
+  transform: rotate(4deg);
+}
+
+.about-card--tr {
+  left: calc(50% + 172px);
+  top: 72px;
+  transform: rotate(4deg);
+}
+
+.about-card--br {
+  left: calc(50% + 172px);
+  bottom: 56px;
+  transform: rotate(-4deg);
+}
+
+.about-card__icon {
+  font-size: 18px;
+  color: var(--color-button-primary);
+}
+
+.about-card__title {
+  margin: 12px 0 6px !important; /* global.css zeroes h1-h6 margins with !important */
+  font-size: 1.625rem;
+  line-height: 1.1;
+}
+
+.about-card__body {
+  margin-bottom: 14px !important; /* style2.css zeroes p margin-bottom with !important */
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--about-muted);
+}
+
+.about-card__extra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.about-card--tl .about-card__extra {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.about-card__bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--about-fill);
+}
+
+.about-card__bar--short {
+  width: 70%;
+}
+
+/* Tinted placeholder rather than a solid red labeled button, so it reads
+   as part of the wireframe and doesn't look clickable. */
+.about-card__fakebtn {
+  margin-top: 6px;
+  height: 32px;
+  border-radius: 8px;
+  background: #fcd9dc;
+}
+
+.about-card__stat {
+  font-size: 2.125rem;
+  line-height: 1;
+}
+
+.about-card--tr .about-card__extra {
+  align-items: baseline;
+  gap: 8px;
+}
+
+.about-card__delta {
+  font: 500 0.8125rem/1 var(--about-label);
+  color: var(--about-red-text);
+}
+
+.about-card__thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--about-fill);
+}
+
+.about-card__swap {
+  font-size: 13px;
+  color: var(--about-muted);
+}
+
+/* Dark "Authenticate" card */
+.about-card--dark {
+  background: #070707;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 10px 24px rgba(0, 0, 0, 0.16),
+    0 28px 56px rgba(0, 0, 0, 0.16);
+}
+
+.about-card--dark .about-card__title {
+  color: #fff;
+}
+
+.about-card--dark .about-card__body {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.about-card__badge {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: var(--color-button-primary);
+  font: 500 0.6875rem/1 var(--about-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.about-card__price {
+  font: 400 0.8125rem/1 var(--about-label);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ---------- Showcase: stacked layout ----------
+   The absolute layout needs ~880px (phone + cards on both sides). Below
+   that, the cards drop out of absolute positioning into a grid under the
+   phone instead of scaling the whole stage down, which would shrink the
+   card text below a readable size. */
+@media (max-width: 960px) {
+  .about-stage {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .about-stage__backdrop {
+    top: 340px; /* stays centered behind the phone, not the whole stack */
+    width: min(620px, 100%);
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .about-phone {
     position: relative;
-    padding: 2.5rem;
-    background-color: #070707;
-    border-radius: 8px;
-}
+    left: auto;
+    top: auto;
+    transform: none;
+    margin-top: 20px;
+  }
 
-.kpi-section {
+  .about-cards {
     position: relative;
+    width: 100%;
+    max-width: 640px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .about-card {
+    position: static;
+    width: auto;
+    transform: none;
+  }
 }
 
-.kpi-card span {
-    font-size: 4.75rem;
-    color: var(--color-button-primary);
-    font-weight: 700;
-    text-transform: uppercase;
-    line-height: 1;
-}
+/* ---------- Tablet / mobile ---------- */
+@media (max-width: 900px) {
+  :root {
+    --about-gutter: 20px;
+  }
 
-.kpi-card p {
-    color: var(--color-text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
+  .about-hero {
+    height: auto;
+    min-height: 420px;
+  }
 
-.section-header h2 {
-    font-size: 1rem ;
-    text-transform: uppercase;
-    letter-spacing: 1.2px !important;
-    color: var(--color-button-primary);
-}
+  .about-hero__content {
+    min-height: 420px;
+    padding: 64px var(--about-gutter);
+  }
 
-.section-header span {
-    line-height: 1;
+  .about-hero__title {
     font-size: 3.5rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+  }
+
+  .about-hero__sub {
+    font-size: 1.0625rem;
+  }
+
+  .about-values {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+
+  .about-split {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+
+  /* Mission: copy first on desktop, but lead with the photo on mobile so
+     both split sections share the same image-then-text rhythm. */
+  .about-split--center .about-split__media {
+    order: -1;
+  }
+
+  .about-split__media--story,
+  .about-split__media--mission {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .about-heading {
+    font-size: 2.75rem;
+  }
+
+  .about-quote {
+    font-size: 2rem;
+  }
+
+  .about-lead {
+    font-size: 1.1875rem;
+  }
+
+  .about-kpis {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+
+  .about-kpis__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .about-kpi + .about-kpi {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    padding-top: 32px;
+  }
+
+  .about-kpi__value {
+    font-size: 3.75rem;
+  }
+
+  .about-showcase {
+    padding-top: 64px;
+    padding-bottom: 72px;
+  }
 }
 
-.section-header p {
-    color: var(--color-text-muted);
-    font-size: 1rem;
+@media (max-width: 560px) {
+  .about-hero__title {
+    font-size: 2.75rem;
+  }
+
+  /* Compact showcase: on phones the section was ~1,700px of mostly
+     decoration. zoom (unlike transform: scale) shrinks the phone's layout
+     box too, so it keeps its internal proportions and frees the space. */
+  .about-phone {
+    zoom: 0.8;
+  }
+
+  .about-stage__backdrop {
+    top: 276px; /* 20px margin + half the zoomed 512px phone */
+  }
+
+  .about-cards {
+    gap: 12px;
+  }
+
+  .about-card {
+    padding: 16px;
+  }
+
+  .about-card__title {
+    font-size: 1.375rem;
+  }
+
+  /* The wireframe extras are decorative (aria-hidden); the Authenticate
+     card's tier + price is real info, so it stays. */
+  .about-card:not(.about-card--dark) .about-card__extra {
+    display: none;
+  }
+
+  .about-card:not(.about-card--dark) .about-card__body {
+    margin-bottom: 0 !important;
+  }
+
+  .about-card__extra {
+    flex-wrap: wrap;
+  }
+
+  .about-ctas .about-btn {
+    flex: 1 1 auto;
+  }
 }
