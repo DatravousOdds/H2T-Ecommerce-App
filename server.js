@@ -774,7 +774,21 @@ app.get("/about", (req, res) => {
 // (firestore 5.x has no count()); upgrade firebase-admin to >=11.4 for
 // count() aggregations, or keep a counters doc, once these collections grow.
 const ABOUT_STATS_TTL_MS = 60 * 60 * 1000;
+// The SDK lets a RunQuery hang up to 300s (600s with retries); cap it so a
+// stalled Firestore fails fast instead of holding every About-page request.
+const ABOUT_STATS_TIMEOUT_MS = 10 * 1000;
+// After a failure, wait before re-reading both collections again so an
+// outage doesn't turn every page view into fresh full-collection reads.
+const ABOUT_STATS_RETRY_MS = 60 * 1000;
 let aboutStatsCache = { data: null, expiresAt: 0, pending: null };
+
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
 
 async function loadAboutStats() {
   const [users, listings] = await Promise.all([
@@ -789,22 +803,31 @@ async function loadAboutStats() {
   return { users: users.size, listings: listings.size, brands: brands.size };
 }
 
+const sendAboutStats = (res) =>
+  aboutStatsCache.data
+    ? res.json(aboutStatsCache.data)
+    : res.status(503).json({ success: false, message: "Stats unavailable" });
+
 app.get("/api/about-stats", async (req, res) => {
-  if (aboutStatsCache.data && Date.now() < aboutStatsCache.expiresAt) {
-    return res.json(aboutStatsCache.data);
-  }
+  // Fresh data, or a recent failure still inside its retry window.
+  if (Date.now() < aboutStatsCache.expiresAt) return sendAboutStats(res);
+
   try {
-    aboutStatsCache.pending ||= loadAboutStats();
+    aboutStatsCache.pending ||= withTimeout(loadAboutStats(), ABOUT_STATS_TIMEOUT_MS);
     const data = await aboutStatsCache.pending;
     aboutStatsCache = { data, expiresAt: Date.now() + ABOUT_STATS_TTL_MS, pending: null };
-    res.json(data);
   } catch (error) {
-    aboutStatsCache.pending = null;
-    console.error("About stats failed:", error);
-    // Serve the last good numbers rather than nothing if a refresh fails.
-    if (aboutStatsCache.data) return res.json(aboutStatsCache.data);
-    res.status(500).json({ success: false, message: "Stats unavailable" });
+    // Every request awaiting this refresh lands here; only log/back off once.
+    if (aboutStatsCache.pending) {
+      console.error("About stats failed:", error.message);
+      aboutStatsCache = {
+        data: aboutStatsCache.data, // serve the last good numbers meanwhile
+        expiresAt: Date.now() + ABOUT_STATS_RETRY_MS,
+        pending: null,
+      };
+    }
   }
+  sendAboutStats(res);
 });
 
 // authentication route
