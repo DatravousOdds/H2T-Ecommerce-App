@@ -813,7 +813,9 @@ app.get("/api/about-stats", async (req, res) => {
   if (Date.now() < aboutStatsCache.expiresAt) return sendAboutStats(res);
 
   try {
-    aboutStatsCache.pending ||= withTimeout(loadAboutStats(), ABOUT_STATS_TIMEOUT_MS);
+    if (!aboutStatsCache.pending) {
+      aboutStatsCache.pending = withTimeout(loadAboutStats(), ABOUT_STATS_TIMEOUT_MS);
+    }
     const data = await aboutStatsCache.pending;
     aboutStatsCache = { data, expiresAt: Date.now() + ABOUT_STATS_TTL_MS, pending: null };
   } catch (error) {
