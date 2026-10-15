@@ -766,6 +766,72 @@ app.get("/brands", (req, res) => {
 app.get("/about", (req, res) => {
   res.sendFile(path.join(staticPth, "static/about.html"));
 });
+
+// Public aggregate counts for the About page KPI band. Cached in memory so
+// page views don't each cost Firestore reads; the in-flight promise is shared
+// so a burst of requests after expiry triggers one refresh, not many.
+// shortcut: select() reads every user/active-listing doc on each refresh
+// (firestore 5.x has no count()); upgrade firebase-admin to >=11.4 for
+// count() aggregations, or keep a counters doc, once these collections grow.
+const ABOUT_STATS_TTL_MS = 60 * 60 * 1000;
+// The SDK lets a RunQuery hang up to 300s (600s with retries); cap it so a
+// stalled Firestore fails fast instead of holding every About-page request.
+const ABOUT_STATS_TIMEOUT_MS = 10 * 1000;
+// After a failure, wait before re-reading both collections again so an
+// outage doesn't turn every page view into fresh full-collection reads.
+const ABOUT_STATS_RETRY_MS = 60 * 1000;
+let aboutStatsCache = { data: null, expiresAt: 0, pending: null };
+
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+async function loadAboutStats() {
+  const [users, listings] = await Promise.all([
+    db.collection("userProfiles").select().get(),
+    db.collection("listings").where("status", "==", "active").select("brand").get(),
+  ]);
+  const brands = new Set(
+    listings.docs
+      .map((doc) => String(doc.get("brand") || "").trim().toLowerCase())
+      .filter(Boolean)
+  );
+  return { users: users.size, listings: listings.size, brands: brands.size };
+}
+
+const sendAboutStats = (res) =>
+  aboutStatsCache.data
+    ? res.json(aboutStatsCache.data)
+    : res.status(503).json({ success: false, message: "Stats unavailable" });
+
+app.get("/api/about-stats", async (req, res) => {
+  // Fresh data, or a recent failure still inside its retry window.
+  if (Date.now() < aboutStatsCache.expiresAt) return sendAboutStats(res);
+
+  try {
+    if (!aboutStatsCache.pending) {
+      aboutStatsCache.pending = withTimeout(loadAboutStats(), ABOUT_STATS_TIMEOUT_MS);
+    }
+    const data = await aboutStatsCache.pending;
+    aboutStatsCache = { data, expiresAt: Date.now() + ABOUT_STATS_TTL_MS, pending: null };
+  } catch (error) {
+    // Every request awaiting this refresh lands here; only log/back off once.
+    if (aboutStatsCache.pending) {
+      console.error("About stats failed:", error.message);
+      aboutStatsCache = {
+        data: aboutStatsCache.data, // serve the last good numbers meanwhile
+        expiresAt: Date.now() + ABOUT_STATS_RETRY_MS,
+        pending: null,
+      };
+    }
+  }
+  sendAboutStats(res);
+});
+
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));

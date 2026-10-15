@@ -22,169 +22,250 @@
     <meta name="twitter:image" content="https://hexxo.store/images/banner_1.jpg">
 
     <link rel="stylesheet" href="../css/main.css" />
-    <link rel="stylesheet" href="../css/pages/about.css" />
     <link rel="stylesheet" href="../css/style2.css" />
-    <link rel="stylesheet" href="../css/global.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100&display=swap"
-      rel="stylesheet"
-    />
+    <!-- After style2, like sibling pages, so the shared nav/footer cascade matches. -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
-
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <!-- style2.css only imports Space Grotesk 400/700; the eyebrows and labels
+         here use 500/600. -->
     <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
     />
+    <!-- Loaded last so page rules win ties against style2/Bootstrap. -->
+    <link rel="stylesheet" href="../css/pages/about.css" />
+
     <script
       src="https://kit.fontawesome.com/854f8a6196.js"
       crossorigin="anonymous"
     ></script>
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    />
   </head>
 
   <body>
     <section id="header">
-      <a href="/"><img src="images/H2T LogoB Small.png" class="logo" /></a>
-      <nav class="navbar"></nav>
-      <div id="mobile">
-        <a href="/cart"><i class="far fa-shopping-bag"></i></a>
-        <i id="bar" class="fas fa-outdent"></i>
-      </div>
+      <!-- BEGIN OF NAVBAR -->
+      <nav></nav>
+      <!-- END OF NAVBAR -->
     </section>
 
-    <main class="home-page-layout">
-    <section id="page-header" class="about-header">
-      <h1>About Hexxo</h1>
-      <h2>Everything you need. One platform</h2>
-      <p>
-        Built by resellers, for resellers - buy, sell, trade & authenticate, all in one place
-      </p>
-    </section>
+    <!-- No .home-page-layout: its padding would inset the full-bleed hero,
+         KPI band and showcase; .about-container handles content width. -->
+    <main class="about">
 
-    <section class="flex-start-column-layout">
-      <!-- Replace image Below later -->
-      <div class="flex-row-wrapper border-bottom">
-        <div class="flex-row-layout">
-        <div class="content-block border-none  flex-start-stack-layout">
-          <div class="icon-wrapper">
-            <i class="fa-solid fa-arrow-trend-up"></i>
-          </div>
-          <div class="content-block-body">
-            <h3 class="content-block-header">Transparent Pricing</h3>
-            <p>Real market prices, fees shown up front. 0% seller fees under $200.
-            </p>
+      <!-- ---------- Hero ---------- -->
+      <header class="about-hero">
+        <!-- TODO: swap for founder photo IMG_1596 when available -->
+        <img
+          class="about-hero__bg"
+          src="/images/hero_4.jpg"
+          alt=""
+          fetchpriority="high"
+        />
+        <nav class="about-breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">About</span>
+        </nav>
+        <div class="about-hero__content">
+          <span class="about-eyebrow about-eyebrow--on-dark">About Hexxo</span>
+          <h1 class="about-hero__title">Everything You Need. One Platform.</h1>
+          <p class="about-hero__sub">
+            Built by resellers, for resellers — buy, sell, trade &amp; authenticate, all in one place.
+          </p>
+          <!-- Same destinations as the Mission CTAs; repeated here so visitors
+               who are sold by the hero don't have to scroll the whole page. -->
+          <div class="about-ctas about-ctas--hero">
+            <a class="about-btn about-btn--primary" href="/seller" data-sell-cta>Start selling <span aria-hidden="true">→</span></a>
+            <a class="about-btn about-btn--ghost-dark" href="/shop">Shop now <span aria-hidden="true">→</span></a>
           </div>
         </div>
-        
-        </div>
-        <div class="flex-row-layout">
-          <div class="content-block border-none flex-start-stack-layout">
-            <div class="icon-wrapper">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-            <div class="content-block-body">
-              <h3 class="content-block-header">Shop with no worry</h3>
-              <p>Every pair verified in 24h. You pick how deep the check goes.</p>
-            </div>
-          </div>
-          
-        </div>
-        <div class="flex-row-layout">
-          <div class="content-block border-none flex-start-stack-layout">
-            <div class="icon-wrapper">
-              <i class="fa-solid fa-right-left"></i>
-            </div>
-            <div class="content-block-body">
-              <h3 class="content-block-header">Buy, sell & trade</h3>
-              <p>One account for every side of the deal. List in 90 seconds.</p>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-    </section>
+      </header>
 
-    <section id="about-app">
-      <div class="flex-row-layout flex-align-start gap-lg">
-        <div class="image-wrapper">
-          <img src="../images/mens_1.jpg" alt="" class="about-image">
+      <!-- ---------- Value props ---------- -->
+      <section class="about-container about-values" aria-label="Why Hexxo">
+        <div class="about-value">
+          <i class="fa-solid fa-arrow-trend-up about-value__icon" aria-hidden="true"></i>
+          <h2 class="about-value__title">Transparent Pricing</h2>
+          <p class="about-value__body">Real market prices, fees shown up front. 0% seller fees on your first five orders when you sign up with a promo code.</p>
         </div>
-        <div class="flex-start-stack-layout">
-          <h3 class="about-us-title">Our Story</h3>
-          <p>Hexxo started as two resellers trying to get our product in front of a bigger audience — posting online, hitting convention centers, trading, you name it, we did it all.
-          </p>
-          <p>After years in the game, we kept running into the same problem: juggling StockX, eBay, LegitCheck, and a dozen other apps just to run our business. One day it hit us — why isn't there an all-in-one tool for this?</p>
-          <p>So we took that pain point and built Hexxo from the ground up. The result is one consolidated platform for everything you need, whether you're buying or selling.</p>
-          <h4 class="text-upper about-subhead">You decide the level of trust</h4>
-          <p>
-            At Hexxo, we ensure every highly-rated brand — including the ones most often faked —
-            is thoroughly checked at the level of trust you choose.
-          </p>
-          <p>
-            There's no corporate lock on how an item gets authenticated. If you want a quick check,
-            our team and AI technology will help you get there.
-          </p>
+        <div class="about-value">
+          <i class="fa-solid fa-shield-halved about-value__icon" aria-hidden="true"></i>
+          <h2 class="about-value__title">Shop With No Worry</h2>
+          <p class="about-value__body">Every pair verified in 24h. You pick how deep the check goes.</p>
         </div>
-      </div>
-      
-    </section>
-    <!-- KPI BANNER-->
-    <section class="kpi-section">
-      <div class="flex-row-layout kpi-banner">
-        <div class="kpi-card flex-start-stack-layout">
-          <span>12k+</span>
-          <p>Monthly Users</p>
+        <div class="about-value">
+          <i class="fa-solid fa-right-left about-value__icon" aria-hidden="true"></i>
+          <h2 class="about-value__title">Buy, Sell &amp; Trade</h2>
+          <p class="about-value__body">One account for every side of the deal. List in 90 seconds.</p>
         </div>
-        <div class="kpi-card flex-start-stack-layout">
-          <span>350k</span>
-          <p>Items listed</p>
+      </section>
+
+      <!-- ---------- Our Story ---------- -->
+      <section class="about-container about-split about-split--start" aria-labelledby="about-story-title">
+        <div class="about-split__media about-split__media--story">
+          <!-- TODO: swap for founder photo IMG_1617 when available -->
+          <img src="/images/banner_1.jpg" alt="Hexxo streetwear and sneakers" loading="lazy" />
         </div>
-        <div class="kpi-card flex-start-stack-layout">
-          <span>100+</span>
-          <p>Authenticated brands</p>
+        <div class="about-split__text">
+          <h2 class="about-heading" id="about-story-title">Our Story</h2>
+          <p class="about-body">Hexxo started as two resellers trying to get our product in front of a bigger audience — posting online, hitting convention centers, trading, you name it, we did it all.</p>
+          <p class="about-body">After years in the game, we kept running into the same problem: juggling StockX, eBay, LegitCheck, and a dozen other apps just to run our business. One day it hit us — why isn't there an all-in-one tool for this?</p>
+          <p class="about-body">So we took that pain point and built Hexxo from the ground up. The result is one consolidated platform for everything you need, whether you're buying or selling.</p>
+          <blockquote class="about-quote">You decide the level of trust.</blockquote>
+          <p class="about-body">That's the idea behind every part of Hexxo — you choose how deep the verification goes, how you buy, how you sell. We built it that way on purpose.</p>
+          <p class="about-body">We poured our passion into this platform to give you the best experience possible, and we hope you love it as much as we do. Thank you.</p>
         </div>
-      </div>
-    </section>
-    <!-- APP FEATURES-->
-     <section>
-      <div class="section-wrapper">
-        <div class="section-header">
-          <h2>Inside the app</h2>
-          <span>One app. Every move</span>
-          <p>Shop, list, authenticate, and trading without leaving Hexxo</p>
+      </section>
+
+      <!-- ---------- KPI band ---------- -->
+      <section class="about-kpis" aria-label="Hexxo by the numbers">
+        <dl class="about-kpis__grid">
+          <div class="about-kpi">
+            <dt class="about-kpi__label">Registered Users</dt>
+            <dd class="about-kpi__value" data-kpi="users">—</dd>
+          </div>
+          <div class="about-kpi">
+            <dt class="about-kpi__label">Active Listings</dt>
+            <dd class="about-kpi__value" data-kpi="listings">—</dd>
+          </div>
+          <div class="about-kpi">
+            <dt class="about-kpi__label">Brands Listed</dt>
+            <dd class="about-kpi__value" data-kpi="brands">—</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- ---------- Inside the app ---------- -->
+      <section class="about-showcase" aria-labelledby="about-showcase-title">
+        <div class="about-showcase__header">
+          <span class="about-eyebrow">Inside the app</span>
+          <h2 class="about-heading" id="about-showcase-title">One App. Every Move.</h2>
+          <p class="about-showcase__sub">Shop, list, authenticate and trade without leaving Hexxo.</p>
         </div>
-      </div>
-     </section>
+
+        <div class="about-stage">
+          <div class="about-stage__backdrop" aria-hidden="true"></div>
+
+          <!-- Illustrative mock of the app UI. Hidden from screen readers:
+               its fake tabs/prices would read as real controls. The feature
+               cards below carry the actual content. -->
+          <div class="about-phone" aria-hidden="true">
+            <div class="about-phone__screen">
+              <div class="about-phone__status"><span class="about-phone__notch"></span></div>
+              <div class="about-phone__appbar">
+                <span class="about-phone__logo">HEXXO</span>
+                <span class="about-phone__actions">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <i class="fa-solid fa-bag-shopping"></i>
+                </span>
+              </div>
+              <div class="about-phone__featured">
+                <!-- TODO: swap for a Jordan 4 shot when available -->
+                <img src="/images/OfferSneaker.jpg" alt="" loading="lazy" />
+              </div>
+              <div class="about-phone__tabs">
+                <span class="about-phone__tab about-phone__tab--active">Buy</span>
+                <span class="about-phone__tab">Sell</span>
+                <span class="about-phone__tab">Trade</span>
+              </div>
+              <div class="about-phone__grid">
+                <div class="about-phone__item">
+                  <img src="/images/OfferSneaker.jpg" alt="" loading="lazy" />
+                  <span class="about-phone__name">Dunk Low Panda</span>
+                  <span class="about-phone__price">$248</span>
+                </div>
+                <div class="about-phone__item">
+                  <img src="/images/bapeJacketBG.jpg" alt="" loading="lazy" />
+                  <span class="about-phone__name">Bape Shark Hoodie</span>
+                  <span class="about-phone__price">$390</span>
+                </div>
+              </div>
+              <div class="about-phone__tabbar">
+                <i class="fa-solid fa-house about-phone__tabbar-active"></i>
+                <i class="fa-solid fa-tag"></i>
+                <i class="fa-solid fa-right-left"></i>
+                <i class="fa-solid fa-user"></i>
+              </div>
+            </div>
+          </div>
+
+          <ul class="about-cards">
+            <li class="about-card about-card--tl">
+              <i class="fa-solid fa-tag about-card__icon" aria-hidden="true"></i>
+              <h3 class="about-card__title">List in 90 Seconds</h3>
+              <p class="about-card__body">Photo, size, price. 0% seller fees on your first five orders with a promo code.</p>
+              <div class="about-card__extra" aria-hidden="true">
+                <span class="about-card__bar"></span>
+                <span class="about-card__bar about-card__bar--short"></span>
+                <!-- A wireframe of the listing form's submit button, not a
+                     control: no label/arrow so it doesn't invite clicks. -->
+                <span class="about-card__fakebtn"></span>
+              </div>
+            </li>
+            <li class="about-card about-card--bl about-card--dark">
+              <i class="fa-solid fa-shield-halved about-card__icon" aria-hidden="true"></i>
+              <h3 class="about-card__title">Authenticate</h3>
+              <p class="about-card__body">Pick your tier. Verified in 24h.</p>
+              <div class="about-card__extra">
+                <span class="about-card__badge">Tier 1</span>
+                <span class="about-card__price">$4.99 / item</span>
+              </div>
+            </li>
+            <li class="about-card about-card--tr">
+              <i class="fa-solid fa-arrow-trend-up about-card__icon" aria-hidden="true"></i>
+              <h3 class="about-card__title">Live Market Price</h3>
+              <p class="about-card__body">See what it really sells for before you buy.</p>
+              <div class="about-card__extra" aria-hidden="true">
+                <span class="about-card__stat">$248</span>
+                <span class="about-card__delta">+12%</span>
+              </div>
+            </li>
+            <li class="about-card about-card--br">
+              <i class="fa-solid fa-right-left about-card__icon" aria-hidden="true"></i>
+              <h3 class="about-card__title">Trade Up</h3>
+              <p class="about-card__body">Swap pairs straight with another seller.</p>
+              <div class="about-card__extra" aria-hidden="true">
+                <img class="about-card__thumb" src="/images/bapeJacketBG.jpg" alt="" loading="lazy" />
+                <i class="fa-solid fa-right-left about-card__swap"></i>
+                <img class="about-card__thumb" src="/images/Oversized-Graphic-Tee-650x810.jpg" alt="" loading="lazy" />
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ---------- Mission ---------- -->
+      <section class="about-container about-split about-split--center" aria-labelledby="about-mission-title">
+        <div class="about-split__text">
+          <h2 class="about-heading" id="about-mission-title">Our Mission</h2>
+          <p class="about-lead">To make the resale market work the way resellers actually work: one place to buy, sell, trade and authenticate, with pricing you can see and verification you control.</p>
+          <p class="about-body about-body--muted">No spreadsheets across five apps. No guessing whether the pair in the box is real. Just the tools to run your business from the first listing to the last payout.</p>
+          <div class="about-ctas">
+            <a class="about-btn about-btn--primary" href="/seller" data-sell-cta>Start selling <span aria-hidden="true">→</span></a>
+            <a class="about-btn about-btn--ghost" href="/shop">Shop now <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <div class="about-split__media about-split__media--mission">
+          <!-- TODO: swap for founder photo IMG_1589 when available -->
+          <img src="/images/hero_5.jpg" alt="Streetwear pieces from the Hexxo marketplace" loading="lazy" />
+        </div>
+      </section>
+
     </main>
 
-    <section id="newsletter">
-      <div class="newstext">
-        <!-- change later, look at plainning sheet -->
-        <h4>Sign Up for Newsletter</h4>
-        <!-- change later, look at plainning sheet -->
-        <p>
-          Get E-mail updates about latest shop and <span>special offers</span>
-        </p>
-      </div>
-      <div class="form">
-        <input type="text" placeholder="  Your email address" />
-        <button class="normal">Sign Up</button>
-      </div>
-    </section>
+    <footer></footer>
 
-    <footer>
-    </footer>
-
-    <script src="script.js"></script>
     <script type="module" src="../js/components/nav.js"></script>
     <script type="module" src="../js/components/footer.js"></script>
+    <script type="module" src="../js/pages/about.js"></script>
   </body>
 </html>
