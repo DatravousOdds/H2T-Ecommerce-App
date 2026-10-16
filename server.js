@@ -1882,12 +1882,17 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       return res.status(409).json({ success: false, message: `Cannot mark "shipped" from "${current.fulfillmentStatus}"` });
     }
 
-    // Buyer-confirmed delivery -- currently open to every order. Once the
-    // ShipStation tracking webhook is live, prepaid-label orders get blocked
-    // here so only the carrier's delivery scan can mark them delivered.
+    // Buyer-confirmed delivery -- self-ship orders only. Prepaid-label orders
+    // (shipstationLabelId set, i.e. findable by /webhooks/shipstation) are
+    // marked delivered by the carrier's own scan instead, with an admin
+    // fallback (/api/admin/orders/:id/mark-delivered) for missed events --
+    // a buyer click would start the seller's payout clock on their say-so.
     if (isBuyer && data.fulfillmentStatus !== undefined) {
       if (!BUYER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus]) {
         return res.status(400).json({ success: false, message: `Buyers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
+      }
+      if (order.shipstationLabelId) {
+        return res.status(409).json({ success: false, message: "This order's delivery is confirmed automatically by the carrier." });
       }
 
       const { result, order: current } = await markOrderDelivered(docRef.ref, { source: "buyer" });
@@ -2446,9 +2451,9 @@ app.get("/api/admin/delivery-confirmations", verifyAuth, async (req, res) => {
         rating: confirmation.rating,
         comment: confirmation.comment,
         photoUrls: confirmation.photoUrls || [],
-        // No automated delivery webhook exists for ShipStation on our plan
-        // (see project notes) -- surfacing these lets admin manually check
-        // the carrier's own tracking page before approving payout.
+        // Self-ship orders have no carrier-confirmed delivery -- surfacing
+        // these lets admin check the carrier's own tracking page before
+        // approving payout.
         trackingNumber: order.trackingNumber || null,
         shippingCarrier: order.shippingCarrier || null,
         // Plain millis, not the raw Firestore Timestamp -- res.json() doesn't
@@ -2862,6 +2867,69 @@ app.get("/api/admin/failed-payouts", verifyAuth, async (req, res) => {
     }));
 
     return res.status(200).json({ success: true, items });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Prepaid-label orders still in transit -- the admin fallback for a carrier
+// "delivered" event that never reached /webhooks/shipstation (ShipStation
+// drops an event after 3 failed attempts). Server-mediated for the same PII
+// reasoning as the lists above.
+app.get("/api/admin/in-transit-orders", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const ordersSnap = await db.collection("orders")
+      .where("fulfillmentStatus", "==", "shipped")
+      .get();
+
+    const items = ordersSnap.docs
+      .filter((orderDoc) => orderDoc.data().shipstationLabelId)
+      .map((orderDoc) => {
+        const order = orderDoc.data();
+        return {
+          orderId: orderDoc.id,
+          itemName: order.item?.name || "Item",
+          buyerId: order.buyerId,
+          buyerEmail: order.buyerEmail || null,
+          trackingNumber: order.trackingNumber || null,
+          shippingCarrier: order.shippingCarrier || null,
+          trackingStatusCode: order.trackingStatusCode || null,
+          trackingStatusDescription: order.trackingStatusDescription || null,
+          shippedAt: order.shippedAt?.toDate?.().getTime() || null,
+          trackingUpdatedAt: order.trackingUpdatedAt?.toDate?.().getTime() || null
+        };
+      });
+
+    return res.status(200).json({ success: true, items });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.post("/api/admin/orders/:id/mark-delivered", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const { result, order } = await markOrderDelivered(db.collection("orders").doc(req.params.id), { source: "admin" });
+
+    if (result === "delivered") {
+      return res.status(200).json({ success: true, message: "Order marked delivered" });
+    }
+    if (result === "already_delivered") {
+      return res.status(200).json({ success: true, alreadyDelivered: true, message: "Order was already delivered" });
+    }
+    if (result === "not_found") {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+    return res.status(409).json({ success: false, message: `Cannot mark "delivered" from "${order.fulfillmentStatus}"` });
 
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

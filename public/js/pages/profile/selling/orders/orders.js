@@ -314,8 +314,13 @@ function openOrderActionMenu(order) {
   // shippedSource is set server-side by markOrderShipped -- "carrier" means
   // the package's first carrier scan marked it shipped, not the seller.
   const carrierConfirmed = status === "shipped" && order.shippedSource === "carrier";
+  // trackingStatusDescription is the carrier's latest word on prepaid-label
+  // orders (written by /webhooks/shipstation) -- textContent, so no escaping.
+  const carrierStatus = order.trackingStatusDescription && status !== "delivered"
+    ? ` · Carrier: ${order.trackingStatusDescription}`
+    : "";
   menu.querySelector(".seller-order-action-status").textContent =
-    `Status: ${status}${carrierConfirmed ? " · confirmed by carrier scan" : ""}`;
+    `Status: ${status}${carrierConfirmed ? " · confirmed by carrier scan" : ""}${carrierStatus}`;
   menu.querySelector(".seller-order-action-ship-fields").style.display = canShip && !isPrepaid ? "flex" : "none";
 
   const prepaidInfo = menu.querySelector(".seller-order-action-prepaid-info");

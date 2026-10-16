@@ -6,6 +6,7 @@ import { auth } from "../../api/firebase-client.js";
 const listEl = document.getElementById("review-list");
 const disputesListEl = document.getElementById("disputes-list");
 const failedPayoutsListEl = document.getElementById("failed-payouts-list");
+const inTransitListEl = document.getElementById("in-transit-list");
 const guardEl = document.getElementById("not-authorized");
 
 // orderId -> that order's photoUrls, wrapped as { url } to reuse the
@@ -26,10 +27,10 @@ function ratingStars(rating) {
     .join("");
 }
 
-// No automated "delivered" webhook exists for ShipStation on our plan (V1 has
-// no such event, V2's tracking endpoint needs the Advanced plan) -- this link
-// lets admin manually check the carrier's own tracking page before approving
-// a payout or resolving a dispute, standing in for that missing ground truth.
+// Lets admin check the carrier's own tracking page before approving a payout,
+// resolving a dispute, or manually marking an in-transit order delivered --
+// self-ship orders have no carrier-confirmed delivery, and a prepaid order's
+// webhook event can be missed.
 const CARRIER_TRACKING_URL_BUILDERS = {
   stamps_com: (n) => `https://tools.usps.com/go/TrackConfirmAction?tLabels=${n}`,
   usps: (n) => `https://tools.usps.com/go/TrackConfirmAction?tLabels=${n}`,
@@ -268,6 +269,69 @@ async function loadFailedPayoutsScreen() {
   renderFailedPayouts(items);
 }
 
+// Carrier status text comes from ShipStation, not from us -- escaped before
+// it goes into innerHTML.
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (ch) => (
+  { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+));
+
+function inTransitCard(item) {
+  const formatDate = (ms) => (ms ? new Date(ms).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "--");
+  const carrierStatus = item.trackingStatusDescription
+    ? `${escapeHtml(item.trackingStatusDescription)} (updated ${formatDate(item.trackingUpdatedAt)})`
+    : "No carrier updates received yet";
+
+  return `
+    <article class="review-card" data-order-id="${item.orderId}">
+      <div class="review-card-header">
+        <div class="review-card-heading">
+          <h3>#${item.orderId.slice(-8)}</h3>
+          <span class="review-submitted-date">Shipped ${formatDate(item.shippedAt)}</span>
+        </div>
+        <span class="status-badge status-submitted">shipped</span>
+      </div>
+      <p class="default-paragraph"><strong>${item.itemName}</strong> &mdash; Buyer: ${item.buyerEmail || item.buyerId}</p>
+      ${trackingInfoHTML(item)}
+      <p class="default-paragraph">Carrier status: ${carrierStatus}</p>
+      <div class="review-actions">
+        <button type="button" class="approve-btn" data-action="mark-delivered">Mark Delivered</button>
+      </div>
+    </article>
+  `;
+}
+
+async function loadInTransitScreen() {
+  const response = await authorizedFetch("/api/admin/in-transit-orders");
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || "Failed to load in-transit orders");
+
+  inTransitListEl.innerHTML = result.items.length
+    ? result.items.map(inTransitCard).join("")
+    : `<p class="default-paragraph">No prepaid orders in transit right now.</p>`;
+}
+
+function wireInTransitActions() {
+  inTransitListEl.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-action='mark-delivered']");
+    if (!button) return;
+
+    // Starts the buyer's 3-day confirmation window (and the seller's payout
+    // clock), so it gets the same explicit confirm the dispute refund does.
+    if (!window.confirm("Mark this order delivered? Only do this after the carrier's tracking page confirms delivery.")) return;
+
+    const orderId = button.closest(".review-card").dataset.orderId;
+    try {
+      const response = await authorizedFetch(`/api/admin/orders/${orderId}/mark-delivered`, { method: "POST" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Mark delivered failed");
+      await loadInTransitScreen();
+    } catch (error) {
+      console.error("Mark delivered failed:", error);
+      alert("Mark delivered failed: " + error.message);
+    }
+  });
+}
+
 async function authorizedFetch(url, options = {}) {
   // Force refresh -- same reasoning as authentication-review.js: a cached
   // token issued before the admin claim was granted won't carry it.
@@ -401,6 +465,7 @@ async function init() {
     listEl.style.display = "none";
     disputesListEl.style.display = "none";
     failedPayoutsListEl.style.display = "none";
+    inTransitListEl.style.display = "none";
     return;
   }
 
@@ -408,9 +473,11 @@ async function init() {
   wireActions();
   wireDisputeActions();
   wireFailedPayoutActions();
+  wireInTransitActions();
   await loadReviewScreen();
   await loadDisputesScreen();
   await loadFailedPayoutsScreen();
+  await loadInTransitScreen();
 }
 
 init();

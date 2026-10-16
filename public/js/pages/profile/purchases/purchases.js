@@ -257,16 +257,24 @@ function buildOrderDetailsHTML(order) {
   const needsDeliveryConfirmation = status === "delivered" && order.deliveryConfirmationStatus === "required";
   if (needsDeliveryConfirmation) deliveryConfirmationPhotos = [];
 
-  // The buyer confirms receipt themselves instead of trusting the seller's
-  // own say-so (see server.js's BUYER_FULFILLMENT_TRANSITIONS).
-  const needsMarkAsReceived = status === "shipped";
-  const markAsReceivedSection = needsMarkAsReceived
-    ? `<div class="order-mark-received">
+  // Self-ship orders: the buyer confirms receipt themselves instead of
+  // trusting the seller's own say-so. Prepaid-label orders
+  // (shipstationLabelId) are marked delivered by the carrier's scan instead
+  // -- server.js's PUT /orders/:id rejects a buyer confirm for those.
+  const isCarrierTracked = Boolean(order.shipstationLabelId);
+  const needsMarkAsReceived = status === "shipped" && !isCarrierTracked;
+  let markAsReceivedSection = "";
+  if (needsMarkAsReceived) {
+    markAsReceivedSection = `<div class="order-mark-received">
          <p class="mark-received-subtext">This seller ships independently, so we can't confirm delivery automatically. Let us know once your item arrives.</p>
          <button type="button" class="order-action-btn" id="mark-as-received-btn">Mark as Received</button>
          <p class="order-action-error mark-received-error"></p>
-       </div>`
-    : "";
+       </div>`;
+  } else if (status === "shipped" && isCarrierTracked) {
+    markAsReceivedSection = `<div class="order-mark-received">
+         <p class="mark-received-subtext">We'll mark this order delivered automatically as soon as the carrier confirms delivery.</p>
+       </div>`;
+  }
 
   const confirmationSection = needsDeliveryConfirmation
     ? `<div class="order-delivery-confirmation">

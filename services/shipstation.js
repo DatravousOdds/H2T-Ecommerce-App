@@ -105,4 +105,13 @@ async function createWebhook({ name, event, url, headers }) {
     });
 }
 
-module.exports = { getRatesForCarrier, createLabel, toV2LabelId, getLabelTracking, listWebhooks, createWebhook }
+// PUT only changes the fields sent -- used to rotate the shared-secret header
+// on an already-registered webhook without deleting and re-creating it.
+async function updateWebhook(webhookId, { name, url, headers }) {
+    return await v2Request(`/v2/environment/webhooks/${encodeURIComponent(webhookId)}`, {
+        method: 'PUT',
+        body: { name, url, headers }
+    });
+}
+
+module.exports = { getRatesForCarrier, createLabel, toV2LabelId, getLabelTracking, listWebhooks, createWebhook, updateWebhook }
