@@ -368,7 +368,10 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
 // (~30 min apart) and then drops the event. So: 2xx for anything a retry
 // can't fix (unknown label, non-tracking event), 5xx only for our own
 // transient failures (Firestore, the fetch-back below) where a retry helps.
-app.post('/webhooks/shipstation', express.raw({ type: '*/*' }), async (req, res) => {
+// limit: every delivery carries the package's full event history (~700
+// bytes/event), so the final "delivered" payload is the largest -- the
+// 100kb default would 413 it (and ShipStation drop it) past ~140 events.
+app.post('/webhooks/shipstation', express.raw({ type: '*/*', limit: '1mb' }), async (req, res) => {
   const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : '';
 
   const auth = await verifyShipstationWebhook(req.headers, rawBody, {
@@ -474,7 +477,11 @@ async function handleShipstationTrackingUpdate(orderRef, labelId, data) {
       await markOrderShipped(orderRef, { source: 'carrier' });
       await markOrderDelivered(orderRef, { source: 'carrier' });
     } else {
-      console.warn(`ShipStation webhook said ${data.status_code} for ${labelId}, but /track reports ${confirmed?.status_code} -- not marking delivered`);
+      // Thrown (-> 500), not swallowed: /track can lag the webhook, and a
+      // 200 here would consume the only "delivered" event ShipStation sends.
+      // Its retries (~30 min apart) re-check once /track has caught up; a
+      // genuinely wrong DE is simply refused again and then dropped.
+      throw new Error(`ShipStation webhook said ${data.status_code} for ${labelId}, but /track reports ${confirmed?.status_code} -- not marking delivered yet`);
     }
   }
 
