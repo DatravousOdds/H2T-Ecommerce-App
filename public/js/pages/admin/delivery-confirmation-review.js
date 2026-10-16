@@ -269,8 +269,8 @@ async function loadFailedPayoutsScreen() {
   renderFailedPayouts(items);
 }
 
-// Carrier status text comes from ShipStation, not from us -- escaped before
-// it goes into innerHTML.
+// Carrier status (ShipStation) and item names (sellers) aren't ours --
+// escaped before they go into innerHTML.
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (ch) => (
   { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
 ));
@@ -290,7 +290,7 @@ function inTransitCard(item) {
         </div>
         <span class="status-badge status-submitted">shipped</span>
       </div>
-      <p class="default-paragraph"><strong>${item.itemName}</strong> &mdash; Buyer: ${item.buyerEmail || item.buyerId}</p>
+      <p class="default-paragraph"><strong>${escapeHtml(item.itemName)}</strong> &mdash; Buyer: ${escapeHtml(item.buyerEmail || item.buyerId)}</p>
       ${trackingInfoHTML(item)}
       <p class="default-paragraph">Carrier status: ${carrierStatus}</p>
       <div class="review-actions">

@@ -4710,8 +4710,15 @@ async function handlePaymentIntentSucceeded(paymentData){
       data = orderDoc.data();
       orderRef = orderDoc.ref;
 
-      if (data.fulfillmentStatus === 'processing') {
-        console.log(`order for payment intent ${paymentData.id} already processed, skipping duplicate webhook delivery`);
+      // Every state this handler (or a later step) moves an order into.
+      // Checking for just "processing" let a redelivered event rewind a
+      // shipped/delivered/refunded order -- now also reached automatically
+      // by carrier scans -- and re-run everything below (promo spend, sale
+      // stats, a second label purchase + debt). "cancelled" is left out on
+      // purpose: an order cancelled while still pending can see its payment
+      // succeed afterwards, and that existing behavior isn't changed here.
+      if (['processing', 'shipped', 'delivered', 'refunded'].includes(data.fulfillmentStatus)) {
+        console.log(`order for payment intent ${paymentData.id} already ${data.fulfillmentStatus}, skipping duplicate webhook delivery`);
         return;
       }
 
