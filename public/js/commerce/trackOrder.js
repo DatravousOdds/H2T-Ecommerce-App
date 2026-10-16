@@ -116,10 +116,11 @@ function displayOrder(order, sellerProfile) {
     messageSellerLink.href = `/contact?order=${orderId}`;
 }
 
-// Only 3 real, timestamp-backed stages exist -- there's no "out for
-// delivery" status or timestamp anywhere in this app's order model (no
-// carrier-tracking webhook reports it), so it's left out rather than shown
-// as an undated placeholder step.
+// Only 3 timestamp-backed stages. Finer carrier detail (out for delivery,
+// attempts, exceptions) exists only for prepaid-label orders, via the
+// ShipStation webhook's tracking fields -- shown in the shipping section
+// instead (buildCarrierTrackingHTML) rather than as steps self-ship orders
+// could never complete.
 function buildTimelineHTML(order) {
     const isShipped = ['shipped', 'delivered'].includes(order.fulfillmentStatus);
     const isDelivered = order.fulfillmentStatus === 'delivered';
@@ -183,6 +184,7 @@ function buildOrderSummaryHTML(order, sellerProfile) {
                 <span>Tracking Number: <strong>${order.trackingNumber}</strong></span>
             </div>
             ${order.shippingCarrier ? `<div>Shipping Carrier: ${formatCarrierName(order.shippingCarrier)}</div>` : ''}
+            ${buildCarrierTrackingHTML(order)}
         `
         : `<div class="tracking-row"><i class="fa-solid fa-truck"></i><span>Not yet shipped</span></div>`;
 
@@ -207,6 +209,52 @@ function buildOrderSummaryHTML(order, sellerProfile) {
         <div class="shipping-info">
             ${trackingHTML}
         </div>
+    `;
+}
+
+// Everything below comes from the carrier via ShipStation, not from us --
+// escaped before it goes into innerHTML.
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, ch => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]
+));
+
+// Live carrier status written onto prepaid-label orders by
+// /webhooks/shipstation (trackingStatusDescription, estimatedDeliveryDate,
+// trackingUrl, trackingEvents -- newest first, capped at 20). Self-ship
+// orders have none of these fields, so this renders nothing for them.
+function buildCarrierTrackingHTML(order) {
+    if (!order.trackingStatusDescription && !order.trackingEvents?.length) return '';
+
+    const isDelivered = order.fulfillmentStatus === 'delivered';
+    const eta = !isDelivered && order.estimatedDeliveryDate
+        ? new Date(order.estimatedDeliveryDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+        : '';
+    // Only http(s) -- a javascript: URL in an href would run on click.
+    const carrierLink = /^https?:\/\//i.test(order.trackingUrl || '')
+        ? `<a href="${escapeHtml(order.trackingUrl)}" target="_blank" rel="noopener noreferrer">View on carrier's site</a>`
+        : '';
+
+    const events = (order.trackingEvents || []).map(event => {
+        const when = event.occurredAt
+            ? new Date(event.occurredAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+            : '';
+        const where = [event.city, event.state].filter(Boolean).join(', ');
+        return `
+            <li>
+                <span class="tracking-event-when">${escapeHtml(when)}</span>
+                <span>${escapeHtml(event.description || '')}${where ? ` &middot; ${escapeHtml(where)}` : ''}</span>
+            </li>`;
+    }).join('');
+
+    return `
+        ${order.trackingStatusDescription ? `<div>Status: <strong>${escapeHtml(order.trackingStatusDescription)}</strong></div>` : ''}
+        ${eta ? `<div>Estimated delivery: ${escapeHtml(eta)}</div>` : ''}
+        ${carrierLink ? `<div>${carrierLink}</div>` : ''}
+        ${events ? `
+            <details class="tracking-events">
+                <summary>Tracking history (${order.trackingEvents.length})</summary>
+                <ol>${events}</ol>
+            </details>` : ''}
     `;
 }
 
