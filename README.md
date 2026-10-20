@@ -66,8 +66,7 @@ Before installing, make sure you have:
   - `KICKDB_KEY`
   - `SHIPSTATION_KEY`
   - `SHIPSTATION_SECRET_KEY`
-  - `EASYSHIP_KEY`
-  - `EASYSHIP_WEBHOOK_SECRET`
+  - `SHIPSTATION_V2_API_KEY`
 
 ## Installation
 

@@ -149,7 +149,7 @@ async function initializeCheckout() {
         const shippingAddressElement = elements.create("address", {
             mode: "shipping",
             allowedCountries: ["US"],
-            // EasyShip requires a contact_phone on the destination address to
+            // ShipStation requires a phone on the ship-to address to
             // purchase a shipping label. fields.phone alone only makes the
             // field collectible -- validation.phone.required is what actually
             // makes the Element withhold event.complete until it's filled in.
@@ -169,7 +169,7 @@ function handleShippingAddressChange(event) {
     }
     // name/phone ride along with address here since this is the only point
     // the buyer's contact info is captured -- both are required later to
-    // actually purchase the EasyShip label (destination_address needs them).
+    // actually purchase the ShipStation label (shipTo needs them).
     calculateTax(event.value.address, event.value.name, event.value.phone);
 
     // This Address Element is now the only place the buyer enters a
