@@ -1078,6 +1078,10 @@ app.get("/api/sellers/:id/public-profile", async (req, res) => {
     return res.json({
       username: profile.username || "",
       profileImage: profile.profileImage || "",
+      // The banner the seller set on their account page, shown on their public
+      // profile. Seller-writable, and the page calls .replace() on it, so only
+      // a string gets through -- anything else would break the whole page.
+      backgroundImage: typeof profile.backgroundImage === "string" ? profile.backgroundImage : "",
       // Two distinct badges: Verified Seller (badge-verified-solid-shield.svg)
       // reflects identity verification at signup; Trusted Seller (shield-logo.svg)
       // is earned via a track record and is derived from cleanSalesCount, which
