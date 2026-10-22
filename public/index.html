@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="css/components/cartDrawer.css"/>
     <link rel="stylesheet" href="css/pages/index.css" />
     <link rel="stylesheet" href="css/components/homeHero.css" />
+    <link rel="stylesheet" href="css/components/brandCarousel.css" />
     <link rel="preconnect" href="https://rsms.me/">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -276,6 +277,27 @@
       </section>
       <!-- end of Products-->
 
+      <!-- Heavy Hitters: established brands as quick shop-by-brand shortcuts.
+           Cards are rendered by brandCarousel.js from core/popularBrands.js -->
+      <section id="heavy-hitters" class="brand-carousel brand-carousel--popular section-p margin-l-r-sm" aria-labelledby="heavyHittersTitle" data-brand-carousel="popular">
+        <div class="pro-header-row">
+          <div class="brand-carousel__heading">
+            <p class="banner-eyebrow">Shop by brand</p>
+            <h2 class="section-header" id="heavyHittersTitle">Heavy Hitters</h2>
+          </div>
+          <a href="/shop/brands.html" class="shop-now-link">View all →</a>
+        </div>
+        <div class="brand-carousel__viewport">
+          <button type="button" class="brand-carousel__arrow brand-carousel__arrow--prev" data-carousel-prev aria-controls="heavyHittersTrack" aria-label="Scroll heavy hitter brands left">
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          </button>
+          <button type="button" class="brand-carousel__arrow brand-carousel__arrow--next" data-carousel-next aria-controls="heavyHittersTrack" aria-label="Scroll heavy hitter brands right">
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          </button>
+          <ul class="brand-carousel__track" id="heavyHittersTrack" data-brand-track></ul>
+        </div>
+      </section>
+
       <section>
         <div class="pro-header-row">
           <h2 class="section-header">Women's Collection</h2>
@@ -358,66 +380,27 @@
         </div>    
     </section>
 
-    <!-- Shop By Brands -->
-    <section id="brands" class="section-p margin-l-r-sm">
-      <div>
-        <h2 class="section-header">Browse By Brands</h2>
+    <!-- Upcoming Brands: seller-created labels. Cards are rendered by
+         brandCarousel.js from /api/upcoming-brands; the section stays hidden
+         until at least one brand is published. -->
+    <section id="upcoming-brands" class="brand-carousel section-p margin-l-r-sm" aria-labelledby="upcomingBrandsTitle" data-brand-carousel="upcoming" hidden>
+      <div class="pro-header-row">
+        <div class="brand-carousel__heading">
+          <p class="banner-eyebrow">Rising labels · Made by Hexxo sellers</p>
+          <h2 class="section-header" id="upcomingBrandsTitle">Upcoming Brands</h2>
+        </div>
+        <a href="/shop/brands.html#upcoming" class="shop-now-link">View all →</a>
       </div>
-      <!-- GRID-->
-      <div class="banner-grid">
-        <a href="/shop/shop.html?brand=jordan">
-          <div class="brand-banner" data-brand="Jordan">
-              <div class="card_text">
-                <h2>Jordan</h2>
-                <p class="total-listings">Loading listings...</p>
-                <p class="card_note">sneakers</p>
-              </div>
-              <div class="banner-brand-logo">
-                <img src="./images/IMG_2604.jpg" alt="Jordan Brand" loading="lazy">
-              </div>
-          </div>
-        </a>
-
-        <a href="/shop/shop.html?brand=gucci">
-          <div class="brand-banner black-banner" data-brand="Bape">
-              <div class="card_text">
-                <h2 class="hdr-w-text">Bape</h2>
-                <p class="total-listings tl-d-text">Loading listings...</p>
-                <p class="card_note">Apparel</p>
-              </div>
-              <div class="banner-brand-logo">
-                <img src="./images/HomeBan.jpg" alt="Supreme Brand" loading="lazy">
-              </div>
-          </div>
-        </a>
-        <a href="/shop/shop.html?brand=vlone">
-          <div class="brand-banner black-banner" data-brand="Vlone">
-              <div class="card_text">
-                <h2 class="hdr-w-text">Vlone</h2>
-                <p class="total-listings tl-d-text">Loading listings...</p>
-                <p class="card_note">apparel</p>
-              </div>
-              <div class="banner-brand-logo">
-                <img src="./images/brand_1.jpg" alt="Nike Brand" loading="lazy">
-              </div>
-          </div>
-        </a>
-        <a href="/shop/shop.html?brand=chrome-hearts">
-          <div class="brand-banner" data-brand="Chrome Hearts">
-              <div class="card_text">
-                <h2>Chrome Hearts</h2>
-                <p class="total-listings">Loading listings...</p>
-                <p class="card_note">Accessories</p>
-              </div>
-              <div class="banner-brand-logo">
-                <img src="./images/chrome_banner_01.jpeg" alt="Jordan Brand" loading="lazy">
-              </div>
-          </div>
-        </a>
-      </div>
-      <!-- CTA -->
-      <div class="cta-wrapper">
-          <a href="/shop/brands.html" class="banner-btn">View All Brands →</a>
+      <!-- Arrows sit beside the track, not inside it: the track's edge-fade
+           mask would fade them out too, and they shouldn't scroll with it -->
+      <div class="brand-carousel__viewport">
+        <button type="button" class="brand-carousel__arrow brand-carousel__arrow--prev" data-carousel-prev aria-controls="upcomingBrandsTrack" aria-label="Scroll upcoming brands left">
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="brand-carousel__arrow brand-carousel__arrow--next" data-carousel-next aria-controls="upcomingBrandsTrack" aria-label="Scroll upcoming brands right">
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <ul class="brand-carousel__track" id="upcomingBrandsTrack" data-brand-track></ul>
       </div>
     </section>
 
@@ -516,6 +499,7 @@
     <script type="module" src="js/components/footer.js"></script>
     <script type="module" src="js/pages/home.js"></script>
     <script type="module" src="js/components/heroCarousel.js"></script>
+    <script type="module" src="js/components/brandCarousel.js"></script>
     <script type="module" src="js/pages/search.js"></script>
     <script>
       // sidebar
