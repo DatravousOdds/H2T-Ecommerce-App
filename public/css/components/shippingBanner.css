@@ -1,0 +1,163 @@
+/* Free-shipping announcement ticker, the first thing on the page above the
+   (sticky, #070707) navbar -- so it scrolls away while the nav stays put,
+   and the nav + hero still read as one dark block underneath it.
+
+   Brand red with ink text: #070707 on #f30c1e is ~4.7:1, which clears WCAG
+   AA for this text (white on that red would not).
+
+   Loop: the track holds two identical groups and slides left by exactly one
+   group width (-50% of the track), then snaps back, so the seam is invisible.
+   Each group is at least as wide as the viewport (min-width: 50% of a 200%
+   track), so there is never empty space on wide screens. */
+
+.shipping-banner {
+  --ship-red: #f30c1e;
+  --ship-ink: #070707;
+  --ship-height: 36px;
+  --ship-duration: 45s;
+
+  background: var(--ship-red);
+  color: var(--ship-ink);
+  overflow: hidden;
+}
+
+/* The whole strip is the tap target -- a link inside moving text would be
+   hard to hit on a phone. */
+.shipping-banner__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  /* Fade the text in/out at the edges instead of hard-cutting it. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.shipping-banner__link:hover {
+  color: inherit;
+}
+
+.shipping-banner__link:focus-visible {
+  outline: 2px solid var(--ship-ink);
+  outline-offset: -4px;
+}
+
+.shipping-banner__track {
+  display: flex;
+  width: max-content;
+  min-width: 200%;
+  animation: shipping-banner-scroll var(--ship-duration) linear infinite;
+}
+
+/* Let people stop it to read (or tap) it. */
+.shipping-banner:hover .shipping-banner__track,
+.shipping-banner__link:focus-visible .shipping-banner__track {
+  animation-play-state: paused;
+}
+
+.shipping-banner__group {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-around;
+  min-width: 50%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shipping-banner__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--ship-height);
+  font: 700 12px/1 'Space Grotesk', Inter, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Diamond separator after every item keeps an even rhythm along the loop.
+   Drawn in CSS rather than a "✦" glyph, which Space Grotesk lacks; being
+   inline-block also keeps the CTA's underline from running under it. */
+.shipping-banner__item::after {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 28px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.shipping-banner__item i {
+  font-size: 13px;
+}
+
+.shipping-banner__item--cta {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.shipping-banner__link:hover .shipping-banner__item--cta {
+  text-decoration-thickness: 3px;
+}
+
+@keyframes shipping-banner-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (max-width: 480px) {
+  .shipping-banner {
+    --ship-duration: 30s;
+  }
+
+  .shipping-banner__item {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .shipping-banner__item::after {
+    margin: 0 18px;
+  }
+}
+
+/* No motion: one centered, static "message ✦ Shop now" line. */
+@media (prefers-reduced-motion: reduce) {
+  .shipping-banner__link {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .shipping-banner__track {
+    width: 100%;
+    min-width: 0;
+    animation: none;
+  }
+
+  .shipping-banner__group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .shipping-banner__group + .shipping-banner__group,
+  .shipping-banner__item:nth-child(n + 3) {
+    display: none;
+  }
+
+  .shipping-banner__item:nth-child(2)::after {
+    content: none;
+  }
+}
+
+/* Static line is too long for small phones: drop "Shop now" (the whole strip
+   is still the link). */
+@media (prefers-reduced-motion: reduce) and (max-width: 400px) {
+  .shipping-banner__item:nth-child(2) {
+    display: none;
+  }
+
+  .shipping-banner__item:first-child::after {
+    content: none;
+  }
+}
