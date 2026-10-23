@@ -12,6 +12,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 const { getRatesForCarrier, createLabel } = require('./services/shipstation');
 const { templateBuilder } = require('./services/emailTemplates');
+const { addBusinessDays } = require('./services/businessDays');
 easyship.auth(process.env.EASYSHIP_KEY);
 if (process.env.EASYSHIP_KEY?.startsWith('sand_')) {
     easyship.server('https://public-api-sandbox.easyship.com');
@@ -228,6 +229,30 @@ async function sendAdminNotification(notificationType, data) {
     });
   } catch (error) {
     console.error(`Error sending admin notification (${notificationType}):`, error);
+  }
+}
+
+// Best-effort email to a customer from a server-side event, e.g. an admin
+// decision (unlike /send/update, there's no request from that user to answer).
+// Never throws. Returns whether it sent, so the caller can tell the admin.
+// Resend's SDK reports failures as { error } instead of throwing, so that's
+// checked explicitly.
+async function sendUserEmail(to, notificationType, data) {
+  try {
+    const template = templateBuilder(notificationType, data);
+    if (!to || !template) return false;
+
+    const { error } = await resendClient.emails.send({
+      from: 'noreply@hexxo.store',
+      to,
+      subject: template.subject,
+      html: template.html
+    });
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error(`Error sending ${notificationType} email:`, error);
+    return false;
   }
 }
 
@@ -495,6 +520,449 @@ app.post('/send/contact', async (req, res) => {
   } catch (error) {
     console.error('Error sending contact form email:', error);
     return res.status(500).json({ success: false, message: 'Failed to send message. Please try again.' });
+  }
+});
+
+// ---- Upcoming brand onboarding ----
+// One application per account: upcomingBrands/{uid}. The full EIN lives in
+// brandApplicationsPrivate/{uid} instead, so admin list reads and the public
+// carousel route (both read upcomingBrands) can never carry it by accident.
+
+// Category shown on the brand's Upcoming Brands card.
+const BRAND_CATEGORIES = ['Apparel', 'Accessories', 'Graphic Tees', 'Outerwear', 'Sneakers'];
+const BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS = 3;
+const INSTAGRAM_HANDLE_PATTERN = /^[A-Za-z0-9._]{1,30}$/;
+
+// Returns { error } or { application, ein }. Repeats every check the form
+// does, since anyone can send this request without using our form.
+function parseBrandApplication(body = {}) {
+  const text = (value) => (typeof value === 'string' ? value.trim() : '');
+  const brandName = text(body.brandName);
+  const category = text(body.category);
+  const description = text(body.description);
+  const instagram = text(body.instagram).replace(/^@/, '');
+  const website = text(body.website);
+  const einDigits = text(body.ein).replace(/[\s-]/g, '');
+
+  if (!brandName || brandName.length > 60) return { error: 'Brand name is required (60 characters max).' };
+  if (!BRAND_CATEGORIES.includes(category)) return { error: 'Choose a category from the list.' };
+  if (description.length < 20 || description.length > 1000) return { error: 'Description must be 20 to 1000 characters.' };
+  if (!INSTAGRAM_HANDLE_PATTERN.test(instagram)) return { error: 'Enter your Instagram handle, like @yourbrand.' };
+
+  let websiteUrl = null;
+  if (website) {
+    try {
+      // "yourbrand.com" is what most people type, so assume https when no scheme is given
+      const url = new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`);
+      if (!url.hostname.includes('.') || url.href.length > 200) throw new Error('bad url');
+      websiteUrl = url.href;
+    } catch {
+      return { error: 'Enter a valid website address, like yourbrand.com.' };
+    }
+  }
+
+  // Format check only -- it can't prove the EIN belongs to this brand.
+  if (einDigits && !/^\d{9}$/.test(einDigits)) return { error: 'An EIN is 9 digits, like 12-3456789.' };
+
+  return {
+    application: { brandName, category, description, instagram, website: websiteUrl },
+    ein: einDigits ? `${einDigits.slice(0, 2)}-${einDigits.slice(2)}` : null,
+  };
+}
+
+// When a rejected applicant may apply again, or null if the cooldown doesn't apply.
+function brandReapplyAt(application) {
+  if (application.status !== 'rejected' || !application.rejectedAt) return null;
+  return addBusinessDays(application.rejectedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS);
+}
+
+// The caller's own application, or null. Picks fields explicitly so internal
+// fields added later (reviewer ids, asset paths) don't leak out by default.
+app.get('/api/brand-onboarding/me', verifyAuth, async (req, res) => {
+  try {
+    const snap = await db.collection('upcomingBrands').doc(req.token.uid).get();
+    if (!snap.exists) return res.json({ success: true, application: null });
+
+    const data = snap.data();
+    return res.json({
+      success: true,
+      application: {
+        brandName: data.brandName,
+        category: data.category,
+        description: data.description,
+        instagram: data.instagram,
+        website: data.website,
+        einLast4: data.einLast4,
+        status: data.status,
+        reviewerNotes: data.reviewerNotes,
+        submittedAt: data.submittedAt?.toDate?.().getTime() || null,
+        reapplyAt: brandReapplyAt(data)?.getTime() || null,
+        // Lets the upload page show what's already uploaded (e.g. after an
+        // admin asks for changes)
+        assets: data.assets
+          ? Object.fromEntries(Object.entries(data.assets).map(([kind, asset]) => [kind, asset.url]))
+          : null,
+      },
+    });
+  } catch (error) {
+    console.error('Error loading brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not load your application.' });
+  }
+});
+
+// Public card data for the homepage Upcoming Brands carousel and
+// /shop/brands.html#upcoming. Published brands only; fields are picked
+// explicitly so contactEmail, einLast4 and reviewer data never go out.
+// An empty list is what hides the carousel on the frontend.
+app.get('/api/upcoming-brands', async (req, res) => {
+  try {
+    const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
+    const brands = snap.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        name: data.brandName,
+        founderHandle: data.founderHandle,
+        category: data.category,
+        // shortcut: no asset upload yet, so no cover field exists -- cards fall
+        // back to a wordmark; set this to the cover URL field once uploads ship
+        image: null,
+      };
+    });
+    // Every homepage view calls this; a short cache keeps Firestore reads flat
+    res.set('Cache-Control', 'public, max-age=300');
+    return res.json({ success: true, brands });
+  } catch (error) {
+    console.error('Error loading upcoming brands:', error);
+    return res.status(500).json({ success: false, message: 'Could not load upcoming brands.' });
+  }
+});
+
+// Submit a new application, or reapply after a rejection once the cooldown
+// has passed. The read-then-write runs in a transaction so a double submit
+// can't create two applications or reapply twice.
+app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
+  const { error, application, ein } = parseBrandApplication(req.body);
+  if (error) return res.status(400).json({ success: false, message: error });
+
+  const uid = req.token.uid;
+  const contactEmail = req.token.email;
+  if (!contactEmail) {
+    return res.status(400).json({ success: false, message: 'Your account needs an email address to apply.' });
+  }
+
+  try {
+    // Handle and email come from the account, never the request body, so an
+    // applicant can't put someone else's @handle on their brand card.
+    const profileSnap = await db.collection('userProfiles').doc(uid).get();
+    const founderHandle = profileSnap.data()?.username;
+    if (!founderHandle) {
+      return res.status(400).json({ success: false, message: 'Add a username to your profile before applying. It shows on your brand card.' });
+    }
+
+    const applicationRef = db.collection('upcomingBrands').doc(uid);
+    const privateRef = db.collection('brandApplicationsPrivate').doc(uid);
+
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      const existing = snap.exists ? snap.data() : null;
+
+      if (existing && existing.status !== 'rejected') {
+        return { conflict: 'You already have an application in progress.' };
+      }
+
+      const reapplyAt = existing && brandReapplyAt(existing);
+      if (reapplyAt && Date.now() < reapplyAt.getTime()) {
+        return { conflict: 'You can reapply after the waiting period.', reapplyAt: reapplyAt.getTime() };
+      }
+
+      const now = admin.firestore.FieldValue.serverTimestamp();
+      const applicationCount = (existing?.applicationCount || 0) + 1;
+
+      // Full overwrite (no merge) so a reapply starts clean: the old
+      // rejection notes and timestamps don't carry over.
+      tx.set(applicationRef, {
+        ...application,
+        founderHandle,
+        contactEmail,
+        einLast4: ein ? ein.slice(-4) : null,
+        status: 'pending_review',
+        applicationCount,
+        reviewerNotes: null,
+        createdAt: existing?.createdAt || now,
+        submittedAt: now,
+      });
+
+      if (ein) {
+        tx.set(privateRef, { ein, updatedAt: now });
+      } else {
+        // A reapply without an EIN shouldn't leave the previous one behind
+        tx.delete(privateRef);
+      }
+
+      return { applicationCount };
+    });
+
+    if (result.conflict) {
+      return res.status(409).json({ success: false, message: result.conflict, reapplyAt: result.reapplyAt || null });
+    }
+
+    // Fire-and-forget: sendAdminNotification never throws, and the
+    // application is already saved whether or not the email goes out.
+    sendAdminNotification('BRAND_APPLICATION_SUBMITTED', {
+      ...application,
+      founderHandle,
+      contactEmail,
+      hasEin: Boolean(ein),
+      applicationCount: result.applicationCount,
+    });
+
+    return res.status(201).json({ success: true, status: 'pending_review' });
+  } catch (error) {
+    console.error('Error submitting brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not submit your application. Please try again.' });
+  }
+});
+
+// ---- Brand onboarding: owner image upload ----
+// The browser uploads straight to Storage at upcomingBrands/{uid}/{kind}
+// (fixed names, no extension, so a re-upload replaces the file instead of
+// leaving an orphan). This is the bucket every other browser upload uses
+// (seller.js, profile-media.js); the Admin SDK's default bucket from
+// FIREBASE_CONFIG is a different one (.appspot.com, used for shipping labels).
+const brandAssetsBucket = admin.storage().bucket('ecom-website-94d87');
+const BRAND_ASSET_KINDS = ['card', 'logo', 'cover'];
+const BRAND_ASSET_MAX_BYTES = 5 * 1024 * 1024;
+const BRAND_ASSET_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Returns { path, url } for one uploaded image, or { error } if it's
+// missing, not an image, or too big. The URL is built from the file's own
+// metadata, never from anything the browser sends.
+async function inspectBrandAsset(uid, kind) {
+  const path = `upcomingBrands/${uid}/${kind}`;
+  let metadata;
+
+  try {
+    [metadata] = await brandAssetsBucket.file(path).getMetadata();
+  } catch (error) {
+    if (error.code === 404) return { error: `Upload your ${kind} image.` };
+    throw error;
+  }
+
+  if (!BRAND_ASSET_CONTENT_TYPES.includes(metadata.contentType)) {
+    return { error: `Your ${kind} image must be a JPG, PNG, or WebP.` };
+  }
+  if (Number(metadata.size) > BRAND_ASSET_MAX_BYTES) {
+    return { error: `Your ${kind} image is over 5 MB. Upload a smaller one.` };
+  }
+
+  // Set by the Firebase client SDK on upload; it's what getDownloadURL() uses
+  const token = metadata.metadata?.firebaseStorageDownloadTokens?.split(',')[0];
+  if (!token) return { error: `Your ${kind} image didn't finish uploading. Upload it again.` };
+
+  return {
+    path,
+    url: `https://firebasestorage.googleapis.com/v0/b/${brandAssetsBucket.name}/o/${encodeURIComponent(path)}?alt=media&token=${token}`,
+  };
+}
+
+// Owner says "my images are uploaded". There's no body to validate: the
+// server only ever looks in the caller's own folder.
+app.post('/api/brand-onboarding/assets', verifyAuth, async (req, res) => {
+  const uid = req.token.uid;
+  const applicationRef = db.collection('upcomingBrands').doc(uid);
+
+  try {
+    // Early check so a wrong-status request gets a 409, not "upload your card image"
+    const snap = await applicationRef.get();
+    if (!snap.exists || snap.data().status !== 'approved_awaiting_assets') {
+      return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
+    }
+
+    const inspected = await Promise.all(BRAND_ASSET_KINDS.map((kind) => inspectBrandAsset(uid, kind)));
+    const problem = inspected.find((result) => result.error);
+    if (problem) return res.status(400).json({ success: false, message: problem.error });
+
+    const assets = Object.fromEntries(BRAND_ASSET_KINDS.map((kind, i) => [kind, inspected[i]]));
+
+    // Re-checked in a transaction: all three images are saved together with
+    // the status change, or none are.
+    const result = await db.runTransaction(async (tx) => {
+      const current = await tx.get(applicationRef);
+      if (current.data()?.status !== 'approved_awaiting_assets') return { conflict: true };
+
+      tx.update(applicationRef, {
+        assets,
+        status: 'assets_submitted',
+        assetsSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return { application: current.data() };
+    });
+
+    if (result.conflict) {
+      return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
+    }
+
+    sendAdminNotification('BRAND_ASSETS_SUBMITTED', {
+      brandName: result.application.brandName,
+      founderHandle: result.application.founderHandle,
+    });
+
+    return res.json({ success: true, status: 'assets_submitted' });
+  } catch (error) {
+    console.error('Error submitting brand images:', error);
+    return res.status(500).json({ success: false, message: 'Could not submit your images. Please try again.' });
+  }
+});
+
+// ---- Brand onboarding: admin review ----
+const BRAND_STATUSES = ['pending_review', 'rejected', 'approved_awaiting_assets', 'assets_submitted', 'published', 'unpublished'];
+const BRAND_REVIEW_DECISIONS = ['approved', 'rejected'];
+
+// Reapply dates in emails are shown in Hexxo's own timezone (Texas), since
+// the server may run in UTC and would otherwise show the wrong day near midnight.
+function formatBrandEmailDate(date) {
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/Chicago' });
+}
+
+// Applications in one status, newest first. The full EIN isn't in these
+// docs (it's in brandApplicationsPrivate), so whole docs are safe to return.
+app.get('/api/admin/brand-applications', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  const status = req.query.status || 'pending_review';
+  if (!BRAND_STATUSES.includes(status)) {
+    return res.status(400).json({ success: false, message: `status must be one of: ${BRAND_STATUSES.join(', ')}` });
+  }
+
+  try {
+    const snap = await db.collection('upcomingBrands').where('status', '==', status).get();
+
+    // shortcut: sorted in memory to avoid a composite index; fine at
+    // dozens of applications, switch to orderBy + index if it reaches thousands.
+    const items = snap.docs
+      .map((doc) => {
+        const data = doc.data();
+        return {
+          uid: doc.id,
+          brandName: data.brandName,
+          category: data.category,
+          description: data.description,
+          instagram: data.instagram,
+          website: data.website,
+          founderHandle: data.founderHandle,
+          contactEmail: data.contactEmail,
+          einLast4: data.einLast4,
+          applicationCount: data.applicationCount,
+          status: data.status,
+          reviewerNotes: data.reviewerNotes,
+          submittedAt: data.submittedAt?.toDate?.().getTime() || null,
+        };
+      })
+      .sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+
+    return res.json({ success: true, items });
+  } catch (error) {
+    console.error('Error listing brand applications:', error);
+    return res.status(500).json({ success: false, message: 'Could not load applications.' });
+  }
+});
+
+// The full EIN, only when an admin explicitly asks for one application's.
+// Kept out of the list route so it's never sent just by opening the page.
+app.get('/api/admin/brand-applications/:uid/ein', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  try {
+    const snap = await db.collection('brandApplicationsPrivate').doc(req.params.uid).get();
+    if (!snap.exists || !snap.data().ein) {
+      return res.status(404).json({ success: false, message: 'No EIN on file for this application.' });
+    }
+
+    // Audit trail: who looked at whose tax ID, without logging the number itself
+    console.info(`EIN viewed for brand application ${req.params.uid} by admin ${req.token.uid}`);
+    return res.json({ success: true, ein: snap.data().ein });
+  } catch (error) {
+    console.error('Error loading EIN:', error);
+    return res.status(500).json({ success: false, message: 'Could not load the EIN.' });
+  }
+});
+
+// Approve or reject a pending application. The transaction re-checks the
+// status, so two admins (or a double-click) can't both decide the same one.
+app.post('/api/admin/brand-applications/:uid/decision', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  const { decision } = req.body || {};
+  const reviewerNotes = typeof req.body?.reviewerNotes === 'string' ? req.body.reviewerNotes.trim() : '';
+
+  if (!BRAND_REVIEW_DECISIONS.includes(decision)) {
+    return res.status(400).json({ success: false, message: `decision must be one of: ${BRAND_REVIEW_DECISIONS.join(', ')}` });
+  }
+  // The owner sees these notes, and a rejection with no reason gives them nothing to fix
+  if (decision === 'rejected' && !reviewerNotes) {
+    return res.status(400).json({ success: false, message: 'Add a note explaining why the application was rejected.' });
+  }
+  if (reviewerNotes.length > 1000) {
+    return res.status(400).json({ success: false, message: 'Notes must be 1000 characters or fewer.' });
+  }
+
+  const applicationRef = db.collection('upcomingBrands').doc(req.params.uid);
+
+  try {
+    // One timestamp for the doc and the email, so the reapply date the
+    // owner is told matches the one GET /me computes from rejectedAt.
+    const decidedAt = admin.firestore.Timestamp.now();
+
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      if (!snap.exists) return { notFound: true };
+
+      const application = snap.data();
+      if (application.status !== 'pending_review') {
+        return { conflict: `This application was already decided (status: ${application.status}).` };
+      }
+
+      const newStatus = decision === 'approved' ? 'approved_awaiting_assets' : 'rejected';
+      tx.update(applicationRef, {
+        status: newStatus,
+        reviewerNotes: reviewerNotes || null,
+        reviewedAt: decidedAt,
+        reviewedByUserId: req.token.uid,
+        rejectedAt: decision === 'rejected' ? decidedAt : null,
+      });
+
+      return { application, newStatus };
+    });
+
+    if (result.notFound) return res.status(404).json({ success: false, message: 'Application not found.' });
+    if (result.conflict) return res.status(409).json({ success: false, message: result.conflict });
+
+    // After the commit: an email failure can't undo the decision, but the
+    // admin is told so they can follow up with the owner.
+    const { application } = result;
+    const emailSent = decision === 'approved'
+      ? await sendUserEmail(application.contactEmail, 'BRAND_APPROVED', {
+        brandName: application.brandName,
+        founderHandle: application.founderHandle,
+        reviewerNotes,
+      })
+      : await sendUserEmail(application.contactEmail, 'BRAND_REJECTED', {
+        brandName: application.brandName,
+        founderHandle: application.founderHandle,
+        reviewerNotes,
+        reapplyDate: formatBrandEmailDate(addBusinessDays(decidedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS)),
+      });
+
+    return res.json({ success: true, status: result.newStatus, emailSent });
+  } catch (error) {
+    console.error('Error deciding brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not save the decision. Please try again.' });
   }
 });
 
@@ -767,6 +1235,10 @@ app.get("/about", (req, res) => {
   res.sendFile(path.join(staticPth, "static/about.html"));
 });
 
+app.get("/brand-onboarding", (req, res) => {
+  res.sendFile(path.join(staticPth, "brandOnboarding/apply.html"));
+});
+
 // Public aggregate counts for the About page KPI band. Cached in memory so
 // page views don't each cost Firestore reads; the in-flight promise is shared
 // so a burst of requests after expiry triggers one refresh, not many.
@@ -859,6 +1331,12 @@ app.get("/admin/delivery-confirmation-review", (req, res) => {
 // POST /api/admin/order-authentications/:orderId/decision's isAdmin checks.
 app.get("/admin/order-authentication-review", (req, res) => {
   res.sendFile(path.join(staticPth, "admin/order-authentication-review.html"));
+});
+
+// Same UX-only client-side gate pattern as authentication-review above.
+// Real enforcement is the admin check on every /api/admin/brand-applications route.
+app.get("/admin/brand-review", (req, res) => {
+  res.sendFile(path.join(staticPth, "admin/brand-review.html"));
 });
 
 // login route

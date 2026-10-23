@@ -14,6 +14,7 @@ import {
 } from "../api/firebase-client.js";
 
 import { showLoader, hideLoader } from "../components/pageLoader.js";
+import { safeReturnTo } from "../core/returnTo.js";
 
 // Initialize Firebase Auth
 const auth = getAuth();
@@ -216,6 +217,17 @@ function initAuthForm() {
   const signupForm = document.querySelector(".signup-form");
   const loginForm = document.querySelector(".login-form");
 
+  // Where to land after login/signup (e.g. back on /brand-onboarding).
+  const returnTo = safeReturnTo(new URLSearchParams(window.location.search).get("returnTo"));
+
+  // Carry it across the "Sign up here" / "Log in here" links, so someone who
+  // switches between the two pages still ends up back where they started.
+  if (returnTo !== "/") {
+    document.querySelectorAll('a.link[href="/signup"], a.link[href="/login"]').forEach((link) => {
+      link.href = `${link.getAttribute("href")}?returnTo=${encodeURIComponent(returnTo)}`;
+    });
+  }
+
   // Force email to lowercase as the user types (preserve cursor position)
   if (email) {
     email.addEventListener("input", () => {
@@ -399,9 +411,9 @@ function initAuthForm() {
             name: name.value,
             seller: false
         }));
-          // Redirect to home page or login
+          // Redirect to where they came from (home page by default)
           setTimeout(() => {
-            location.replace("/");
+            location.replace(returnTo);
 
           }, 2000);
           // Signed up
@@ -473,7 +485,7 @@ function initAuthForm() {
               }));
 
             // console.log("Login successful, redirecting to home page");
-            location.replace("/");
+            location.replace(returnTo);
 
           } catch (error) {
             hideLoader(loginForm);

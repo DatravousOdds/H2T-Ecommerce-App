@@ -287,3 +287,51 @@
   color: #2563eb;
   border-color: #bfdbfe;
 }
+
+/* ---- Brand review (/admin/brand-review) ---- */
+.brand-review-message {
+  max-width: 960px;
+  margin: 0 24px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.brand-review-message[data-tone="success"] { background: #def7ec; color: #03543f; }
+.brand-review-message[data-tone="warning"] { background: #fef3c7; color: #92400e; }
+.brand-review-message[data-tone="error"] { background: #fee2e2; color: #b91c1c; }
+
+/* Applicant-written, so keep their line breaks */
+.brand-review-description {
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+}
+
+.brand-review-notes-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.brand-review-ein {
+  font-variant-numeric: tabular-nums;
+}
+
+.brand-review-link-btn {
+  margin-left: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.review-actions button:disabled,
+.brand-review-link-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
