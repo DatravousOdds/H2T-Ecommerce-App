@@ -1,0 +1,404 @@
+/* Brand onboarding (/brand-onboarding). Loads only on this page, so :root
+   here is effectively page-scoped (same approach as about.css).
+
+   Small red text uses the darker red (#b91c1c, 6.47:1 on white); brand red
+   #f30c1e is only 4.30:1, under WCAG AA for normal-size text. */
+:root {
+  --brand-apply-ink: var(--color-text-primary, #070707);
+  --brand-apply-body: #4a4a4a;
+  --brand-apply-muted: #6b6b6b;
+  --brand-apply-red-text: #b91c1c;
+  --brand-apply-fill: #f5f5f5;
+  --brand-apply-line: #e7e5e4;
+  --brand-apply-display: 'Bebas Neue', sans-serif;
+  --brand-apply-label: 'Space Grotesk', sans-serif;
+}
+
+.brand-apply {
+  background: #fff;
+  color: var(--brand-apply-ink);
+}
+
+.brand-apply__container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 72px;
+  display: grid;
+  gap: 32px;
+}
+
+.brand-apply__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font: 500 0.875rem/1.4 var(--brand-apply-label);
+  color: var(--brand-apply-muted);
+}
+
+.brand-apply__breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-apply__breadcrumb a:hover {
+  color: var(--brand-apply-ink);
+  text-decoration: underline;
+}
+
+/* ---------- Intro ---------- */
+.brand-apply__intro {
+  display: grid;
+  gap: 12px;
+}
+
+.brand-apply__eyebrow {
+  font: 600 0.8125rem/1.2 var(--brand-apply-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-apply-red-text);
+}
+
+/* Bebas Neue has one weight. !important because global.css forces weight
+   600 and letter-spacing on every h1-h6 with !important (see about.css). */
+.brand-apply__title {
+  margin: 0;
+  font-family: var(--brand-apply-display);
+  font-size: clamp(2.75rem, 7vw, 4rem);
+  line-height: 0.95;
+  font-weight: 400 !important;
+  letter-spacing: 1px !important;
+  text-wrap: balance;
+}
+
+.brand-apply__lede {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--brand-apply-body);
+}
+
+.brand-apply__steps {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.brand-apply__steps li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--brand-apply-body);
+}
+
+.brand-apply__steps strong {
+  display: block;
+  font-family: var(--brand-apply-label);
+  color: var(--brand-apply-ink);
+}
+
+.brand-apply__step-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brand-apply-ink);
+  color: #fff;
+  font: 700 0.8125rem/1 var(--brand-apply-label);
+}
+
+/* ---------- Panels ---------- */
+.brand-apply__panel {
+  display: grid;
+  gap: 14px;
+  padding: 28px;
+  border: 1px solid var(--brand-apply-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.brand-apply__panel-title {
+  margin: 0;
+  font-family: var(--brand-apply-label);
+  font-size: 1.375rem;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.brand-apply__muted {
+  margin: 0;
+  color: var(--brand-apply-muted);
+  line-height: 1.55;
+}
+
+.brand-apply__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* ---------- Status ---------- */
+.brand-apply__status-chip {
+  justify-self: start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font: 600 0.75rem/1 var(--brand-apply-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--brand-apply-fill);
+  color: var(--brand-apply-ink);
+}
+
+.brand-apply__status-chip[data-tone="pending"] { background: #fef3c7; color: #854d0e; }
+.brand-apply__status-chip[data-tone="approved"] { background: #dbeafe; color: #1e40af; }
+.brand-apply__status-chip[data-tone="live"] { background: #dcfce7; color: #166534; }
+.brand-apply__status-chip[data-tone="rejected"] { background: #fee2e2; color: var(--brand-apply-red-text); }
+
+.brand-apply__notes {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: var(--brand-apply-fill);
+}
+
+.brand-apply__notes-label {
+  font: 600 0.75rem/1.2 var(--brand-apply-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-apply-muted);
+}
+
+.brand-apply__notes p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.brand-apply__summary {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px 20px;
+  margin: 4px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--brand-apply-line);
+  font-size: 0.9375rem;
+}
+
+.brand-apply__summary dt {
+  font-weight: 500;
+  color: var(--brand-apply-muted);
+}
+
+.brand-apply__summary dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Form ---------- */
+.brand-apply__form {
+  display: grid;
+  gap: 20px;
+}
+
+.brand-apply__form .form-group {
+  gap: 6px;
+}
+
+.brand-apply__form label {
+  margin: 0;
+  font: 600 0.9375rem/1.3 var(--brand-apply-label);
+}
+
+.brand-apply__optional {
+  margin-left: 6px;
+  font: 400 0.8125rem/1 var(--ui-font, sans-serif);
+  color: var(--brand-apply-muted);
+}
+
+/* Two classes deep so these beat forms.css's input:not(...) selector,
+   which would otherwise cap inputs at 500px. */
+.brand-apply .brand-apply__form input,
+.brand-apply .brand-apply__form textarea,
+.brand-apply .brand-apply__form select {
+  width: 100%;
+  max-width: 100%;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: var(--brand-apply-fill);
+  font-family: var(--ui-font, sans-serif);
+  font-size: 1rem;
+  color: var(--brand-apply-ink);
+}
+
+.brand-apply .brand-apply__form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* forms.css removes the outline on every input; keyboard users still need one */
+.brand-apply .brand-apply__form :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--brand-apply-ink);
+  outline-offset: 2px;
+}
+
+.brand-apply .brand-apply__form :is(input, select, textarea):user-invalid {
+  border-color: var(--brand-apply-red-text);
+}
+
+.brand-apply__prefixed {
+  position: relative;
+}
+
+.brand-apply__prefixed > span {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--brand-apply-muted);
+  pointer-events: none;
+}
+
+.brand-apply .brand-apply__prefixed input {
+  padding-left: 32px;
+}
+
+.brand-apply__hint {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--brand-apply-muted);
+}
+
+.brand-apply__hint a {
+  color: var(--brand-apply-ink);
+}
+
+.brand-apply__form-error {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: var(--brand-apply-red-text);
+  font-weight: 500;
+}
+
+.brand-apply .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+}
+
+.brand-apply .btn:focus-visible {
+  outline: 2px solid var(--brand-apply-ink);
+  outline-offset: 2px;
+}
+
+/* ---------- Image upload (approved_awaiting_assets) ---------- */
+.brand-assets {
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--brand-apply-line);
+}
+
+/* Card and logo side by side, the wide cover underneath at full width, so
+   each preview keeps its real shape */
+.brand-assets__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+  grid-template-areas:
+    "card logo"
+    "cover cover";
+  gap: 16px;
+  align-items: start;
+}
+
+.brand-asset--card { grid-area: card; }
+.brand-asset--logo { grid-area: logo; }
+.brand-asset--cover { grid-area: cover; }
+
+.brand-asset {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.brand-asset__preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px dashed #c9c6c4;
+  border-radius: 10px;
+  background: var(--brand-apply-fill);
+  color: var(--brand-apply-muted);
+  font: 500 0.875rem/1.2 var(--brand-apply-label);
+}
+
+.brand-asset--card .brand-asset__preview { aspect-ratio: 4 / 5; }
+.brand-asset--logo .brand-asset__preview { aspect-ratio: 1 / 1; max-width: 220px; }
+.brand-asset--cover .brand-asset__preview { aspect-ratio: 3 / 1; }
+
+.brand-asset__preview img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-asset:hover .brand-asset__preview {
+  border-color: var(--brand-apply-ink);
+}
+
+/* The real input is visually hidden but focusable, so show focus on the tile */
+.brand-asset:focus-within .brand-asset__preview {
+  outline: 2px solid var(--brand-apply-ink);
+  outline-offset: 2px;
+}
+
+.brand-asset__label {
+  font: 600 0.9375rem/1.3 var(--brand-apply-label);
+}
+
+.brand-asset__hint,
+.brand-asset__state {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--brand-apply-muted);
+}
+
+.brand-asset__state:empty { display: none; }
+.brand-asset__state[data-tone="done"] { color: #166534; }
+.brand-asset__state[data-tone="error"] { color: var(--brand-apply-red-text); }
+
+@media (max-width: 600px) {
+  .brand-apply__container {
+    padding: 24px 16px 56px;
+    gap: 24px;
+  }
+
+  .brand-apply__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .brand-apply__panel {
+    padding: 20px;
+  }
+
+  .brand-apply__actions .btn {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}

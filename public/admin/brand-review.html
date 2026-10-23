@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <!-- Google tag (gtag.js), skipped when the browser sends Global Privacy Control -->
+  <script type="module" src="/js/core/analytics.js"></script>
+    <link rel="stylesheet" href="../css/main.css"/>
+    <link rel="stylesheet" href="../css/style2.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/components/newsletter.css" />
+    <link rel="stylesheet" href="../css/components/footer.css" />
+    <link rel="stylesheet" href="../css/admin-review.css" />
+    <link rel="stylesheet" href="../css/components/cartDrawer.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/854f8a6196.js" crossorigin="anonymous"></script>
+    <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Hexxo : Brand Review</title>
+  </head>
+  <body>
+    <main>
+      <section id="header">
+        <nav aria-label="Main Navigation"></nav>
+      </section>
+
+      <header class="content-header">
+        <h1>Brand Review</h1>
+        <p class="subheader">Upcoming Brand applications waiting for an approve or reject decision</p>
+      </header>
+
+      <section id="not-authorized" class="review-guard" style="display: none">
+        <p>You don't have access to this page.</p>
+      </section>
+
+      <!-- Result of the last decision (including "email didn't send"
+           warnings). Replaces the alert() the other review pages use. -->
+      <p id="review-message" class="brand-review-message" role="status" hidden></p>
+
+      <section id="review-list" class="review-list">
+        <p class="default-paragraph">Loading applications...</p>
+      </section>
+    </main>
+
+    <footer></footer>
+    <div class="cart-drawer" id="cartDrawer" aria-modal="true" role="dialog" aria-label="Cart">
+    </div>
+
+    <script type="module" src="../js/components/footer.js"></script>
+    <script type="module" src="../js/pages/admin/brand-review.js"></script>
+    <script type="module" src="../js/components/nav.js"></script>
+    <script type="module" src="../js/components/cartDrawer.js"></script>
+  </body>
+</html>
