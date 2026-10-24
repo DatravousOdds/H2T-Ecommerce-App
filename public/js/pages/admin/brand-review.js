@@ -2,19 +2,16 @@
 
 import { checkUserStatus } from "../../auth/auth.js";
 import { auth } from "../../api/firebase-client.js";
+import { escapeHtml } from "../../core/escapeHtml.js";
 
 const listEl = document.getElementById("review-list");
 const guardEl = document.getElementById("not-authorized");
 const messageEl = document.getElementById("review-message");
 
 // Every field on these cards was typed by an applicant, so it's escaped
-// before going into innerHTML (unlike the other review pages, whose data
-// comes from our own order records).
-function escapeHtml(value) {
-  const div = document.createElement("div");
-  div.textContent = value ?? "";
-  return div.innerHTML;
-}
+// before going into innerHTML. It must escape quotes too: several values go
+// inside attributes (data-brand-name, href), where an unescaped " in a
+// brand name would let it add its own attributes, e.g. an onmouseover.
 
 function formatSubmittedDate(item) {
   if (!item.submittedAt) return "--";
