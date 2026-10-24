@@ -819,7 +819,10 @@ app.post('/api/brand-onboarding/assets', verifyAuth, async (req, res) => {
       return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
     }
 
-    const version = Date.now();
+    // Unique per request, not just per millisecond: a request that loses the
+    // transaction below deletes its own copies, which must never be the
+    // winner's files.
+    const version = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
     const frozen = await Promise.allSettled(BRAND_ASSET_KINDS.map((kind) => freezeBrandAsset(uid, kind, version)));
     const newPaths = frozen.filter((r) => r.status === 'fulfilled' && r.value.path).map((r) => r.value.path);
     const failed = frozen.find((r) => r.status === 'rejected');
