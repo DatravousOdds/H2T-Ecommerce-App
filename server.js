@@ -614,25 +614,47 @@ app.get('/api/brand-onboarding/me', verifyAuth, async (req, res) => {
 // /shop/brands.html#upcoming. Published brands only; fields are picked
 // explicitly so contactEmail, einLast4 and reviewer data never go out.
 // An empty list is what hides the carousel on the frontend.
+// Every homepage view calls this, and Firestore bills per document read, so
+// results are cached in memory for a minute: about one query per minute
+// instead of one per visitor. Concurrent requests share one in-flight query.
+// shortcut: per-process cache; each server instance keeps its own copy,
+// which is fine for a 60s TTL. Move to a shared cache if it ever needs to be exact.
+const UPCOMING_BRANDS_TTL_MS = 60 * 1000;
+let upcomingBrandsCache = { brands: null, expiresAt: 0, pending: null };
+
+async function loadUpcomingBrands() {
+  const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
+  return snap.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      name: data.brandName,
+      founderHandle: data.founderHandle,
+      category: data.category,
+      // shortcut: no asset upload yet, so no cover field exists -- cards fall
+      // back to a wordmark; set this to the cover URL field once uploads ship
+      image: null,
+    };
+  });
+}
+
 app.get('/api/upcoming-brands', async (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300');
+
+  if (upcomingBrandsCache.brands && Date.now() < upcomingBrandsCache.expiresAt) {
+    return res.json({ success: true, brands: upcomingBrandsCache.brands });
+  }
+
   try {
-    const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
-    const brands = snap.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        name: data.brandName,
-        founderHandle: data.founderHandle,
-        category: data.category,
-        // shortcut: no asset upload yet, so no cover field exists -- cards fall
-        // back to a wordmark; set this to the cover URL field once uploads ship
-        image: null,
-      };
-    });
-    // Every homepage view calls this; a short cache keeps Firestore reads flat
-    res.set('Cache-Control', 'public, max-age=300');
+    upcomingBrandsCache.pending ||= loadUpcomingBrands();
+    const brands = await upcomingBrandsCache.pending;
+    upcomingBrandsCache = { brands, expiresAt: Date.now() + UPCOMING_BRANDS_TTL_MS, pending: null };
     return res.json({ success: true, brands });
   } catch (error) {
+    upcomingBrandsCache.pending = null;
     console.error('Error loading upcoming brands:', error);
+    // Serve the last good list rather than hiding the carousel on a blip
+    if (upcomingBrandsCache.brands) return res.json({ success: true, brands: upcomingBrandsCache.brands });
+    res.set('Cache-Control', 'no-store');
     return res.status(500).json({ success: false, message: 'Could not load upcoming brands.' });
   }
 });
@@ -730,39 +752,58 @@ app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
 // (seller.js, profile-media.js); the Admin SDK's default bucket from
 // FIREBASE_CONFIG is a different one (.appspot.com, used for shipping labels).
 const brandAssetsBucket = admin.storage().bucket('ecom-website-94d87');
+const crypto = require('crypto');
 const BRAND_ASSET_KINDS = ['card', 'logo', 'cover'];
 const BRAND_ASSET_MAX_BYTES = 5 * 1024 * 1024;
 const BRAND_ASSET_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-// Returns { path, url } for one uploaded image, or { error } if it's
-// missing, not an image, or too big. The URL is built from the file's own
-// metadata, never from anything the browser sends.
-async function inspectBrandAsset(uid, kind) {
-  const path = `upcomingBrands/${uid}/${kind}`;
-  let metadata;
+// Submitted images are frozen: each upload is copied to
+// brandAssets/{uid}/{kind}-{version}, a path browsers can't write (Storage
+// denies it by default), and the copy is what gets reviewed and published.
+// Without this, the owner could overwrite upcomingBrands/{uid}/{kind} after
+// review and either swap the approved image or break its URL.
+const BRAND_FROZEN_PREFIX = 'brandAssets/';
+
+function brandAssetUrl(path, token) {
+  return `https://firebasestorage.googleapis.com/v0/b/${brandAssetsBucket.name}/o/${encodeURIComponent(path)}?alt=media&token=${token}`;
+}
+
+// Copies one upload to its frozen path and checks the COPY, so what's
+// validated is exactly what's saved, even if the owner re-uploads mid-request.
+// Returns { path, url } or { error }; a copy that fails the checks is deleted.
+async function freezeBrandAsset(uid, kind, version) {
+  const source = brandAssetsBucket.file(`upcomingBrands/${uid}/${kind}`);
+  const frozen = brandAssetsBucket.file(`${BRAND_FROZEN_PREFIX}${uid}/${kind}-${version}`);
 
   try {
-    [metadata] = await brandAssetsBucket.file(path).getMetadata();
+    await source.copy(frozen);
   } catch (error) {
     if (error.code === 404) return { error: `Upload your ${kind} image.` };
     throw error;
   }
 
+  const [metadata] = await frozen.getMetadata();
+  let problem = null;
   if (!BRAND_ASSET_CONTENT_TYPES.includes(metadata.contentType)) {
-    return { error: `Your ${kind} image must be a JPG, PNG, or WebP.` };
+    problem = `Your ${kind} image must be a JPG, PNG, or WebP.`;
+  } else if (Number(metadata.size) > BRAND_ASSET_MAX_BYTES) {
+    problem = `Your ${kind} image is over 5 MB. Upload a smaller one.`;
   }
-  if (Number(metadata.size) > BRAND_ASSET_MAX_BYTES) {
-    return { error: `Your ${kind} image is over 5 MB. Upload a smaller one.` };
+  if (problem) {
+    await frozen.delete({ ignoreNotFound: true });
+    return { error: problem };
   }
 
-  // Set by the Firebase client SDK on upload; it's what getDownloadURL() uses
-  const token = metadata.metadata?.firebaseStorageDownloadTokens?.split(',')[0];
-  if (!token) return { error: `Your ${kind} image didn't finish uploading. Upload it again.` };
+  // A fresh token, so the URL is the copy's own and unrelated to the upload's
+  const token = crypto.randomUUID();
+  await frozen.setMetadata({ metadata: { firebaseStorageDownloadTokens: token } });
+  return { path: frozen.name, url: brandAssetUrl(frozen.name, token) };
+}
 
-  return {
-    path,
-    url: `https://firebasestorage.googleapis.com/v0/b/${brandAssetsBucket.name}/o/${encodeURIComponent(path)}?alt=media&token=${token}`,
-  };
+// Best-effort cleanup; a leftover file costs a little storage, never correctness.
+async function deleteBrandAssetFiles(paths) {
+  await Promise.all(paths.map((path) => brandAssetsBucket.file(path).delete({ ignoreNotFound: true })
+    .catch((error) => console.error(`Failed to delete brand asset ${path}:`, error))));
 }
 
 // Owner says "my images are uploaded". There's no body to validate: the
@@ -778,11 +819,19 @@ app.post('/api/brand-onboarding/assets', verifyAuth, async (req, res) => {
       return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
     }
 
-    const inspected = await Promise.all(BRAND_ASSET_KINDS.map((kind) => inspectBrandAsset(uid, kind)));
-    const problem = inspected.find((result) => result.error);
-    if (problem) return res.status(400).json({ success: false, message: problem.error });
+    const version = Date.now();
+    const frozen = await Promise.allSettled(BRAND_ASSET_KINDS.map((kind) => freezeBrandAsset(uid, kind, version)));
+    const newPaths = frozen.filter((r) => r.status === 'fulfilled' && r.value.path).map((r) => r.value.path);
+    const failed = frozen.find((r) => r.status === 'rejected');
+    const problem = frozen.find((r) => r.status === 'fulfilled' && r.value.error);
+    if (failed || problem) {
+      // All three or none: drop the copies that did succeed
+      await deleteBrandAssetFiles(newPaths);
+      if (failed) throw failed.reason;
+      return res.status(400).json({ success: false, message: problem.value.error });
+    }
 
-    const assets = Object.fromEntries(BRAND_ASSET_KINDS.map((kind, i) => [kind, inspected[i]]));
+    const assets = Object.fromEntries(BRAND_ASSET_KINDS.map((kind, i) => [kind, frozen[i].value]));
 
     // Re-checked in a transaction: all three images are saved together with
     // the status change, or none are.
@@ -799,8 +848,16 @@ app.post('/api/brand-onboarding/assets', verifyAuth, async (req, res) => {
     });
 
     if (result.conflict) {
+      await deleteBrandAssetFiles(newPaths);
       return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
     }
+
+    // A resubmit (after an admin asks for changes) replaces the earlier frozen
+    // copies, so remove them. Not awaited: the response doesn't depend on it.
+    const previousPaths = Object.values(result.application.assets || {})
+      .map((asset) => asset?.path)
+      .filter((path) => path?.startsWith(BRAND_FROZEN_PREFIX) && !newPaths.includes(path));
+    if (previousPaths.length) deleteBrandAssetFiles(previousPaths);
 
     sendAdminNotification('BRAND_ASSETS_SUBMITTED', {
       brandName: result.application.brandName,
