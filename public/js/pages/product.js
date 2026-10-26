@@ -953,7 +953,8 @@ function calculateDiscountPrice(discountAmount, price) {
 
 function setProductDescription(data) {
     const productDescription = document.getElementById('detail-product');
-    productDescription.innerText = data.description;
+    // Panel is open by default, so never show "undefined" for older listings without one.
+    productDescription.innerText = data.description || 'No description provided.';
 }
 
 // fetchSalesPrices returns two parallel, unsorted arrays (the server route has
