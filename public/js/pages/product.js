@@ -6,6 +6,30 @@ import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { fetchSalesPrices } from '../components/priceChart.js';
 import { isAuthenticationEligible } from '../core/authenticationEligibility.js';
 
+// Authenticity panel + badge copy, keyed by the listing's status. "eligible"
+// is mandatory Tier 1 authentication enforced server-side at checkout: seller
+// photos are reviewed before shipping, and a fail voids the card hold.
+const AUTH_DETAIL_COPY = {
+    authenticated: {
+        badge: 'Authenticity Guarantee',
+        icon: 'fa-circle-check',
+        title: 'Authenticated by Hexxo',
+        text: 'This exact item has already passed Hexxo authentication.'
+    },
+    eligible: {
+        badge: 'Authentication included',
+        icon: 'fa-shield-halved',
+        title: 'Hexxo Tier 1 authentication included',
+        text: "After you buy, Hexxo reviews the seller's photos of this item before it ships. If it fails, your order is cancelled and your card is never charged."
+    },
+    none: {
+        badge: null,
+        icon: 'fa-triangle-exclamation',
+        title: 'Not authenticated by Hexxo',
+        text: "This item isn't eligible for Hexxo authentication and ships directly from the seller. By purchasing, you accept full responsibility for its authenticity."
+    }
+};
+
 
 const user = await checkUserStatus();
 const searchQuery = new URLSearchParams(window.location.search);
@@ -31,6 +55,13 @@ const productPrice = document.querySelector('.prod-price')
 const productOriginalPrice = document.querySelector('.original-price');
 const priceChange = document.getElementById('priceChange');
 const shippingNote = document.getElementById('shippingNote');
+const detailShippingCarrier = document.getElementById('detailShippingCarrier');
+const authDetail = document.getElementById('authDetail');
+const authNote = document.getElementById('authNote');
+const authDetailRow = document.getElementById('authDetailRow');
+const authDetailIcon = document.getElementById('authDetailIcon');
+const authDetailTitle = document.getElementById('authDetailTitle');
+const authDetailText = document.getElementById('authDetailText');
 const conditionGroup = document.getElementById('conditionGroup');
 const genderOption = document.getElementById('genderOption');
 const genderGroup = document.getElementById('genderGroup');
@@ -59,7 +90,6 @@ const sizeLabel = document.getElementById('size-label');
 const reviewCount = document.getElementById('reviews-count');
 const reviewsContainer = document.querySelector('.comments');
 
-const detailTriggers = document.querySelectorAll('.detail-trigger');
 const writeReviewBtn = document.getElementById("writeReviewBtn");
 const offerBtn = document.getElementById('offerBtn');
 const editListingBtn = document.getElementById('editListingBtn');
@@ -98,16 +128,8 @@ const item = await createCartItem();
 
 
 /* ==== EVENT LISTENERS ===== */
-detailTriggers.forEach((trigger) => {
-    trigger.addEventListener("click", () => {
-            const detailText = trigger.closest('.detail-container').lastElementChild;
-            const isActive = detailText.classList.toggle('active');
-            
-            const icon = trigger.lastElementChild;
-            icon.classList.toggle('fa-plus', !isActive)
-            icon.classList.toggle('fa-minus', isActive)
-         })
-})
+// The href scrolls to the panel; this re-opens it if the buyer collapsed it.
+authNote.addEventListener('click', () => { authDetail.open = true; });
 
 offerBtn.addEventListener('click', () => {
     // console.log("offer btn clicked")
@@ -363,15 +385,21 @@ async function displayProductDetails() {
         // products grid): authenticated means this exact item already passed
         // review; isAuthenticationEligible means it hasn't yet but mandatorily
         // will before it ships (enforced server-side at checkout regardless).
-        if (data.authenticated) {
-            authBadge.style.display = '';
-            authBadgeText.textContent = 'Authenticity Guarantee';
-        } else if (isAuthenticationEligible(data)) {
-            authBadge.style.display = '';
-            authBadgeText.textContent = 'Verified authentic';
-        } else {
-            authBadge.style.display = 'none';
-        }
+        const authStatus = data.authenticated ? 'authenticated'
+            : isAuthenticationEligible(data) ? 'eligible'
+            : 'none';
+        const authCopy = AUTH_DETAIL_COPY[authStatus];
+
+        authBadge.style.display = authCopy.badge ? '' : 'none';
+        authBadgeText.textContent = authCopy.badge || '';
+        authNote.hidden = authStatus !== 'none';
+
+        authDetailIcon.classList.add(authCopy.icon);
+        authDetailTitle.textContent = authCopy.title;
+        authDetailText.textContent = authCopy.text;
+        authDetailRow.classList.add(`auth-detail--${authStatus}`);
+        // A liability warning tucked inside a closed panel isn't a warning.
+        authDetail.open = authStatus === 'none';
 
         const sellerProfile = await getUserProfile(data.userId);
         sellerProfilePicture.src = sellerProfile.profileImage || '/images/default-avatar.svg';
@@ -420,6 +448,13 @@ async function displayProductDetails() {
         // purchaseShippingLabel in server.js), so this is always "Free
         // shipping" from the buyer's side.
         shippingNote.textContent = '+ Free shipping';
+
+        // Only the prepaid (Hexxo label) path stores listing.shipping; the
+        // self-ship path leaves it empty. textContent, not innerHTML --
+        // service_name is written client-side by the seller form.
+        detailShippingCarrier.textContent = data.shipping?.service_name
+            ? `Ships via ${data.shipping.service_name} with a Hexxo prepaid label.`
+            : 'Ships directly from the seller with their carrier of choice.';
 
         const productMainImage = data.images.find(image => image.isPrimary === true) || data.images[0];
 
@@ -918,7 +953,8 @@ function calculateDiscountPrice(discountAmount, price) {
 
 function setProductDescription(data) {
     const productDescription = document.getElementById('detail-product');
-    productDescription.innerText = data.description;
+    // Panel is open by default, so never show "undefined" for older listings without one.
+    productDescription.innerText = data.description || 'No description provided.';
 }
 
 // fetchSalesPrices returns two parallel, unsorted arrays (the server route has
@@ -1074,7 +1110,7 @@ function displayProducts(products) {
         : isAuthenticationEligible(productData)
         ? `<div class="auth-badge auth-badge--card">
             <img src="/images/hexxo_auth_badge.png" alt="">
-            <span>Verified authentic</span>
+            <span>Authentication included</span>
           </div>`
         : '';
 
