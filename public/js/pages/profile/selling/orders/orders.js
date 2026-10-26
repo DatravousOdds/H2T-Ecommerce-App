@@ -5,6 +5,8 @@ import {
   auth,
   collection,
   db,
+  doc,
+  getDoc,
   getDocs,
   query,
   where,
@@ -238,13 +240,47 @@ function wireControls(allOrders) {
 // duplicate listeners each time.
 async function refreshOrders(userId) {
   currentOrders = await fetchSellerOrders(userId);
+  rerenderCurrentOrders();
+}
 
+function rerenderCurrentOrders() {
   const rangeSelect = document.getElementById("orders-filter");
   const searchInput = document.querySelector("#orders-filters .search-bar input");
   const range = rangeSelect ? rangeSelect.value : "all";
   const term = searchInput ? searchInput.value.trim() : "";
 
   applyFiltersAndRender(currentOrders, range, term);
+}
+
+// The table is a page-load snapshot, and ShipStation's tracking webhook can
+// move an order to "shipped" (carrier's first scan) after that -- so the one
+// order being opened is re-read right before its actions are shown, rather
+// than offering Mark Shipped/Cancel off stale status. Falls back to the
+// cached copy if the read fails: the server re-checks status inside a
+// transaction regardless, so a stale menu is a UX gap, not a correctness one.
+// Capped because an offline read can take ~10s to fail, leaving View looking dead.
+const FRESH_ORDER_TIMEOUT_MS = 3000;
+
+async function fetchFreshOrder(cached) {
+  try {
+    const snap = await Promise.race([
+      getDoc(doc(db, "orders", cached.docId)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), FRESH_ORDER_TIMEOUT_MS))
+    ]);
+    if (!snap.exists()) return cached;
+
+    const fresh = { ...snap.data(), docId: snap.id };
+    const index = currentOrders.findIndex((o) => o.docId === fresh.docId);
+    if (index !== -1) currentOrders[index] = fresh;
+
+    // Keep the table row's status badge in sync with what the menu shows.
+    if (fresh.fulfillmentStatus !== cached.fulfillmentStatus) rerenderCurrentOrders();
+
+    return fresh;
+  } catch (error) {
+    console.error("Couldn't refresh order before opening its actions:", error);
+    return cached;
+  }
 }
 
 function getOrderActionState(order) {
@@ -281,7 +317,16 @@ function openOrderActionMenu(order) {
   const isPrepaid = Boolean(order.shipstationShipmentId);
 
   menu.querySelector(".seller-order-action-item-name").textContent = order.item?.name || "Item";
-  menu.querySelector(".seller-order-action-status").textContent = `Status: ${status}`;
+  // shippedSource is set server-side by markOrderShipped -- "carrier" means
+  // the package's first carrier scan marked it shipped, not the seller.
+  const carrierConfirmed = status === "shipped" && order.shippedSource === "carrier";
+  // trackingStatusDescription is the carrier's latest word on prepaid-label
+  // orders (written by /webhooks/shipstation) -- textContent, so no escaping.
+  const carrierStatus = order.trackingStatusDescription && status !== "delivered"
+    ? ` · Carrier: ${order.trackingStatusDescription}`
+    : "";
+  menu.querySelector(".seller-order-action-status").textContent =
+    `Status: ${status}${carrierConfirmed ? " · confirmed by carrier scan" : ""}${carrierStatus}`;
   menu.querySelector(".seller-order-action-ship-fields").style.display = canShip && !isPrepaid ? "flex" : "none";
 
   const prepaidInfo = menu.querySelector(".seller-order-action-prepaid-info");
@@ -443,13 +488,20 @@ function wireOrderActions(userId) {
   const submitAuthPhotosBtn = document.getElementById("seller-submit-auth-photos-btn");
 
   if (table) {
-    table.addEventListener("click", (e) => {
+    let latestViewRequest = 0;
+
+    table.addEventListener("click", async (e) => {
       const viewBtn = e.target.closest(".action-button.view");
       if (!viewBtn) return;
 
       const docId = viewBtn.closest("tr")?.dataset.docId;
       const order = currentOrders.find((o) => o.docId === docId);
-      if (order) openOrderActionMenu(order);
+      if (!order) return;
+
+      const requestId = ++latestViewRequest;
+      const fresh = await fetchFreshOrder(order);
+      // A slower read from an earlier click must not replace the order opened since.
+      if (requestId === latestViewRequest) openOrderActionMenu(fresh);
     });
   }
 
@@ -477,7 +529,20 @@ function wireOrderActions(userId) {
       }
 
       try {
-        await patchOrder(docId, { fulfillmentStatus: "shipped", trackingNumber, shippingCarrier });
+        const result = await patchOrder(docId, { fulfillmentStatus: "shipped", trackingNumber, shippingCarrier });
+
+        // Already shipped by the time this click landed (most often the
+        // carrier's scan beat a menu left open) -- the server made no
+        // change. Re-open on fresh data instead of closing, so the seller
+        // sees *why* nothing happened ("confirmed by carrier scan") rather
+        // than a menu that just vanishes.
+        if (result.alreadyShipped) {
+          await refreshOrders(userId);
+          const fresh = currentOrders.find((o) => o.docId === docId);
+          if (fresh) openOrderActionMenu(fresh);
+          return;
+        }
+
         closeOrderActionMenu();
         await refreshOrders(userId);
       } catch (error) {
