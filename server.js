@@ -2894,8 +2894,12 @@ app.get("/api/admin/in-transit-orders", verifyAuth, async (req, res) => {
       return res.status(403).json({ success: false, message: "Admin only" });
     }
 
+    // Only the fields used below -- keeps every shipped order's address and
+    // tracking history out of memory. Same read count; no index needed.
     const ordersSnap = await db.collection("orders")
       .where("fulfillmentStatus", "==", "shipped")
+      .select("shipstationLabelId", "item.name", "buyerId", "buyerEmail", "trackingNumber", "shippingCarrier",
+        "trackingStatusCode", "trackingStatusDescription", "shippedAt", "trackingUpdatedAt")
       .get();
 
     const items = ordersSnap.docs
