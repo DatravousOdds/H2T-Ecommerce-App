@@ -143,12 +143,19 @@
           <div class="s_prod_details">
             <!-- Auth Badge: hidden by default. Shown by product.js when the
                 listing is already authenticated ("Authenticity Guarantee") or
-                just eligible and will be authenticated at checkout ("Verified
-                authentic") -- text set dynamically either way. -->
+                just eligible and will be authenticated at checkout ("Authentication
+                included") -- text set dynamically either way. -->
             <div class="auth-badge" id="authBadge" style="display: none">
               <img src="../images/hexxo_auth_badge.png" alt="">
               <span>Authenticity Guarantee</span>
             </div>
+            <!-- Shown instead of #authBadge when the listing won't be
+                 authenticated, so the liability notice is visible before the
+                 CTAs. Jumps to the Authenticity panel below. -->
+            <a class="auth-note" id="authNote" href="#authDetail" hidden>
+              <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+              Not authenticated by Hexxo
+            </a>
 
             <p class="prod-category"></p>
 
@@ -213,85 +220,85 @@
 
             <hr/>
 
+            <!-- Native <details> gives open/close, keyboard support and
+                 aria-expanded for free -- no JS toggle needed. -->
             <div class="details-container">
 
-              <div class="detail-container">
-                <h3>
-                  <button class="detail-trigger">
-                    Product Description
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </h3>
-                  <p class="detail-text" id="detail-product">
-                    New with box: A brand-new, unused, and unworn item (including
-                    handmade items) in the original packaging (such as the original
-                    box or bag) and/or with the original tags attached.
-                  </p>
-              </div>
+              <!-- Content + open state set by product.js from the listing's
+                   authentication status (same rule as #authBadge). -->
+              <details class="detail-container" id="authDetail">
+                <summary class="detail-trigger">
+                  Authenticity
+                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                </summary>
+                <div class="detail-row auth-detail" id="authDetailRow">
+                  <i class="fa-solid detail-row-icon" id="authDetailIcon" aria-hidden="true"></i>
+                  <div>
+                    <p class="detail-row-title" id="authDetailTitle"></p>
+                    <p class="detail-row-sub" id="authDetailText"></p>
+                  </div>
+                </div>
+              </details>
 
-              <div class="detail-container">
-                <h3>
-                  <button class="detail-trigger">
-                    Shipping & Returns
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </h3>
-                <p class="detail-text" id="detail-shipping">
-                  All orders will be shipped out within 72 hours (Monday-Friday)
-                  of your purchase. You will be emailed tracking information as
-                  soon as your package ships. Returns are permitted on items
-                  within 16 days from the fulfillment date. Sneaker Politics does
-                  not offer returns for refunds, but rather only for store credit.
-                  Please visit our Returns Page for any questions about returns
-                  and/or to start your return process. Socks, underwear,
-                  sunglasses, release date products and items that are discounted
-                  40% or more off the retail price are designated as FINAL SALE
-                  and may not be returned for a refund, store credit or size
-                  exchange. Visit our FAQ Page for any questions about what is
-                  considered final sale.
+              <details class="detail-container" open>
+                <summary class="detail-trigger">
+                  Product Description
+                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                </summary>
+                <p class="detail-text" id="detail-product">
+                  New with box: A brand-new, unused, and unworn item (including
+                  handmade items) in the original packaging (such as the original
+                  box or bag) and/or with the original tags attached.
                 </p>
-              </div>
+              </details>
 
-              <div class="detail-container">
-                <h3>
-                  <button class="detail-trigger">
-                    Selling
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </h3>
-                <p class="detail-text" id="detail-selling">
-                  All orders will be shipped out within 72 hours (Monday-Friday)
-                  of your purchase. You will be emailed tracking information as
-                  soon as your package ships.
-                </p>
-              </div>
+              <details class="detail-container">
+                <summary class="detail-trigger">
+                  Shipping &amp; Returns
+                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                </summary>
+                <ul class="detail-list">
+                  <li class="detail-row">
+                    <i class="fa-solid fa-truck-fast detail-row-icon" aria-hidden="true"></i>
+                    <div>
+                      <p class="detail-row-title">Free shipping</p>
+                      <!-- Carrier text set by product.js from listing.shipping -->
+                      <p class="detail-row-sub" id="detailShippingCarrier"></p>
+                    </div>
+                  </li>
+                  <li class="detail-row">
+                    <i class="fa-solid fa-rotate-left detail-row-icon" aria-hidden="true"></i>
+                    <div>
+                      <p class="detail-row-title">All sales final</p>
+                      <p class="detail-row-sub">
+                        Covered by Buyer Protection: report an issue within 48 hours
+                        of delivery if the item isn't as described.
+                        <a href="/static/terms.html#s8">Learn more</a>
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </details>
 
-              <div class="detail-container">
-                <h3>
-                  <button class="detail-trigger">
-                    Payment Methods
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </h3>
-                <p class="detail-text" id="detail-payment">
-                  We accept Visa, Mastercard, American Express, PayPal, Apple Pay, and Google Pay.
-                  All transactions are encrypted and processed securely.
+              <details class="detail-container">
+                <summary class="detail-trigger">
+                  Payment Methods
+                  <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                </summary>
+                <!-- Checkout's PaymentIntent is card-only (server.js
+                     /create-checkout-session), so only card brands are listed. -->
+                <ul class="payment-icons" aria-label="Accepted payment methods">
+                  <li><i class="fa-brands fa-cc-visa" role="img" aria-label="Visa" title="Visa"></i></li>
+                  <li><i class="fa-brands fa-cc-mastercard" role="img" aria-label="Mastercard" title="Mastercard"></i></li>
+                  <li><i class="fa-brands fa-cc-amex" role="img" aria-label="American Express" title="American Express"></i></li>
+                  <li><i class="fa-brands fa-cc-discover" role="img" aria-label="Discover" title="Discover"></i></li>
+                </ul>
+                <p class="detail-row-sub payment-secure">
+                  <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                  Encrypted and processed securely by Stripe.
                 </p>
-              </div>
+              </details>
 
-              <div class="detail-container">
-                <h3>
-                  <button class="detail-trigger">
-                    Authenticity
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </h3>
-                <p class="detail-text" id="detail-auth">
-                  Every item is verified by an independent authenticator before delivery,
-                  ensuring you receive only genuine products.
-                </p>
-              </div>
-          
             </div>
 
             <div class="sm-reviews-section">
@@ -464,7 +471,6 @@
     <!-- ===== END MODALS ===== -->
 
     <!-- <script type="module" src="../js/components/cartDrawer.js"></script> -->
-    <script src="../js/components/toggleDetails.js"></script>
     <script type="module" src="../js/components/newsletter.js"></script>
     <script type="module" src="../js/components/priceChart.js"></script>
     <script type="module" src="../js/core/global.js"></script>
