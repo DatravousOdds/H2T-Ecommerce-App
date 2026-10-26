@@ -40,13 +40,19 @@ const CARRIER_TRACKING_URL_BUILDERS = {
   fedex_walleted: (n) => `https://www.fedex.com/fedextrack/?trknbr=${n}`,
 };
 
+// Carrier status (ShipStation), item names and self-ship tracking numbers
+// (sellers) aren't ours -- escaped before they go into innerHTML.
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (ch) => (
+  { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
+));
+
 function trackingInfoHTML(item) {
   if (!item.trackingNumber) return "";
 
   const buildUrl = CARRIER_TRACKING_URL_BUILDERS[item.shippingCarrier];
   const trackingDisplay = buildUrl
-    ? `<a href="${buildUrl(encodeURIComponent(item.trackingNumber))}" target="_blank" rel="noopener noreferrer">${item.trackingNumber}</a>`
-    : item.trackingNumber;
+    ? `<a href="${buildUrl(encodeURIComponent(item.trackingNumber))}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.trackingNumber)}</a>`
+    : escapeHtml(item.trackingNumber);
 
   return `<p class="default-paragraph review-tracking">Tracking: ${trackingDisplay}</p>`;
 }
@@ -268,12 +274,6 @@ async function loadFailedPayoutsScreen() {
   const items = await fetchFailedPayouts();
   renderFailedPayouts(items);
 }
-
-// Carrier status (ShipStation) and item names (sellers) aren't ours --
-// escaped before they go into innerHTML.
-const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (ch) => (
-  { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]
-));
 
 function inTransitCard(item) {
   const formatDate = (ms) => (ms ? new Date(ms).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "--");

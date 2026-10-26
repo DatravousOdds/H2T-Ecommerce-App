@@ -1851,13 +1851,17 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       if (!SELLER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus]) {
         return res.status(400).json({ success: false, message: `Sellers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
       }
-      if (!data.trackingNumber) {
+      if (typeof data.trackingNumber !== "string" || !data.trackingNumber.trim()) {
         return res.status(400).json({ success: false, message: "Tracking number is required to mark an order shipped" });
       }
 
+      // Prepaid-label orders keep the label's own tracking: /webhooks/shipstation
+      // drops any event whose tracking_number doesn't match the order's, so a
+      // seller-supplied number would orphan every carrier update.
+      const isPrepaidLabel = Boolean(order.shipstationLabelId);
       const { result, order: current } = await markOrderShipped(docRef.ref, {
-        trackingNumber: data.trackingNumber,
-        shippingCarrier: data.shippingCarrier,
+        trackingNumber: isPrepaidLabel ? undefined : data.trackingNumber,
+        shippingCarrier: isPrepaidLabel ? undefined : data.shippingCarrier,
         source: "seller"
       });
 

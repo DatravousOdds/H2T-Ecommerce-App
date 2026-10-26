@@ -67,6 +67,7 @@ Before installing, make sure you have:
   - `SHIPSTATION_KEY`
   - `SHIPSTATION_SECRET_KEY`
   - `SHIPSTATION_V2_API_KEY`
+  - `SHIPSTATION_WEBHOOK_TOKEN`
 
 ## Installation
 
