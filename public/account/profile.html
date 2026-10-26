@@ -6,7 +6,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Pinned: the admin and seller charts use Chart.js v4 APIs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -15,6 +16,7 @@
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/profile.css" />
+    <link rel="stylesheet" href="css/pages/adminDashboard.css" />
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/components/product-card.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
@@ -81,6 +83,10 @@
               </li>
               <li class="tab-btn" data-tab="settings">
                 <a href="#"><i class="fa-solid fa-gear"></i></a>Settings
+              </li>
+              <!-- Shown by admin.js only when the signed-in user has the admin claim -->
+              <li class="tab-btn" data-tab="admin" id="admin-tab-btn" hidden>
+                <a href="#"><i class="fa-solid fa-chart-line"></i></a>Admin
               </li>
               <li class="tab-btn" id="logout-btn">
                 <a href="#"><i class="fa-solid fa-right-from-bracket"></i></a
@@ -5417,6 +5423,77 @@
                 </div>
               </div>
             </div>
+          </section>
+        </div>
+        <div class="tab" id="admin">
+          <!-- .tab.active forces display, so the hidden gate lives on this inner
+               wrapper: a non-admin opening ?tab=admin sees an empty panel. -->
+          <section class="admin-dashboard" id="admin-dashboard" aria-labelledby="admin-title" hidden>
+            <header class="admin-dashboard__header">
+              <h1 class="admin-dashboard__title" id="admin-title">Admin</h1>
+              <p class="admin-dashboard__meta" id="admin-stats-meta">Loading stats…</p>
+              <p class="admin-dashboard__status" id="admin-status" role="status" hidden></p>
+            </header>
+
+            <section class="admin-dashboard__section admin-headline" aria-labelledby="admin-headline-title">
+              <h2 class="admin-headline__title" id="admin-headline-title">Last 30 days</h2>
+              <dl class="admin-headline__stats" id="admin-headline"></dl>
+            </section>
+
+            <div class="admin-dashboard__panel admin-dashboard__error" id="admin-error" role="alert" hidden>
+              <h2 class="admin-dashboard__panel-title">Couldn't load stats</h2>
+              <p class="admin-dashboard__meta">Something went wrong while loading the dashboard. Try again in a moment.</p>
+              <button type="button" class="order-action-btn primary" id="admin-retry">Try again</button>
+            </div>
+
+            <section class="admin-dashboard__section" aria-labelledby="admin-needs-action-title">
+              <h2 class="admin-dashboard__section-title" id="admin-needs-action-title">Needs action</h2>
+              <div class="stat-grid" id="admin-needs-action"></div>
+            </section>
+
+            <section class="admin-dashboard__section" aria-labelledby="admin-users-title">
+              <h2 class="admin-dashboard__section-title" id="admin-users-title">Users</h2>
+              <div class="stat-grid" id="admin-users"></div>
+              <div class="admin-dashboard__panel">
+                <h3 class="admin-dashboard__panel-title">Signups per month</h3>
+                <div class="admin-dashboard__chart">
+                  <canvas id="admin-signups-chart" role="img" aria-label="Signups per month, last 6 months"></canvas>
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-dashboard__section" aria-labelledby="admin-orders-title">
+              <h2 class="admin-dashboard__section-title" id="admin-orders-title">Orders &amp; money</h2>
+              <div class="stat-grid" id="admin-orders"></div>
+              <div class="admin-dashboard__panels">
+                <div class="admin-dashboard__panel">
+                  <h3 class="admin-dashboard__panel-title">Orders by status</h3>
+                  <ul class="admin-dashboard__list" id="admin-orders-by-status"></ul>
+                  <p class="admin-dashboard__panel-footer" id="admin-in-transit"></p>
+                </div>
+                <div class="admin-dashboard__panel">
+                  <h3 class="admin-dashboard__panel-title">Top brands by sales</h3>
+                  <ul class="admin-dashboard__list" id="admin-top-brands"></ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="admin-dashboard__section" aria-labelledby="admin-trust-title">
+              <h2 class="admin-dashboard__section-title" id="admin-trust-title">Trust &amp; safety</h2>
+              <div class="stat-grid" id="admin-trust"></div>
+              <div class="admin-dashboard__panels">
+                <div class="admin-dashboard__panel">
+                  <h3 class="admin-dashboard__panel-title">Refunds by buyer</h3>
+                  <div class="admin-dashboard__table-wrap" id="admin-refunds-by-buyer"></div>
+                </div>
+                <div class="admin-dashboard__panel">
+                  <h3 class="admin-dashboard__panel-title">Sellers by disputes</h3>
+                  <div class="admin-dashboard__table-wrap" id="admin-sellers-by-disputes"></div>
+                </div>
+              </div>
+            </section>
+
+            <p class="admin-dashboard__meta admin-dashboard__section">Counts in-app disputes and refunds only. Stripe chargebacks and dashboard refunds are not included.</p>
           </section>
         </div>
       </div>
