@@ -368,6 +368,72 @@ const notificationTemplates = {
       <p style="margin:0 0 8px; font:700 12px/1 ${BRAND.uiFont}; letter-spacing:0.12em; text-transform:uppercase; color:${BRAND.muted};">Message</p>
       <div style="margin:0 0 24px; padding:16px 20px; border-left:3px solid ${BRAND.red}; background:${BRAND.panel}; font:400 15px/1.6 ${BRAND.uiFont}; color:${BRAND.body}; white-space:pre-wrap;">${escapeHtml(message)}</div>
     `, { preheader: `${escapeHtml(name)} sent a message via the contact form.`, audience: 'admin' })
+  }),
+
+  // ---- Upcoming Brand onboarding ----
+  // brandName, founderHandle, description and reviewerNotes come from
+  // applicant or admin input, so they're escaped like everything else.
+  // The EIN is never passed to any template: email isn't a safe place for a
+  // tax ID, so the admin email only gets hasEin.
+
+  BRAND_APPLICATION_SUBMITTED: ({ brandName, category, description, instagram, website, founderHandle, contactEmail, hasEin, applicationCount }) => ({
+    subject: `New brand application: ${brandName}`,
+    html: baseTemplate(`
+      ${eyebrow('Admin &middot; Brand application')}
+      ${heading(escapeHtml(brandName))}
+      ${paragraph(applicationCount > 1
+        ? `A previously rejected brand reapplied (attempt ${escapeHtml(applicationCount)}).`
+        : 'A new brand applied to be featured in Upcoming Brands.')}
+      ${detailCard([
+        ['Founder', `@${escapeHtml(founderHandle)} (${escapeHtml(contactEmail)})`],
+        ['Category', escapeHtml(category)],
+        ['Instagram', `@${escapeHtml(instagram)}`],
+        ['Website', website ? escapeHtml(website) : 'None'],
+        ['EIN provided', hasEin ? 'Yes' : 'No'],
+      ])}
+      <p style="margin:0 0 8px; font:700 12px/1 ${BRAND.uiFont}; letter-spacing:0.12em; text-transform:uppercase; color:${BRAND.muted};">Description</p>
+      <div style="margin:0 0 24px; padding:16px 20px; border-left:3px solid ${BRAND.red}; background:${BRAND.panel}; font:400 15px/1.6 ${BRAND.uiFont}; color:${BRAND.body}; white-space:pre-wrap;">${escapeHtml(description)}</div>
+      ${button('Review application', `${SITE_URL}/admin/brand-review`)}
+    `, { preheader: `${escapeHtml(brandName)} applied to Upcoming Brands.`, audience: 'admin' })
+  }),
+
+  BRAND_ASSETS_SUBMITTED: ({ brandName, founderHandle }) => ({
+    subject: `Brand images ready to review: ${brandName}`,
+    html: baseTemplate(`
+      ${eyebrow('Admin &middot; Brand images')}
+      ${heading(escapeHtml(brandName))}
+      ${paragraph(`@${escapeHtml(founderHandle)} uploaded their card image, logo, and cover photo. Check them before the brand goes live.`)}
+      ${button('Review images', `${SITE_URL}/admin/brand-review`)}
+    `, { preheader: `${escapeHtml(brandName)} uploaded their brand images.`, audience: 'admin' })
+  }),
+
+  // Both decision emails link to /brand-onboarding, which always shows the
+  // owner's current status and next step, so the link stays right as the
+  // flow grows.
+  BRAND_APPROVED: ({ brandName, founderHandle, reviewerNotes }) => ({
+    subject: `${brandName} is approved for Upcoming Brands`,
+    html: baseTemplate(`
+      ${eyebrow('Upcoming Brands')}
+      ${heading("You're approved.")}
+      ${paragraph(`Hi @${escapeHtml(founderHandle)}, good news &mdash; <strong style="color:${BRAND.ink};">${escapeHtml(brandName)}</strong> is approved to be featured in Upcoming Brands on Hexxo.`)}
+      ${paragraph('Next step: upload your brand images (a card image, your logo, and a cover photo). We&rsquo;ll check them, then your brand goes live.')}
+      ${reviewerNotes ? `<p style="margin:0 0 8px; font:700 12px/1 ${BRAND.uiFont}; letter-spacing:0.12em; text-transform:uppercase; color:${BRAND.muted};">A note from our team</p>
+      <div style="margin:0 0 24px; padding:16px 20px; border-left:3px solid ${BRAND.red}; background:${BRAND.panel}; font:400 15px/1.6 ${BRAND.uiFont}; color:${BRAND.body}; white-space:pre-wrap;">${escapeHtml(reviewerNotes)}</div>` : ''}
+      ${button('Upload your images', `${SITE_URL}/brand-onboarding`)}
+    `, { preheader: `${escapeHtml(brandName)} is approved. Upload your images to go live.` })
+  }),
+
+  BRAND_REJECTED: ({ brandName, founderHandle, reviewerNotes, reapplyDate }) => ({
+    subject: 'An update on your Hexxo brand application',
+    html: baseTemplate(`
+      ${eyebrow('Upcoming Brands')}
+      ${heading('An update on your application.')}
+      ${paragraph(`Hi @${escapeHtml(founderHandle)}, thanks for applying to feature <strong style="color:${BRAND.ink};">${escapeHtml(brandName)}</strong> on Hexxo. We weren&rsquo;t able to approve it this time.`)}
+      <p style="margin:0 0 8px; font:700 12px/1 ${BRAND.uiFont}; letter-spacing:0.12em; text-transform:uppercase; color:${BRAND.muted};">A note from our team</p>
+      <div style="margin:0 0 24px; padding:16px 20px; border-left:3px solid ${BRAND.red}; background:${BRAND.panel}; font:400 15px/1.6 ${BRAND.uiFont}; color:${BRAND.body}; white-space:pre-wrap;">${escapeHtml(reviewerNotes)}</div>
+      ${paragraph(`You can update your application and reapply on or after ${escapeHtml(reapplyDate)}.`)}
+      ${button('View your application', `${SITE_URL}/brand-onboarding`)}
+    `, { preheader: `An update on your ${escapeHtml(brandName)} application.` })
   })
 };
 
