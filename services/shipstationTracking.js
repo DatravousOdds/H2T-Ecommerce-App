@@ -93,7 +93,9 @@ function buildTrackingSnapshot(data, eventMs) {
 function planTrackingUpdate(prev, data) {
   const code = data.status_code;
   const eventMs = latestEventMs(data);
-  const stale = eventMs !== null && prev.lastTrackingEventAtMs != null && eventMs <= prev.lastTrackingEventAtMs;
+  // A payload with no dated events can't prove it's newer than stored history,
+  // so it mustn't replace it (its empty trackingEvents would wipe the timeline).
+  const stale = prev.lastTrackingEventAtMs != null && (eventMs === null || eventMs <= prev.lastTrackingEventAtMs);
 
   const closed = CLOSED_STATUSES.has(prev.fulfillmentStatus);
   const delivered = prev.fulfillmentStatus === 'delivered';

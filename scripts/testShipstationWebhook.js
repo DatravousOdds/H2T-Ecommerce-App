@@ -38,6 +38,9 @@ async function run() {
   assert.ok(plan.stale && !plan.notifyAttention, "older event: stale, no re-notify");
   plan = planTrackingUpdate({ ...shipped, lastTrackingEventAtMs: stored }, event("DE", "2026-05-02T12:00:00Z"));
   assert.ok(plan.stale && plan.deliver, "a retried DE still finishes the transition");
+  plan = planTrackingUpdate({ ...shipped, lastTrackingEventAtMs: stored }, { tracking_number: "1ZTEST", status_code: "IT", events: [] });
+  assert.ok(plan.stale, "no dated events can't overwrite stored history");
+  assert.ok(!planTrackingUpdate(fresh, { tracking_number: "1ZTEST", status_code: "NY", events: [] }).stale, "nothing stored yet: snapshot still written");
 
   for (const fulfillmentStatus of ["cancelled", "refunded", "delivered"]) {
     plan = planTrackingUpdate({ ...fresh, fulfillmentStatus }, event("DE", "2026-05-02T12:00:00Z", { status_detail_code: "OUT_FOR_DELIVERY" }));
