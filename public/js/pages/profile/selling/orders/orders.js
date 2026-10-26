@@ -258,9 +258,15 @@ function rerenderCurrentOrders() {
 // than offering Mark Shipped/Cancel off stale status. Falls back to the
 // cached copy if the read fails: the server re-checks status inside a
 // transaction regardless, so a stale menu is a UX gap, not a correctness one.
+// Capped because an offline read can take ~10s to fail, leaving View looking dead.
+const FRESH_ORDER_TIMEOUT_MS = 3000;
+
 async function fetchFreshOrder(cached) {
   try {
-    const snap = await getDoc(doc(db, "orders", cached.docId));
+    const snap = await Promise.race([
+      getDoc(doc(db, "orders", cached.docId)),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), FRESH_ORDER_TIMEOUT_MS))
+    ]);
     if (!snap.exists()) return cached;
 
     const fresh = { ...snap.data(), docId: snap.id };
@@ -482,13 +488,20 @@ function wireOrderActions(userId) {
   const submitAuthPhotosBtn = document.getElementById("seller-submit-auth-photos-btn");
 
   if (table) {
+    let latestViewRequest = 0;
+
     table.addEventListener("click", async (e) => {
       const viewBtn = e.target.closest(".action-button.view");
       if (!viewBtn) return;
 
       const docId = viewBtn.closest("tr")?.dataset.docId;
       const order = currentOrders.find((o) => o.docId === docId);
-      if (order) openOrderActionMenu(await fetchFreshOrder(order));
+      if (!order) return;
+
+      const requestId = ++latestViewRequest;
+      const fresh = await fetchFreshOrder(order);
+      // A slower read from an earlier click must not replace the order opened since.
+      if (requestId === latestViewRequest) openOrderActionMenu(fresh);
     });
   }
 
