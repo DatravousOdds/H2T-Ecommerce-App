@@ -474,10 +474,17 @@ async function init() {
   wireDisputeActions();
   wireFailedPayoutActions();
   wireInTransitActions();
-  await loadReviewScreen();
-  await loadDisputesScreen();
-  await loadFailedPayoutsScreen();
-  await loadInTransitScreen();
+  // In parallel, and independent: one failing list mustn't leave the others on "Loading...".
+  const screens = [
+    [loadReviewScreen, listEl],
+    [loadDisputesScreen, disputesListEl],
+    [loadFailedPayoutsScreen, failedPayoutsListEl],
+    [loadInTransitScreen, inTransitListEl]
+  ];
+  await Promise.all(screens.map(([load, el]) => load().catch((error) => {
+    console.error("Admin list failed to load:", error);
+    el.innerHTML = `<p class="default-paragraph">Couldn't load this list. Refresh to try again.</p>`;
+  })));
 }
 
 init();
