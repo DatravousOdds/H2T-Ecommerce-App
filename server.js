@@ -2438,6 +2438,11 @@ const ADMIN_STATS_TTL_MS = 10 * 60 * 1000;
 // After a failed recompute, wait this long before trying again so an outage
 // doesn't turn every admin page load into a full (and failing) scan.
 const ADMIN_STATS_RETRY_MS = 30 * 1000;
+// Every admin request awaits the same recompute, and the SDKs' own limits are
+// long (Firestore queries up to 300s with retries, Auth 25s x 4 retries per
+// page). Capping it means a stalled backend yields the stale/error fallback
+// within a minute instead of leaving every dashboard loading for ~5 minutes.
+const ADMIN_STATS_TIMEOUT_MS = 60 * 1000;
 let adminStatsCache = { data: null, expiresAt: 0, pending: null, pendingGeneration: 0, retryAt: 0 };
 // Bumped by invalidateAdminStats(). A recompute that was already running when
 // an admin action landed holds pre-action numbers, so it isn't cached.
@@ -2450,6 +2455,16 @@ function invalidateAdminStats() {
   adminStatsCache.expiresAt = 0;
   adminStatsCache.retryAt = 0;
   adminStatsCache.pending = null;
+}
+
+// Rejects if `promise` hasn't settled within `ms`. The underlying work keeps
+// running, but race() attaches a handler, so its late failure isn't unhandled.
+function withTimeout(promise, ms, label) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
 // shortcut: pages through every Auth user on each recompute (cached 10 min);
@@ -2549,7 +2564,7 @@ app.get("/api/admin/stats", verifyAuth, async (req, res) => {
   if (Date.now() < adminStatsCache.retryAt) return sendFallback();
 
   if (!adminStatsCache.pending) {
-    adminStatsCache.pending = loadAdminStats();
+    adminStatsCache.pending = withTimeout(loadAdminStats(), ADMIN_STATS_TIMEOUT_MS, "Admin stats");
     adminStatsCache.pendingGeneration = adminStatsGeneration;
   }
   const { pending, pendingGeneration } = adminStatsCache;
