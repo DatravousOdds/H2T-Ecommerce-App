@@ -626,11 +626,19 @@ let upcomingBrandsCache = { brands: null, expiresAt: 0, pending: null };
 
 async function loadUpcomingBrands() {
   const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
+  if (snap.empty) return [];
+
+  // The handle saved at submit goes stale if the owner changes their
+  // username, so cards use the current one (one batched read per cache
+  // refresh, not per visitor) and fall back to the saved handle.
+  const profiles = await db.getAll(...snap.docs.map((doc) => db.collection('userProfiles').doc(doc.id)));
+  const currentHandles = new Map(profiles.map((profile) => [profile.id, profile.data()?.username]));
+
   return snap.docs.map((doc) => {
     const data = doc.data();
     return {
       name: data.brandName,
-      founderHandle: data.founderHandle,
+      founderHandle: currentHandles.get(doc.id) || data.founderHandle,
       category: data.category,
       // shortcut: no asset upload yet, so no cover field exists -- cards fall
       // back to a wordmark; set this to the cover URL field once uploads ship
