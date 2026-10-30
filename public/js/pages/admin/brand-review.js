@@ -170,6 +170,30 @@ async function toggleEin(card, button) {
   }
 }
 
+// Approve emails the owner immediately and can't be taken back, so it takes
+// two clicks: the first arms the button, a second within 5s sends. Reject is
+// already guarded by its required note.
+const APPROVE_CONFIRM_MS = 5000;
+
+function isArmed(button) {
+  return Number(button.dataset.armedUntil || 0) > Date.now();
+}
+
+function armApprove(card, button) {
+  button.dataset.armedUntil = String(Date.now() + APPROVE_CONFIRM_MS);
+  button.textContent = "Confirm approve";
+  button.classList.add("is-armed");
+  showMessage(`Click "Confirm approve" to approve ${card.dataset.brandName} and email the owner.`, "warning");
+
+  setTimeout(() => {
+    // Skip if it was re-armed since, or already sent (disabled / removed)
+    if (!button.isConnected || button.disabled || isArmed(button)) return;
+    delete button.dataset.armedUntil;
+    button.textContent = "Approve";
+    button.classList.remove("is-armed");
+  }, APPROVE_CONFIRM_MS);
+}
+
 function wireActions() {
   listEl.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
@@ -178,6 +202,8 @@ function wireActions() {
     const card = button.closest(".review-card");
     if (button.dataset.action === "show-ein") {
       toggleEin(card, button);
+    } else if (button.dataset.action === "approved" && !isArmed(button)) {
+      armApprove(card, button);
     } else {
       handleDecision(card, button.dataset.action);
     }
