@@ -12,6 +12,7 @@ const { getRatesForCarrier, createLabel, toV2LabelId, getLabelTracking } = requi
 const { TRACK_EVENT_RESOURCE_TYPE, DELIVERED, parseLabelId, planTrackingUpdate } = require('./services/shipstationTracking');
 const { verifyShipstationWebhook } = require('./services/shipstationWebhookAuth');
 const { templateBuilder } = require('./services/emailTemplates');
+const { emptyUserTally, tallyUser, summarizeOrders, averageReviewMs, summarizeDisputes, summarizeSellerDebt, countQueues } = require('./services/adminStats');
 
 // Hexxo only lists clothing/accessories, so USPS's restricted-content rate
 // classes (media mail and its close relatives) are never legitimate for a
@@ -2431,6 +2432,158 @@ app.post('/api/admin/affiliate-payouts/run', verifyAuth, async (req, res) => {
   }
 });
 
+// Profile "Admin" tab. One recompute is shared by every admin request, using
+// the same cache + shared in-flight promise pattern as /api/about-stats.
+const ADMIN_STATS_TTL_MS = 10 * 60 * 1000;
+// After a failed recompute, wait this long before trying again so an outage
+// doesn't turn every admin page load into a full (and failing) scan.
+const ADMIN_STATS_RETRY_MS = 30 * 1000;
+// Every admin request awaits the same recompute, and the SDKs' own limits are
+// long (Firestore queries up to 300s with retries, Auth 25s x 4 retries per
+// page). Capping it means a stalled backend yields the stale/error fallback
+// within a minute instead of leaving every dashboard loading for ~5 minutes.
+const ADMIN_STATS_TIMEOUT_MS = 60 * 1000;
+let adminStatsCache = { data: null, expiresAt: 0, pending: null, pendingGeneration: 0, retryAt: 0 };
+// Bumped by invalidateAdminStats(). A recompute that was already running when
+// an admin action landed holds pre-action numbers, so it isn't cached.
+let adminStatsGeneration = 0;
+
+// Called after admin actions that change a Needs-action queue, so the
+// dashboard doesn't keep showing resolved work for up to 10 minutes.
+function invalidateAdminStats() {
+  adminStatsGeneration++;
+  adminStatsCache.expiresAt = 0;
+  adminStatsCache.retryAt = 0;
+  adminStatsCache.pending = null;
+}
+
+// Rejects if `promise` hasn't settled within `ms`. The underlying work keeps
+// running, but race() attaches a handler, so its late failure isn't unhandled.
+function withTimeout(promise, ms, label) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+// shortcut: pages through every Auth user on each recompute (cached 10 min);
+// move to a scheduled job writing a stats doc past ~50k users.
+async function loadAuthUserStats(nowMs) {
+  const tally = emptyUserTally(nowMs);
+  let pageToken;
+  do {
+    const page = await admin.auth().listUsers(1000, pageToken);
+    page.users.forEach((user) => tallyUser(tally, user.metadata, nowMs));
+    pageToken = page.pageToken;
+  } while (pageToken);
+  return tally;
+}
+
+// shortcut: reads every order (selected fields only) on each recompute,
+// cached 10 min; move to a scheduled stats doc in the tens of thousands.
+async function loadOrderStats(nowMs) {
+  const [ordersSnap, photosSnap, disputesSnap, debtsSnap, failedPayoutsSnap] = await Promise.all([
+    db.collection("orders")
+      .select("buyerId", "buyerEmail", "fulfillmentStatus", "createdAt", "subtotal", "shippingCost", "shipstationLabelId",
+        "item.brand", "item.marketplaceFee", "item.salesTax", "authenticationStatus", "authenticationDecidedAt", "livemode")
+      .get(),
+    db.collection("orderAuthenticationPhotos")
+      .where("status", "in", ["submitted", "passed", "failed"])
+      .select("status", "createdAt", "reviewedAt")
+      .get(),
+    db.collection("disputes").select("sellerId", "status").get(),
+    db.collection("sellerDebts").where("status", "==", "outstanding").select("sellerId", "remainingAmount").get(),
+    db.collection("payouts").where("status", "==", "failed").select().get()
+  ]);
+  const orders = summarizeOrders(ordersSnap.docs.map((doc) => doc.data()), nowMs);
+  const withId = (snap) => snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+  // Needs-action counts mirror the review pages, test orders included.
+  const queues = countQueues({
+    orders: withId(ordersSnap),
+    photos: withId(photosSnap),
+    disputes: withId(disputesSnap),
+    failedPayouts: failedPayoutsSnap.size
+  });
+
+  // Metrics, though, only count live orders: these collections are keyed by
+  // order doc id and outlive hand-deleted test orders.
+  const liveOrderIds = new Set(ordersSnap.docs.filter((doc) => doc.get("livemode") !== false).map((doc) => doc.id));
+  const live = (snap) => snap.docs.filter((doc) => liveOrderIds.has(doc.id)).map((doc) => doc.data());
+
+  orders.tier1.avgReviewMs = averageReviewMs(live(photosSnap).filter((photo) => photo.status !== "submitted"));
+  const disputes = summarizeDisputes(live(disputesSnap));
+
+  // One batched read for the ranked sellers' display names.
+  if (disputes.topSellers.length) {
+    const profiles = await db.getAll(...disputes.topSellers.map((s) => db.collection("userProfiles").doc(s.sellerId)));
+    profiles.forEach((profile, i) => { disputes.topSellers[i].username = profile.get("username") || null; });
+  }
+
+  return {
+    orders,
+    disputes,
+    sellerDebt: summarizeSellerDebt(live(debtsSnap)),
+    queues
+  };
+}
+
+async function loadAdminStats() {
+  const nowMs = Date.now();
+  const [users, { orders, disputes, sellerDebt, queues }] = await Promise.all([
+    loadAuthUserStats(nowMs),
+    loadOrderStats(nowMs)
+  ]);
+  return {
+    computedAt: nowMs,
+    // stuck has no review page to mirror, so it keeps the live-orders rule.
+    needsAction: { ...queues, stuck: orders.stuck },
+    users,
+    orders,
+    disputes,
+    sellerDebt
+  };
+}
+
+app.get("/api/admin/stats", verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: "Admin only" });
+  }
+  // Response carries buyer emails -- keep it out of browser/proxy caches.
+  res.set("Cache-Control", "no-store");
+
+  // Last good numbers (flagged stale) beat an empty dashboard.
+  const sendFallback = () => (adminStatsCache.data
+    ? res.json({ success: true, stale: true, ...adminStatsCache.data })
+    : res.status(500).json({ success: false, message: "Stats unavailable" }));
+
+  if (adminStatsCache.data && Date.now() < adminStatsCache.expiresAt) {
+    return res.json({ success: true, ...adminStatsCache.data });
+  }
+  if (Date.now() < adminStatsCache.retryAt) return sendFallback();
+
+  if (!adminStatsCache.pending) {
+    adminStatsCache.pending = withTimeout(loadAdminStats(), ADMIN_STATS_TIMEOUT_MS, "Admin stats");
+    adminStatsCache.pendingGeneration = adminStatsGeneration;
+  }
+  const { pending, pendingGeneration } = adminStatsCache;
+  try {
+    const data = await pending;
+    if (adminStatsCache.pending === pending) adminStatsCache.pending = null;
+    // Only cache as fresh if no admin action landed while this was computing.
+    if (pendingGeneration === adminStatsGeneration) {
+      Object.assign(adminStatsCache, { data, expiresAt: Date.now() + ADMIN_STATS_TTL_MS, retryAt: 0 });
+    }
+    res.json({ success: true, ...data });
+  } catch (error) {
+    if (adminStatsCache.pending === pending) adminStatsCache.pending = null;
+    adminStatsCache.retryAt = Date.now() + ADMIN_STATS_RETRY_MS;
+    console.error("Admin stats failed:", error);
+    sendFallback();
+  }
+});
+
 // Server-mediated on purpose, not a direct client Firestore query like
 // authentication-review.js uses for its own list -- `orders` deliberately
 // has no Firestore rule at all (default-deny) because it carries buyer PII
@@ -2665,6 +2818,7 @@ app.post("/api/admin/order-authentications/:orderId/decision", verifyAuth, async
       reviewedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
+    invalidateAdminStats();
     return res.status(200).json({ success: true });
 
   } catch (error) {
@@ -2838,6 +2992,7 @@ app.post("/api/orders/:id/delivery-confirmation/approve", verifyAuth, async (req
 
     const payout = await approveDeliveryAndReleasePayout(order, orderId, docRef);
 
+    invalidateAdminStats();
     return res.status(200).json({ success: true, payout });
 
   } catch (error) {
@@ -2936,6 +3091,7 @@ app.post("/api/admin/orders/:id/mark-delivered", verifyAuth, async (req, res) =>
     const { result, order } = await markOrderDelivered(db.collection("orders").doc(req.params.id), { source: "admin" });
 
     if (result === "delivered") {
+      invalidateAdminStats();
       return res.status(200).json({ success: true, message: "Order marked delivered" });
     }
     if (result === "already_delivered") {
@@ -2984,6 +3140,7 @@ app.post("/api/orders/:id/payout/retry", verifyAuth, async (req, res) => {
       console.error(`payout retry for order ${orderId} failed again: ${payout.payoutHoldReason}${payout.lastError ? ` (${payout.lastError})` : ""}`);
     }
 
+    invalidateAdminStats();
     return res.status(200).json({ success: true, payout });
 
   } catch (error) {
@@ -3176,6 +3333,7 @@ app.post("/api/orders/:id/dispute/uphold", verifyAuth, async (req, res) => {
       "/profile?tab=selling"
     );
 
+    invalidateAdminStats();
     return res.status(200).json({ success: true, refund: { id: refund.id, status: refund.status } });
 
   } catch (error) {
@@ -3210,6 +3368,7 @@ app.post("/api/orders/:id/dispute/reject", verifyAuth, async (req, res) => {
       "/profile?tab=purchases"
     );
 
+    invalidateAdminStats();
     return res.status(200).json({ success: true, payout });
 
   } catch (error) {
@@ -4520,7 +4679,9 @@ function buildOrderDataFromPaymentIntent(paymentData) {
     shippingAddress: paymentData.metadata.shipping_from,
     item: JSON.parse(paymentData.metadata.item),
     taxCalculationId: paymentData.metadata.tax_calculation_id || null,
-    buyerShippingAddress: paymentData.metadata.shipping_to ? JSON.parse(paymentData.metadata.shipping_to) : null
+    buyerShippingAddress: paymentData.metadata.shipping_to ? JSON.parse(paymentData.metadata.shipping_to) : null,
+    // Dev and prod share this Firestore; lets admin stats skip test-mode orders.
+    livemode: paymentData.livemode
   };
 }
 
