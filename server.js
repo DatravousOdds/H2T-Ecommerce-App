@@ -528,8 +528,10 @@ app.post('/send/contact', async (req, res) => {
 // brandApplicationsPrivate/{uid} instead, so admin list reads and the public
 // carousel route (both read upcomingBrands) can never carry it by accident.
 
-// Category shown on the brand's Upcoming Brands card.
-const BRAND_CATEGORIES = ['Apparel', 'Accessories', 'Graphic Tees', 'Outerwear', 'Sneakers'];
+// Category shown on the brand's Upcoming Brands card. Must match the <select>
+// in public/brandOnboarding/apply.html; "Other" is the catch-all so no brand
+// is forced into a category that doesn't fit.
+const BRAND_CATEGORIES = ['Apparel', 'Graphic Tees', 'Outerwear', 'Sneakers', 'Accessories', 'Jewelry', 'Headwear', 'Bags', 'Other'];
 const BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS = 3;
 const INSTAGRAM_HANDLE_PATTERN = /^[A-Za-z0-9._]{1,30}$/;
 
