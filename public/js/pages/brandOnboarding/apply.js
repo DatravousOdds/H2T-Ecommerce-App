@@ -74,8 +74,10 @@ async function authorizedFetch(url, options = {}) {
   });
 }
 
+// Central Time, same as the rejection email (formatBrandEmailDate in
+// server.js), so the page and the email always name the same day.
 function formatDate(ms) {
-  return new Date(ms).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
+  return new Date(ms).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "America/Chicago" });
 }
 
 function renderSummary(application) {
@@ -110,7 +112,7 @@ function renderStatus(application) {
   if (application.status === "rejected") {
     message = canReapplyNow
       ? "You can update your application and reapply now."
-      : `You can reapply on ${formatDate(application.reapplyAt)}.`;
+      : `You can reapply on ${formatDate(application.reapplyAt)} (Central Time).`;
   }
   document.getElementById("statusMessage").textContent = message;
 

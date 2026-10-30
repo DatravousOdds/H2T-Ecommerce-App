@@ -431,7 +431,7 @@ const notificationTemplates = {
       ${paragraph(`Hi @${escapeHtml(founderHandle)}, thanks for applying to feature <strong style="color:${BRAND.ink};">${escapeHtml(brandName)}</strong> on Hexxo. We weren&rsquo;t able to approve it this time.`)}
       <p style="margin:0 0 8px; font:700 12px/1 ${BRAND.uiFont}; letter-spacing:0.12em; text-transform:uppercase; color:${BRAND.muted};">A note from our team</p>
       <div style="margin:0 0 24px; padding:16px 20px; border-left:3px solid ${BRAND.red}; background:${BRAND.panel}; font:400 15px/1.6 ${BRAND.uiFont}; color:${BRAND.body}; white-space:pre-wrap;">${escapeHtml(reviewerNotes)}</div>
-      ${paragraph(`You can update your application and reapply on or after ${escapeHtml(reapplyDate)}.`)}
+      ${paragraph(`You can update your application and reapply on or after ${escapeHtml(reapplyDate)} (Central Time).`)}
       ${button('View your application', `${SITE_URL}/brand-onboarding`)}
     `, { preheader: `An update on your ${escapeHtml(brandName)} application.` })
   })
