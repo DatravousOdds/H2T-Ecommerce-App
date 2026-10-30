@@ -376,14 +376,16 @@ const notificationTemplates = {
   // The EIN is never passed to any template: email isn't a safe place for a
   // tax ID, so the admin email only gets hasEin.
 
-  BRAND_APPLICATION_SUBMITTED: ({ brandName, category, description, instagram, website, founderHandle, contactEmail, hasEin, applicationCount }) => ({
-    subject: `New brand application: ${brandName}`,
+  BRAND_APPLICATION_SUBMITTED: ({ brandName, category, description, instagram, website, founderHandle, contactEmail, hasEin, applicationCount, isUpdate }) => ({
+    subject: isUpdate ? `Brand application updated: ${brandName}` : `New brand application: ${brandName}`,
     html: baseTemplate(`
       ${eyebrow('Admin &middot; Brand application')}
       ${heading(escapeHtml(brandName))}
-      ${paragraph(applicationCount > 1
-        ? `A previously rejected brand reapplied (attempt ${escapeHtml(applicationCount)}).`
-        : 'A new brand applied to be featured in Upcoming Brands.')}
+      ${paragraph(isUpdate
+        ? 'The applicant edited their application while it was waiting for review. These are the current details.'
+        : applicationCount > 1
+          ? `A previously rejected brand reapplied (attempt ${escapeHtml(applicationCount)}).`
+          : 'A new brand applied to be featured in Upcoming Brands.')}
       ${detailCard([
         ['Founder', `@${escapeHtml(founderHandle)} (${escapeHtml(contactEmail)})`],
         ['Category', escapeHtml(category)],

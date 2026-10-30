@@ -122,6 +122,9 @@ function renderStatus(application) {
 
   renderSummary(application);
   document.getElementById("reapplyActions").hidden = !canReapplyNow;
+  document.getElementById("pendingActions").hidden = application.status !== "pending_review";
+  disarmWithdraw();
+  showStatusError("");
 
   if (application.status === "approved_awaiting_assets") {
     showAssetUpload(application.assets, loadApplication);
@@ -131,8 +134,14 @@ function renderStatus(application) {
   showPanel("status");
 }
 
-// prefill is the previous application when reapplying, otherwise null.
-function openForm(prefill) {
+const FORM_MODES = {
+  new: { title: "Tell us about your brand", submit: "Submit application" },
+  reapply: { title: "Update and reapply", submit: "Resubmit application" },
+  edit: { title: "Edit your application", submit: "Save changes" },
+};
+
+// prefill is the current application when reapplying or editing, otherwise null.
+function openForm(prefill, mode = "new") {
   form.reset();
   hideFormError();
 
@@ -149,9 +158,55 @@ function openForm(prefill) {
     ? `You previously gave an EIN ending in ${prefill.einLast4}. Enter it again to keep it on file.`
     : "";
 
-  formTitle.textContent = prefill ? "Update and reapply" : "Tell us about your brand";
-  submitButton.textContent = prefill ? "Resubmit application" : "Submit application";
+  formTitle.textContent = FORM_MODES[mode].title;
+  submitButton.textContent = FORM_MODES[mode].submit;
+  // Editing or reapplying started from the status view, so offer a way back
+  document.getElementById("cancelFormButton").hidden = mode === "new";
   showPanel("form");
+}
+
+function showStatusError(message) {
+  const el = document.getElementById("statusError");
+  el.textContent = message;
+  el.hidden = !message;
+}
+
+// Withdrawing deletes the application and can't be undone, so it takes two
+// clicks, the same pattern as Approve on the admin page.
+const WITHDRAW_CONFIRM_MS = 5000;
+const withdrawButton = document.getElementById("withdrawButton");
+let withdrawArmedUntil = 0;
+
+function disarmWithdraw() {
+  withdrawArmedUntil = 0;
+  withdrawButton.textContent = "Withdraw application";
+  withdrawButton.classList.remove("is-armed");
+}
+
+async function handleWithdraw() {
+  if (Date.now() > withdrawArmedUntil) {
+    withdrawArmedUntil = Date.now() + WITHDRAW_CONFIRM_MS;
+    withdrawButton.textContent = "Click again to withdraw";
+    withdrawButton.classList.add("is-armed");
+    setTimeout(() => { if (Date.now() >= withdrawArmedUntil) disarmWithdraw(); }, WITHDRAW_CONFIRM_MS);
+    return;
+  }
+
+  withdrawButton.disabled = true;
+  showStatusError("");
+  try {
+    const response = await authorizedFetch("/api/brand-onboarding", { method: "DELETE" });
+    const result = await response.json();
+    // 409/404: it was reviewed or removed meanwhile; show whatever is true now
+    if (!response.ok && response.status !== 409 && response.status !== 404) {
+      throw new Error(result.message || "We couldn't withdraw your application. Please try again.");
+    }
+    await loadApplication();
+  } catch (error) {
+    showStatusError(error.message);
+  } finally {
+    withdrawButton.disabled = false;
+  }
 }
 
 async function loadApplication() {
@@ -229,7 +284,10 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-document.getElementById("reapplyButton").addEventListener("click", () => openForm(currentApplication));
+document.getElementById("reapplyButton").addEventListener("click", () => openForm(currentApplication, "reapply"));
+document.getElementById("editButton").addEventListener("click", () => openForm(currentApplication, "edit"));
+document.getElementById("cancelFormButton").addEventListener("click", () => renderStatus(currentApplication));
+withdrawButton.addEventListener("click", handleWithdraw);
 document.getElementById("retryButton").addEventListener("click", loadApplication);
 
 async function init() {

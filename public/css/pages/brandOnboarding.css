@@ -300,6 +300,37 @@
   outline-offset: 2px;
 }
 
+/* Withdraw: a quiet text button that turns solid once armed */
+.brand-apply__danger-btn {
+  min-height: 44px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--brand-apply-red-text);
+  font: 600 0.9375rem/1 var(--brand-apply-label);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.brand-apply__danger-btn.is-armed {
+  padding: 0 16px;
+  border-radius: 8px;
+  background: var(--brand-apply-red-text);
+  color: #fff;
+  text-decoration: none;
+}
+
+.brand-apply__danger-btn:focus-visible {
+  outline: 2px solid var(--brand-apply-ink);
+  outline-offset: 2px;
+}
+
+.brand-apply__danger-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ---------- Image upload (approved_awaiting_assets) ---------- */
 .brand-assets {
   display: grid;

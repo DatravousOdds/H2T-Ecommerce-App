@@ -698,8 +698,10 @@ app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
       const snap = await tx.get(applicationRef);
       const existing = snap.exists ? snap.data() : null;
 
-      if (existing && existing.status !== 'rejected') {
-        return { conflict: 'You already have an application in progress.' };
+      // Still waiting for review = the owner is editing it in place
+      const isEdit = existing?.status === 'pending_review';
+      if (existing && existing.status !== 'rejected' && !isEdit) {
+        return { conflict: 'Your application has already been reviewed, so it can\'t be changed.' };
       }
 
       const reapplyAt = existing && brandReapplyAt(existing);
@@ -708,10 +710,12 @@ app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
       }
 
       const now = admin.firestore.FieldValue.serverTimestamp();
-      const applicationCount = (existing?.applicationCount || 0) + 1;
+      // An edit isn't a new attempt
+      const applicationCount = isEdit ? existing.applicationCount : (existing?.applicationCount || 0) + 1;
 
       // Full overwrite (no merge) so a reapply starts clean: the old
-      // rejection notes and timestamps don't carry over.
+      // rejection notes and timestamps don't carry over. An edit keeps its
+      // original submittedAt so it doesn't jump the admin's queue.
       tx.set(applicationRef, {
         ...application,
         founderHandle,
@@ -721,7 +725,8 @@ app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
         applicationCount,
         reviewerNotes: null,
         createdAt: existing?.createdAt || now,
-        submittedAt: now,
+        submittedAt: isEdit ? existing.submittedAt : now,
+        ...(isEdit && { updatedAt: now }),
       });
 
       if (ein) {
@@ -731,7 +736,7 @@ app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
         tx.delete(privateRef);
       }
 
-      return { applicationCount };
+      return { applicationCount, isEdit };
     });
 
     if (result.conflict) {
@@ -746,12 +751,40 @@ app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
       contactEmail,
       hasEin: Boolean(ein),
       applicationCount: result.applicationCount,
+      isUpdate: result.isEdit,
     });
 
-    return res.status(201).json({ success: true, status: 'pending_review' });
+    return res.status(result.isEdit ? 200 : 201).json({ success: true, status: 'pending_review', updated: result.isEdit });
   } catch (error) {
     console.error('Error submitting brand application:', error);
     return res.status(500).json({ success: false, message: 'Could not submit your application. Please try again.' });
+  }
+});
+
+// Withdraw an application that hasn't been reviewed yet: deletes it and the
+// private EIN record. With no application left, the owner can apply again
+// right away (no cooldown, since they weren't rejected).
+app.delete('/api/brand-onboarding', verifyAuth, async (req, res) => {
+  const applicationRef = db.collection('upcomingBrands').doc(req.token.uid);
+  const privateRef = db.collection('brandApplicationsPrivate').doc(req.token.uid);
+
+  try {
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      if (!snap.exists) return { notFound: true };
+      if (snap.data().status !== 'pending_review') return { conflict: true };
+
+      tx.delete(applicationRef);
+      tx.delete(privateRef);
+      return {};
+    });
+
+    if (result.notFound) return res.status(404).json({ success: false, message: 'You don\'t have an application to withdraw.' });
+    if (result.conflict) return res.status(409).json({ success: false, message: 'Your application has already been reviewed, so it can\'t be withdrawn.' });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Error withdrawing brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not withdraw your application. Please try again.' });
   }
 });
 

@@ -150,6 +150,12 @@
           <div class="brand-apply__actions" id="reapplyActions" hidden>
             <button type="button" class="btn btn-primary" id="reapplyButton">Reapply</button>
           </div>
+          <!-- Only while under review: fix details, or cancel and start over -->
+          <div class="brand-apply__actions" id="pendingActions" hidden>
+            <button type="button" class="btn btn-secondary" id="editButton">Edit application</button>
+            <button type="button" class="brand-apply__danger-btn" id="withdrawButton">Withdraw application</button>
+          </div>
+          <p class="brand-apply__form-error" id="statusError" role="alert" hidden></p>
         </section>
 
         <section class="brand-apply__panel" id="errorPanel" hidden>
@@ -227,6 +233,7 @@
 
             <div class="brand-apply__actions">
               <button type="submit" class="btn btn-primary" id="submitButton">Submit application</button>
+              <button type="button" class="btn btn-secondary" id="cancelFormButton" hidden>Cancel</button>
             </div>
           </form>
         </section>
