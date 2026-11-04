@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../css/components/skeleton.css" />
     <link rel="stylesheet" href="../css/components/newsletter.css" />
     <link rel="stylesheet" href="../css/components/cartDrawer.css" />
+    <link rel="stylesheet" href="../css/components/brandCarousel.css" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
@@ -81,6 +82,19 @@
         <li id="curr-page" class="curr-pg">Brands</li>
       </ol>
     </div>
+
+    <!-- Upcoming brands: seller-created labels. Target of the home page
+         carousel's "View all" (/shop/brands.html#upcoming). Kept first on the
+         page because the Featured banners below only render after their
+         Firestore fetch -- anything above this anchor growing late would push
+         it down after the browser has already jumped to it. -->
+    <section id="upcoming" class="brand-grid-section section-p1 margin-l-r-sm" aria-labelledby="upcomingTitle" hidden>
+      <div class="section-header">
+        <p class="banner-eyebrow">Rising labels · Made by Hexxo sellers</p>
+        <h2 id="upcomingTitle">Upcoming Brands</h2>
+      </div>
+      <ul class="brand-card-grid" id="upcomingBrandGrid"></ul>
+    </section>
 
     <!-- Featured brands: always shown, curated banners -->
     <section id="brands" class="section-p1 margin-l-r-sm">

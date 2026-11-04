@@ -498,6 +498,34 @@ app.post('/send/contact', async (req, res) => {
   }
 });
 
+// Public card data for the homepage Upcoming Brands carousel and
+// /shop/brands.html#upcoming. Reads upcomingBrands/{uid} (written by the
+// brand onboarding flow) and returns published brands only; fields are picked
+// explicitly so applicant data (contactEmail, einLast4, reviewer notes) never
+// goes out. An empty list is what hides the carousel on the frontend.
+app.get('/api/upcoming-brands', async (req, res) => {
+  try {
+    const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
+    const brands = snap.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        name: data.brandName,
+        founderHandle: data.founderHandle,
+        category: data.category,
+        // shortcut: no asset upload yet, so no cover field exists -- cards fall
+        // back to a wordmark; set this to the cover URL field once uploads ship
+        image: null,
+      };
+    });
+    // Every homepage view calls this; a short cache keeps Firestore reads flat
+    res.set('Cache-Control', 'public, max-age=300');
+    return res.json({ success: true, brands });
+  } catch (error) {
+    console.error('Error loading upcoming brands:', error);
+    return res.status(500).json({ success: false, message: 'Could not load upcoming brands.' });
+  }
+});
+
 app.post('/webhooks/easyship', async (req, res) => {
   const signature = req.headers['x-easyship-signature'];
   if (!signature) {
