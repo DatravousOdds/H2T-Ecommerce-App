@@ -2091,6 +2091,7 @@ app.post("/api/orders/:id/authentication-photos", verifyAuth, async (req, res) =
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
+    invalidateAdminStats();
     return res.status(200).json({ success: true, message: "Photos submitted for authentication review." });
 
   } catch (error) {
@@ -2432,8 +2433,7 @@ app.post('/api/admin/affiliate-payouts/run', verifyAuth, async (req, res) => {
   }
 });
 
-// Profile "Admin" tab. One recompute is shared by every admin request, using
-// the same cache + shared in-flight promise pattern as /api/about-stats.
+// Profile "Admin" tab. One recompute is shared by every admin request.
 const ADMIN_STATS_TTL_MS = 10 * 60 * 1000;
 // After a failed recompute, wait this long before trying again so an outage
 // doesn't turn every admin page load into a full (and failing) scan.
@@ -2443,13 +2443,17 @@ const ADMIN_STATS_RETRY_MS = 30 * 1000;
 // page). Capping it means a stalled backend yields the stale/error fallback
 // within a minute instead of leaving every dashboard loading for ~5 minutes.
 const ADMIN_STATS_TIMEOUT_MS = 60 * 1000;
+// shortcut: cache and invalidation are per-process; with 2+ server instances,
+// a resolved item can stay stale up to 10 min on the others. Move the result
+// to a Firestore stats doc if you scale out.
 let adminStatsCache = { data: null, expiresAt: 0, pending: null, pendingGeneration: 0, retryAt: 0 };
 // Bumped by invalidateAdminStats(). A recompute that was already running when
 // an admin action landed holds pre-action numbers, so it isn't cached.
 let adminStatsGeneration = 0;
 
-// Called after admin actions that change a Needs-action queue, so the
-// dashboard doesn't keep showing resolved work for up to 10 minutes.
+// Called whenever a Needs-action queue changes (work resolved by an admin, or
+// new work from a buyer or seller), so the dashboard isn't up to 10 minutes
+// behind. Costs no reads: the recompute waits for the next admin visit.
 function invalidateAdminStats() {
   adminStatsGeneration++;
   adminStatsCache.expiresAt = 0;
@@ -3202,6 +3206,7 @@ app.post("/api/orders/:id/dispute", verifyAuth, async (req, res) => {
       "/profile?tab=selling"
     );
 
+    invalidateAdminStats();
     return res.status(200).json({ success: true, message: "Thank you! Our support team will review the problem and email you on the next step." });
 
   } catch (error) {

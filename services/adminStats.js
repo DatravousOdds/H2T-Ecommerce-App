@@ -141,6 +141,7 @@ function summarizeOrders(orders, nowMs) {
       const key = order.buyerId || "unknown";
       const entry = refunds.get(key) || { buyerId: order.buyerId || null, email: order.buyerEmail || null, count: 0, amountCents: 0 };
       entry.count++;
+      // Full charge, not item value like sales: a refund returns the whole payment.
       entry.amountCents += toCents(order.subtotal);
       refunds.set(key, entry);
     }
