@@ -241,6 +241,13 @@ async function loadApplication() {
   }
 }
 
+// Accepts a pasted profile link as well as a handle. Keep in sync with
+// normalizeInstagram in server.js, which re-checks it.
+function normalizeInstagram(value) {
+  const profileLink = value.trim().match(/^(?:https?:\/\/)?(?:www\.|m\.)?instagram\.com\/([^/?#]+)\/?(?:[?#].*)?$/i);
+  return (profileLink ? profileLink[1] : value.trim()).replace(/^@/, "");
+}
+
 function showFormError(message) {
   formError.textContent = message;
   formError.hidden = false;
@@ -255,6 +262,8 @@ function hideFormError() {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   hideFormError();
+  // Before the validity check, whose pattern only allows a plain handle
+  form.elements.instagram.value = normalizeInstagram(form.elements.instagram.value);
 
   if (!form.checkValidity()) {
     form.reportValidity();

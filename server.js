@@ -535,6 +535,14 @@ const BRAND_CATEGORIES = ['Apparel', 'Graphic Tees', 'Outerwear', 'Sneakers', 'A
 const BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS = 3;
 const INSTAGRAM_HANDLE_PATTERN = /^[A-Za-z0-9._]{1,30}$/;
 
+// Accepts a pasted profile link as well as a handle. Keep in sync with
+// normalizeInstagram in public/js/pages/brandOnboarding/apply.js. A link with
+// more path (a post, /p/abc) doesn't match, so it fails the handle check.
+function normalizeInstagram(value) {
+  const profileLink = value.match(/^(?:https?:\/\/)?(?:www\.|m\.)?instagram\.com\/([^/?#]+)\/?(?:[?#].*)?$/i);
+  return (profileLink ? profileLink[1] : value).replace(/^@/, '');
+}
+
 // Returns { error } or { application, ein }. Repeats every check the form
 // does, since anyone can send this request without using our form.
 function parseBrandApplication(body = {}) {
@@ -542,14 +550,14 @@ function parseBrandApplication(body = {}) {
   const brandName = text(body.brandName);
   const category = text(body.category);
   const description = text(body.description);
-  const instagram = text(body.instagram).replace(/^@/, '');
+  const instagram = normalizeInstagram(text(body.instagram));
   const website = text(body.website);
   const einDigits = text(body.ein).replace(/[\s-]/g, '');
 
   if (!brandName || brandName.length > 60) return { error: 'Brand name is required (60 characters max).' };
   if (!BRAND_CATEGORIES.includes(category)) return { error: 'Choose a category from the list.' };
   if (description.length < 20 || description.length > 1000) return { error: 'Description must be 20 to 1000 characters.' };
-  if (!INSTAGRAM_HANDLE_PATTERN.test(instagram)) return { error: 'Enter your Instagram handle, like @yourbrand.' };
+  if (!INSTAGRAM_HANDLE_PATTERN.test(instagram)) return { error: 'Enter your Instagram handle, like @yourbrand, or a link to your profile.' };
 
   let websiteUrl = null;
   if (website) {
