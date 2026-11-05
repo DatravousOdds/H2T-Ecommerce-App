@@ -13,6 +13,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 const { getRatesForCarrier, createLabel } = require('./services/shipstation');
 const { templateBuilder } = require('./services/emailTemplates');
 const { addBusinessDays } = require('./services/businessDays');
+const { getBrandAction, planBrandAction } = require('./services/brandReview');
 easyship.auth(process.env.EASYSHIP_KEY);
 if (process.env.EASYSHIP_KEY?.startsWith('sand_')) {
     easyship.server('https://public-api-sandbox.easyship.com');
@@ -627,6 +628,9 @@ app.get('/api/brand-onboarding/me', verifyAuth, async (req, res) => {
   }
 });
 
+// A published brand shows the "New" badge for its first 30 days.
+const BRAND_NEW_BADGE_MS = 30 * 24 * 60 * 60 * 1000;
+
 // Public card data for the homepage Upcoming Brands carousel and
 // /shop/brands.html#upcoming. Published brands only; fields are picked
 // explicitly so contactEmail, einLast4 and reviewer data never go out.
@@ -648,18 +652,25 @@ async function loadUpcomingBrands() {
   // refresh, not per visitor) and fall back to the saved handle.
   const profiles = await db.getAll(...snap.docs.map((doc) => db.collection('userProfiles').doc(doc.id)));
   const currentHandles = new Map(profiles.map((profile) => [profile.id, profile.data()?.username]));
+  const now = Date.now();
 
-  return snap.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      name: data.brandName,
-      founderHandle: currentHandles.get(doc.id) || data.founderHandle,
-      category: data.category,
-      // shortcut: no asset upload yet, so no cover field exists -- cards fall
-      // back to a wordmark; set this to the cover URL field once uploads ship
-      image: null,
-    };
-  });
+  // shortcut: sorted in memory to avoid a composite index; fine while
+  // published brands number in the dozens.
+  return snap.docs
+    .map((doc) => ({ doc, publishedAt: doc.data().publishedAt?.toMillis?.() || 0 }))
+    .sort((a, b) => b.publishedAt - a.publishedAt)
+    .map(({ doc, publishedAt }) => {
+      const data = doc.data();
+      return {
+        name: data.brandName,
+        founderHandle: currentHandles.get(doc.id) || data.founderHandle,
+        category: data.category,
+        // The approved card image; null falls back to the card's wordmark
+        image: data.assets?.card?.url || null,
+        // Computed at load, so it can lag the 30-day mark by up to the cache TTL
+        isNew: publishedAt > 0 && now - publishedAt < BRAND_NEW_BADGE_MS,
+      };
+    });
 }
 
 app.get('/api/upcoming-brands', async (req, res) => {
@@ -934,7 +945,6 @@ app.post('/api/brand-onboarding/assets', verifyAuth, async (req, res) => {
 
 // ---- Brand onboarding: admin review ----
 const BRAND_STATUSES = ['pending_review', 'rejected', 'approved_awaiting_assets', 'assets_submitted', 'published', 'unpublished'];
-const BRAND_REVIEW_DECISIONS = ['approved', 'rejected'];
 
 // Reapply dates in emails are shown in Hexxo's own timezone (Texas), since
 // the server may run in UTC and would otherwise show the wrong day near midnight.
@@ -976,6 +986,10 @@ app.get('/api/admin/brand-applications', verifyAuth, async (req, res) => {
           status: data.status,
           reviewerNotes: data.reviewerNotes,
           submittedAt: data.submittedAt?.toDate?.().getTime() || null,
+          publishedAt: data.publishedAt?.toDate?.().getTime() || null,
+          assets: data.assets
+            ? Object.fromEntries(Object.entries(data.assets).map(([kind, asset]) => [kind, asset.url]))
+            : null,
         };
       })
       .sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
@@ -1019,12 +1033,14 @@ app.post('/api/admin/brand-applications/:uid/decision', verifyAuth, async (req, 
   const { decision } = req.body || {};
   const reviewerNotes = typeof req.body?.reviewerNotes === 'string' ? req.body.reviewerNotes.trim() : '';
 
-  if (!BRAND_REVIEW_DECISIONS.includes(decision)) {
-    return res.status(400).json({ success: false, message: `decision must be one of: ${BRAND_REVIEW_DECISIONS.join(', ')}` });
+  const action = getBrandAction(decision);
+  if (!action) {
+    return res.status(400).json({ success: false, message: 'Unknown decision.' });
   }
-  // The owner sees these notes, and a rejection with no reason gives them nothing to fix
-  if (decision === 'rejected' && !reviewerNotes) {
-    return res.status(400).json({ success: false, message: 'Add a note explaining why the application was rejected.' });
+  // The owner sees these notes; a rejection or change request with no
+  // reason gives them nothing to fix
+  if (action.notesRequired && !reviewerNotes) {
+    return res.status(400).json({ success: false, message: action.notesRequired });
   }
   if (reviewerNotes.length > 1000) {
     return res.status(400).json({ success: false, message: 'Notes must be 1000 characters or fewer.' });
@@ -1042,20 +1058,11 @@ app.post('/api/admin/brand-applications/:uid/decision', verifyAuth, async (req, 
       if (!snap.exists) return { notFound: true };
 
       const application = snap.data();
-      if (application.status !== 'pending_review') {
-        return { conflict: `This application was already decided (status: ${application.status}).` };
-      }
+      const plan = planBrandAction(application, decision, { reviewerNotes, decidedAt, adminUid: req.token.uid });
+      if (plan.conflict) return { conflict: plan.conflict };
 
-      const newStatus = decision === 'approved' ? 'approved_awaiting_assets' : 'rejected';
-      tx.update(applicationRef, {
-        status: newStatus,
-        reviewerNotes: reviewerNotes || null,
-        reviewedAt: decidedAt,
-        reviewedByUserId: req.token.uid,
-        rejectedAt: decision === 'rejected' ? decidedAt : null,
-      });
-
-      return { application, newStatus };
+      tx.update(applicationRef, plan.update);
+      return { application };
     });
 
     if (result.notFound) return res.status(404).json({ success: false, message: 'Application not found.' });
@@ -1063,21 +1070,21 @@ app.post('/api/admin/brand-applications/:uid/decision', verifyAuth, async (req, 
 
     // After the commit: an email failure can't undo the decision, but the
     // admin is told so they can follow up with the owner.
+    // emailSent stays null for actions that don't email anyone (the toggles)
     const { application } = result;
-    const emailSent = decision === 'approved'
-      ? await sendUserEmail(application.contactEmail, 'BRAND_APPROVED', {
+    let emailSent = null;
+    if (action.email) {
+      emailSent = await sendUserEmail(application.contactEmail, action.email, {
         brandName: application.brandName,
         founderHandle: application.founderHandle,
         reviewerNotes,
-      })
-      : await sendUserEmail(application.contactEmail, 'BRAND_REJECTED', {
-        brandName: application.brandName,
-        founderHandle: application.founderHandle,
-        reviewerNotes,
-        reapplyDate: formatBrandEmailDate(addBusinessDays(decidedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS)),
+        ...(decision === 'rejected' && {
+          reapplyDate: formatBrandEmailDate(addBusinessDays(decidedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS)),
+        }),
       });
+    }
 
-    return res.json({ success: true, status: result.newStatus, emailSent });
+    return res.json({ success: true, status: action.to, emailSent });
   } catch (error) {
     console.error('Error deciding brand application:', error);
     return res.status(500).json({ success: false, message: 'Could not save the decision. Please try again.' });
