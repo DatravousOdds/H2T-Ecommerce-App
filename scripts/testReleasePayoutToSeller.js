@@ -45,9 +45,10 @@ function calculateSellerPayoutCents(order) {
   const shippingCents = toCents(order.shippingCost);
   const salesTaxCents = toCents(order.item?.salesTax);
   const marketplaceFeeCents = toCents(order.item?.marketplaceFee);
+  const sellerFeeCents = toCents(order.item?.sellerFee ?? order.item?.marketplaceFee);
 
   const listingPriceCents = subtotalCents - shippingCents - salesTaxCents - marketplaceFeeCents;
-  return listingPriceCents - marketplaceFeeCents;
+  return listingPriceCents - sellerFeeCents;
 }
 
 async function getOutstandingSellerDebts(db, sellerId) {
