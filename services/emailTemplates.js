@@ -436,6 +436,32 @@ const notificationTemplates = {
       ${paragraph(`You can update your application and reapply on or after ${escapeHtml(reapplyDate)} (Central Time).`)}
       ${button('View your application', `${SITE_URL}/brand-onboarding`)}
     `, { preheader: `An update on your ${escapeHtml(brandName)} application.` })
+  }),
+
+  BRAND_PUBLISHED: ({ brandName, founderHandle }) => ({
+    subject: `${brandName} is live on Hexxo`,
+    html: baseTemplate(`
+      ${eyebrow('Upcoming Brands')}
+      ${heading("You're live.")}
+      ${paragraph(`Hi @${escapeHtml(founderHandle)}, <strong style="color:${BRAND.ink};">${escapeHtml(brandName)}</strong> is now featured in Upcoming Brands on the Hexxo homepage.`)}
+      ${paragraph('Shoppers who tap your card see your listings, so make sure your best pieces are listed under your brand name.')}
+      ${button('See your brand', `${SITE_URL}/shop/brands.html#upcoming`)}
+    `, { preheader: `${escapeHtml(brandName)} is now featured in Upcoming Brands.` })
+  }),
+
+  // Sent when an admin sends submitted images back; the owner's existing
+  // images stay on file, so they only replace the ones the note mentions.
+  BRAND_CHANGES_REQUESTED: ({ brandName, founderHandle, reviewerNotes }) => ({
+    subject: `Update your images for ${brandName}`,
+    html: baseTemplate(`
+      ${eyebrow('Upcoming Brands')}
+      ${heading('Almost there.')}
+      ${paragraph(`Hi @${escapeHtml(founderHandle)}, we checked the images for <strong style="color:${BRAND.ink};">${escapeHtml(brandName)}</strong> and need a change before your brand goes live.`)}
+      <p style="margin:0 0 8px; font:700 12px/1 ${BRAND.uiFont}; letter-spacing:0.12em; text-transform:uppercase; color:${BRAND.muted};">A note from our team</p>
+      <div style="margin:0 0 24px; padding:16px 20px; border-left:3px solid ${BRAND.red}; background:${BRAND.panel}; font:400 15px/1.6 ${BRAND.uiFont}; color:${BRAND.body}; white-space:pre-wrap;">${escapeHtml(reviewerNotes)}</div>
+      ${paragraph('Your other images are still on file, so you only need to replace the ones mentioned above.')}
+      ${button('Update your images', `${SITE_URL}/brand-onboarding`)}
+    `, { preheader: `One change needed before ${escapeHtml(brandName)} goes live.` })
   })
 };
 
