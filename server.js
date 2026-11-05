@@ -582,12 +582,19 @@ function brandReapplyAt(application) {
 // fields added later (reviewer ids, asset paths) don't leak out by default.
 app.get('/api/brand-onboarding/me', verifyAuth, async (req, res) => {
   try {
-    const snap = await db.collection('upcomingBrands').doc(req.token.uid).get();
-    if (!snap.exists) return res.json({ success: true, application: null });
+    const [snap, profileSnap] = await Promise.all([
+      db.collection('upcomingBrands').doc(req.token.uid).get(),
+      db.collection('userProfiles').doc(req.token.uid).get(),
+    ]);
+    // New accounts start with an empty username, and applying requires one.
+    // Reported here so the page can ask before the owner fills in the form.
+    const hasUsername = Boolean(profileSnap.data()?.username);
+    if (!snap.exists) return res.json({ success: true, hasUsername, application: null });
 
     const data = snap.data();
     return res.json({
       success: true,
+      hasUsername,
       application: {
         brandName: data.brandName,
         category: data.category,

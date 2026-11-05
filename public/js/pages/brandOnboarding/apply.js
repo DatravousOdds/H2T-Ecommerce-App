@@ -10,6 +10,7 @@ const panels = {
   status: document.getElementById("statusPanel"),
   error: document.getElementById("errorPanel"),
   form: document.getElementById("formPanel"),
+  username: document.getElementById("usernamePanel"),
 };
 
 const form = document.getElementById("brandApplyForm");
@@ -54,6 +55,8 @@ const STATUS_VIEWS = {
 
 // The last application loaded, kept so Reapply can pre-fill the form.
 let currentApplication = null;
+// From GET /me. Applying requires a username, and new accounts start without one.
+let hasUsername = false;
 
 function showPanel(name) {
   for (const [key, panel] of Object.entries(panels)) {
@@ -142,6 +145,11 @@ const FORM_MODES = {
 
 // prefill is the current application when reapplying or editing, otherwise null.
 function openForm(prefill, mode = "new") {
+  if (!hasUsername) {
+    showPanel("username");
+    return;
+  }
+
   form.reset();
   hideFormError();
 
@@ -221,6 +229,7 @@ async function loadApplication() {
     }
 
     currentApplication = result.application;
+    hasUsername = result.hasUsername;
     if (currentApplication) {
       renderStatus(currentApplication);
     } else {
@@ -289,6 +298,7 @@ document.getElementById("editButton").addEventListener("click", () => openForm(c
 document.getElementById("cancelFormButton").addEventListener("click", () => renderStatus(currentApplication));
 withdrawButton.addEventListener("click", handleWithdraw);
 document.getElementById("retryButton").addEventListener("click", loadApplication);
+document.getElementById("usernameDoneButton").addEventListener("click", loadApplication);
 
 async function init() {
   let user = null;

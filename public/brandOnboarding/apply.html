@@ -91,6 +91,16 @@
           </div>
         </section>
 
+        <!-- Shown before the form, so nobody fills it in only to be turned away -->
+        <section class="brand-apply__panel" id="usernamePanel" hidden>
+          <h2 class="brand-apply__panel-title">Choose a username first</h2>
+          <p class="brand-apply__muted">Your username shows on your brand card as "by @username", so you'll need one before you apply. Add it in your profile, then come back here.</p>
+          <div class="brand-apply__actions">
+            <a class="btn btn-primary" href="/profile?tab=profile" target="_blank" rel="noopener">Add a username</a>
+            <button type="button" class="btn btn-secondary" id="usernameDoneButton">I've added it</button>
+          </div>
+        </section>
+
         <section class="brand-apply__panel" id="statusPanel" hidden aria-live="polite">
           <span class="brand-apply__status-chip" id="statusChip"></span>
           <h2 class="brand-apply__panel-title" id="statusTitle"></h2>
