@@ -362,6 +362,10 @@ const LoggedInNav = (user) => ({
           <i class="fa-solid fa-sack-dollar"></i>
           <span>Purchases</span>
         </a>
+        <a href="/profile?tab=certificates" class="dropdown-item">
+          <i class="fa-solid fa-certificate"></i>
+          <span>Certificates</span>
+        </a>
         <a href="/profile?tab=settings" class="dropdown-item">
           <i class="fa-solid fa-gear"></i>
           <span>Settings</span>
@@ -402,6 +406,7 @@ const LoggedInNav = (user) => ({
           <li><a data-section="favorites" href="/profile?tab=favorites">Favorites</a></li>
           <li><a data-section="notification" href="/profile?tab=notification">Notifications</a></li>
           <li><a data-section="purchases" href="/profile?tab=purchases">Purchases</a></li>
+          <li><a data-section="certificates" href="/profile?tab=certificates">Certificates</a></li>
           <li><a data-section="settings" href="/profile?tab=settings">Settings</a></li>
         </ul>
       </li>
