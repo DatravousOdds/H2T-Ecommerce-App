@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/style2.css" />
     <link rel="stylesheet" href="css/profile.css" />
+    <link rel="stylesheet" href="css/pages/certificates.css" />
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/components/product-card.css" />
     <link rel="stylesheet" href="css/components/newsletter.css" />
@@ -78,6 +79,9 @@
               </li>
               <li class="tab-btn" data-tab="purchases">
                 <a href="#"><i class="fa-solid fa-sack-dollar"></i></a>Purchases
+              </li>
+              <li class="tab-btn" data-tab="certificates">
+                <a href="#"><i class="fa-solid fa-certificate"></i></a>Certificates
               </li>
               <li class="tab-btn" data-tab="settings">
                 <a href="#"><i class="fa-solid fa-gear"></i></a>Settings
@@ -5248,6 +5252,72 @@
               </div>
             </div>
           </div>
+        </div>
+        <!-- Certificates Content-->
+        <div class="tab" id="certificates">
+          <section class="certificates-section">
+            <header class="favorites-header">
+              <h1>My Certificates</h1>
+              <p>Proof of authenticity for items you bought, sold, or had checked.</p>
+            </header>
+
+            <nav class="purchase-type-nav" aria-label="Filter certificates">
+              <div class="purchase-type-list"></div>
+            </nav>
+
+            <div class="cert-errors" aria-live="polite"></div>
+
+            <ul class="cert-grid">
+              <li class="cert-card skeleton-item" aria-hidden="true">
+                <div class="skeleton skeleton-img cert-thumb"></div>
+                <div class="cert-info">
+                  <span class="skeleton skeleton-line long"></span>
+                  <span class="skeleton skeleton-line medium"></span>
+                  <span class="skeleton skeleton-line short"></span>
+                </div>
+              </li>
+              <li class="cert-card skeleton-item" aria-hidden="true">
+                <div class="skeleton skeleton-img cert-thumb"></div>
+                <div class="cert-info">
+                  <span class="skeleton skeleton-line long"></span>
+                  <span class="skeleton skeleton-line medium"></span>
+                  <span class="skeleton skeleton-line short"></span>
+                </div>
+              </li>
+              <li class="cert-card skeleton-item" aria-hidden="true">
+                <div class="skeleton skeleton-img cert-thumb"></div>
+                <div class="cert-info">
+                  <span class="skeleton skeleton-line long"></span>
+                  <span class="skeleton skeleton-line medium"></span>
+                  <span class="skeleton skeleton-line short"></span>
+                </div>
+              </li>
+              <li class="cert-card skeleton-item" aria-hidden="true">
+                <div class="skeleton skeleton-img cert-thumb"></div>
+                <div class="cert-info">
+                  <span class="skeleton skeleton-line long"></span>
+                  <span class="skeleton skeleton-line medium"></span>
+                  <span class="skeleton skeleton-line short"></span>
+                </div>
+              </li>
+            </ul>
+
+            <div class="empty-state" hidden>
+              <div class="no-favorites">
+                <div class="icon-background">
+                  <i class="fa-solid fa-certificate" aria-hidden="true"></i>
+                </div>
+                <h2 class="emptyq-title">No certificates yet</h2>
+                <p class="empty-message">
+                  When an item you buy or sell passes authentication, its certificate shows up here.
+                </p>
+                <div class="btn-wrapper">
+                  <a class="btn btn-primary" href="/authenticator/authenticate.html">Authenticate an item</a>
+                  <a class="btn btn-secondary" href="/index.html">Browse the shop</a>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
         <!-- Settings Content-->
         <div class="tab" id="settings">

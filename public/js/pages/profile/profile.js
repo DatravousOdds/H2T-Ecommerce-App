@@ -22,6 +22,7 @@ import { initProfileMedia } from "./profile-media.js";
 import { initBio } from "./bio.js";
 import { initFavorites } from "../profile/favorites/favorites.js";
 import { initPurchases } from "../profile/purchases/purchases.js"
+import { initCertificates } from "../profile/certificates/certificates.js";
 import { initNotifications } from "../profile/notifications/notifications.js";
 import { initSettings } from "../profile/settings/settings.js";
 import { initPaymentMethods } from "./payment-methods.js";
@@ -133,6 +134,8 @@ async function loadProfileData() {
       shippingDataSection?.classList.remove("is-loading");
       loadProfileDisplayData(userData);
       loadReviewData(userData);
+      // Not awaited, and before the awaits below, so its queries don't wait on every earlier tab.
+      initCertificates(userData).catch((error) => console.error("Certificates tab failed to load:", error));
       await initFavorites(userData);
       await initNotifications(userData);
       await initPurchases(userData);
