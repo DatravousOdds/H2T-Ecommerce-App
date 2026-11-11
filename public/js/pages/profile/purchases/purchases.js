@@ -755,8 +755,8 @@ function wireEventDelegation(currentUser) {
 }
 
 function wireTabSwitching() {
-  const purchaseTypeItems = document.querySelectorAll(".purchase-type-item");
-  const purchaseContentSections = document.querySelectorAll(".purchases-content-section");
+  const purchaseTypeItems = document.querySelectorAll("#purchases .purchase-type-item");
+  const purchaseContentSections = document.querySelectorAll("#purchases .purchases-content-section");
 
   purchaseTypeItems.forEach((item, index) => {
     item.addEventListener("click", () => {
