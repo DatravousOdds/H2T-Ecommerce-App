@@ -26,7 +26,7 @@ const AUTH_DETAIL_COPY = {
         badge: null,
         icon: 'fa-triangle-exclamation',
         title: 'Not authenticated by Hexxo',
-        text: "This item isn't eligible for Hexxo authentication and ships directly from the seller. By purchasing, you accept full responsibility for its authenticity."
+        text: "This item isn't eligible for Hexxo authentication and ships directly from the seller. Buyer Protection still applies if the item arrives materially different from its listing; report an issue within 48 hours of delivery."
     }
 };
 
@@ -108,6 +108,9 @@ const salesDrawer = document.getElementById('salesDrawer');
 const salesDrawerBackdrop = document.getElementById('salesDrawerBackdrop');
 const viewAllSalesBtn = document.getElementById('viewAllSalesBtn');
 
+// The href scrolls to the panel; this re-opens it if the buyer collapsed it.
+authNote.addEventListener('click', () => { authDetail.open = true; });
+
 initCartDrawer();
 setAddToCartButtonState();
 setBreadcrumb();
@@ -128,8 +131,6 @@ const item = await createCartItem();
 
 
 /* ==== EVENT LISTENERS ===== */
-// The href scrolls to the panel; this re-opens it if the buyer collapsed it.
-authNote.addEventListener('click', () => { authDetail.open = true; });
 
 offerBtn.addEventListener('click', () => {
     // console.log("offer btn clicked")
@@ -398,7 +399,7 @@ async function displayProductDetails() {
         authDetailTitle.textContent = authCopy.title;
         authDetailText.textContent = authCopy.text;
         authDetailRow.classList.add(`auth-detail--${authStatus}`);
-        // A liability warning tucked inside a closed panel isn't a warning.
+        // Keep the disclosure visible before the buyer chooses to purchase.
         authDetail.open = authStatus === 'none';
 
         const sellerProfile = await getUserProfile(data.userId);
