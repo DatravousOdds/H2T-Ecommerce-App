@@ -349,7 +349,7 @@ app.use(
   })
 );
 
-app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
+app.post('/webhook', express.raw({type: 'application/json'}), async (request, response) => {
   let event = request.body;
   // Only verify the event if you have an endpoint secret defined.
   // Otherwise use the basic event deserialized with JSON.parse
@@ -374,7 +374,12 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
       // Then define and call a method to handle the successful payment intent.
-      handlePaymentIntentSucceeded(paymentIntent);
+      try {
+        await handlePaymentIntentSucceeded(paymentIntent);
+      } catch (err) {
+        console.error('Payment webhook processing failed:', err);
+        return response.sendStatus(500);
+      }
       break;
     case 'payment_intent.amount_capturable_updated':
       // Only fires for capture_method: 'manual' PaymentIntents (i.e.
@@ -5388,7 +5393,6 @@ async function handlePaymentIntentSucceeded(paymentData){
     }
 
     const salePrice = paymentData.amount / 100;
-    const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
 
     // On promo orders Stripe's processing fee comes out of the seller's
     // payout instead of Hexxo's fee revenue (see releasePayoutToSeller) --
@@ -5425,49 +5429,43 @@ async function handlePaymentIntentSucceeded(paymentData){
       console.error(`Failed to retrieve balance transaction for payment intent ${paymentData.id}:`, err.message);
     }
 
-    let data;
-    let orderRef;
-
-    if (!existingOrder.empty) {
+    // Commit the order transition and allowance together: a failed write leaves
+    // both retriable, and concurrent deliveries can only claim the sale once.
+    const outcome = await db.runTransaction(async (tx) => {
+      const existingOrder = await tx.get(db.collection('orders').where('id', '==', paymentData.id).limit(1));
       const orderDoc = existingOrder.docs[0];
-      data = orderDoc.data();
-      orderRef = orderDoc.ref;
-
-      // Every state this handler (or a later step) moves an order into.
-      // Checking for just "processing" let a redelivered event rewind a
-      // shipped/delivered/refunded order -- now also reached automatically
-      // by carrier scans -- and re-run everything below (promo spend, sale
-      // stats, a second label purchase + debt). "cancelled" is left out on
-      // purpose: an order cancelled while still pending can see its payment
-      // succeed afterwards, and that existing behavior isn't changed here.
+      const data = orderDoc ? orderDoc.data() : buildOrderDataFromPaymentIntent(paymentData);
       if (['processing', 'shipped', 'delivered', 'refunded'].includes(data.fulfillmentStatus)) {
-        console.log(`order for payment intent ${paymentData.id} already ${data.fulfillmentStatus}, skipping duplicate webhook delivery`);
-        return;
+        return null;
       }
 
-      await orderRef.update({
-        status: paymentData.status,
-        fulfillmentStatus: 'processing',
-        promoFeeWaived: feeWaived,
-        stripeFeeCents,
-        availableAt,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    } else {
-      // No pending order found -- /orders/init either never fired or
-      // failed. Build the order now off the PaymentIntent's own metadata
-      // rather than silently losing a captured payment.
-      data = buildOrderDataFromPaymentIntent(paymentData);
-
-      orderRef = await db.collection('orders').add({
-        ...data,
+      const orderRef = orderDoc ? orderDoc.ref : db.collection('orders').doc();
+      const paymentFields = {
         status: paymentData.status,
         fulfillmentStatus: 'processing',
         promoFeeWaived: feeWaived,
         stripeFeeCents,
         availableAt
-      });
-    }
+      };
+      if (orderDoc) {
+        tx.update(orderRef, {
+          ...paymentFields,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      } else {
+        tx.create(orderRef, { ...data, ...paymentFields });
+      }
+      // shortcut: different checkouts can exceed the cap; reserve at checkout
+      // if a strict cap is needed. Duplicate events for one sale count once.
+      if (zeroFee2027WaivedCents > 0 && data.sellerId) {
+        tx.update(db.collection('sellerPromos').doc(data.sellerId), {
+          waivedSalesCents: admin.firestore.FieldValue.increment(zeroFee2027WaivedCents)
+        });
+      }
+      return { data, orderRef };
+    });
+    if (!outcome) return;
+    const { data, orderRef } = outcome;
 
     console.log(`order for payment intent ${paymentData.id} now processing`);
 
@@ -5483,18 +5481,6 @@ async function handlePaymentIntentSucceeded(paymentData){
         });
       } catch (err) {
         console.error(`Failed to decrement seller fee waiver for ${data.sellerId}:`, err.message);
-      }
-    }
-    // shortcut: the cap is checked at /tax/calculate but only spent here, so
-    // concurrent checkouts can each see the same remaining cap and overshoot
-    // $10K by up to one sale; move to a reservation at checkout if that matters.
-    if (zeroFee2027WaivedCents > 0 && data.sellerId) {
-      try {
-        await db.collection('sellerPromos').doc(data.sellerId).update({
-          waivedSalesCents: admin.firestore.FieldValue.increment(zeroFee2027WaivedCents)
-        });
-      } catch (err) {
-        console.error(`Failed to record 2027 fee waiver for ${data.sellerId}:`, err.message);
       }
     }
     if (paymentData.metadata.promo_discount_applied === 'true' && data.buyerId) {
@@ -5666,7 +5652,8 @@ async function handlePaymentIntentSucceeded(paymentData){
     return JSON.stringify({status: "order processing"})
 
   } catch (err) {
-    console.error(err)
+    console.error(err);
+    throw err;
   }
 }
 
