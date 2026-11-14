@@ -22,7 +22,7 @@ const ANGLE_CATEGORY_BY_NORMALIZED_CATEGORY = {
 // Same normalization seller.js already uses everywhere else (category.value
 // is gender-prefixed, e.g. "men-sneakers"). Collectibles' Trading-Cards-vs-
 // other-subtype split isn't knowable yet at this point in the flow -- the
-// "Type" field that captures it lives in Product Info, which now comes
+// "Type" field that captures it lives in the Details section, which now comes
 // *after* the photo step -- so Collectibles falls back to Apparel here too.
 function resolveAngleCategory(rawCategoryValue) {
     const normalized = (rawCategoryValue || '').trim().split('-')[1] || 'other';
@@ -399,6 +399,12 @@ imageGridContainer.addEventListener('click', (e) => {
     // bubbles back up here -- ignore it so the picker isn't opened twice.
     if (e.target.matches('input[type="file"]')) return;
 
+    if (e.target.closest('.photo-placeholder')) {
+        showImagesError('Pick a category first to add photos.');
+        productCategory.focus();
+        return;
+    }
+
     const imageContainer = e.target.closest('.image-container');
     if (!imageContainer) { return null;}
 
@@ -536,7 +542,7 @@ function charCounter() {
         titleCharCounter.textContent = `${current}/80`;
         if (current >= charLimit) {
             // Show error
-            showError('title', 'Title must be less then 80 characters')
+            showError('title', 'Title must be less than 80 characters')
             return;
         }
         
@@ -561,7 +567,7 @@ function wordCounter() {
         descriptionWordCounter.textContent = `${current}/100`;
 
         if (current >= limit) {
-            showError('description', 'Description must be 1000 words or less!');
+            showError('description', 'Description must be 100 words or less!');
             return;
         }
     })
@@ -1319,7 +1325,7 @@ function validateProductInfo() {
         return;
     };
     if (!description) { 
-        showError('description', "Please enter at least five word to describe product");
+        showError('description', "Add a short description");
         isValid = false;
         return;
     };
@@ -1503,7 +1509,8 @@ function imageSlotHTML(angle, index) {
 // angle count/labels vary a lot per category, same as the standalone
 // authentication-request flow's photo step. The static video slot is left
 // alone (category-independent, stays put as the grid's last child); only
-// the image-angle slots ahead of it get discarded and rebuilt. The existing
+// the image-angle slots (or pre-category placeholders) ahead of it get
+// discarded and rebuilt. The existing
 // click/drag listeners are delegated on imageGridContainer itself (see
 // below), so newly-inserted slots pick those up automatically -- nothing
 // else needs re-wiring after a rebuild.
@@ -1511,12 +1518,13 @@ function renderImageSlots(angleCategory) {
     const angles = ANGLE_REQUIREMENTS[angleCategory];
     if (!angles || !videoContainer) return;
 
-    imageGridContainer.querySelectorAll('.image-container:not(.video-container)').forEach(el => el.remove());
+    imageGridContainer.querySelectorAll('.image-container:not(.video-container), .photo-placeholder').forEach(el => el.remove());
+    removeImagesError();
     videoContainer.insertAdjacentHTML('beforebegin', angles.map((angle, i) => imageSlotHTML(angle, i)).join(''));
 
     if (photosSubheader) {
         const requiredCount = getRequiredAngleCount(angleCategory);
-        photosSubheader.textContent = `Recommended: ${requiredCount} photo${requiredCount === 1 ? '' : 's'} for this category -- not required to list, but having them ready helps your item pass authentication faster if it's selected.`;
+        photosSubheader.textContent = `Recommended: ${requiredCount} photo${requiredCount === 1 ? '' : 's'}. Only 1 is required to list, but the full set helps your item pass authentication faster if it's selected.`;
     }
 }
 

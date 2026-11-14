@@ -32,11 +32,15 @@
             <h3 class="header-title">List an item</h3>
         </nav>
     </section>
-    <main>
-        <section class="category-select" id="category-select">
+    <main class="listing-layout">
+        <div class="listing-form">
+        <section class="category-select" id="category-select" data-step="category">
             <div class="section-header">
-              <h4>Category</h4>
-              <p>Choose a category to see which photos are required</p>
+              <span class="step-num" aria-hidden="true">1</span>
+              <div>
+                <h4>Category</h4>
+                <p>Pick one and we'll show the photos buyers look for.</p>
+              </div>
             </div>
             <div class="input-container">
                 <label for="category">Category</label>
@@ -45,17 +49,17 @@
 
                     <optgroup label="Men">
                     <option value="men-sneakers">Sneakers</option>
-                    <option value="men-apparel">Apparel (Tops, Hoodies, Pants, Jackets)</option>
+                    <option value="men-apparel">Apparel (tops, hoodies, pants, jackets)</option>
                     <option value="men-shoes">Shoes</option>
-                    <option value="men-hats">Hats & Caps</option>
+                    <option value="men-hats">Hats &amp; caps</option>
                     <option value="men-accessories">Accessories</option>
                     </optgroup>
 
                     <optgroup label="Women">
                     <option value="women-sneakers">Sneakers</option>
-                    <option value="women-apparel">Apparel (Tops, Dresses, Pants)</option>
-                    <option value="women-shoes">Shoes & Boots</option>
-                    <option value="women-bags">Bags & Purses</option>
+                    <option value="women-apparel">Apparel (tops, dresses, pants)</option>
+                    <option value="women-shoes">Shoes &amp; boots</option>
+                    <option value="women-bags">Bags &amp; purses</option>
                     <option value="women-accessories">Accessories</option>
                     </optgroup>
 
@@ -68,26 +72,34 @@
                 <p class="errorText" id="error-category"></p>
             </div>
         </section>
-        <section class="photos" id="photos">
+        <section class="photos" id="photos" data-step="photos">
             <div class="section-header">
-              <h4>Photos</h4>
-              <p id="photosSubheader">Select a category above to see recommended photos</p>
+              <span class="step-num" aria-hidden="true">2</span>
+              <div>
+                <h4>Photos</h4>
+                <p id="photosSubheader">Pick a category first to see which angles to shoot.</p>
+              </div>
             </div>
 
             <div class="images-grid-container">
-                <!-- Recommended-angle photo slots populated per-category by
-                     renderImageSlots() in seller.js -- same data source as the
-                     standalone authentication-request flow (angleRequirements.js),
+                <!-- Until a category is picked the grid shows locked .photo-placeholder
+                     slots. Recommended-angle photo slots then replace them, populated
+                     per-category by renderImageSlots() in seller.js -- same data source
+                     as the standalone authentication-request flow (angleRequirements.js),
                      but advisory only here: seller.js's validateImages() only
                      requires at least one photo to list, not the full set.
                      The video slot below stays static/category-independent. -->
+                <div class="photo-placeholder" aria-hidden="true"><i class="fa-solid fa-plus"></i><span>Photo</span></div>
+                <div class="photo-placeholder" aria-hidden="true"><i class="fa-solid fa-plus"></i><span>Photo</span></div>
+                <div class="photo-placeholder" aria-hidden="true"><i class="fa-solid fa-plus"></i><span>Photo</span></div>
+                <div class="photo-placeholder" aria-hidden="true"><i class="fa-solid fa-plus"></i><span>Photo</span></div>
                 <article class="image-container video-container" id="videoContainer">
                     <!-- accept="video/*" (not a MIME list) is what makes Android offer
                          "Camcorder" alongside the gallery/files picker; the
                          actual format check happens in handleVideoUpload(). -->
                     <input type="file" name="video" id="video" accept="video/*">
                     <i class="fa-solid fa-video"></i>
-                    <span>Add 1 video (optional, max 30s)</span>
+                    <span>Video (optional, 30s)</span>
                     <video class="video-preview" muted playsinline controls style="display: none;"></video>
                     <button type="button" class="remove-image-btn" style="display: none;">
                         <i class="fa-solid fa-trash-can"></i>
@@ -95,18 +107,22 @@
                 </article>
             </div>
             <p class="errorText" id="errorText"></p>
+            <p class="field-hint">Shoot in daylight on a plain background. Your first photo is the cover buyers see in search.</p>
         </section>
-        <section class="product-info" id="product-info">
+        <section class="product-info" id="product-info" data-step="details">
             <div class="section-header">
-              <h4>Product Info</h4>
-              <p>Describe your product to buyer get a clear picture</p>
+              <span class="step-num" aria-hidden="true">3</span>
+              <div>
+                <h4>Details</h4>
+                <p>The more specific you are, the fewer questions you'll get.</p>
+              </div>
             </div>
             <div class="input-container">
                 <div class="input-header">
                     <label for="title">Title</label>
                     <div class="char-counter" id="titleCharCounter">0/80</div>
                 </div>
-                <input type="text" class="input-width-full input-bordered" id="title" placeholder="What are you selling?" maxlength="80">
+                <input type="text" class="input-width-full input-bordered" id="title" placeholder="e.g. Jordan 4 Retro 'Military Black'" maxlength="80">
                 <p class="errorText" id="error-title"></p>
             </div>
 
@@ -126,114 +142,165 @@
                 <p class="errorText" id="error-releaseDate"></p>
             </div>
 
-            <div class="input-container">
-                <label for="brand">Brand</label>
-                <div class="brand-combobox">
-                    <input
-                        class="input-width-full input-bordered"
-                        type="text"
-                        id="brand"
-                        placeholder="Search or enter a brand"
-                        autocomplete="off"
-                        role="combobox"
-                        aria-expanded="false"
-                        aria-autocomplete="list"
-                        aria-controls="brandOptions"
-                    >
-                    <ul class="brand-options" id="brandOptions" role="listbox"></ul>
+            <div class="field-row">
+                <div class="input-container">
+                    <label for="brand">Brand</label>
+                    <div class="brand-combobox">
+                        <input
+                            class="input-width-full input-bordered"
+                            type="text"
+                            id="brand"
+                            placeholder="Search or type a brand"
+                            autocomplete="off"
+                            role="combobox"
+                            aria-expanded="false"
+                            aria-autocomplete="list"
+                            aria-controls="brandOptions"
+                        >
+                        <ul class="brand-options" id="brandOptions" role="listbox"></ul>
+                    </div>
+                    <p class="errorText" id="error-brand"></p>
                 </div>
-                <p class="errorText" id="error-brand"></p>
+
+                <div class="input-container">
+                    <label for="color">Color <span class="optional-label">(optional)</span></label>
+                    <select name="color" id="color">
+                        <option value="" selected>Select a color</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="input-container">
-                <label for="color">Color <span class="optional-label">(optional)</span></label>
-                <select name="color" id="color">
-                    <option value="" selected>Select a color</option>
-                </select>
-            </div>
+            <div class="field-row">
+                <div class="input-container" id="sizeInfo">
+                    <label for="size">Size</label>
+                    <select name="size" id="size">
 
-            <div class="input-container" id="sizeInfo">
-                <label for="size">Size</label>
-                <select name="size" id="size">
-                    
-                </select>
-                <p class="errorText" id="error-size"></p>
+                    </select>
+                    <p class="errorText" id="error-size"></p>
+                </div>
+
+                <div class="input-container">
+                    <div class="input-header">
+                        <label for="condition">Condition</label>
+                    </div>
+                    <select class="condition" name="conditionInput" id="condition">
+                        <option value="">Select condition</option>
+                        <option value="new" data-hint="Never worn. Original box or tags.">New</option>
+                        <option value="like new" data-hint="Worn once or twice. No visible flaws.">Like new</option>
+                        <option value="good" data-hint="Light wear. Small signs of use.">Good</option>
+                        <option value="fair" data-hint="Visible wear but fully usable. Show flaws in photos.">Fair</option>
+                        <option value="poor" data-hint="Heavy wear or damage. Describe it clearly.">Poor</option>
+                    </select>
+                    <p class="field-hint" id="conditionHint"></p>
+                    <p class="errorText" id="error-condition"></p>
+                </div>
             </div>
 
             <div class="input-container">
                 <div class="input-header">
                     <label for="description">Description</label>
-                    <div class="char-counter" id="descriptionWordCounter">0/100</div>
+                    <div class="char-counter"><span id="descriptionWordCounter">0/100</span> words</div>
                 </div>
-                <textarea class="description input-width-full" name="descriptionInput" id="description" placeholder="Description your product..." maxlength="1000" ></textarea>
+                <textarea class="description input-width-full" name="descriptionInput" id="description" placeholder="Fit, flaws, what's included (box, tags, receipt)…" maxlength="1000" ></textarea>
                 <p class="errorText" id="error-description"></p>
             </div>
 
-            <div class="input-container">
-                <div class="input-header">
-                    <label for="condition">Condition</label>
-                </div>
-                <select class="condition" name="conditionInput" id="condition">
-                    <option value=""></option>
-                    <option value="new">New</option>
-                    <option value="like new">Like New</option>
-                    <option value="good">Good</option>
-                    <option value="fair">Fair</option>
-                    <option value="poor">poor</option>
-                </select>
-                <p class="errorText" id="error-condition"></p>
-            </div>
-            
         </section>
 
-        <section class="pricing-info" id="pricing-info">
+        <section class="pricing-info" id="pricing-info" data-step="price">
             <div class="section-header">
-              <h4>Pricing</h4>
-              <p>Set your price</p>  
+              <span class="step-num" aria-hidden="true">4</span>
+              <div>
+                <h4>Price</h4>
+                <p>Set your price and see what you'll take home.</p>
+              </div>
+            </div>
+            <div class="promo-banner" id="zeroFeePromo" hidden>
+                <strong>0% seller fees in 2027.</strong> List an item by Dec 31 and pay no seller fee on your first $10K of 2027 sales. Payment processing fees still apply.
             </div>
             <div class="input-container">
                 <div class="input-header">
                     <label for="price">Item price</label>
                     <i class="fa-solid fa-dollar-sign"></i>
                 </div>
-                <input type="number" name="price" id="price" class="item-price input-width-full input-bordered " style="padding-left: 24px;">
+                <input type="number" name="price" id="price" class="item-price input-width-full input-bordered " style="padding-left: 24px;" inputmode="decimal" placeholder="0">
                 <p class="errorText" id="error-price"></p>
+            </div>
+            <div class="price-breakdown" aria-live="polite">
+                <div><span>Item price</span><span id="breakdownPrice">$0.00</span></div>
+                <div><span>Seller fee (7%)</span><span id="breakdownFee">−$0.00</span></div>
+                <div class="price-breakdown-total"><span>Est. take-home</span><span id="breakdownTakeHome">$0.00</span></div>
+                <small id="labelNote">Your prepaid label cost comes off this when you ship.</small>
             </div>
         </section>
 
-        <section class="shipping-info" id="shipping-info">
+        <section class="shipping-info" id="shipping-info" data-step="shipping">
             <div class="section-header">
-              <h4>Shipping</h4>  
-              <p>Choose your choice of shipping save you the hassle</p>
+              <span class="step-num" aria-hidden="true">5</span>
+              <div>
+                <h4>Shipping</h4>
+                <p>Pick how you'll get it to the buyer.</p>
+              </div>
             </div>
             <div class="input-grid-wrapper">
                 <div class="shipping-btn-container">
                     <div class="container-header">
-                        <label for="prepaid">Hexxo's prepaid label</label>
+                        <label for="prepaid">Hexxo prepaid label</label>
                         <input type="radio" name="shipping-method" id="prepaid" value="prepaid" class="input-width-5" checked>
                     </div>
-                    <p class="shipping-note">We'll email you a label and you ship</p>
-                    <p class="shipping-cost">Label cost deducted from your payout</p>
+                    <span class="shipping-pill">Easiest</span>
+                    <p class="shipping-note">We buy your label once it sells. Download it from your Selling dashboard, pack it, and drop it off.</p>
+                    <p class="shipping-cost">Label cost comes out of your payout.</p>
                 </div>
                 <div class="shipping-btn-container">
                     <div class="container-header">
-                        <label for="yourShip">Your own shipping</label>
+                        <label for="yourShip">Ship it yourself</label>
                         <input type="radio" name="shipping-method" id="yourShip" value="own-shipping" class="input-width-5">
                     </div>
-                    <p class="shipping-note">You ship at your own cost</p>
-                    <p class="shipping-cost">Depends on shipping provider</p>
+                    <p class="shipping-note">Use any carrier you like and add tracking.</p>
+                    <p class="shipping-cost">You cover the shipping cost.</p>
                 </div>
             </div>
-            
+
             <p class="errorText" id="error-shipping"></p>
         </section>
+        </div>
 
-        <section class="cta-buttons" id="cta-buttons">
+        <aside class="listing-summary" aria-label="Listing summary">
+            <div class="summary-preview">
+                <h3>Buyer preview</h3>
+                <div class="summary-item">
+                    <div class="summary-image">
+                        <span>Your cover photo</span>
+                        <img id="summaryCover" alt="" hidden>
+                    </div>
+                    <div class="summary-info">
+                        <span id="summaryBrand">Brand</span>
+                        <span id="summaryTitle">Your title</span>
+                        <span id="summaryMeta">Size · Condition</span>
+                        <span id="summaryPrice">$0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="summary-takehome empty">
+                <span>Est. take-home</span>
+                <strong id="summaryTakeHome">$0.00</strong>
+            </div>
+            <div class="summary-checklist">
+                <h3 id="summaryProgress">0 of 5 done</h3>
+                <ul>
+                    <li data-step="category"><button type="button"><span class="summary-dot" aria-hidden="true"></span>Category</button></li>
+                    <li data-step="photos"><button type="button"><span class="summary-dot" aria-hidden="true"></span>Photos</button></li>
+                    <li data-step="details"><button type="button"><span class="summary-dot" aria-hidden="true"></span>Details</button></li>
+                    <li data-step="price"><button type="button"><span class="summary-dot" aria-hidden="true"></span>Price</button></li>
+                    <li data-step="shipping"><button type="button"><span class="summary-dot" aria-hidden="true"></span>Shipping</button></li>
+                </ul>
+            </div>
             <div class="cta-wrapper">
-                <button class="btn draft-btn" id="draftBtn">Save as draft</button>
+                <button class="btn draft-btn" id="draftBtn"><span class="draft-btn-save">Save </span>draft</button>
                 <button class="btn post-btn" id="postBtn">List it</button>
             </div>
-        </section>
+        </aside>
     </main>
    
 
