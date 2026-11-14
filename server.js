@@ -424,47 +424,25 @@ app.post('/webhooks/shipstation', express.raw({ type: '*/*', limit: '1mb' }), as
 });
 
 async function handleShipstationTrackingUpdate(orderRef, labelId, data) {
-  // 1. Record the tracking snapshot and claim one-off notifications in one
-  //    transaction -- two deliveries for the same order racing each other
-  //    can't both see "not yet notified" and both notify.
-  const plan = await db.runTransaction(async (tx) => {
-    const order = (await tx.get(orderRef)).data();
-
-    // The label id matched, so this should never trip -- but if it ever
-    // does, writing another package's tracking onto this order is worse
-    // than dropping the event.
-    if (data.tracking_number && order.trackingNumber && data.tracking_number !== order.trackingNumber) {
-      return { mismatch: true, orderTracking: order.trackingNumber };
-    }
-
-    const plan = planTrackingUpdate({
-      fulfillmentStatus: order.fulfillmentStatus,
-      lastTrackingEventAtMs: order.lastTrackingEventAt?.toMillis?.() ?? null,
-      outForDeliveryNotified: Boolean(order.outForDeliveryNotifiedAt)
-    }, data);
-
-    if (!plan.stale) {
-      tx.update(orderRef, {
-        ...plan.snapshot,
-        ...(plan.notifyOutForDelivery ? { outForDeliveryNotifiedAt: admin.firestore.FieldValue.serverTimestamp() } : {}),
-        trackingUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
-    return { ...plan, order };
-  });
-
-  if (plan.mismatch) {
-    console.error(`ShipStation tracking for label ${labelId} has tracking_number ${data.tracking_number}, order has ${plan.orderTracking} -- ignored`);
+  const initialOrder = (await orderRef.get()).data();
+  if (!initialOrder) return;
+  if (data.tracking_number && initialOrder.trackingNumber && data.tracking_number !== initialOrder.trackingNumber) {
+    console.error(`ShipStation tracking for label ${labelId} has tracking_number ${data.tracking_number}, order has ${initialOrder.trackingNumber} -- ignored`);
     return;
   }
 
-  // 2. Status transitions. Both helpers are forward-only and no-op when the
-  //    order is already there, so a retried delivery is safe to re-run.
-  if (plan.ship) {
+  const transition = planTrackingUpdate({
+    fulfillmentStatus: initialOrder.fulfillmentStatus,
+    lastTrackingEventAtMs: initialOrder.lastTrackingEventAt?.toMillis?.() ?? null,
+    outForDeliveryNotified: Boolean(initialOrder.outForDeliveryNotifiedAt)
+  }, data);
+
+  // Finish retriable transitions before consuming the tracking event.
+  if (transition.ship) {
     await markOrderShipped(orderRef, { source: 'carrier' });
   }
 
-  if (plan.deliver) {
+  if (transition.deliver) {
     // Delivery starts the buyer's confirmation window and with it the
     // seller's payout clock, so it's confirmed against ShipStation directly
     // rather than trusted from the payload alone. A throw here (timeout,
@@ -485,8 +463,29 @@ async function handleShipstationTrackingUpdate(orderRef, labelId, data) {
     }
   }
 
-  // 3. One-off notifications, only ever after the transaction committed
-  //    (transaction callbacks can re-run; notifications must not).
+  // Re-read and claim notifications atomically so concurrent deliveries notify once.
+  const plan = await db.runTransaction(async (tx) => {
+    const order = (await tx.get(orderRef)).data();
+    if (!order || (data.tracking_number && order.trackingNumber && data.tracking_number !== order.trackingNumber)) return null;
+
+    const plan = planTrackingUpdate({
+      fulfillmentStatus: order.fulfillmentStatus,
+      lastTrackingEventAtMs: order.lastTrackingEventAt?.toMillis?.() ?? null,
+      outForDeliveryNotified: Boolean(order.outForDeliveryNotifiedAt)
+    }, data);
+
+    if (!plan.stale) {
+      tx.update(orderRef, {
+        ...plan.snapshot,
+        ...(plan.notifyOutForDelivery ? { outForDeliveryNotifiedAt: admin.firestore.FieldValue.serverTimestamp() } : {}),
+        trackingUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    return { ...plan, order };
+  });
+  if (!plan) return;
+
+  // Transaction callbacks can re-run; send notifications only after commit.
   const { order } = plan;
   const itemName = order.item?.name || "your item";
 
