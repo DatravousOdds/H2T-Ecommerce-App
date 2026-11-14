@@ -25,6 +25,7 @@ import { initPurchases } from "../profile/purchases/purchases.js"
 import { initCertificates } from "../profile/certificates/certificates.js";
 import { initNotifications } from "../profile/notifications/notifications.js";
 import { initSettings } from "../profile/settings/settings.js";
+import { initAdmin } from "../profile/admin/admin.js";
 import { initPaymentMethods } from "./payment-methods.js";
 import { initPayouts } from "./payouts.js";
 import { initWallet, loadPaymentInfoData } from "./wallet.js";
@@ -136,6 +137,8 @@ async function loadProfileData() {
       loadReviewData(userData);
       // Not awaited, and before the awaits below, so its queries don't wait on every earlier tab.
       initCertificates(userData).catch((error) => console.error("Certificates tab failed to load:", error));
+      // Not awaited: admin stats shouldn't hold up the rest of the profile.
+      initAdmin().catch((error) => console.error("Admin tab failed to load:", error));
       await initFavorites(userData);
       await initNotifications(userData);
       await initPurchases(userData);
