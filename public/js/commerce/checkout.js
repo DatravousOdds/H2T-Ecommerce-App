@@ -467,7 +467,7 @@ function displayOrderSummary(data, isAuthPayment = false) {
         ? `
             <div class="authentication-guarantee-badge">
               <i class="fa-solid fa-shield-halved"></i>
-              <span>Authenticity Check -- this item will be authenticated before it ships to you.</span>
+              <span>Authenticity Check — this item will be authenticated before it ships to you.</span>
             </div>
         `
         : '';

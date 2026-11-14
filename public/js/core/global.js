@@ -1086,7 +1086,7 @@ const displayProducts = (products, containerElement) => {
       : isAuthenticationEligible(productData)
       ? `<div class="auth-badge auth-badge--card">
           <img src="/images/hexxo_auth_badge.png" alt="">
-          <span>Authenticity check</span>
+          <span>Authenticity Check</span>
         </div>`
       : '';
 
