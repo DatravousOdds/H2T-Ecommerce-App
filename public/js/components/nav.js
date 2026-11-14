@@ -379,6 +379,10 @@ const LoggedInNav = (user) => ({
           <i class="fa-solid fa-magnifying-glass-chart"></i>
           <span>Order Authentication Review</span>
         </a>
+        <a href="/admin/brand-review.html" class="dropdown-item">
+          <i class="fa-solid fa-store"></i>
+          <span>Brand Review</span>
+        </a>
         ` : ""}
         <a href="#" class="dropdown-item" id="logoutBtn">
           <i class="fa-solid fa-right-from-bracket"></i>
@@ -424,6 +428,12 @@ const LoggedInNav = (user) => ({
         <a href="/admin/order-authentication-review.html" class="menu-item">
           <i class="fa-solid fa-magnifying-glass-chart"></i>
           <span>Order Authentication Review</span>
+        </a>
+      </li>
+      <li>
+        <a href="/admin/brand-review.html" class="menu-item">
+          <i class="fa-solid fa-store"></i>
+          <span>Brand Review</span>
         </a>
       </li>
     `;

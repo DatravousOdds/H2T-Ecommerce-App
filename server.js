@@ -5,17 +5,14 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const jwt = require("jsonwebtoken");
-const easyship = require('@api/easyship');
 const resend = require("resend")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
-const { getRatesForCarrier, createLabel } = require('./services/shipstation');
+const { getRatesForCarrier, createLabel, toV2LabelId, getLabelTracking } = require('./services/shipstation');
+const { TRACK_EVENT_RESOURCE_TYPE, DELIVERED, parseLabelId, planTrackingUpdate } = require('./services/shipstationTracking');
+const { verifyShipstationWebhook } = require('./services/shipstationWebhookAuth');
 const { templateBuilder } = require('./services/emailTemplates');
-easyship.auth(process.env.EASYSHIP_KEY);
-if (process.env.EASYSHIP_KEY?.startsWith('sand_')) {
-    easyship.server('https://public-api-sandbox.easyship.com');
-}
+const { addBusinessDays } = require('./services/businessDays');
 
 // Hexxo only lists clothing/accessories, so USPS's restricted-content rate
 // classes (media mail and its close relatives) are never legitimate for a
@@ -231,6 +228,30 @@ async function sendAdminNotification(notificationType, data) {
   }
 }
 
+// Best-effort email to a customer from a server-side event, e.g. an admin
+// decision (unlike /send/update, there's no request from that user to answer).
+// Never throws. Returns whether it sent, so the caller can tell the admin.
+// Resend's SDK reports failures as { error } instead of throwing, so that's
+// checked explicitly.
+async function sendUserEmail(to, notificationType, data) {
+  try {
+    const template = templateBuilder(notificationType, data);
+    if (!to || !template) return false;
+
+    const { error } = await resendClient.emails.send({
+      from: 'noreply@hexxo.store',
+      to,
+      subject: template.subject,
+      html: template.html
+    });
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error(`Error sending ${notificationType} email:`, error);
+    return false;
+  }
+}
+
 const AUTHENTICATION_MIN_PRICE = 150;
 const SNEAKER_FOOTWEAR_BRANDS = [
   "nike", "jordan", "adidas", "yeezy", "new balance", "asics", "vans",
@@ -361,6 +382,173 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
   // Return a 200 response to acknowledge receipt of the event
   response.sendStatus(200);
 });
+
+// ShipStation API V2 tracking webhook (event `track_event_v2`, registered via
+// POST /v2/environment/webhooks). Registered before express.json() for the
+// same reason as Stripe's above: signature verification needs the exact raw
+// bytes. `type: '*/*'` so the body stays a Buffer regardless of the
+// Content-Type ShipStation sends.
+//
+// Response codes matter here -- ShipStation retries a non-2xx up to twice
+// (~30 min apart) and then drops the event. So: 2xx for anything a retry
+// can't fix (unknown label, non-tracking event), 5xx only for our own
+// transient failures (Firestore, the fetch-back below) where a retry helps.
+// limit: every delivery carries the package's full event history (~700
+// bytes/event), so the final "delivered" payload is the largest -- the
+// 100kb default would 413 it (and ShipStation drop it) past ~140 events.
+app.post('/webhooks/shipstation', express.raw({ type: '*/*', limit: '1mb' }), async (req, res) => {
+  const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf8') : '';
+
+  const auth = await verifyShipstationWebhook(req.headers, rawBody, {
+    expectedToken: process.env.SHIPSTATION_WEBHOOK_TOKEN
+  }).catch((err) => ({ ok: false, status: 500, reason: err.message }));
+
+  if (!auth.ok) {
+    console.error(`ShipStation webhook rejected (${auth.status}): ${auth.reason}`);
+    return res.sendStatus(auth.status);
+  }
+  if (!auth.signed) {
+    // See the TEMPORARY note in shipstationWebhookAuth.js -- once this stops
+    // appearing in logs for real deliveries, signatures can be required.
+    console.warn('ShipStation webhook accepted without signature headers (shared token only)');
+  }
+
+  let event;
+  try {
+    event = JSON.parse(rawBody);
+  } catch {
+    return res.sendStatus(400);
+  }
+
+  if (event?.resource_type !== TRACK_EVENT_RESOURCE_TYPE) {
+    return res.sendStatus(200);
+  }
+
+  const labelId = parseLabelId(event.resource_url);
+  const data = event.data;
+  if (!labelId || !data?.status_code) {
+    console.error('ShipStation tracking webhook missing label id or status_code:', event.resource_url);
+    return res.sendStatus(400);
+  }
+
+  try {
+    const snapshot = await db.collection('orders').where('shipstationLabelId', '==', labelId).limit(1).get();
+    if (snapshot.empty) {
+      // Labels bought outside this app (or before shipstationLabelId existed)
+      // -- nothing of ours to update, and a retry won't change that.
+      console.warn(`ShipStation tracking webhook: no order for label ${labelId}`);
+      return res.sendStatus(200);
+    }
+
+    await handleShipstationTrackingUpdate(snapshot.docs[0].ref, labelId, data);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(`Failed to process ShipStation tracking webhook for label ${labelId}:`, err);
+    res.sendStatus(500);
+  }
+});
+
+async function handleShipstationTrackingUpdate(orderRef, labelId, data) {
+  const initialOrder = (await orderRef.get()).data();
+  if (!initialOrder) return;
+  if (data.tracking_number && initialOrder.trackingNumber && data.tracking_number !== initialOrder.trackingNumber) {
+    console.error(`ShipStation tracking for label ${labelId} has tracking_number ${data.tracking_number}, order has ${initialOrder.trackingNumber} -- ignored`);
+    return;
+  }
+
+  const transition = planTrackingUpdate({
+    fulfillmentStatus: initialOrder.fulfillmentStatus,
+    lastTrackingEventAtMs: initialOrder.lastTrackingEventAt?.toMillis?.() ?? null,
+    outForDeliveryNotified: Boolean(initialOrder.outForDeliveryNotifiedAt)
+  }, data);
+
+  // Finish retriable transitions before consuming the tracking event.
+  if (transition.ship) {
+    await markOrderShipped(orderRef, { source: 'carrier' });
+  }
+
+  if (transition.deliver) {
+    // Delivery starts the buyer's confirmation window and with it the
+    // seller's payout clock, so it's confirmed against ShipStation directly
+    // rather than trusted from the payload alone. A throw here (timeout,
+    // 5xx) propagates to a 500, and ShipStation's retry tries again.
+    const confirmed = await getLabelTracking(labelId);
+    if (DELIVERED.has(confirmed?.status_code)) {
+      // A package can go from label-created to delivered with no scan
+      // reaching us in between -- ship first so delivered always follows
+      // shipped (and shippedAt exists).
+      await markOrderShipped(orderRef, { source: 'carrier' });
+      await markOrderDelivered(orderRef, { source: 'carrier' });
+    } else {
+      // Thrown (-> 500), not swallowed: /track can lag the webhook, and a
+      // 200 here would consume the only "delivered" event ShipStation sends.
+      // Its retries (~30 min apart) re-check once /track has caught up; a
+      // genuinely wrong DE is simply refused again and then dropped.
+      throw new Error(`ShipStation webhook said ${data.status_code} for ${labelId}, but /track reports ${confirmed?.status_code} -- not marking delivered yet`);
+    }
+  }
+
+  // Re-read and claim notifications atomically so concurrent deliveries notify once.
+  const plan = await db.runTransaction(async (tx) => {
+    const order = (await tx.get(orderRef)).data();
+    if (!order || (data.tracking_number && order.trackingNumber && data.tracking_number !== order.trackingNumber)) return null;
+
+    const plan = planTrackingUpdate({
+      fulfillmentStatus: order.fulfillmentStatus,
+      lastTrackingEventAtMs: order.lastTrackingEventAt?.toMillis?.() ?? null,
+      outForDeliveryNotified: Boolean(order.outForDeliveryNotifiedAt)
+    }, data);
+
+    if (!plan.stale) {
+      tx.update(orderRef, {
+        ...plan.snapshot,
+        ...(plan.notifyOutForDelivery ? { outForDeliveryNotifiedAt: admin.firestore.FieldValue.serverTimestamp() } : {}),
+        trackingUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    return { ...plan, order };
+  });
+  if (!plan) return;
+
+  // Transaction callbacks can re-run; send notifications only after commit.
+  const { order } = plan;
+  const itemName = order.item?.name || "your item";
+
+  if (plan.notifyOutForDelivery) {
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Out for Delivery",
+      `Your order for ${itemName} is out for delivery today.`,
+      "/profile?tab=purchases"
+    );
+  }
+
+  if (plan.notifyAttention) {
+    const { kind, description } = plan.notifyAttention;
+    const detail = description ? ` (${description})` : "";
+    const title = kind === "attempt" ? "Delivery Attempted" : "Shipping Issue";
+
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      title,
+      kind === "attempt"
+        ? `The carrier tried to deliver your order for ${itemName} but couldn't complete it${detail}. Check tracking for next steps.`
+        : `There's a problem with the delivery of your order for ${itemName}${detail}. Check tracking for details.`,
+      "/profile?tab=purchases"
+    );
+    await createNotification(
+      order.sellerId,
+      "order_status",
+      title,
+      kind === "attempt"
+        ? `Delivery of your sale ${itemName} was attempted but not completed${detail}.`
+        : `The carrier reported a problem delivering your sale ${itemName}${detail}.`,
+      "/profile?tab=selling"
+    );
+  }
+}
 
 app.use(express.json());
 
@@ -498,103 +686,566 @@ app.post('/send/contact', async (req, res) => {
   }
 });
 
-// Public card data for the homepage Upcoming Brands carousel and
-// /shop/brands.html#upcoming. Reads upcomingBrands/{uid} (written by the
-// brand onboarding flow) and returns published brands only; fields are picked
-// explicitly so applicant data (contactEmail, einLast4, reviewer notes) never
-// goes out. An empty list is what hides the carousel on the frontend.
-app.get('/api/upcoming-brands', async (req, res) => {
+// ---- Upcoming brand onboarding ----
+// One application per account: upcomingBrands/{uid}. The full EIN lives in
+// brandApplicationsPrivate/{uid} instead, so admin list reads and the public
+// carousel route (both read upcomingBrands) can never carry it by accident.
+
+// Category shown on the brand's Upcoming Brands card. Must match the <select>
+// in public/brandOnboarding/apply.html; "Other" is the catch-all so no brand
+// is forced into a category that doesn't fit.
+const BRAND_CATEGORIES = ['Apparel', 'Graphic Tees', 'Outerwear', 'Sneakers', 'Accessories', 'Jewelry', 'Headwear', 'Bags', 'Other'];
+const BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS = 3;
+const INSTAGRAM_HANDLE_PATTERN = /^[A-Za-z0-9._]{1,30}$/;
+
+// Accepts a pasted profile link as well as a handle. Keep in sync with
+// normalizeInstagram in public/js/pages/brandOnboarding/apply.js. A link with
+// more path (a post, /p/abc) doesn't match, so it fails the handle check.
+function normalizeInstagram(value) {
+  const profileLink = value.match(/^(?:https?:\/\/)?(?:www\.|m\.)?instagram\.com\/([^/?#]+)\/?(?:[?#].*)?$/i);
+  return (profileLink ? profileLink[1] : value).replace(/^@/, '');
+}
+
+// Returns { error } or { application, ein }. Repeats every check the form
+// does, since anyone can send this request without using our form.
+function parseBrandApplication(body = {}) {
+  const text = (value) => (typeof value === 'string' ? value.trim() : '');
+  const brandName = text(body.brandName);
+  const category = text(body.category);
+  const description = text(body.description);
+  const instagram = normalizeInstagram(text(body.instagram));
+  const website = text(body.website);
+  const einDigits = text(body.ein).replace(/[\s-]/g, '');
+
+  if (!brandName || brandName.length > 60) return { error: 'Brand name is required (60 characters max).' };
+  if (!BRAND_CATEGORIES.includes(category)) return { error: 'Choose a category from the list.' };
+  if (description.length < 20 || description.length > 1000) return { error: 'Description must be 20 to 1000 characters.' };
+  if (!INSTAGRAM_HANDLE_PATTERN.test(instagram)) return { error: 'Enter your Instagram handle, like @yourbrand, or a link to your profile.' };
+
+  let websiteUrl = null;
+  if (website) {
+    try {
+      // "yourbrand.com" is what most people type, so assume https when no scheme is given
+      const url = new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`);
+      if (!url.hostname.includes('.') || url.href.length > 200) throw new Error('bad url');
+      websiteUrl = url.href;
+    } catch {
+      return { error: 'Enter a valid website address, like yourbrand.com.' };
+    }
+  }
+
+  // Format check only -- it can't prove the EIN belongs to this brand.
+  if (einDigits && !/^\d{9}$/.test(einDigits)) return { error: 'An EIN is 9 digits, like 12-3456789.' };
+
+  return {
+    application: { brandName, category, description, instagram, website: websiteUrl },
+    ein: einDigits ? `${einDigits.slice(0, 2)}-${einDigits.slice(2)}` : null,
+  };
+}
+
+// When a rejected applicant may apply again, or null if the cooldown doesn't apply.
+function brandReapplyAt(application) {
+  if (application.status !== 'rejected' || !application.rejectedAt) return null;
+  return addBusinessDays(application.rejectedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS);
+}
+
+// The caller's own application, or null. Picks fields explicitly so internal
+// fields added later (reviewer ids, asset paths) don't leak out by default.
+app.get('/api/brand-onboarding/me', verifyAuth, async (req, res) => {
   try {
-    const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
-    const brands = snap.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        name: data.brandName,
-        founderHandle: data.founderHandle,
+    const [snap, profileSnap] = await Promise.all([
+      db.collection('upcomingBrands').doc(req.token.uid).get(),
+      db.collection('userProfiles').doc(req.token.uid).get(),
+    ]);
+    // New accounts start with an empty username, and applying requires one.
+    // Reported here so the page can ask before the owner fills in the form.
+    const hasUsername = Boolean(profileSnap.data()?.username);
+    if (!snap.exists) return res.json({ success: true, hasUsername, application: null });
+
+    const data = snap.data();
+    return res.json({
+      success: true,
+      hasUsername,
+      application: {
+        brandName: data.brandName,
         category: data.category,
-        // shortcut: no asset upload yet, so no cover field exists -- cards fall
-        // back to a wordmark; set this to the cover URL field once uploads ship
-        image: null,
-      };
+        description: data.description,
+        instagram: data.instagram,
+        website: data.website,
+        einLast4: data.einLast4,
+        status: data.status,
+        reviewerNotes: data.reviewerNotes,
+        submittedAt: data.submittedAt?.toDate?.().getTime() || null,
+        reapplyAt: brandReapplyAt(data)?.getTime() || null,
+        // Lets the upload page show what's already uploaded (e.g. after an
+        // admin asks for changes)
+        assets: data.assets
+          ? Object.fromEntries(Object.entries(data.assets).map(([kind, asset]) => [kind, asset.url]))
+          : null,
+      },
     });
-    // Every homepage view calls this; a short cache keeps Firestore reads flat
-    res.set('Cache-Control', 'public, max-age=300');
+  } catch (error) {
+    console.error('Error loading brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not load your application.' });
+  }
+});
+
+// Public card data for the homepage Upcoming Brands carousel and
+// /shop/brands.html#upcoming. Published brands only; fields are picked
+// explicitly so contactEmail, einLast4 and reviewer data never go out.
+// An empty list is what hides the carousel on the frontend.
+// Every homepage view calls this, and Firestore bills per document read, so
+// results are cached in memory for a minute: about one query per minute
+// instead of one per visitor. Concurrent requests share one in-flight query.
+// shortcut: per-process cache; each server instance keeps its own copy,
+// which is fine for a 60s TTL. Move to a shared cache if it ever needs to be exact.
+const UPCOMING_BRANDS_TTL_MS = 60 * 1000;
+let upcomingBrandsCache = { brands: null, expiresAt: 0, pending: null };
+
+async function loadUpcomingBrands() {
+  const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
+  if (snap.empty) return [];
+
+  // The handle saved at submit goes stale if the owner changes their
+  // username, so cards use the current one (one batched read per cache
+  // refresh, not per visitor) and fall back to the saved handle.
+  const profiles = await db.getAll(...snap.docs.map((doc) => db.collection('userProfiles').doc(doc.id)));
+  const currentHandles = new Map(profiles.map((profile) => [profile.id, profile.data()?.username]));
+
+  return snap.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      name: data.brandName,
+      founderHandle: currentHandles.get(doc.id) || data.founderHandle,
+      category: data.category,
+      // shortcut: no asset upload yet, so no cover field exists -- cards fall
+      // back to a wordmark; set this to the cover URL field once uploads ship
+      image: null,
+    };
+  });
+}
+
+app.get('/api/upcoming-brands', async (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300');
+
+  if (upcomingBrandsCache.brands && Date.now() < upcomingBrandsCache.expiresAt) {
+    return res.json({ success: true, brands: upcomingBrandsCache.brands });
+  }
+
+  try {
+    upcomingBrandsCache.pending ||= loadUpcomingBrands();
+    const brands = await upcomingBrandsCache.pending;
+    upcomingBrandsCache = { brands, expiresAt: Date.now() + UPCOMING_BRANDS_TTL_MS, pending: null };
     return res.json({ success: true, brands });
   } catch (error) {
+    upcomingBrandsCache.pending = null;
     console.error('Error loading upcoming brands:', error);
+    // Serve the last good list rather than hiding the carousel on a blip
+    if (upcomingBrandsCache.brands) return res.json({ success: true, brands: upcomingBrandsCache.brands });
+    res.set('Cache-Control', 'no-store');
     return res.status(500).json({ success: false, message: 'Could not load upcoming brands.' });
   }
 });
 
-app.post('/webhooks/easyship', async (req, res) => {
-  const signature = req.headers['x-easyship-signature'];
-  if (!signature) {
-    return res.sendStatus(401);
+// Submit a new application, or reapply after a rejection once the cooldown
+// has passed. The read-then-write runs in a transaction so a double submit
+// can't create two applications or reapply twice.
+app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
+  const { error, application, ein } = parseBrandApplication(req.body);
+  if (error) return res.status(400).json({ success: false, message: error });
+
+  const uid = req.token.uid;
+  const contactEmail = req.token.email;
+  if (!contactEmail) {
+    return res.status(400).json({ success: false, message: 'Your account needs an email address to apply.' });
   }
 
   try {
-    jwt.verify(signature, process.env.EASYSHIP_WEBHOOK_SECRET, { algorithms: ['HS256'] });
-  } catch (err) {
-    console.error("Easyship webhook signature verification failed:", err.message);
-    return res.sendStatus(401);
-  }
-
-  const event = req.body;
-  console.log("Received Easyship webhook:", JSON.stringify(event));
-
-  if (event?.event_type !== 'shipment.tracking.status.changed') {
-    return res.sendStatus(200);
-  }
-
-  const shipment = event.data;
-  const shipmentId = shipment?.easyship_shipment_id;
-  const deliveryStatus = shipment?.status;
-
-  if (!shipmentId || deliveryStatus?.toLowerCase() !== 'delivered') {
-    return res.sendStatus(200);
-  }
-
-  try {
-    const snapshot = await db.collection('orders').where('easyshipShipmentId', '==', shipmentId).limit(1).get();
-    if (snapshot.empty) {
-      console.error(`No order found for Easyship shipment ${shipmentId}`);
-      return res.sendStatus(200);
+    // Handle and email come from the account, never the request body, so an
+    // applicant can't put someone else's @handle on their brand card.
+    const profileSnap = await db.collection('userProfiles').doc(uid).get();
+    const founderHandle = profileSnap.data()?.username;
+    if (!founderHandle) {
+      return res.status(400).json({ success: false, message: 'Add a username to your profile before applying. It shows on your brand card.' });
     }
 
-    const orderDoc = snapshot.docs[0];
-    const order = orderDoc.data();
+    const applicationRef = db.collection('upcomingBrands').doc(uid);
+    const privateRef = db.collection('brandApplicationsPrivate').doc(uid);
 
-    // Already delivered (duplicate webhook delivery) or somehow not shipped
-    // yet -- either way, nothing to do. Not an error: Easyship's own docs
-    // don't promise exactly-once delivery.
-    if (order.fulfillmentStatus !== 'shipped') {
-      return res.sendStatus(200);
-    }
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      const existing = snap.exists ? snap.data() : null;
 
-    const deliveredAt = new Date();
-    await orderDoc.ref.update({
-      fulfillmentStatus: 'delivered',
-      deliveredAt,
-      deliveryConfirmationDeadlineAt: new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS),
-      deliveryConfirmationStatus: 'required',
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      // Still waiting for review = the owner is editing it in place
+      const isEdit = existing?.status === 'pending_review';
+      if (existing && existing.status !== 'rejected' && !isEdit) {
+        return { conflict: 'Your application has already been reviewed, so it can\'t be changed.' };
+      }
+
+      const reapplyAt = existing && brandReapplyAt(existing);
+      if (reapplyAt && Date.now() < reapplyAt.getTime()) {
+        return { conflict: 'You can reapply after the waiting period.', reapplyAt: reapplyAt.getTime() };
+      }
+
+      const now = admin.firestore.FieldValue.serverTimestamp();
+      // An edit isn't a new attempt
+      const applicationCount = isEdit ? existing.applicationCount : (existing?.applicationCount || 0) + 1;
+
+      // Full overwrite (no merge) so a reapply starts clean: the old
+      // rejection notes and timestamps don't carry over. An edit keeps its
+      // original submittedAt so it doesn't jump the admin's queue.
+      tx.set(applicationRef, {
+        ...application,
+        founderHandle,
+        contactEmail,
+        einLast4: ein ? ein.slice(-4) : null,
+        status: 'pending_review',
+        applicationCount,
+        reviewerNotes: null,
+        createdAt: existing?.createdAt || now,
+        submittedAt: isEdit ? existing.submittedAt : now,
+        ...(isEdit && { updatedAt: now }),
+      });
+
+      if (ein) {
+        tx.set(privateRef, { ein, updatedAt: now });
+      } else {
+        // A reapply without an EIN shouldn't leave the previous one behind
+        tx.delete(privateRef);
+      }
+
+      return { applicationCount, isEdit };
     });
 
-    await createNotification(
-      order.buyerId,
-      "order_status",
-      "Order Delivered",
-      `Your order for ${order.item?.name || "your item"} has been delivered.`,
-      "/profile?tab=purchases"
-    );
+    if (result.conflict) {
+      return res.status(409).json({ success: false, message: result.conflict, reapplyAt: result.reapplyAt || null });
+    }
 
-    res.sendStatus(200);
-  } catch (err) {
-    console.error("Failed to process Easyship webhook:", err);
-    res.sendStatus(500);
+    // Fire-and-forget: sendAdminNotification never throws, and the
+    // application is already saved whether or not the email goes out.
+    sendAdminNotification('BRAND_APPLICATION_SUBMITTED', {
+      ...application,
+      founderHandle,
+      contactEmail,
+      hasEin: Boolean(ein),
+      applicationCount: result.applicationCount,
+      isUpdate: result.isEdit,
+    });
+
+    return res.status(result.isEdit ? 200 : 201).json({ success: true, status: 'pending_review', updated: result.isEdit });
+  } catch (error) {
+    console.error('Error submitting brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not submit your application. Please try again.' });
   }
 });
 
+// Withdraw an application that hasn't been reviewed yet: deletes it and the
+// private EIN record. With no application left, the owner can apply again
+// right away (no cooldown, since they weren't rejected).
+app.delete('/api/brand-onboarding', verifyAuth, async (req, res) => {
+  const applicationRef = db.collection('upcomingBrands').doc(req.token.uid);
+  const privateRef = db.collection('brandApplicationsPrivate').doc(req.token.uid);
+
+  try {
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      if (!snap.exists) return { notFound: true };
+      if (snap.data().status !== 'pending_review') return { conflict: true };
+
+      tx.delete(applicationRef);
+      tx.delete(privateRef);
+      return {};
+    });
+
+    if (result.notFound) return res.status(404).json({ success: false, message: 'You don\'t have an application to withdraw.' });
+    if (result.conflict) return res.status(409).json({ success: false, message: 'Your application has already been reviewed, so it can\'t be withdrawn.' });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Error withdrawing brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not withdraw your application. Please try again.' });
+  }
+});
+
+// ---- Brand onboarding: owner image upload ----
+// The browser uploads straight to Storage at upcomingBrands/{uid}/{kind}
+// (fixed names, no extension, so a re-upload replaces the file instead of
+// leaving an orphan). This is the bucket every other browser upload uses
+// (seller.js, profile-media.js); the Admin SDK's default bucket from
+// FIREBASE_CONFIG is a different one (.appspot.com, used for shipping labels).
+const brandAssetsBucket = admin.storage().bucket('ecom-website-94d87');
+const crypto = require('crypto');
+const BRAND_ASSET_KINDS = ['card', 'logo', 'cover'];
+const BRAND_ASSET_MAX_BYTES = 5 * 1024 * 1024;
+const BRAND_ASSET_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Submitted images are frozen: each upload is copied to
+// brandAssets/{uid}/{kind}-{version}, a path browsers can't write (Storage
+// denies it by default), and the copy is what gets reviewed and published.
+// Without this, the owner could overwrite upcomingBrands/{uid}/{kind} after
+// review and either swap the approved image or break its URL.
+const BRAND_FROZEN_PREFIX = 'brandAssets/';
+
+function brandAssetUrl(path, token) {
+  return `https://firebasestorage.googleapis.com/v0/b/${brandAssetsBucket.name}/o/${encodeURIComponent(path)}?alt=media&token=${token}`;
+}
+
+// Copies one upload to its frozen path and checks the COPY, so what's
+// validated is exactly what's saved, even if the owner re-uploads mid-request.
+// Returns { path, url } or { error }; a copy that fails the checks is deleted.
+async function freezeBrandAsset(uid, kind, version) {
+  const source = brandAssetsBucket.file(`upcomingBrands/${uid}/${kind}`);
+  const frozen = brandAssetsBucket.file(`${BRAND_FROZEN_PREFIX}${uid}/${kind}-${version}`);
+
+  try {
+    await source.copy(frozen);
+  } catch (error) {
+    if (error.code === 404) return { error: `Upload your ${kind} image.` };
+    throw error;
+  }
+
+  const [metadata] = await frozen.getMetadata();
+  let problem = null;
+  if (!BRAND_ASSET_CONTENT_TYPES.includes(metadata.contentType)) {
+    problem = `Your ${kind} image must be a JPG, PNG, or WebP.`;
+  } else if (Number(metadata.size) > BRAND_ASSET_MAX_BYTES) {
+    problem = `Your ${kind} image is over 5 MB. Upload a smaller one.`;
+  }
+  if (problem) {
+    await frozen.delete({ ignoreNotFound: true });
+    return { error: problem };
+  }
+
+  // A fresh token, so the URL is the copy's own and unrelated to the upload's
+  const token = crypto.randomUUID();
+  await frozen.setMetadata({ metadata: { firebaseStorageDownloadTokens: token } });
+  return { path: frozen.name, url: brandAssetUrl(frozen.name, token) };
+}
+
+// Best-effort cleanup; a leftover file costs a little storage, never correctness.
+async function deleteBrandAssetFiles(paths) {
+  await Promise.all(paths.map((path) => brandAssetsBucket.file(path).delete({ ignoreNotFound: true })
+    .catch((error) => console.error(`Failed to delete brand asset ${path}:`, error))));
+}
+
+// Owner says "my images are uploaded". There's no body to validate: the
+// server only ever looks in the caller's own folder.
+app.post('/api/brand-onboarding/assets', verifyAuth, async (req, res) => {
+  const uid = req.token.uid;
+  const applicationRef = db.collection('upcomingBrands').doc(uid);
+
+  try {
+    // Early check so a wrong-status request gets a 409, not "upload your card image"
+    const snap = await applicationRef.get();
+    if (!snap.exists || snap.data().status !== 'approved_awaiting_assets') {
+      return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
+    }
+
+    // Unique per request, not just per millisecond: a request that loses the
+    // transaction below deletes its own copies, which must never be the
+    // winner's files.
+    const version = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+    const frozen = await Promise.allSettled(BRAND_ASSET_KINDS.map((kind) => freezeBrandAsset(uid, kind, version)));
+    const newPaths = frozen.filter((r) => r.status === 'fulfilled' && r.value.path).map((r) => r.value.path);
+    const failed = frozen.find((r) => r.status === 'rejected');
+    const problem = frozen.find((r) => r.status === 'fulfilled' && r.value.error);
+    if (failed || problem) {
+      // All three or none: drop the copies that did succeed
+      await deleteBrandAssetFiles(newPaths);
+      if (failed) throw failed.reason;
+      return res.status(400).json({ success: false, message: problem.value.error });
+    }
+
+    const assets = Object.fromEntries(BRAND_ASSET_KINDS.map((kind, i) => [kind, frozen[i].value]));
+
+    // Re-checked in a transaction: all three images are saved together with
+    // the status change, or none are.
+    const result = await db.runTransaction(async (tx) => {
+      const current = await tx.get(applicationRef);
+      if (current.data()?.status !== 'approved_awaiting_assets') return { conflict: true };
+
+      tx.update(applicationRef, {
+        assets,
+        status: 'assets_submitted',
+        assetsSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return { application: current.data() };
+    });
+
+    if (result.conflict) {
+      await deleteBrandAssetFiles(newPaths);
+      return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
+    }
+
+    // A resubmit (after an admin asks for changes) replaces the earlier frozen
+    // copies, so remove them. Not awaited: the response doesn't depend on it.
+    const previousPaths = Object.values(result.application.assets || {})
+      .map((asset) => asset?.path)
+      .filter((path) => path?.startsWith(BRAND_FROZEN_PREFIX) && !newPaths.includes(path));
+    if (previousPaths.length) deleteBrandAssetFiles(previousPaths);
+
+    sendAdminNotification('BRAND_ASSETS_SUBMITTED', {
+      brandName: result.application.brandName,
+      founderHandle: result.application.founderHandle,
+    });
+
+    return res.json({ success: true, status: 'assets_submitted' });
+  } catch (error) {
+    console.error('Error submitting brand images:', error);
+    return res.status(500).json({ success: false, message: 'Could not submit your images. Please try again.' });
+  }
+});
+
+// ---- Brand onboarding: admin review ----
+const BRAND_STATUSES = ['pending_review', 'rejected', 'approved_awaiting_assets', 'assets_submitted', 'published', 'unpublished'];
+const BRAND_REVIEW_DECISIONS = ['approved', 'rejected'];
+
+// Reapply dates in emails are shown in Hexxo's own timezone (Texas), since
+// the server may run in UTC and would otherwise show the wrong day near midnight.
+function formatBrandEmailDate(date) {
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/Chicago' });
+}
+
+// Applications in one status, newest first. The full EIN isn't in these
+// docs (it's in brandApplicationsPrivate), so whole docs are safe to return.
+app.get('/api/admin/brand-applications', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  const status = req.query.status || 'pending_review';
+  if (!BRAND_STATUSES.includes(status)) {
+    return res.status(400).json({ success: false, message: `status must be one of: ${BRAND_STATUSES.join(', ')}` });
+  }
+
+  try {
+    const snap = await db.collection('upcomingBrands').where('status', '==', status).get();
+
+    // shortcut: sorted in memory to avoid a composite index; fine at
+    // dozens of applications, switch to orderBy + index if it reaches thousands.
+    const items = snap.docs
+      .map((doc) => {
+        const data = doc.data();
+        return {
+          uid: doc.id,
+          brandName: data.brandName,
+          category: data.category,
+          description: data.description,
+          instagram: data.instagram,
+          website: data.website,
+          founderHandle: data.founderHandle,
+          contactEmail: data.contactEmail,
+          einLast4: data.einLast4,
+          applicationCount: data.applicationCount,
+          status: data.status,
+          reviewerNotes: data.reviewerNotes,
+          submittedAt: data.submittedAt?.toDate?.().getTime() || null,
+        };
+      })
+      .sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+
+    return res.json({ success: true, items });
+  } catch (error) {
+    console.error('Error listing brand applications:', error);
+    return res.status(500).json({ success: false, message: 'Could not load applications.' });
+  }
+});
+
+// The full EIN, only when an admin explicitly asks for one application's.
+// Kept out of the list route so it's never sent just by opening the page.
+app.get('/api/admin/brand-applications/:uid/ein', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  try {
+    const snap = await db.collection('brandApplicationsPrivate').doc(req.params.uid).get();
+    if (!snap.exists || !snap.data().ein) {
+      return res.status(404).json({ success: false, message: 'No EIN on file for this application.' });
+    }
+
+    // Audit trail: who looked at whose tax ID, without logging the number itself
+    console.info(`EIN viewed for brand application ${req.params.uid} by admin ${req.token.uid}`);
+    return res.json({ success: true, ein: snap.data().ein });
+  } catch (error) {
+    console.error('Error loading EIN:', error);
+    return res.status(500).json({ success: false, message: 'Could not load the EIN.' });
+  }
+});
+
+// Approve or reject a pending application. The transaction re-checks the
+// status, so two admins (or a double-click) can't both decide the same one.
+app.post('/api/admin/brand-applications/:uid/decision', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  const { decision } = req.body || {};
+  const reviewerNotes = typeof req.body?.reviewerNotes === 'string' ? req.body.reviewerNotes.trim() : '';
+
+  if (!BRAND_REVIEW_DECISIONS.includes(decision)) {
+    return res.status(400).json({ success: false, message: `decision must be one of: ${BRAND_REVIEW_DECISIONS.join(', ')}` });
+  }
+  // The owner sees these notes, and a rejection with no reason gives them nothing to fix
+  if (decision === 'rejected' && !reviewerNotes) {
+    return res.status(400).json({ success: false, message: 'Add a note explaining why the application was rejected.' });
+  }
+  if (reviewerNotes.length > 1000) {
+    return res.status(400).json({ success: false, message: 'Notes must be 1000 characters or fewer.' });
+  }
+
+  const applicationRef = db.collection('upcomingBrands').doc(req.params.uid);
+
+  try {
+    // One timestamp for the doc and the email, so the reapply date the
+    // owner is told matches the one GET /me computes from rejectedAt.
+    const decidedAt = admin.firestore.Timestamp.now();
+
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      if (!snap.exists) return { notFound: true };
+
+      const application = snap.data();
+      if (application.status !== 'pending_review') {
+        return { conflict: `This application was already decided (status: ${application.status}).` };
+      }
+
+      const newStatus = decision === 'approved' ? 'approved_awaiting_assets' : 'rejected';
+      tx.update(applicationRef, {
+        status: newStatus,
+        reviewerNotes: reviewerNotes || null,
+        reviewedAt: decidedAt,
+        reviewedByUserId: req.token.uid,
+        rejectedAt: decision === 'rejected' ? decidedAt : null,
+      });
+
+      return { application, newStatus };
+    });
+
+    if (result.notFound) return res.status(404).json({ success: false, message: 'Application not found.' });
+    if (result.conflict) return res.status(409).json({ success: false, message: result.conflict });
+
+    // After the commit: an email failure can't undo the decision, but the
+    // admin is told so they can follow up with the owner.
+    const { application } = result;
+    const emailSent = decision === 'approved'
+      ? await sendUserEmail(application.contactEmail, 'BRAND_APPROVED', {
+        brandName: application.brandName,
+        founderHandle: application.founderHandle,
+        reviewerNotes,
+      })
+      : await sendUserEmail(application.contactEmail, 'BRAND_REJECTED', {
+        brandName: application.brandName,
+        founderHandle: application.founderHandle,
+        reviewerNotes,
+        reapplyDate: formatBrandEmailDate(addBusinessDays(decidedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS)),
+      });
+
+    return res.json({ success: true, status: result.newStatus, emailSent });
+  } catch (error) {
+    console.error('Error deciding brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not save the decision. Please try again.' });
+  }
+});
 
 app.get('/carriers', async (req, res) => {
   try {
@@ -795,6 +1446,10 @@ app.get("/about", (req, res) => {
   res.sendFile(path.join(staticPth, "static/about.html"));
 });
 
+app.get("/brand-onboarding", (req, res) => {
+  res.sendFile(path.join(staticPth, "brandOnboarding/apply.html"));
+});
+
 // Public aggregate counts for the About page KPI band. Cached in memory so
 // page views don't each cost Firestore reads; the in-flight promise is shared
 // so a burst of requests after expiry triggers one refresh, not many.
@@ -887,6 +1542,12 @@ app.get("/admin/delivery-confirmation-review", (req, res) => {
 // POST /api/admin/order-authentications/:orderId/decision's isAdmin checks.
 app.get("/admin/order-authentication-review", (req, res) => {
   res.sendFile(path.join(staticPth, "admin/order-authentication-review.html"));
+});
+
+// Same UX-only client-side gate pattern as authentication-review above.
+// Real enforcement is the admin check on every /api/admin/brand-applications route.
+app.get("/admin/brand-review", (req, res) => {
+  res.sendFile(path.join(staticPth, "admin/brand-review.html"));
 });
 
 // login route
@@ -1691,11 +2352,10 @@ app.put("/users/:id", verifyAuth, async (req, res) => {
 // Sellers can never self-declare "delivered" -- that used to let a seller
 // start the buyer's 3-day delivery-confirmation window (deliveredAt) with a
 // single click, regardless of whether the item had actually arrived.
-// "delivered" is now only set from ground truth: the /webhooks/easyship
-// route below (for orders with a purchased label, order.easyshipShipmentId
-// set) or the buyer confirming receipt themselves via
-// BUYER_FULFILLMENT_TRANSITIONS (for self-ship orders, where no carrier
-// webhook exists to source that truth from).
+// "delivered" is only set from ground truth: the buyer confirming receipt
+// themselves via BUYER_FULFILLMENT_TRANSITIONS (and, once the ShipStation
+// V2 tracking webhook is live, the carrier's own delivery scan for
+// prepaid-label orders).
 const SELLER_FULFILLMENT_TRANSITIONS = {
   shipped: ["pending", "processing"]
 };
@@ -1703,6 +2363,116 @@ const SELLER_FULFILLMENT_TRANSITIONS = {
 const BUYER_FULFILLMENT_TRANSITIONS = {
   delivered: ["shipped"]
 };
+
+// The only two places an order moves to shipped/delivered. Callers (seller
+// PUT, buyer PUT, carrier webhooks) can race each other -- e.g. a seller on
+// a stale page clicking Mark Shipped seconds after the carrier's first scan
+// already did -- so the status check and the write happen inside one
+// transaction: whichever lands second sees the first's write and no-ops
+// instead of double-writing.
+//
+// Notifications are sent *after* the transaction, never inside it --
+// Firestore re-runs a transaction's callback when it hits contention, so
+// anything inside can execute more than once. Only the call whose result is
+// "shipped"/"delivered" (the one that actually made the transition) notifies.
+//
+// Both return { result, order }, result being one of:
+//   "shipped" | "delivered"                   -- this call made the transition
+//   "already_shipped" | "already_delivered"   -- someone else got there first
+//   "not_allowed"                             -- can't move there from current status
+//   "not_found"
+async function markOrderShipped(orderRef, { trackingNumber, shippingCarrier, source }) {
+  const outcome = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(orderRef);
+    if (!snap.exists) return { result: "not_found", order: null };
+
+    const order = snap.data();
+    if (order.fulfillmentStatus === "shipped") return { result: "already_shipped", order };
+    if (!SELLER_FULFILLMENT_TRANSITIONS.shipped.includes(order.fulfillmentStatus)) {
+      return { result: "not_allowed", order };
+    }
+
+    tx.update(orderRef, {
+      fulfillmentStatus: "shipped",
+      // A carrier scan doesn't carry new tracking info for prepaid orders --
+      // it's already on the order from label purchase -- so only overwrite
+      // when the caller actually supplied it (the self-ship seller path).
+      ...(trackingNumber !== undefined ? { trackingNumber } : {}),
+      ...(shippingCarrier !== undefined ? { shippingCarrier } : {}),
+      shippedAt: admin.firestore.FieldValue.serverTimestamp(),
+      shippedSource: source,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    return { result: "shipped", order };
+  });
+
+  if (outcome.result === "shipped") {
+    const { order } = outcome;
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Order Shipped",
+      `Your order for ${order.item?.name || "your item"} has shipped (tracking #${trackingNumber ?? order.trackingNumber}).`,
+      "/profile?tab=purchases"
+    );
+  }
+
+  return outcome;
+}
+
+async function markOrderDelivered(orderRef, { source }) {
+  const outcome = await db.runTransaction(async (tx) => {
+    const snap = await tx.get(orderRef);
+    if (!snap.exists) return { result: "not_found", order: null };
+
+    const order = snap.data();
+    if (order.fulfillmentStatus === "delivered") return { result: "already_delivered", order };
+    if (!BUYER_FULFILLMENT_TRANSITIONS.delivered.includes(order.fulfillmentStatus)) {
+      return { result: "not_allowed", order };
+    }
+
+    // Plain Dates, not FieldValue.serverTimestamp() -- the deadline has to
+    // be computed from deliveredAt in the same write, and a serverTimestamp
+    // sentinel can't be used for arithmetic.
+    const deliveredAt = new Date();
+    tx.update(orderRef, {
+      fulfillmentStatus: "delivered",
+      deliveredAt,
+      deliveryConfirmationDeadlineAt: new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS),
+      deliveryConfirmationStatus: "required",
+      deliverySource: source,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    return { result: "delivered", order };
+  });
+
+  if (outcome.result === "delivered") {
+    const { order } = outcome;
+    await createNotification(
+      order.buyerId,
+      "order_status",
+      "Order Delivered",
+      `Your order for ${order.item?.name || "your item"} has been delivered.`,
+      "/profile?tab=purchases"
+    );
+
+    // Seller only hears about carrier-confirmed deliveries -- a buyer's own
+    // "Mark as Received" already implies the buyer is engaged, while a
+    // carrier scan is the seller's first signal the 3-day confirmation
+    // window (and so their payout clock) has started.
+    if (source === "carrier") {
+      await createNotification(
+        order.sellerId,
+        "order_status",
+        "Order Delivered",
+        `Your sale of ${order.item?.name || "your item"} was delivered. The buyer now has 3 days to confirm receipt.`,
+        "/profile?tab=selling"
+      );
+    }
+  }
+
+  return outcome;
+}
 
 app.put("/orders/:id", verifyAuth, async (req, res) => {
   const data = req.body;
@@ -1736,60 +2506,86 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       return res.status(409).json({ success: false, message: "Order is locked!" })
     }
 
-    const updatedData = {};
-
+    // Seller marking shipped. Both prepaid-label and self-ship orders
+    // converge here (a prepaid label being generated deliberately doesn't
+    // set fulfillmentStatus itself -- see purchaseShippingLabel's call
+    // site). Role-specific input checks stay here; the status check itself
+    // lives in markOrderShipped's transaction, since order above is a
+    // pre-transaction read that a carrier webhook may have already outrun.
     if (isSeller && data.fulfillmentStatus !== undefined) {
-      const allowedFrom = SELLER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus];
-
-      if (!allowedFrom) {
+      if (!SELLER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus]) {
         return res.status(400).json({ success: false, message: `Sellers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
       }
-      if (!allowedFrom.includes(order.fulfillmentStatus)) {
-        return res.status(409).json({ success: false, message: `Cannot mark "${data.fulfillmentStatus}" from "${order.fulfillmentStatus}"` });
-      }
-      if (!data.trackingNumber) {
+      if (typeof data.trackingNumber !== "string" || !data.trackingNumber.trim()) {
         return res.status(400).json({ success: false, message: "Tracking number is required to mark an order shipped" });
       }
 
-      updatedData.fulfillmentStatus = data.fulfillmentStatus;
-      updatedData.trackingNumber = data.trackingNumber;
-      updatedData.shippingCarrier = data.shippingCarrier;
-      // Both prepaid-label and self-ship orders converge on this same
-      // branch to actually mark "shipped" (a prepaid label being generated
-      // deliberately doesn't set fulfillmentStatus itself -- see
-      // purchaseShippingLabel's call site) -- so this is the one place that
-      // needs to stamp it. Nothing else on the order doc records a
-      // per-stage timestamp for this transition otherwise.
-      updatedData.shippedAt = admin.firestore.FieldValue.serverTimestamp();
+      // Prepaid-label orders keep the label's own tracking: /webhooks/shipstation
+      // drops any event whose tracking_number doesn't match the order's, so a
+      // seller-supplied number would orphan every carrier update.
+      const isPrepaidLabel = Boolean(order.shipstationLabelId);
+      const { result, order: current } = await markOrderShipped(docRef.ref, {
+        trackingNumber: isPrepaidLabel ? undefined : data.trackingNumber,
+        shippingCarrier: isPrepaidLabel ? undefined : data.shippingCarrier,
+        source: "seller"
+      });
+
+      if (result === "shipped") {
+        return res.status(200).json({ update: true, message: "Update successful" });
+      }
+      if (result === "already_shipped") {
+        // Already shipped with a *different* tracking number means the
+        // seller is trying to change it, not just double-clicking -- a
+        // silent 200 would make them think the new number was saved.
+        if (current.trackingNumber && current.trackingNumber !== data.trackingNumber) {
+          return res.status(409).json({ success: false, message: "This order was already marked shipped with a different tracking number." });
+        }
+        // Same intent already satisfied (most often: the carrier's first
+        // scan beat a stale page's click) -- succeed without re-writing or
+        // re-notifying the buyer.
+        return res.status(200).json({
+          update: false,
+          alreadyShipped: true,
+          shippedSource: current.shippedSource || null,
+          message: current.shippedSource === "carrier"
+            ? "Already marked shipped by the carrier's scan."
+            : "Order was already marked shipped."
+        });
+      }
+      if (result === "not_found") {
+        return res.status(404).json({ success: false, message: "Document not found!" });
+      }
+      return res.status(409).json({ success: false, message: `Cannot mark "shipped" from "${current.fulfillmentStatus}"` });
     }
 
-    // Buyer-confirmed delivery -- only reachable when there's no Easyship
-    // shipment to source ground truth from instead (self-ship listings, or a
-    // prepaid listing whose label purchase failed and the seller had to ship
-    // manually). Orders with a real Easyship shipment are only ever moved to
-    // "delivered" by /webhooks/easyship below.
+    // Buyer-confirmed delivery -- self-ship orders only. Prepaid-label orders
+    // (shipstationLabelId set, i.e. findable by /webhooks/shipstation) are
+    // marked delivered by the carrier's own scan instead, with an admin
+    // fallback (/api/admin/orders/:id/mark-delivered) for missed events --
+    // a buyer click would start the seller's payout clock on their say-so.
     if (isBuyer && data.fulfillmentStatus !== undefined) {
-      const allowedFrom = BUYER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus];
-
-      if (!allowedFrom) {
+      if (!BUYER_FULFILLMENT_TRANSITIONS[data.fulfillmentStatus]) {
         return res.status(400).json({ success: false, message: `Buyers cannot set fulfillmentStatus to "${data.fulfillmentStatus}"` });
       }
-      if (!allowedFrom.includes(order.fulfillmentStatus)) {
-        return res.status(409).json({ success: false, message: `Cannot mark "${data.fulfillmentStatus}" from "${order.fulfillmentStatus}"` });
-      }
-      if (order.easyshipShipmentId) {
-        return res.status(409).json({ success: false, message: "This order's delivery is tracked automatically and can't be confirmed manually." });
+      if (order.shipstationLabelId) {
+        return res.status(409).json({ success: false, message: "This order's delivery is confirmed automatically by the carrier." });
       }
 
-      // Plain Dates, not FieldValue.serverTimestamp() -- the deadline has to
-      // be computed from deliveredAt in the same write, and a serverTimestamp
-      // sentinel can't be used for arithmetic client-side.
-      const deliveredAt = new Date();
-      updatedData.fulfillmentStatus = "delivered";
-      updatedData.deliveredAt = deliveredAt;
-      updatedData.deliveryConfirmationDeadlineAt = new Date(deliveredAt.getTime() + DELIVERY_CONFIRMATION_WINDOW_MS);
-      updatedData.deliveryConfirmationStatus = "required";
+      const { result, order: current } = await markOrderDelivered(docRef.ref, { source: "buyer" });
+
+      if (result === "delivered") {
+        return res.status(200).json({ update: true, message: "Update successful" });
+      }
+      if (result === "already_delivered") {
+        return res.status(200).json({ update: false, alreadyDelivered: true, message: "Order was already marked delivered." });
+      }
+      if (result === "not_found") {
+        return res.status(404).json({ success: false, message: "Document not found!" });
+      }
+      return res.status(409).json({ success: false, message: `Cannot mark "delivered" from "${current.fulfillmentStatus}"` });
     }
+
+    const updatedData = {};
 
     if(isAdmin) {
       if (data.status !== undefined) {
@@ -1805,28 +2601,6 @@ app.put("/orders/:id", verifyAuth, async (req, res) => {
       ...updatedData,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-
-    const itemName = order.item?.name || "your item";
-
-    if (updatedData.fulfillmentStatus === "shipped") {
-      await createNotification(
-        order.buyerId,
-        "order_status",
-        "Order Shipped",
-        `Your order for ${itemName} has shipped (tracking #${data.trackingNumber}).`,
-        "/profile?tab=purchases"
-      );
-    }
-
-    if (updatedData.fulfillmentStatus === "delivered") {
-      await createNotification(
-        order.buyerId,
-        "order_status",
-        "Order Delivered",
-        `Your order for ${itemName} has been delivered.`,
-        "/profile?tab=purchases"
-      );
-    }
 
     res.status(200).json({ update: true, message: "Update successful"});
 
@@ -2353,9 +3127,9 @@ app.get("/api/admin/delivery-confirmations", verifyAuth, async (req, res) => {
         rating: confirmation.rating,
         comment: confirmation.comment,
         photoUrls: confirmation.photoUrls || [],
-        // No automated delivery webhook exists for ShipStation on our plan
-        // (see project notes) -- surfacing these lets admin manually check
-        // the carrier's own tracking page before approving payout.
+        // Self-ship orders have no carrier-confirmed delivery -- surfacing
+        // these lets admin check the carrier's own tracking page before
+        // approving payout.
         trackingNumber: order.trackingNumber || null,
         shippingCarrier: order.shippingCarrier || null,
         // Plain millis, not the raw Firestore Timestamp -- res.json() doesn't
@@ -2505,7 +3279,7 @@ app.post("/api/admin/order-authentications/:orderId/decision", verifyAuth, async
       // Triggers the existing payment_intent.succeeded webhook unchanged --
       // that's what actually flips fulfillmentStatus to "processing",
       // records the tax transaction, bumps listing sale stats, AND already
-      // purchases a real EasyShip label unconditionally for prepaid-shipping
+      // purchases a real ShipStation label unconditionally for prepaid-shipping
       // listings (purchaseShippingLabel, called from inside that same
       // webhook) -- none of that is duplicated here. authenticationStatus is
       // set directly here (not left to the webhook) so the seller's
@@ -2769,6 +3543,73 @@ app.get("/api/admin/failed-payouts", verifyAuth, async (req, res) => {
     }));
 
     return res.status(200).json({ success: true, items });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Prepaid-label orders still in transit -- the admin fallback for a carrier
+// "delivered" event that never reached /webhooks/shipstation (ShipStation
+// drops an event after 3 failed attempts). Server-mediated for the same PII
+// reasoning as the lists above.
+app.get("/api/admin/in-transit-orders", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    // Only the fields used below -- keeps every shipped order's address and
+    // tracking history out of memory. Same read count; no index needed.
+    const ordersSnap = await db.collection("orders")
+      .where("fulfillmentStatus", "==", "shipped")
+      .select("shipstationLabelId", "item.name", "buyerId", "buyerEmail", "trackingNumber", "shippingCarrier",
+        "trackingStatusCode", "trackingStatusDescription", "shippedAt", "trackingUpdatedAt")
+      .get();
+
+    const items = ordersSnap.docs
+      .filter((orderDoc) => orderDoc.data().shipstationLabelId)
+      .map((orderDoc) => {
+        const order = orderDoc.data();
+        return {
+          orderId: orderDoc.id,
+          itemName: order.item?.name || "Item",
+          buyerId: order.buyerId,
+          buyerEmail: order.buyerEmail || null,
+          trackingNumber: order.trackingNumber || null,
+          shippingCarrier: order.shippingCarrier || null,
+          trackingStatusCode: order.trackingStatusCode || null,
+          trackingStatusDescription: order.trackingStatusDescription || null,
+          shippedAt: order.shippedAt?.toDate?.().getTime() || null,
+          trackingUpdatedAt: order.trackingUpdatedAt?.toDate?.().getTime() || null
+        };
+      });
+
+    return res.status(200).json({ success: true, items });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.post("/api/admin/orders/:id/mark-delivered", verifyAuth, async (req, res) => {
+  try {
+    if (req.token.admin !== true) {
+      return res.status(403).json({ success: false, message: "Admin only" });
+    }
+
+    const { result, order } = await markOrderDelivered(db.collection("orders").doc(req.params.id), { source: "admin" });
+
+    if (result === "delivered") {
+      return res.status(200).json({ success: true, message: "Order marked delivered" });
+    }
+    if (result === "already_delivered") {
+      return res.status(200).json({ success: true, alreadyDelivered: true, message: "Order was already delivered" });
+    }
+    if (result === "not_found") {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+    return res.status(409).json({ success: false, message: `Cannot mark "delivered" from "${order.fulfillmentStatus}"` });
 
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -3086,18 +3927,34 @@ app.delete("/orders/:id", verifyAuth, async (req, res) => {
       // Cancellation is only meaningful before the item has actually shipped
       // -- once it's shipped/delivered/already cancelled, "cancel" no longer
       // makes sense as an action.
+      //
+      // Checked inside a transaction, not against `order` above: a carrier
+      // webhook can move the order to "shipped" between that read and this
+      // write, and cancelling a package that's already with the carrier
+      // would refund an item that's on its way to the buyer.
       const cancellable = ['pending', 'processing'];
-      const isCancellable = cancellable.includes(order.fulfillmentStatus);
+      const cancelledBy = isAdmin ? "admin" : isSeller ? "seller" : "buyer";
 
-      if (isCancellable) {
-        const cancelledBy = isAdmin ? "admin" : isSeller ? "seller" : "buyer";
+      const { cancelled, currentStatus } = await db.runTransaction(async (tx) => {
+        const fresh = (await tx.get(docRef.ref)).data();
+        if (!cancellable.includes(fresh.fulfillmentStatus)) {
+          return { cancelled: false, currentStatus: fresh.fulfillmentStatus };
+        }
 
-        await docRef.ref.update({
+        tx.update(docRef.ref, {
           fulfillmentStatus: "cancelled",
           cancelledBy,
           ...(isAdmin && reason ? { cancellationReason: reason } : {}),
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        })
+        });
+        return { cancelled: true, currentStatus: "cancelled" };
+      });
+
+      if (!cancelled && currentStatus === "shipped") {
+        return res.status(409).json({ success: false, message: "This order has already shipped and can't be cancelled." });
+      }
+
+      if (cancelled) {
 
         const itemName = order.item?.name || "your item";
         const message = isAdmin && reason
@@ -3441,8 +4298,7 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     // name/phone are carried alongside the address fields here (rather than
     // as separate metadata keys) since buildOrderDataFromPaymentIntent just
     // JSON.parses this whole blob into buyerShippingAddress -- that's what
-    // the EasyShip shipment-create call will read contact_name/contact_phone
-    // off of later.
+    // purchaseShippingLabel reads the ship-to name/phone off of later.
     await stripe.paymentIntents.update(paymentIntentId, {
       amount: Math.round(total * 100),
       metadata: {
@@ -4396,12 +5252,9 @@ async function handlePaymentIntentAuthorized(paymentData) {
 // any failure instead of swallowing it, so the caller can notify the seller
 // rather than silently leaving an order with no label and no tracking number.
 //
-// Returns `shipstationShipmentId`, deliberately NOT `easyshipShipmentId` --
-// the buyer-confirms-delivery path (PUT /orders/:id) only blocks a buyer's
-// self-confirm when `easyshipShipmentId` is set, since ShipStation has no
-// delivered webhook to source that ground truth from instead. Keeping this
-// field under a different name lets these orders fall into the same
-// buyer-self-confirms flow as self-ship orders, on purpose.
+// Returns `shipstationShipmentId` -- V1's numeric shipment id. ShipStation
+// API V2 addresses the same label as "se-{shipmentId}" (see toV2LabelId in
+// services/shipstation.js), which is how V2 tracking finds these orders.
 async function purchaseShippingLabel(order, listing) {
   const shipping = listing.shipping;
   if (!shipping || typeof shipping !== 'object' || !shipping.carrierCode || !shipping.serviceCode) {
@@ -4466,7 +5319,7 @@ async function purchaseShippingLabel(order, listing) {
   }
 
   // ShipStation returns the label as a base64 PDF directly in the response
-  // (no hosted URL like EasyShip gave us) -- upload it to our own Storage
+  // (no hosted URL) -- upload it to our own Storage
   // bucket so the rest of the app can keep treating shippingLabelUrl as a
   // plain link, same as before.
   const labelBuffer = Buffer.from(label.labelData, 'base64');
@@ -4481,7 +5334,11 @@ async function purchaseShippingLabel(order, listing) {
     trackingNumber: label.trackingNumber,
     shippingCarrier: shipping.carrierCode,
     shippingLabelUrl,
-    shipstationShipmentId: label.shipmentId
+    shipstationShipmentId: label.shipmentId,
+    // What /webhooks/shipstation looks orders up by. Normalized to V2's
+    // "se-" form here so that once label purchase itself moves to V2 (which
+    // returns label_id directly), the webhook side needs no change.
+    shipstationLabelId: toV2LabelId(label.shipmentId)
   };
 }
 
@@ -4533,8 +5390,15 @@ async function handlePaymentIntentSucceeded(paymentData){
       data = orderDoc.data();
       orderRef = orderDoc.ref;
 
-      if (data.fulfillmentStatus === 'processing') {
-        console.log(`order for payment intent ${paymentData.id} already processed, skipping duplicate webhook delivery`);
+      // Every state this handler (or a later step) moves an order into.
+      // Checking for just "processing" let a redelivered event rewind a
+      // shipped/delivered/refunded order -- now also reached automatically
+      // by carrier scans -- and re-run everything below (promo spend, sale
+      // stats, a second label purchase + debt). "cancelled" is left out on
+      // purpose: an order cancelled while still pending can see its payment
+      // succeed afterwards, and that existing behavior isn't changed here.
+      if (['processing', 'shipped', 'delivered', 'refunded'].includes(data.fulfillmentStatus)) {
+        console.log(`order for payment intent ${paymentData.id} already ${data.fulfillmentStatus}, skipping duplicate webhook delivery`);
         return;
       }
 
@@ -4688,6 +5552,7 @@ async function handlePaymentIntentSucceeded(paymentData){
               shippingCarrier: label.shippingCarrier,
               shippingLabelUrl: label.shippingLabelUrl,
               shipstationShipmentId: label.shipstationShipmentId,
+              shipstationLabelId: label.shipstationLabelId,
               labelGeneratedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 

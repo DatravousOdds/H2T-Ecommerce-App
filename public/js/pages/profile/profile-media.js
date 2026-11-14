@@ -35,13 +35,44 @@ export const updateProfilePicture = async (userId, file) => {
   }
 };
 
+// Banners render as a ~1300x220 strip (and show to every visitor of the
+// seller's public profile), but uploads arrive as full-size phone photos --
+// one measured at 4.9 MB / 4284x5712. 2560px on the longest side stays sharp
+// on a 2x screen at that width.
+const BANNER_MAX_DIMENSION = 2560;
+
+export async function shrinkBannerImage(file) {
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const scale = Math.min(1, BANNER_MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext("2d");
+  // JPEG has no alpha; without this, transparent PNG areas would turn black.
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+  if (!blob) throw new Error("Canvas could not encode the banner");
+  // An already-small, well-compressed upload can come out bigger re-encoded.
+  return blob.size < file.size ? blob : file;
+}
+
 export const updateBackgroundPicture = async (userId, file) => {
   try {
     const storageRef = ref(
       storage,
       `background-pictures/${userId}/${Date.now()}-${file.name}`
     );
-    await uploadBytes(storageRef, file);
+    // A resize problem (e.g. a format this browser can't decode) must never
+    // block the banner change itself, so fall back to the original file.
+    const upload = await shrinkBannerImage(file).catch((error) => {
+      console.error("Banner resize failed, uploading original:", error);
+      return file;
+    });
+    await uploadBytes(storageRef, upload);
     const imageUrl = await getDownloadURL(storageRef);
  
     const userDocRef = doc(db, "userProfiles", userId);
