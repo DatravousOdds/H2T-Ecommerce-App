@@ -341,10 +341,6 @@ if (isEditing) {
     await prefillFromAuthRequest(authRequestId);
 }
 
-// Edit and auth-prefill writes finish above; after this the panel repaints only
-// on input/change/click and photo src changes.
-initListingSummary(readListingDraft, imageGridContainer);
-
 postBtn.addEventListener('click', async () => {
     // Step 1: Validate basic information
     if (!validationInformation()) return;
@@ -506,6 +502,10 @@ productCategory.addEventListener("change", () => {
     pendingAuthSize = null;
 })
 
+// Last, so a panel error can't stop List it or Save draft from being wired. After
+// this the panel repaints only on input/change/click and photo src changes.
+initListingSummary(readListingDraft, imageGridContainer);
+
 
 
 
@@ -571,7 +571,7 @@ function wordCounter() {
 
         descriptionWordCounter.textContent = `${current}/100`;
 
-        if (current >= limit) {
+        if (current > limit) {
             showError('description', 'Description must be 100 words or less!');
             return;
         }
@@ -1302,22 +1302,11 @@ function validateProductInfo() {
         isValid = false;
         return;
     };
-    if (currentUser.isAdmin && productListingType?.value === 'release') {
-        const releaseDateValue = productReleaseDate.value;
-        if (!releaseDateValue) {
-            showError('releaseDate', "Please pick a release date");
-            isValid = false;
-            return;
-        }
-        const [year, month, day] = releaseDateValue.split('-').map(Number);
-        const releaseDate = new Date(year, month - 1, day);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (releaseDate <= today) {
-            showError('releaseDate', "Release date must be in the future");
-            isValid = false;
-            return;
-        }
+    const releaseError = releaseDateError();
+    if (releaseError) {
+        showError('releaseDate', releaseError);
+        isValid = false;
+        return;
     }
     if (!brand) {
         showError('brand', "Please enter a brand");
@@ -1376,8 +1365,21 @@ function validateImages() {
     return true;
 }
 
+// Shared with readListingDraft so the checklist can't drift from the validator.
+// Returns the error message, or '' when no release date is needed or it's valid.
+function releaseDateError() {
+    if (!(currentUser.isAdmin && productListingType?.value === 'release')) return '';
+    const releaseDateValue = productReleaseDate.value;
+    if (!releaseDateValue) return 'Please pick a release date';
+    const [year, month, day] = releaseDateValue.split('-').map(Number);
+    const releaseDate = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return releaseDate <= today ? 'Release date must be in the future' : '';
+}
+
 // `done` may be stricter than the validators, never looser, so 5 of 5 means
-// List it passes (except the admin-only release date).
+// List it passes.
 function readListingDraft() {
     // getAttribute, as in validateImages: the .src property of an empty <img> is the page URL.
     const coverImage = [...document.querySelectorAll('.image-preview')].find(image => image.getAttribute('src'));
@@ -1408,7 +1410,7 @@ function readListingDraft() {
             category: productCategory.value !== '',
             photos: Boolean(coverImage),
             // Size excluded because the validator excludes it.
-            details: Boolean(title && brand && condition && productDescription.value.trim()),
+            details: Boolean(title && brand && condition && productDescription.value.trim() && !releaseDateError()),
             // Stricter than the validator, which accepts "0".
             price: estimateTakeHome(productPrice.value) !== null,
             shipping: Boolean(shippingRadio)
