@@ -1,9 +1,34 @@
 import { checkUserStatus } from '../auth/auth.js';
 import { db, collection, where, query, getDocs } from '../api/firebase-client.js';
 import { initCartDrawer } from '../components/cartDrawer.js';
+import { fetchUpcomingBrands } from '../core/upcomingBrands.js';
+import { renderUpcomingBrandCard } from '../components/brandCarousel.js';
 
 initCartDrawer();
 checkUserStatus();
+
+// The home carousel's "View all" lands here, so this shows the full list
+// (no 7-card cap) using the same card renderer, keeping both looks in sync.
+// The section starts hidden and only appears once a brand is published.
+async function renderUpcomingBrands() {
+  const section = document.getElementById("upcoming");
+  const grid = document.getElementById("upcomingBrandGrid");
+  if (!section || !grid) return;
+
+  const brands = await fetchUpcomingBrands();
+  if (brands.length === 0) return;
+
+  grid.innerHTML = brands
+    .map((brand) => `<li>${renderUpcomingBrandCard(brand)}</li>`)
+    .join("");
+  section.hidden = false;
+
+  // The browser's own #upcoming jump ran while the section was still hidden
+  // (nothing to scroll to), so redo it now that it exists
+  if (location.hash === "#upcoming") section.scrollIntoView();
+}
+
+renderUpcomingBrands();
 
 // Featured/sponsor brands: always shown on this page, even with 0 listings.
 // Everything else is discovered from real listings and appended below them.

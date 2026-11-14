@@ -1,0 +1,591 @@
+/* Homepage brand carousels (Heavy Hitters + Upcoming Brands) and the shared
+   .brand-card (also used by /shop/brands.html's #upcoming grid). Native horizontal scroll with
+   scroll-snap rather than a JS-driven transform, so touch swipe, trackpad
+   and keyboard scrolling all work for free. */
+
+.brand-carousel__heading .section-header {
+  /* .section-header's own 1.5rem top margin would push it away from the eyebrow */
+  margin: 0.25rem 0 1rem !important;
+}
+
+.brand-carousel .pro-header-row {
+  align-items: flex-end;
+}
+
+.brand-carousel .shop-now-link {
+  margin-bottom: 1rem;
+}
+
+/* ---- Arrows ----
+   Overlaid on the track's left/right edges, inside the edge-fade zone, so
+   they sit on the faded card they'll reveal. They live in this wrapper
+   rather than in the <ul> so the track's mask doesn't fade them too. */
+
+.brand-carousel__viewport {
+  position: relative;
+}
+
+.brand-carousel__arrow {
+  position: absolute;
+  /* centered on the cards, not the track -- the track has 0.5rem top /
+     1.25rem bottom padding for shadows, so 50% alone sits 0.375rem low */
+  top: calc(50% - 0.375rem);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  box-shadow: 0 4px 14px rgba(7, 7, 7, 0.18);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s;
+}
+
+.brand-carousel__arrow--prev {
+  left: 0.5rem;
+}
+
+.brand-carousel__arrow--next {
+  right: 0.5rem;
+}
+
+.brand-carousel__arrow:hover {
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.brand-carousel__arrow:focus-visible {
+  outline: 3px solid var(--color-button-primary);
+  outline-offset: 2px;
+}
+
+/* At an edge the arrow fades out with the fade on that side, instead of
+   sitting disabled on top of a card. visibility (not just opacity) also
+   takes it out of the tab order and the accessibility tree. */
+.brand-carousel__arrow:disabled {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* brandCarousel.js sets data-overflowing only when there's something to
+   scroll to, e.g. a wide screen where every card already fits gets no arrows */
+.brand-carousel:not([data-overflowing]) .brand-carousel__arrow {
+  display: none;
+}
+
+/* Touch devices swipe natively, and a button over the card would just
+   cover the photo */
+@media (hover: none) {
+  .brand-carousel__arrow {
+    display: none !important;
+  }
+}
+
+.brand-carousel__track {
+  display: flex;
+  gap: var(--gap-reg);
+  margin: 0;
+  /* room for the card hover lift + shadow, which overflow-x would otherwise clip */
+  padding: 0.5rem 0.25rem 1.25rem;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* matches the side padding -- without it, snap aligns the first card to
+     the scrollport edge (scrollLeft 4, not 0), so the carousel never reads
+     as "at start" and the prev arrow/left fade wrongly stay on */
+  scroll-padding-inline: 0.25rem;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+/* Desktop: pad snapping by the 48px edge-fade width. Snapped cards then
+   start just past the fade (the arrow sits over the previous card's
+   sliver, not a card you're reading), and since browsers honor
+   scroll-padding when scrolling a focused element into view, tabbing to an
+   edge card no longer leaves it under the fade/arrow. The first card's
+   snap point goes negative and clamps to 0, so "at start" still reads 0.
+   Phones keep the small value so the swipe peek stays on the right. */
+@media (hover: hover) and (min-width: 769px) {
+  .brand-carousel__track {
+    scroll-padding-inline: 3rem;
+  }
+}
+
+.brand-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Edge fades hint "there's more this way". Driven by the same data-at-*
+   attributes as the arrow disabled states, so a fade never shows on a side
+   you can't scroll toward. No attributes (JS didn't run) = no mask. */
+.brand-carousel[data-overflowing] .brand-carousel__track {
+  --fade-left: 48px;
+  --fade-right: 48px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent 100%);
+}
+
+.brand-carousel[data-at-start] .brand-carousel__track {
+  --fade-left: 0px;
+}
+
+.brand-carousel[data-at-end] .brand-carousel__track {
+  --fade-right: 0px;
+}
+
+.brand-carousel__item {
+  flex: 0 0 clamp(220px, 22vw, 280px);
+  scroll-snap-align: start;
+}
+
+/* ---- Scroll-in reveal ----
+   .reveal-ready is only added by brandCarousel.js, so cards are never hidden
+   unless the script is there to reveal them. --i (set per item) staggers
+   the delay. Only opacity/transform animate, which skips layout work. */
+
+.brand-carousel.reveal-ready .brand-carousel__item {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.brand-carousel.reveal-ready.is-visible .brand-carousel__item {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* ---- End card: the "view all" stop at the end of the scroll ---- */
+
+.brand-carousel__end-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-reg);
+  aspect-ratio: 4 / 5;
+  padding: 1.5rem;
+  border-radius: 16px;
+  /* same light grey as the Shop By Categories circles */
+  background-color: #F2F2F2;
+  color: var(--color-text-primary);
+  text-align: center;
+  text-decoration: none;
+}
+
+.brand-carousel__end-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.brand-carousel__end-label {
+  max-width: 14ch;
+  font-family: var(--primary-font);
+  font-size: var(--fs-h4);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.brand-carousel__end-card:focus-visible {
+  outline: 3px solid var(--color-button-primary);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .brand-carousel__end-card:hover {
+    color: var(--color-text-primary);
+  }
+
+  .brand-carousel__end-card:hover .brand-carousel__end-icon,
+  .brand-carousel__end-card:focus-visible .brand-carousel__end-icon {
+    background-color: var(--color-button-primary);
+    transform: translateX(4px);
+  }
+}
+
+/* ---- Card ---- */
+
+.brand-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  /* same layered shadow + springy lift as .brand-banner, so it reads as the same family */
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 12px 32px rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
+}
+
+.brand-card:focus-visible {
+  outline: 3px solid var(--color-button-primary);
+  outline-offset: 3px;
+}
+
+/* Inside a carousel the track clips overflow, and its 4px side padding is
+   less than the ring's 6px reach -- so draw the ring inside the card there */
+.brand-carousel__track .brand-card:focus-visible,
+.brand-carousel__track .brand-carousel__end-card:focus-visible {
+  outline-offset: -3px;
+}
+
+.brand-card__media,
+.brand-card__media img {
+  width: 100%;
+  height: 100%;
+}
+
+.brand-card__media img {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* Bottom gradient keeps white text readable on any photo */
+.brand-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(7, 7, 7, 0.88) 0%, rgba(7, 7, 7, 0.35) 45%, transparent 70%);
+  pointer-events: none;
+}
+
+.brand-card__badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background-color: var(--color-button-primary);
+  color: var(--color-text-secondary);
+  font-family: var(--ui-font);
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.brand-card__body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 1.25rem;
+}
+
+.brand-card__category {
+  color: #ff6b76;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.brand-card__name {
+  margin: 0.15rem 0 0.1rem;
+  color: var(--color-text-secondary);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.brand-card__founder {
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--ui-font);
+  font-size: var(--fs-body-sm);
+}
+
+.brand-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--ui-font);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Hover-capable devices: CTA hides until the card is hovered/focused.
+   Touch devices have no hover, so they skip this block and the CTA stays visible. */
+@media (hover: hover) {
+  .brand-card__cta {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .brand-card:hover,
+  .brand-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.06),
+      0 8px 20px rgba(0, 0, 0, 0.1),
+      0 24px 48px rgba(0, 0, 0, 0.08);
+  }
+
+  .brand-card:hover .brand-card__media img,
+  .brand-card:focus-visible .brand-card__media img,
+  .brand-card:hover .brand-card__placeholder,
+  .brand-card:focus-visible .brand-card__placeholder {
+    transform: scale(1.05);
+  }
+
+  .brand-card:hover .brand-card__cta,
+  .brand-card:focus-visible .brand-card__cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .brand-card__cta:hover,
+  .brand-card:hover .brand-card__cta:hover {
+    background-color: var(--color-button-primary);
+    color: var(--color-text-secondary);
+  }
+}
+
+/* ---- Heavy Hitters variant (.brand-carousel--popular) ----
+   Same mechanics as Upcoming, but smaller square tiles: these are quick
+   shop-by-brand shortcuts, so they should read as navigation, not as the
+   editorial spotlight the tall Upcoming cards are. */
+
+.brand-carousel--popular .brand-carousel__item {
+  flex-basis: clamp(180px, 16vw, 220px);
+}
+
+.brand-carousel--popular .brand-card,
+.brand-carousel--popular .brand-carousel__end-card {
+  aspect-ratio: 1 / 1;
+}
+
+.brand-card--popular .brand-card__body {
+  padding: 1rem;
+}
+
+/* On a square tile the text covers more of the card than on a tall one, so
+   the gradient climbs higher and darker -- keeps the name readable even on
+   light product-on-white shots (e.g. New Balance) */
+.brand-card--popular::after {
+  background: linear-gradient(to top, rgba(7, 7, 7, 0.9) 0%, rgba(7, 7, 7, 0.6) 40%, transparent 78%);
+}
+
+.brand-card--popular .brand-card__name {
+  font-size: var(--fs-h3);
+  font-weight: 800;
+}
+
+/* Fallback when a brand has no photo yet -- a type-only tile, sitting in
+   the upper part of the card so it doesn't collide with the name below */
+.brand-card__wordmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 1rem 35%;
+  background: radial-gradient(circle at 30% 20%, #2b2b2b 0%, var(--color-background-secondary) 70%);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: "Bebas Neue", var(--primary-font);
+  font-size: clamp(2.5rem, 4vw, 3.25rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  /* seller brand names run up to 60 chars; break them rather than overflow */
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.brand-card__wordmark--long {
+  font-size: clamp(1.5rem, 2vw, 1.75rem);
+}
+
+/* Placeholder cover for Heavy Hitters until a brand has a cover photo: one
+   of 6 palettes (picked by card position in brandCarousel.js, so neighbors
+   never repeat a color) with the brand's Logo.dev logo on top. The brand name
+   on the tile shows only when there's no logo (e.g. Jordan). Every tone gets
+   the same layers -- soft highlight, faint diagonal texture, deep base
+   gradient -- so the row reads as one designed set, not random colors. */
+.brand-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  /* the card text below is ~108px tall at every card size (fixed px, not a
+     share of the card), so reserve a fixed 7rem to keep the name clear of it */
+  padding: 0 1rem 7rem;
+  background:
+    radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.18) 0%, transparent 45%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 14px),
+    linear-gradient(160deg, var(--tone-from) 0%, var(--tone-to) 100%);
+  color: rgba(255, 255, 255, 0.95);
+  font-family: "Bebas Neue", var(--primary-font);
+  font-size: clamp(2.25rem, 3.5vw, 3rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.4s ease;
+}
+
+/* In card order, alternating warm and cool so a row has rhythm: Hexxo red,
+   midnight, tan, charcoal, olive, violet -- all deep enough for the
+   white name and card text */
+.brand-card__placeholder[data-tone="0"] { --tone-from: #f30c1e; --tone-to: #4a0309; }
+.brand-card__placeholder[data-tone="1"] { --tone-from: #2f4a8a; --tone-to: #0b1430; }
+.brand-card__placeholder[data-tone="2"] { --tone-from: #9a7048; --tone-to: #3b2615; }
+.brand-card__placeholder[data-tone="3"] { --tone-from: #3d3d3d; --tone-to: #070707; }
+.brand-card__placeholder[data-tone="4"] { --tone-from: #5b6b33; --tone-to: #161b0a; }
+.brand-card__placeholder[data-tone="5"] { --tone-from: #6a3fa0; --tone-to: #1a0d2b; }
+
+/* Logo.dev logo for brands with no cover photo yet, in two layers of the same
+   image (one download): a blurred backdrop filling the card with the brand's
+   colors, and a crisp app-icon-style tile above the card text. Full-bleed
+   alone put each centered mark under the name/subtitle. */
+.brand-card__media .brand-card__logo-backdrop {
+  position: absolute;
+  inset: 0;
+  /* transparent logos (Nike's swoosh) blur over white, not the dark tile */
+  background-color: var(--color-background-primary);
+  filter: blur(24px) saturate(1.3);
+  /* blur fades the image's own edges toward transparent (the placeholder
+     showed through as a tint at 1.4); overscaling pushes that fade outside
+     the card. `scale`, not transform, so the hover zoom adds to it */
+  scale: 1.7;
+}
+
+/* The crisp tile is sized from the space above the ~108px of card text:
+   width = card - 140px (48-84px), and top: 1rem then centers it in that
+   space at every card size (180-240px). Positioned with top/margin, not a
+   translate, because the card hover sets transform on media images. */
+.brand-card__media .brand-card__logo {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  right: 0;
+  width: clamp(48px, calc(100% - 140px), 84px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  margin-inline: auto;
+  border-radius: 22%;
+  /* some logos are transparent PNGs (Nike's black swoosh) -- white behind */
+  background-color: var(--color-background-primary);
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* The placeholder's name is the fallback; hide it while a logo is showing
+   (brandCarousel.js removes the <img> if Logo.dev 404s) */
+.brand-card__media:has(.brand-card__logo) .brand-card__placeholder {
+  color: transparent;
+}
+
+@media (max-width: 768px) {
+  /* ~68% width lets ~1/4 of the next card peek in -- the swipe hint on touch */
+  .brand-carousel__item {
+    flex-basis: 68vw;
+    max-width: 300px;
+  }
+
+  /* repeated here because the variant's selector above outranks the plain one */
+  .brand-carousel--popular .brand-carousel__item {
+    flex-basis: 58vw;
+    max-width: 240px;
+  }
+}
+
+/* ---- View All grid (/shop/brands.html#upcoming) ----
+   Same .brand-card as the carousel, laid out as a wrapping grid since this
+   page is for browsing the full list, not a quick swipe. */
+
+.brand-grid-section {
+  /* #header is sticky, so without this the anchor jump lands the title
+     underneath it */
+  scroll-margin-top: 6rem;
+}
+
+.brand-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--gap-reg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 480px) {
+  /* two columns on phones so the list stays browsable rather than a long
+     single-file scroll of tall cards */
+  .brand-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-sm);
+  }
+
+  .brand-card-grid .brand-card__body {
+    padding: 0.75rem;
+  }
+
+  .brand-card-grid .brand-card__name {
+    font-size: var(--fs-h4);
+  }
+
+  /* the whole card is the link, and the pill would wrap at this width */
+  .brand-card-grid .brand-card__cta {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-carousel__track {
+    scroll-behavior: auto;
+  }
+
+  .brand-card,
+  .brand-card__media img,
+  .brand-card__placeholder,
+  .brand-card__cta,
+  .brand-carousel__end-icon,
+  .brand-carousel__arrow {
+    transition: none;
+  }
+}

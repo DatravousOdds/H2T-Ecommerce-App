@@ -17,10 +17,8 @@ let deliveryConfirmationPhotos = [];
  *
  * fulfillmentStatus is real now: "pending" (checkout submit, before payment
  * captures) -> "processing" (webhook confirms payment) -> "shipped" (seller
- * enters tracking) -> "delivered" (never seller-set -- either
- * /webhooks/easyship, for orders with a purchased label, or the buyer
- * confirming receipt themselves below, for self-ship orders with no carrier
- * webhook to source that truth from), or "cancelled" from pending/processing.
+ * enters tracking) -> "delivered" (never seller-set -- the buyer confirms
+ * receipt themselves below), or "cancelled" from pending/processing.
  * order.status stays Stripe's own payment status
  * ("succeeded"/etc) and is unrelated -- see orders.js for that one.
  * trackingNumber/carrier are written by PUT /orders/:id when a seller ships.
@@ -259,20 +257,24 @@ function buildOrderDetailsHTML(order) {
   const needsDeliveryConfirmation = status === "delivered" && order.deliveryConfirmationStatus === "required";
   if (needsDeliveryConfirmation) deliveryConfirmationPhotos = [];
 
-  // Self-ship orders (no purchased Easyship label, order.easyshipShipmentId
-  // unset) have no carrier webhook to source real delivery ground truth
-  // from -- the buyer confirms receipt themselves instead of trusting the
-  // seller's own say-so. Easyship-tracked orders skip this section entirely;
-  // /webhooks/easyship marks them delivered automatically (see server.js's
-  // BUYER_FULFILLMENT_TRANSITIONS).
-  const needsMarkAsReceived = status === "shipped" && !order.easyshipShipmentId;
-  const markAsReceivedSection = needsMarkAsReceived
-    ? `<div class="order-mark-received">
+  // Self-ship orders: the buyer confirms receipt themselves instead of
+  // trusting the seller's own say-so. Prepaid-label orders
+  // (shipstationLabelId) are marked delivered by the carrier's scan instead
+  // -- server.js's PUT /orders/:id rejects a buyer confirm for those.
+  const isCarrierTracked = Boolean(order.shipstationLabelId);
+  const needsMarkAsReceived = status === "shipped" && !isCarrierTracked;
+  let markAsReceivedSection = "";
+  if (needsMarkAsReceived) {
+    markAsReceivedSection = `<div class="order-mark-received">
          <p class="mark-received-subtext">This seller ships independently, so we can't confirm delivery automatically. Let us know once your item arrives.</p>
          <button type="button" class="order-action-btn" id="mark-as-received-btn">Mark as Received</button>
          <p class="order-action-error mark-received-error"></p>
-       </div>`
-    : "";
+       </div>`;
+  } else if (status === "shipped" && isCarrierTracked) {
+    markAsReceivedSection = `<div class="order-mark-received">
+         <p class="mark-received-subtext">We'll mark this order delivered automatically as soon as the carrier confirms delivery.</p>
+       </div>`;
+  }
 
   const confirmationSection = needsDeliveryConfirmation
     ? `<div class="order-delivery-confirmation">
@@ -424,9 +426,8 @@ async function cancelOrder(docId) {
   return result;
 }
 
-// Buyer-initiated "shipped" -> "delivered" for self-ship orders only --
-// server.js's BUYER_FULFILLMENT_TRANSITIONS rejects this for any order with
-// an easyshipShipmentId, since /webhooks/easyship owns that transition there.
+// Buyer-initiated "shipped" -> "delivered" (see server.js's
+// BUYER_FULFILLMENT_TRANSITIONS).
 async function markOrderReceived(docId) {
   const idToken = await auth.currentUser.getIdToken();
 
