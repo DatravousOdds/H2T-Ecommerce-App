@@ -5,10 +5,9 @@ const SELLER_FEE_RATE = 0.07;
 export function estimateTakeHome(priceText) {
     // Same parse collectListingInfo saves as listingPrice.
     const price = parseFloat(priceText);
-    if (!Number.isFinite(price) || price <= 0) return null;
-
     const priceCents = Math.round(price * 100);
-    if (priceCents < 1) return null;
+    // Also rejects NaN, ±Infinity and "1e308"-style prices too large for exact cents.
+    if (!Number.isSafeInteger(priceCents) || priceCents < 1) return null;
 
     // Same toFixed(2) rounding the server charges with; rounding priceCents * rate is off by 1 cent on some prices.
     const feeCents = Math.round(parseFloat((SELLER_FEE_RATE * price).toFixed(2)) * 100);
@@ -81,11 +80,12 @@ export function initListingSummary(readDraft, photoGrid) {
     }
 
     // The frame delay puts render after seller.js's synchronous handlers, so this
-    // also catches writes that fire no event: brand option, shipping box, resetForm.
+    // also catches writes that fire no event: brand option, shipping box, List another.
     ['input', 'change', 'click'].forEach((type) => document.addEventListener(type, refresh));
 
     // Covers what never reaches document: FileReader onload, the remove button's
-    // stopPropagation, drag swap. render only changes classes here, so it can't loop.
+    // stopPropagation, drag swap, and Save draft's async resetForm (it clears photo srcs).
+    // render only changes classes here, so it can't loop.
     new MutationObserver(refresh).observe(photoGrid, { subtree: true, childList: true, attributeFilter: ['src'] });
 
     // Midnight Pacific, when the promo's listing window closes.

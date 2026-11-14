@@ -10,7 +10,7 @@ const assert = require("assert");
     assert.strictEqual(estimateTakeHome(price).feeCents, feeCents, `server fee parity for ${price}`);
   }
 
-  for (const price of ["", "abc", "0", "-5", "0.001", "Infinity"]) {
+  for (const price of ["", "abc", "0", "-5", "0.001", "Infinity", "1e308", "1e17"]) {
     assert.strictEqual(estimateTakeHome(price), null, `price=${price} is rejected`);
   }
 
