@@ -305,9 +305,13 @@ section p {
 }
 
 .input-container :is(input, select, textarea):focus {
-    border-color: #dc2626 !important;
     background-color: #fff;
-    outline: none;
+}
+
+/* Not a red border: that's the .error state, so an errored field would show no focus. */
+.input-container :is(input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-text-primary);
+    outline-offset: 2px;
 }
 
 .input-container select option {
@@ -717,10 +721,8 @@ button {
     white-space: nowrap;
 }
 
-/* Bootstrap's .btn:focus-visible drops the outline for a box-shadow that only its
-   color variants define, so these showed no focus. Inset, because the desktop
-   panel's overflow clips anything drawn outside the buttons. */
-.listing-summary .btn:focus-visible {
+/* Inset: the desktop panel's overflow clips outlines drawn outside. */
+.listing-summary button:focus-visible {
     outline: 2px solid var(--color-text-primary);
     outline-offset: -4px;
 }
@@ -749,7 +751,12 @@ button {
 
     /* Room for the fixed bar so it never covers the Shipping section. */
     .listing-form {
-        padding-bottom: calc(88px + env(safe-area-inset-bottom));
+        padding-bottom: 88px;
+    }
+
+    /* Browsers scroll a focused field above the bar instead of under it. */
+    html {
+        scroll-padding-bottom: 88px;
     }
 
     /* z-index: below .brand-options (20) so a dropdown opened near the bottom
@@ -767,7 +774,7 @@ button {
         align-items: center;
         max-height: none;
         overflow: visible;
-        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        padding: 10px 16px;
         background: #fff;
         border-top: 1px solid #ebe7e7;
     }

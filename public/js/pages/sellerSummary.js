@@ -93,8 +93,12 @@ export function initListingSummary(readDraft, photoGrid) {
 
     document.querySelector('.summary-checklist').addEventListener('click', (e) => {
         const step = e.target.closest('li[data-step]')?.dataset.step;
+        if (!step) return;
+        const section = document.querySelector(`section[data-step="${step}"]`);
         // No behavior option: Bootstrap's :root scroll-behavior is already smooth only without prefers-reduced-motion.
-        if (step) document.querySelector(`section[data-step="${step}"]`).scrollIntoView();
+        section.scrollIntoView();
+        // Takes keyboard and screen-reader users to the step too; Photos has no field to focus.
+        section.querySelector('h4').focus({ preventScroll: true });
     });
 
     refresh();
