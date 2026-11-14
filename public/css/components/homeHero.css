@@ -437,39 +437,6 @@
   color: #fff;
 }
 
-.home-hero__slots {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-}
-
-.home-hero__slots li {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 0;
-  border: 1.5px dashed rgba(255, 255, 255, 0.25);
-  border-radius: 8px;
-}
-
-.home-hero__slot-num {
-  font-family: "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-  color: #fff;
-}
-
-.home-hero__slot-tag {
-  font: 600 10px Inter, sans-serif;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--hero-red);
-}
-
 .home-hero__steps {
   margin: 0;
   padding: 20px 0 0;
@@ -852,23 +819,6 @@
   .home-hero__offer-caption {
     max-width: none;
     font-size: 16px;
-  }
-
-  .home-hero__slots {
-    gap: 8px;
-  }
-
-  .home-hero__slots li {
-    gap: 6px;
-    padding: 10px 0;
-  }
-
-  .home-hero__slot-num {
-    font-size: 18px;
-  }
-
-  .home-hero__slot-tag {
-    font-size: 9px;
   }
 
   .home-hero__steps {

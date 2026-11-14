@@ -60,9 +60,17 @@ const MARKETPLACE_FEE_RATE = 0.07
 const DELIVERY_CONFIRMATION_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
 // Referral perk granted at signup when a promo code validates against the
 // codes collection -- see /promo-code/redeem and handlePaymentIntentSucceeded.
-const PROMO_SELLER_FEE_WAIVER_COUNT = 5
+// The seller fee waiver half of this perk is retired (replaced by the 2027
+// promo below); sellerFeeWaiversRemaining is still honored for sellers who
+// redeemed before that, until they've spent it.
 const PROMO_BUYER_DISCOUNT_COUNT = 5
 const PROMO_BUYER_DISCOUNT_RATE = 0.01
+
+// 2027 zero-seller-fee promo -- sellerPromos/{uid} docs are written only by
+// scripts/snapshotZeroFee2027.js. "2027" is Pacific time, same as that
+// script's cutoff.
+const ZERO_FEE_2027_START_MS = Date.parse("2027-01-01T08:00:00Z")
+const ZERO_FEE_2027_END_MS = Date.parse("2028-01-01T08:00:00Z")
 
 // Affiliate commission for a shop's code (codes collection), separate from
 // and uncapped unlike the signup perks above -- tiered by that shop's total
@@ -341,7 +349,7 @@ app.use(
   })
 );
 
-app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
+app.post('/webhook', express.raw({type: 'application/json'}), async (request, response) => {
   let event = request.body;
   // Only verify the event if you have an endpoint secret defined.
   // Otherwise use the basic event deserialized with JSON.parse
@@ -366,7 +374,12 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
       // Then define and call a method to handle the successful payment intent.
-      handlePaymentIntentSucceeded(paymentIntent);
+      try {
+        await handlePaymentIntentSucceeded(paymentIntent);
+      } catch (err) {
+        console.error('Payment webhook processing failed:', err);
+        return response.sendStatus(500);
+      }
       break;
     case 'payment_intent.amount_capturable_updated':
       // Only fires for capture_method: 'manual' PaymentIntents (i.e.
@@ -2787,9 +2800,12 @@ function calculateSellerPayoutCents(order) {
   const shippingCents = toCents(order.shippingCost);
   const salesTaxCents = toCents(order.item?.salesTax);
   const marketplaceFeeCents = toCents(order.item?.marketplaceFee);
+  // Orders from before the buyer/seller fee split have no sellerFee -- the
+  // seller paid the same fee as the buyer.
+  const sellerFeeCents = toCents(order.item?.sellerFee ?? order.item?.marketplaceFee);
 
   const listingPriceCents = subtotalCents - shippingCents - salesTaxCents - marketplaceFeeCents;
-  return listingPriceCents - marketplaceFeeCents;
+  return listingPriceCents - sellerFeeCents;
 }
 
 // Reads a seller's outstanding debts (e.g. return-shipping costs charged
@@ -4127,10 +4143,19 @@ app.get('/checkout/session', async (req, res) => {
 // Called from both /order-summary (the buyer's preview) and /tax/calculate
 // (the call that actually sets the PaymentIntent's charged amount) so the
 // quoted total and the charged total can't drift apart.
+//
+// marketplaceFee is the buyer-side fee; sellerFee is what comes out of the
+// seller's payout. They're equal except under the 2027 promo, which only
+// waives the seller side -- on the first capCents of a seller's 2027 sales,
+// with the fee still charged on any part of a sale past the cap.
 async function computePromoPricing(listing, buyerId) {
-  const [sellerProfileSnap, buyerProfileSnap] = await Promise.all([
+  const now = Date.now();
+  const in2027 = now >= ZERO_FEE_2027_START_MS && now < ZERO_FEE_2027_END_MS;
+
+  const [sellerProfileSnap, buyerProfileSnap, sellerPromoSnap] = await Promise.all([
     db.collection('userProfiles').doc(listing.userId).get(),
-    db.collection('userProfiles').doc(buyerId).get()
+    db.collection('userProfiles').doc(buyerId).get(),
+    in2027 ? db.collection('sellerPromos').doc(listing.userId).get() : null
   ]);
 
   const sellerProfile = sellerProfileSnap.exists ? sellerProfileSnap.data() : null;
@@ -4144,8 +4169,18 @@ async function computePromoPricing(listing, buyerId) {
     : listing.listingPrice;
 
   const marketplaceFee = promoFeeWaived ? 0 : MARKETPLACE_FEE_RATE * listingPrice;
+  let sellerFee = marketplaceFee;
+  let zeroFee2027WaivedCents = 0;
 
-  return { listingPrice, marketplaceFee, promoFeeWaived, promoDiscountApplied };
+  // The old code waiver (both sides, 0 fee) goes first if a seller still has one.
+  if (!promoFeeWaived && sellerPromoSnap?.exists) {
+    const { capCents, waivedSalesCents } = sellerPromoSnap.data();
+    const priceCents = Math.round(listingPrice * 100);
+    zeroFee2027WaivedCents = Math.min(priceCents, Math.max(0, capCents - waivedSalesCents));
+    sellerFee = MARKETPLACE_FEE_RATE * (priceCents - zeroFee2027WaivedCents) / 100;
+  }
+
+  return { listingPrice, marketplaceFee, sellerFee, zeroFee2027WaivedCents, promoFeeWaived, promoDiscountApplied };
 }
 
 app.post("/order-summary", verifyAuth, async(req, res) => {
@@ -4254,7 +4289,7 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
       return res.status(400).json({ success: false, message: "You can't purchase your own listing" });
     }
 
-    const { listingPrice, marketplaceFee, promoFeeWaived, promoDiscountApplied } = await computePromoPricing(listing, req.token.uid);
+    const { listingPrice, marketplaceFee, sellerFee, zeroFee2027WaivedCents, promoFeeWaived, promoDiscountApplied } = await computePromoPricing(listing, req.token.uid);
 
     // Same reasoning as /order-summary -- the buyer never pays the courier
     // rate, so this stays 0 regardless of shipping method.
@@ -4293,6 +4328,7 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     // what the order record (and its buyer/seller-facing breakdown) ends
     // up showing, matching what total actually charges.
     currentItem.marketplaceFee = parseFloat(marketplaceFee.toFixed(2));
+    currentItem.sellerFee = parseFloat(sellerFee.toFixed(2));
     // listingPrice was never persisted onto the order before -- confirm.js
     // fell back to a stale sessionStorage snapshot taken before checkout,
     // which doesn't reflect a promo discount applied here. originalPrice +
@@ -4318,7 +4354,8 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
         // re-checking eligibility again at capture time (which could have
         // changed in between).
         promo_fee_waived: String(promoFeeWaived),
-        promo_discount_applied: String(promoDiscountApplied)
+        promo_discount_applied: String(promoDiscountApplied),
+        zero_fee_2027_waived_cents: String(zeroFee2027WaivedCents)
       }
     });
 
@@ -4958,8 +4995,8 @@ app.post("/api/authentication-requests/:id/resubmit", verifyAuth, async (req, re
 });
 
 // Validates a signup promo code against the codes collection and, only on a
-// real match, grants the referral perks (seller fee waivers + buyer discount
-// uses) on the caller's own profile. Trusted step -- req.token.uid comes from
+// real match, grants the referral perk (buyer discount uses) on the
+// caller's own profile. Trusted step -- req.token.uid comes from
 // verifyAuth, not anything the client sends, since userProfiles is otherwise
 // client-writable and a forged payload there could self-grant these for free.
 app.post('/promo-code/redeem', verifyAuth, async (req, res) => {
@@ -4988,7 +5025,6 @@ app.post('/promo-code/redeem', verifyAuth, async (req, res) => {
     await profileRef.set({
       promoCode: code,
       promoCodeValid: true,
-      sellerFeeWaiversRemaining: PROMO_SELLER_FEE_WAIVER_COUNT,
       buyerDiscountRemaining: PROMO_BUYER_DISCOUNT_COUNT
     }, { merge: true });
 
@@ -5357,11 +5393,11 @@ async function handlePaymentIntentSucceeded(paymentData){
     }
 
     const salePrice = paymentData.amount / 100;
-    const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
 
-    // Waived orders have no marketplaceFee for Hexxo to absorb Stripe's cut
-    // from, so the fee has to come out of the seller's payout instead (see
-    // calculateSellerPayoutCents). Captured once here, at the only point
+    // On promo orders Stripe's processing fee comes out of the seller's
+    // payout instead of Hexxo's fee revenue (see releasePayoutToSeller) --
+    // code-waived orders have no marketplaceFee to absorb it from, and the
+    // 2027 promo terms say processing fees still apply. Captured once here, at the only point
     // this is knowable without a live Stripe call, rather than looked up
     // again on every payout attempt/retry.
     //
@@ -5370,7 +5406,11 @@ async function handlePaymentIntentSucceeded(paymentData){
     // needs this to avoid attempting a transfer before the money has
     // actually cleared, and a plain field comparison there is cheaper than
     // a live Stripe lookup on every payout attempt/retry.
-    const feeWaived = paymentData.metadata.promo_fee_waived === 'true';
+    const codeFeeWaived = paymentData.metadata.promo_fee_waived === 'true';
+    const zeroFee2027WaivedCents = parseInt(paymentData.metadata.zero_fee_2027_waived_cents || '0', 10);
+    // Either promo puts Stripe's processing fee on the seller ("payment
+    // processing fees apply" in the 2027 terms).
+    const feeWaived = codeFeeWaived || zeroFee2027WaivedCents > 0;
     let stripeFeeCents = null;
     let availableAt = null;
 
@@ -5389,49 +5429,43 @@ async function handlePaymentIntentSucceeded(paymentData){
       console.error(`Failed to retrieve balance transaction for payment intent ${paymentData.id}:`, err.message);
     }
 
-    let data;
-    let orderRef;
-
-    if (!existingOrder.empty) {
+    // Commit the order transition and allowance together: a failed write leaves
+    // both retriable, and concurrent deliveries can only claim the sale once.
+    const outcome = await db.runTransaction(async (tx) => {
+      const existingOrder = await tx.get(db.collection('orders').where('id', '==', paymentData.id).limit(1));
       const orderDoc = existingOrder.docs[0];
-      data = orderDoc.data();
-      orderRef = orderDoc.ref;
-
-      // Every state this handler (or a later step) moves an order into.
-      // Checking for just "processing" let a redelivered event rewind a
-      // shipped/delivered/refunded order -- now also reached automatically
-      // by carrier scans -- and re-run everything below (promo spend, sale
-      // stats, a second label purchase + debt). "cancelled" is left out on
-      // purpose: an order cancelled while still pending can see its payment
-      // succeed afterwards, and that existing behavior isn't changed here.
+      const data = orderDoc ? orderDoc.data() : buildOrderDataFromPaymentIntent(paymentData);
       if (['processing', 'shipped', 'delivered', 'refunded'].includes(data.fulfillmentStatus)) {
-        console.log(`order for payment intent ${paymentData.id} already ${data.fulfillmentStatus}, skipping duplicate webhook delivery`);
-        return;
+        return null;
       }
 
-      await orderRef.update({
-        status: paymentData.status,
-        fulfillmentStatus: 'processing',
-        promoFeeWaived: feeWaived,
-        stripeFeeCents,
-        availableAt,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    } else {
-      // No pending order found -- /orders/init either never fired or
-      // failed. Build the order now off the PaymentIntent's own metadata
-      // rather than silently losing a captured payment.
-      data = buildOrderDataFromPaymentIntent(paymentData);
-
-      orderRef = await db.collection('orders').add({
-        ...data,
+      const orderRef = orderDoc ? orderDoc.ref : db.collection('orders').doc();
+      const paymentFields = {
         status: paymentData.status,
         fulfillmentStatus: 'processing',
         promoFeeWaived: feeWaived,
         stripeFeeCents,
         availableAt
-      });
-    }
+      };
+      if (orderDoc) {
+        tx.update(orderRef, {
+          ...paymentFields,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      } else {
+        tx.create(orderRef, { ...data, ...paymentFields });
+      }
+      // shortcut: different checkouts can exceed the cap; reserve at checkout
+      // if a strict cap is needed. Duplicate events for one sale count once.
+      if (zeroFee2027WaivedCents > 0 && data.sellerId) {
+        tx.update(db.collection('sellerPromos').doc(data.sellerId), {
+          waivedSalesCents: admin.firestore.FieldValue.increment(zeroFee2027WaivedCents)
+        });
+      }
+      return { data, orderRef };
+    });
+    if (!outcome) return;
+    const { data, orderRef } = outcome;
 
     console.log(`order for payment intent ${paymentData.id} now processing`);
 
@@ -5440,7 +5474,7 @@ async function handlePaymentIntentSucceeded(paymentData){
     // charged), not re-checked here. This only runs on the same "first time
     // marking this order processing" path as everything below, so a
     // redelivered webhook for an already-processed order can't double-spend.
-    if (feeWaived && data.sellerId) {
+    if (codeFeeWaived && data.sellerId) {
       try {
         await db.collection('userProfiles').doc(data.sellerId).update({
           sellerFeeWaiversRemaining: admin.firestore.FieldValue.increment(-1)
@@ -5618,7 +5652,8 @@ async function handlePaymentIntentSucceeded(paymentData){
     return JSON.stringify({status: "order processing"})
 
   } catch (err) {
-    console.error(err)
+    console.error(err);
+    throw err;
   }
 }
 
