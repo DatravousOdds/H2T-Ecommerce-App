@@ -8,7 +8,10 @@
 // Needs RESEND_API_KEY, ADMIN_EMAIL and FIREBASE_CONFIG in .env.
 // NOTE: local .env points at the production Firestore, so --send is live.
 require("dotenv").config();
-const { notificationTemplates } = require("../services/emailTemplates");
+const { marketingTemplates } = require("../services/emailTemplates");
+
+// Same cutoff as scripts/snapshotZeroFee2027.js: Dec 31, 2026 11:59 PM Pacific.
+const PROMO_DEADLINE = new Date("2027-01-01T07:59:59Z");
 
 // privacy.html: marketing email is opt-in only, and the Newsletter toggle
 // turns it off. So an explicit toggle value wins; the signup checkbox only
@@ -19,13 +22,14 @@ function isOptedIn(profile) {
 }
 
 // Which template a profile gets, or null to skip it.
-function pickTemplate(profile, hasPublishedListing) {
+function pickTemplate(profile, hasPublishedListing, now = new Date()) {
   const email = String(profile.email || "").toLowerCase();
   // example.com is our test accounts; they'd bounce and hurt sender reputation.
   if (!email.includes("@") || email.endsWith("@example.com")) return null;
   if (!isOptedIn(profile)) return null;
   if (profile.outreach?.firstListing2026SentAt) return null; // already sent
-  return hasPublishedListing ? "SELLER_FEEDBACK" : "FIRST_LISTING_NUDGE";
+  if (hasPublishedListing) return "SELLER_FEEDBACK";
+  return now > PROMO_DEADLINE ? null : "FIRST_LISTING_NUDGE"; // the nudge is built on the promo; never send it expired
 }
 
 async function run() {
@@ -59,8 +63,12 @@ async function run() {
   const resend = new Resend(process.env.RESEND_API_KEY);
   let sent = 0;
   for (const { ref, type, email, firstName } of queue) {
-    const { subject, html } = notificationTemplates[type]({ firstName, unsubscribeEmail: adminEmail });
-    const { error } = await resend.emails.send({ from: "noreply@hexxo.store", to: email, replyTo: adminEmail, subject, html });
+    const { subject, html } = marketingTemplates[type]({ firstName, unsubscribeEmail: adminEmail });
+    const { error } = await resend.emails.send({
+      from: "noreply@hexxo.store", to: email, replyTo: adminEmail, subject, html,
+      // Lets Gmail/Yahoo show their own unsubscribe control.
+      headers: { "List-Unsubscribe": `<mailto:${adminEmail}?subject=Unsubscribe>` },
+    });
     if (error) {
       console.error(`✗ ${email}: ${error.message}`);
       process.exitCode = 1;

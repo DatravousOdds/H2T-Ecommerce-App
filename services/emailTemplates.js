@@ -523,9 +523,14 @@ const notificationTemplates = {
       ${paragraph('Your other images are still on file, so you only need to replace the ones mentioned above.')}
       ${button('Update your images', `${SITE_URL}/brand-onboarding`)}
     `, { preheader: `One change needed before ${escapeHtml(brandName)} goes live.` })
-  }),
+  })
+};
 
-  // ----- Marketing (opted-in users only; sent by scripts/sendOutreach.js) -----
+// Marketing emails go to opted-in users only, sent by scripts/sendOutreach.js.
+// Kept out of notificationTemplates on purpose: POST /send/update lets a
+// client pick any type templateBuilder() serves, and these must not be
+// reachable that way.
+const marketingTemplates = {
 
   // To opted-in users with no published listing. Fee claims mirror the
   // homepage promo wording, including the processing-fee fine print.
@@ -593,4 +598,4 @@ function templateBuilder(notificationType, data) {
   return build(data || {});
 }
 
-module.exports = { templateBuilder, notificationTemplates };
+module.exports = { templateBuilder, notificationTemplates, marketingTemplates };
