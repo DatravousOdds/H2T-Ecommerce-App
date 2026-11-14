@@ -13,6 +13,8 @@ const { TRACK_EVENT_RESOURCE_TYPE, DELIVERED, parseLabelId, planTrackingUpdate }
 const { verifyShipstationWebhook } = require('./services/shipstationWebhookAuth');
 const { templateBuilder } = require('./services/emailTemplates');
 const { emptyUserTally, tallyUser, summarizeOrders, averageReviewMs, summarizeDisputes, summarizeSellerDebt, countQueues } = require('./services/adminStats');
+const { addBusinessDays } = require('./services/businessDays');
+const { getBrandAction, planBrandAction } = require('./services/brandReview');
 
 // Hexxo only lists clothing/accessories, so USPS's restricted-content rate
 // classes (media mail and its close relatives) are never legitimate for a
@@ -59,9 +61,17 @@ const MARKETPLACE_FEE_RATE = 0.07
 const DELIVERY_CONFIRMATION_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
 // Referral perk granted at signup when a promo code validates against the
 // codes collection -- see /promo-code/redeem and handlePaymentIntentSucceeded.
-const PROMO_SELLER_FEE_WAIVER_COUNT = 5
+// The seller fee waiver half of this perk is retired (replaced by the 2027
+// promo below); sellerFeeWaiversRemaining is still honored for sellers who
+// redeemed before that, until they've spent it.
 const PROMO_BUYER_DISCOUNT_COUNT = 5
 const PROMO_BUYER_DISCOUNT_RATE = 0.01
+
+// 2027 zero-seller-fee promo -- sellerPromos/{uid} docs are written only by
+// scripts/snapshotZeroFee2027.js. "2027" is Pacific time, same as that
+// script's cutoff.
+const ZERO_FEE_2027_START_MS = Date.parse("2027-01-01T08:00:00Z")
+const ZERO_FEE_2027_END_MS = Date.parse("2028-01-01T08:00:00Z")
 
 // Affiliate commission for a shop's code (codes collection), separate from
 // and uncapped unlike the signup perks above -- tiered by that shop's total
@@ -228,6 +238,30 @@ async function sendAdminNotification(notificationType, data) {
   }
 }
 
+// Best-effort email to a customer from a server-side event, e.g. an admin
+// decision (unlike /send/update, there's no request from that user to answer).
+// Never throws. Returns whether it sent, so the caller can tell the admin.
+// Resend's SDK reports failures as { error } instead of throwing, so that's
+// checked explicitly.
+async function sendUserEmail(to, notificationType, data) {
+  try {
+    const template = templateBuilder(notificationType, data);
+    if (!to || !template) return false;
+
+    const { error } = await resendClient.emails.send({
+      from: 'noreply@hexxo.store',
+      to,
+      subject: template.subject,
+      html: template.html
+    });
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error(`Error sending ${notificationType} email:`, error);
+    return false;
+  }
+}
+
 const AUTHENTICATION_MIN_PRICE = 150;
 const SNEAKER_FOOTWEAR_BRANDS = [
   "nike", "jordan", "adidas", "yeezy", "new balance", "asics", "vans",
@@ -316,7 +350,7 @@ app.use(
   })
 );
 
-app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
+app.post('/webhook', express.raw({type: 'application/json'}), async (request, response) => {
   let event = request.body;
   // Only verify the event if you have an endpoint secret defined.
   // Otherwise use the basic event deserialized with JSON.parse
@@ -341,7 +375,12 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
       const paymentIntent = event.data.object;
       console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`);
       // Then define and call a method to handle the successful payment intent.
-      handlePaymentIntentSucceeded(paymentIntent);
+      try {
+        await handlePaymentIntentSucceeded(paymentIntent);
+      } catch (err) {
+        console.error('Payment webhook processing failed:', err);
+        return response.sendStatus(500);
+      }
       break;
     case 'payment_intent.amount_capturable_updated':
       // Only fires for capture_method: 'manual' PaymentIntents (i.e.
@@ -425,47 +464,25 @@ app.post('/webhooks/shipstation', express.raw({ type: '*/*', limit: '1mb' }), as
 });
 
 async function handleShipstationTrackingUpdate(orderRef, labelId, data) {
-  // 1. Record the tracking snapshot and claim one-off notifications in one
-  //    transaction -- two deliveries for the same order racing each other
-  //    can't both see "not yet notified" and both notify.
-  const plan = await db.runTransaction(async (tx) => {
-    const order = (await tx.get(orderRef)).data();
-
-    // The label id matched, so this should never trip -- but if it ever
-    // does, writing another package's tracking onto this order is worse
-    // than dropping the event.
-    if (data.tracking_number && order.trackingNumber && data.tracking_number !== order.trackingNumber) {
-      return { mismatch: true, orderTracking: order.trackingNumber };
-    }
-
-    const plan = planTrackingUpdate({
-      fulfillmentStatus: order.fulfillmentStatus,
-      lastTrackingEventAtMs: order.lastTrackingEventAt?.toMillis?.() ?? null,
-      outForDeliveryNotified: Boolean(order.outForDeliveryNotifiedAt)
-    }, data);
-
-    if (!plan.stale) {
-      tx.update(orderRef, {
-        ...plan.snapshot,
-        ...(plan.notifyOutForDelivery ? { outForDeliveryNotifiedAt: admin.firestore.FieldValue.serverTimestamp() } : {}),
-        trackingUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
-    return { ...plan, order };
-  });
-
-  if (plan.mismatch) {
-    console.error(`ShipStation tracking for label ${labelId} has tracking_number ${data.tracking_number}, order has ${plan.orderTracking} -- ignored`);
+  const initialOrder = (await orderRef.get()).data();
+  if (!initialOrder) return;
+  if (data.tracking_number && initialOrder.trackingNumber && data.tracking_number !== initialOrder.trackingNumber) {
+    console.error(`ShipStation tracking for label ${labelId} has tracking_number ${data.tracking_number}, order has ${initialOrder.trackingNumber} -- ignored`);
     return;
   }
 
-  // 2. Status transitions. Both helpers are forward-only and no-op when the
-  //    order is already there, so a retried delivery is safe to re-run.
-  if (plan.ship) {
+  const transition = planTrackingUpdate({
+    fulfillmentStatus: initialOrder.fulfillmentStatus,
+    lastTrackingEventAtMs: initialOrder.lastTrackingEventAt?.toMillis?.() ?? null,
+    outForDeliveryNotified: Boolean(initialOrder.outForDeliveryNotifiedAt)
+  }, data);
+
+  // Finish retriable transitions before consuming the tracking event.
+  if (transition.ship) {
     await markOrderShipped(orderRef, { source: 'carrier' });
   }
 
-  if (plan.deliver) {
+  if (transition.deliver) {
     // Delivery starts the buyer's confirmation window and with it the
     // seller's payout clock, so it's confirmed against ShipStation directly
     // rather than trusted from the payload alone. A throw here (timeout,
@@ -486,8 +503,29 @@ async function handleShipstationTrackingUpdate(orderRef, labelId, data) {
     }
   }
 
-  // 3. One-off notifications, only ever after the transaction committed
-  //    (transaction callbacks can re-run; notifications must not).
+  // Re-read and claim notifications atomically so concurrent deliveries notify once.
+  const plan = await db.runTransaction(async (tx) => {
+    const order = (await tx.get(orderRef)).data();
+    if (!order || (data.tracking_number && order.trackingNumber && data.tracking_number !== order.trackingNumber)) return null;
+
+    const plan = planTrackingUpdate({
+      fulfillmentStatus: order.fulfillmentStatus,
+      lastTrackingEventAtMs: order.lastTrackingEventAt?.toMillis?.() ?? null,
+      outForDeliveryNotified: Boolean(order.outForDeliveryNotifiedAt)
+    }, data);
+
+    if (!plan.stale) {
+      tx.update(orderRef, {
+        ...plan.snapshot,
+        ...(plan.notifyOutForDelivery ? { outForDeliveryNotifiedAt: admin.firestore.FieldValue.serverTimestamp() } : {}),
+        trackingUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    return { ...plan, order };
+  });
+  if (!plan) return;
+
+  // Transaction callbacks can re-run; send notifications only after commit.
   const { order } = plan;
   const itemName = order.item?.name || "your item";
 
@@ -660,6 +698,573 @@ app.post('/send/contact', async (req, res) => {
   } catch (error) {
     console.error('Error sending contact form email:', error);
     return res.status(500).json({ success: false, message: 'Failed to send message. Please try again.' });
+  }
+});
+
+// ---- Upcoming brand onboarding ----
+// One application per account: upcomingBrands/{uid}. The full EIN lives in
+// brandApplicationsPrivate/{uid} instead, so admin list reads and the public
+// carousel route (both read upcomingBrands) can never carry it by accident.
+
+// Category shown on the brand's Upcoming Brands card. Must match the <select>
+// in public/brandOnboarding/apply.html; "Other" is the catch-all so no brand
+// is forced into a category that doesn't fit.
+const BRAND_CATEGORIES = ['Apparel', 'Graphic Tees', 'Outerwear', 'Sneakers', 'Accessories', 'Jewelry', 'Headwear', 'Bags', 'Other'];
+const BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS = 3;
+const INSTAGRAM_HANDLE_PATTERN = /^[A-Za-z0-9._]{1,30}$/;
+
+// Accepts a pasted profile link as well as a handle. Keep in sync with
+// normalizeInstagram in public/js/pages/brandOnboarding/apply.js. A link with
+// more path (a post, /p/abc) doesn't match, so it fails the handle check.
+function normalizeInstagram(value) {
+  const profileLink = value.match(/^(?:https?:\/\/)?(?:www\.|m\.)?instagram\.com\/([^/?#]+)\/?(?:[?#].*)?$/i);
+  return (profileLink ? profileLink[1] : value).replace(/^@/, '');
+}
+
+// Returns { error } or { application, ein }. Repeats every check the form
+// does, since anyone can send this request without using our form.
+function parseBrandApplication(body = {}) {
+  const text = (value) => (typeof value === 'string' ? value.trim() : '');
+  const brandName = text(body.brandName);
+  const category = text(body.category);
+  const description = text(body.description);
+  const instagram = normalizeInstagram(text(body.instagram));
+  const website = text(body.website);
+  const einDigits = text(body.ein).replace(/[\s-]/g, '');
+
+  if (!brandName || brandName.length > 60) return { error: 'Brand name is required (60 characters max).' };
+  if (!BRAND_CATEGORIES.includes(category)) return { error: 'Choose a category from the list.' };
+  if (description.length < 20 || description.length > 1000) return { error: 'Description must be 20 to 1000 characters.' };
+  if (!INSTAGRAM_HANDLE_PATTERN.test(instagram)) return { error: 'Enter your Instagram handle, like @yourbrand, or a link to your profile.' };
+
+  let websiteUrl = null;
+  if (website) {
+    try {
+      // "yourbrand.com" is what most people type, so assume https when no scheme is given
+      const url = new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`);
+      if (!url.hostname.includes('.') || url.href.length > 200) throw new Error('bad url');
+      websiteUrl = url.href;
+    } catch {
+      return { error: 'Enter a valid website address, like yourbrand.com.' };
+    }
+  }
+
+  // Format check only -- it can't prove the EIN belongs to this brand.
+  if (einDigits && !/^\d{9}$/.test(einDigits)) return { error: 'An EIN is 9 digits, like 12-3456789.' };
+
+  return {
+    application: { brandName, category, description, instagram, website: websiteUrl },
+    ein: einDigits ? `${einDigits.slice(0, 2)}-${einDigits.slice(2)}` : null,
+  };
+}
+
+// When a rejected applicant may apply again, or null if the cooldown doesn't apply.
+function brandReapplyAt(application) {
+  if (application.status !== 'rejected' || !application.rejectedAt) return null;
+  return addBusinessDays(application.rejectedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS);
+}
+
+// The caller's own application, or null. Picks fields explicitly so internal
+// fields added later (reviewer ids, asset paths) don't leak out by default.
+app.get('/api/brand-onboarding/me', verifyAuth, async (req, res) => {
+  try {
+    const [snap, profileSnap] = await Promise.all([
+      db.collection('upcomingBrands').doc(req.token.uid).get(),
+      db.collection('userProfiles').doc(req.token.uid).get(),
+    ]);
+    // New accounts start with an empty username, and applying requires one.
+    // Reported here so the page can ask before the owner fills in the form.
+    const hasUsername = Boolean(profileSnap.data()?.username);
+    if (!snap.exists) return res.json({ success: true, hasUsername, application: null });
+
+    const data = snap.data();
+    return res.json({
+      success: true,
+      hasUsername,
+      application: {
+        brandName: data.brandName,
+        category: data.category,
+        description: data.description,
+        instagram: data.instagram,
+        website: data.website,
+        einLast4: data.einLast4,
+        status: data.status,
+        reviewerNotes: data.reviewerNotes,
+        submittedAt: data.submittedAt?.toDate?.().getTime() || null,
+        reapplyAt: brandReapplyAt(data)?.getTime() || null,
+        // Lets the upload page show what's already uploaded (e.g. after an
+        // admin asks for changes)
+        assets: data.assets
+          ? Object.fromEntries(Object.entries(data.assets).map(([kind, asset]) => [kind, asset.url]))
+          : null,
+      },
+    });
+  } catch (error) {
+    console.error('Error loading brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not load your application.' });
+  }
+});
+
+// A published brand shows the "New" badge for its first 30 days.
+const BRAND_NEW_BADGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+// Public card data for the homepage Upcoming Brands carousel and
+// /shop/brands.html#upcoming. Published brands only; fields are picked
+// explicitly so contactEmail, einLast4 and reviewer data never go out.
+// An empty list is what hides the carousel on the frontend.
+// Every homepage view calls this, and Firestore bills per document read, so
+// results are cached in memory for a minute: about one query per minute
+// instead of one per visitor. Concurrent requests share one in-flight query.
+// shortcut: per-process cache; each server instance keeps its own copy,
+// which is fine for a 60s TTL. Move to a shared cache if it ever needs to be exact.
+const UPCOMING_BRANDS_TTL_MS = 60 * 1000;
+let upcomingBrandsCache = { brands: null, expiresAt: 0, pending: null };
+
+async function loadUpcomingBrands() {
+  const snap = await db.collection('upcomingBrands').where('status', '==', 'published').get();
+  if (snap.empty) return [];
+
+  // The handle saved at submit goes stale if the owner changes their
+  // username, so cards use the current one (one batched read per cache
+  // refresh, not per visitor) and fall back to the saved handle.
+  const profiles = await db.getAll(...snap.docs.map((doc) => db.collection('userProfiles').doc(doc.id)));
+  const currentHandles = new Map(profiles.map((profile) => [profile.id, profile.data()?.username]));
+  const now = Date.now();
+
+  // shortcut: sorted in memory to avoid a composite index; fine while
+  // published brands number in the dozens.
+  return snap.docs
+    .map((doc) => ({ doc, publishedAt: doc.data().publishedAt?.toMillis?.() || 0 }))
+    .sort((a, b) => b.publishedAt - a.publishedAt)
+    .map(({ doc, publishedAt }) => {
+      const data = doc.data();
+      return {
+        name: data.brandName,
+        founderHandle: currentHandles.get(doc.id) || data.founderHandle,
+        category: data.category,
+        // The approved card image; null falls back to the card's wordmark
+        image: data.assets?.card?.url || null,
+        // Computed at load, so it can lag the 30-day mark by up to the cache TTL
+        isNew: publishedAt > 0 && now - publishedAt < BRAND_NEW_BADGE_MS,
+      };
+    });
+}
+
+app.get('/api/upcoming-brands', async (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300');
+
+  if (upcomingBrandsCache.brands && Date.now() < upcomingBrandsCache.expiresAt) {
+    return res.json({ success: true, brands: upcomingBrandsCache.brands });
+  }
+
+  try {
+    upcomingBrandsCache.pending ||= loadUpcomingBrands();
+    const brands = await upcomingBrandsCache.pending;
+    upcomingBrandsCache = { brands, expiresAt: Date.now() + UPCOMING_BRANDS_TTL_MS, pending: null };
+    return res.json({ success: true, brands });
+  } catch (error) {
+    upcomingBrandsCache.pending = null;
+    console.error('Error loading upcoming brands:', error);
+    // Serve the last good list rather than hiding the carousel on a blip
+    if (upcomingBrandsCache.brands) return res.json({ success: true, brands: upcomingBrandsCache.brands });
+    res.set('Cache-Control', 'no-store');
+    return res.status(500).json({ success: false, message: 'Could not load upcoming brands.' });
+  }
+});
+
+// Submit a new application, or reapply after a rejection once the cooldown
+// has passed. The read-then-write runs in a transaction so a double submit
+// can't create two applications or reapply twice.
+app.post('/api/brand-onboarding', verifyAuth, async (req, res) => {
+  const { error, application, ein } = parseBrandApplication(req.body);
+  if (error) return res.status(400).json({ success: false, message: error });
+
+  const uid = req.token.uid;
+  const contactEmail = req.token.email;
+  if (!contactEmail) {
+    return res.status(400).json({ success: false, message: 'Your account needs an email address to apply.' });
+  }
+
+  try {
+    // Handle and email come from the account, never the request body, so an
+    // applicant can't put someone else's @handle on their brand card.
+    const profileSnap = await db.collection('userProfiles').doc(uid).get();
+    const founderHandle = profileSnap.data()?.username;
+    if (!founderHandle) {
+      return res.status(400).json({ success: false, message: 'Add a username to your profile before applying. It shows on your brand card.' });
+    }
+
+    const applicationRef = db.collection('upcomingBrands').doc(uid);
+    const privateRef = db.collection('brandApplicationsPrivate').doc(uid);
+
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      const existing = snap.exists ? snap.data() : null;
+
+      // Still waiting for review = the owner is editing it in place
+      const isEdit = existing?.status === 'pending_review';
+      if (existing && existing.status !== 'rejected' && !isEdit) {
+        return { conflict: 'Your application has already been reviewed, so it can\'t be changed.' };
+      }
+
+      const reapplyAt = existing && brandReapplyAt(existing);
+      if (reapplyAt && Date.now() < reapplyAt.getTime()) {
+        return { conflict: 'You can reapply after the waiting period.', reapplyAt: reapplyAt.getTime() };
+      }
+
+      const now = admin.firestore.FieldValue.serverTimestamp();
+      // An edit isn't a new attempt
+      const applicationCount = isEdit ? existing.applicationCount : (existing?.applicationCount || 0) + 1;
+
+      // Full overwrite (no merge) so a reapply starts clean: the old
+      // rejection notes and timestamps don't carry over. An edit keeps its
+      // original submittedAt so it doesn't jump the admin's queue.
+      tx.set(applicationRef, {
+        ...application,
+        founderHandle,
+        contactEmail,
+        einLast4: ein ? ein.slice(-4) : null,
+        status: 'pending_review',
+        applicationCount,
+        reviewerNotes: null,
+        createdAt: existing?.createdAt || now,
+        submittedAt: isEdit ? existing.submittedAt : now,
+        ...(isEdit && { updatedAt: now }),
+      });
+
+      if (ein) {
+        tx.set(privateRef, { ein, updatedAt: now });
+      } else {
+        // A reapply without an EIN shouldn't leave the previous one behind
+        tx.delete(privateRef);
+      }
+
+      return { applicationCount, isEdit };
+    });
+
+    if (result.conflict) {
+      return res.status(409).json({ success: false, message: result.conflict, reapplyAt: result.reapplyAt || null });
+    }
+
+    // Fire-and-forget: sendAdminNotification never throws, and the
+    // application is already saved whether or not the email goes out.
+    sendAdminNotification('BRAND_APPLICATION_SUBMITTED', {
+      ...application,
+      founderHandle,
+      contactEmail,
+      hasEin: Boolean(ein),
+      applicationCount: result.applicationCount,
+      isUpdate: result.isEdit,
+    });
+
+    return res.status(result.isEdit ? 200 : 201).json({ success: true, status: 'pending_review', updated: result.isEdit });
+  } catch (error) {
+    console.error('Error submitting brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not submit your application. Please try again.' });
+  }
+});
+
+// Withdraw an application that hasn't been reviewed yet: deletes it and the
+// private EIN record. With no application left, the owner can apply again
+// right away (no cooldown, since they weren't rejected).
+app.delete('/api/brand-onboarding', verifyAuth, async (req, res) => {
+  const applicationRef = db.collection('upcomingBrands').doc(req.token.uid);
+  const privateRef = db.collection('brandApplicationsPrivate').doc(req.token.uid);
+
+  try {
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      if (!snap.exists) return { notFound: true };
+      if (snap.data().status !== 'pending_review') return { conflict: true };
+
+      tx.delete(applicationRef);
+      tx.delete(privateRef);
+      return {};
+    });
+
+    if (result.notFound) return res.status(404).json({ success: false, message: 'You don\'t have an application to withdraw.' });
+    if (result.conflict) return res.status(409).json({ success: false, message: 'Your application has already been reviewed, so it can\'t be withdrawn.' });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Error withdrawing brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not withdraw your application. Please try again.' });
+  }
+});
+
+// ---- Brand onboarding: owner image upload ----
+// The browser uploads straight to Storage at upcomingBrands/{uid}/{kind}
+// (fixed names, no extension, so a re-upload replaces the file instead of
+// leaving an orphan). This is the bucket every other browser upload uses
+// (seller.js, profile-media.js); the Admin SDK's default bucket from
+// FIREBASE_CONFIG is a different one (.appspot.com, used for shipping labels).
+const brandAssetsBucket = admin.storage().bucket('ecom-website-94d87');
+const crypto = require('crypto');
+const BRAND_ASSET_KINDS = ['card', 'logo', 'cover'];
+const BRAND_ASSET_MAX_BYTES = 5 * 1024 * 1024;
+const BRAND_ASSET_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Submitted images are frozen: each upload is copied to
+// brandAssets/{uid}/{kind}-{version}, a path browsers can't write (Storage
+// denies it by default), and the copy is what gets reviewed and published.
+// Without this, the owner could overwrite upcomingBrands/{uid}/{kind} after
+// review and either swap the approved image or break its URL.
+const BRAND_FROZEN_PREFIX = 'brandAssets/';
+
+function brandAssetUrl(path, token) {
+  return `https://firebasestorage.googleapis.com/v0/b/${brandAssetsBucket.name}/o/${encodeURIComponent(path)}?alt=media&token=${token}`;
+}
+
+// Copies one upload to its frozen path and checks the COPY, so what's
+// validated is exactly what's saved, even if the owner re-uploads mid-request.
+// Returns { path, url } or { error }; a copy that fails the checks is deleted.
+async function freezeBrandAsset(uid, kind, version) {
+  const source = brandAssetsBucket.file(`upcomingBrands/${uid}/${kind}`);
+  const frozen = brandAssetsBucket.file(`${BRAND_FROZEN_PREFIX}${uid}/${kind}-${version}`);
+
+  try {
+    await source.copy(frozen);
+  } catch (error) {
+    if (error.code === 404) return { error: `Upload your ${kind} image.` };
+    throw error;
+  }
+
+  const [metadata] = await frozen.getMetadata();
+  let problem = null;
+  if (!BRAND_ASSET_CONTENT_TYPES.includes(metadata.contentType)) {
+    problem = `Your ${kind} image must be a JPG, PNG, or WebP.`;
+  } else if (Number(metadata.size) > BRAND_ASSET_MAX_BYTES) {
+    problem = `Your ${kind} image is over 5 MB. Upload a smaller one.`;
+  }
+  if (problem) {
+    await frozen.delete({ ignoreNotFound: true });
+    return { error: problem };
+  }
+
+  // A fresh token, so the URL is the copy's own and unrelated to the upload's
+  const token = crypto.randomUUID();
+  await frozen.setMetadata({ metadata: { firebaseStorageDownloadTokens: token } });
+  return { path: frozen.name, url: brandAssetUrl(frozen.name, token) };
+}
+
+// Best-effort cleanup; a leftover file costs a little storage, never correctness.
+async function deleteBrandAssetFiles(paths) {
+  await Promise.all(paths.map((path) => brandAssetsBucket.file(path).delete({ ignoreNotFound: true })
+    .catch((error) => console.error(`Failed to delete brand asset ${path}:`, error))));
+}
+
+// Owner says "my images are uploaded". There's no body to validate: the
+// server only ever looks in the caller's own folder.
+app.post('/api/brand-onboarding/assets', verifyAuth, async (req, res) => {
+  const uid = req.token.uid;
+  const applicationRef = db.collection('upcomingBrands').doc(uid);
+
+  try {
+    // Early check so a wrong-status request gets a 409, not "upload your card image"
+    const snap = await applicationRef.get();
+    if (!snap.exists || snap.data().status !== 'approved_awaiting_assets') {
+      return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
+    }
+
+    // Unique per request, not just per millisecond: a request that loses the
+    // transaction below deletes its own copies, which must never be the
+    // winner's files.
+    const version = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+    const frozen = await Promise.allSettled(BRAND_ASSET_KINDS.map((kind) => freezeBrandAsset(uid, kind, version)));
+    const newPaths = frozen.filter((r) => r.status === 'fulfilled' && r.value.path).map((r) => r.value.path);
+    const failed = frozen.find((r) => r.status === 'rejected');
+    const problem = frozen.find((r) => r.status === 'fulfilled' && r.value.error);
+    if (failed || problem) {
+      // All three or none: drop the copies that did succeed
+      await deleteBrandAssetFiles(newPaths);
+      if (failed) throw failed.reason;
+      return res.status(400).json({ success: false, message: problem.value.error });
+    }
+
+    const assets = Object.fromEntries(BRAND_ASSET_KINDS.map((kind, i) => [kind, frozen[i].value]));
+
+    // Re-checked in a transaction: all three images are saved together with
+    // the status change, or none are.
+    const result = await db.runTransaction(async (tx) => {
+      const current = await tx.get(applicationRef);
+      if (current.data()?.status !== 'approved_awaiting_assets') return { conflict: true };
+
+      tx.update(applicationRef, {
+        assets,
+        status: 'assets_submitted',
+        assetsSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return { application: current.data() };
+    });
+
+    if (result.conflict) {
+      await deleteBrandAssetFiles(newPaths);
+      return res.status(409).json({ success: false, message: 'Your application isn\'t waiting for images right now.' });
+    }
+
+    // A resubmit (after an admin asks for changes) replaces the earlier frozen
+    // copies, so remove them. Not awaited: the response doesn't depend on it.
+    const previousPaths = Object.values(result.application.assets || {})
+      .map((asset) => asset?.path)
+      .filter((path) => path?.startsWith(BRAND_FROZEN_PREFIX) && !newPaths.includes(path));
+    if (previousPaths.length) deleteBrandAssetFiles(previousPaths);
+
+    sendAdminNotification('BRAND_ASSETS_SUBMITTED', {
+      brandName: result.application.brandName,
+      founderHandle: result.application.founderHandle,
+    });
+
+    return res.json({ success: true, status: 'assets_submitted' });
+  } catch (error) {
+    console.error('Error submitting brand images:', error);
+    return res.status(500).json({ success: false, message: 'Could not submit your images. Please try again.' });
+  }
+});
+
+// ---- Brand onboarding: admin review ----
+const BRAND_STATUSES = ['pending_review', 'rejected', 'approved_awaiting_assets', 'assets_submitted', 'published', 'unpublished'];
+
+// Reapply dates in emails are shown in Hexxo's own timezone (Texas), since
+// the server may run in UTC and would otherwise show the wrong day near midnight.
+function formatBrandEmailDate(date) {
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/Chicago' });
+}
+
+// Applications in one status, newest first. The full EIN isn't in these
+// docs (it's in brandApplicationsPrivate), so whole docs are safe to return.
+app.get('/api/admin/brand-applications', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  const status = req.query.status || 'pending_review';
+  if (!BRAND_STATUSES.includes(status)) {
+    return res.status(400).json({ success: false, message: `status must be one of: ${BRAND_STATUSES.join(', ')}` });
+  }
+
+  try {
+    const snap = await db.collection('upcomingBrands').where('status', '==', status).get();
+
+    // shortcut: sorted in memory to avoid a composite index; fine at
+    // dozens of applications, switch to orderBy + index if it reaches thousands.
+    const items = snap.docs
+      .map((doc) => {
+        const data = doc.data();
+        return {
+          uid: doc.id,
+          brandName: data.brandName,
+          category: data.category,
+          description: data.description,
+          instagram: data.instagram,
+          website: data.website,
+          founderHandle: data.founderHandle,
+          contactEmail: data.contactEmail,
+          einLast4: data.einLast4,
+          applicationCount: data.applicationCount,
+          status: data.status,
+          reviewerNotes: data.reviewerNotes,
+          submittedAt: data.submittedAt?.toDate?.().getTime() || null,
+          publishedAt: data.publishedAt?.toDate?.().getTime() || null,
+          assets: data.assets
+            ? Object.fromEntries(Object.entries(data.assets).map(([kind, asset]) => [kind, asset.url]))
+            : null,
+        };
+      })
+      .sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+
+    return res.json({ success: true, items });
+  } catch (error) {
+    console.error('Error listing brand applications:', error);
+    return res.status(500).json({ success: false, message: 'Could not load applications.' });
+  }
+});
+
+// The full EIN, only when an admin explicitly asks for one application's.
+// Kept out of the list route so it's never sent just by opening the page.
+app.get('/api/admin/brand-applications/:uid/ein', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  try {
+    const snap = await db.collection('brandApplicationsPrivate').doc(req.params.uid).get();
+    if (!snap.exists || !snap.data().ein) {
+      return res.status(404).json({ success: false, message: 'No EIN on file for this application.' });
+    }
+
+    // Audit trail: who looked at whose tax ID, without logging the number itself
+    console.info(`EIN viewed for brand application ${req.params.uid} by admin ${req.token.uid}`);
+    return res.json({ success: true, ein: snap.data().ein });
+  } catch (error) {
+    console.error('Error loading EIN:', error);
+    return res.status(500).json({ success: false, message: 'Could not load the EIN.' });
+  }
+});
+
+// Approve or reject a pending application. The transaction re-checks the
+// status, so two admins (or a double-click) can't both decide the same one.
+app.post('/api/admin/brand-applications/:uid/decision', verifyAuth, async (req, res) => {
+  if (req.token.admin !== true) {
+    return res.status(403).json({ success: false, message: 'Admin only' });
+  }
+
+  const { decision } = req.body || {};
+  const reviewerNotes = typeof req.body?.reviewerNotes === 'string' ? req.body.reviewerNotes.trim() : '';
+
+  const action = getBrandAction(decision);
+  if (!action) {
+    return res.status(400).json({ success: false, message: 'Unknown decision.' });
+  }
+  // The owner sees these notes; a rejection or change request with no
+  // reason gives them nothing to fix
+  if (action.notesRequired && !reviewerNotes) {
+    return res.status(400).json({ success: false, message: action.notesRequired });
+  }
+  if (reviewerNotes.length > 1000) {
+    return res.status(400).json({ success: false, message: 'Notes must be 1000 characters or fewer.' });
+  }
+
+  const applicationRef = db.collection('upcomingBrands').doc(req.params.uid);
+
+  try {
+    // One timestamp for the doc and the email, so the reapply date the
+    // owner is told matches the one GET /me computes from rejectedAt.
+    const decidedAt = admin.firestore.Timestamp.now();
+
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(applicationRef);
+      if (!snap.exists) return { notFound: true };
+
+      const application = snap.data();
+      const plan = planBrandAction(application, decision, { reviewerNotes, decidedAt, adminUid: req.token.uid });
+      if (plan.conflict) return { conflict: plan.conflict };
+
+      tx.update(applicationRef, plan.update);
+      return { application };
+    });
+
+    if (result.notFound) return res.status(404).json({ success: false, message: 'Application not found.' });
+    if (result.conflict) return res.status(409).json({ success: false, message: result.conflict });
+
+    // After the commit: an email failure can't undo the decision, but the
+    // admin is told so they can follow up with the owner.
+    // emailSent stays null for actions that don't email anyone (the toggles)
+    const { application } = result;
+    let emailSent = null;
+    if (action.email) {
+      emailSent = await sendUserEmail(application.contactEmail, action.email, {
+        brandName: application.brandName,
+        founderHandle: application.founderHandle,
+        reviewerNotes,
+        ...(decision === 'rejected' && {
+          reapplyDate: formatBrandEmailDate(addBusinessDays(decidedAt.toDate(), BRAND_REAPPLY_COOLDOWN_BUSINESS_DAYS)),
+        }),
+      });
+    }
+
+    return res.json({ success: true, status: action.to, emailSent });
+  } catch (error) {
+    console.error('Error deciding brand application:', error);
+    return res.status(500).json({ success: false, message: 'Could not save the decision. Please try again.' });
   }
 });
 
@@ -861,6 +1466,76 @@ app.get("/brands", (req, res) => {
 app.get("/about", (req, res) => {
   res.sendFile(path.join(staticPth, "static/about.html"));
 });
+
+app.get("/brand-onboarding", (req, res) => {
+  res.sendFile(path.join(staticPth, "brandOnboarding/apply.html"));
+});
+
+// Public aggregate counts for the About page KPI band. Cached in memory so
+// page views don't each cost Firestore reads; the in-flight promise is shared
+// so a burst of requests after expiry triggers one refresh, not many.
+// shortcut: select() reads every user/active-listing doc on each refresh
+// (firestore 5.x has no count()); upgrade firebase-admin to >=11.4 for
+// count() aggregations, or keep a counters doc, once these collections grow.
+const ABOUT_STATS_TTL_MS = 60 * 60 * 1000;
+// The SDK lets a RunQuery hang up to 300s (600s with retries); cap it so a
+// stalled Firestore fails fast instead of holding every About-page request.
+const ABOUT_STATS_TIMEOUT_MS = 10 * 1000;
+// After a failure, wait before re-reading both collections again so an
+// outage doesn't turn every page view into fresh full-collection reads.
+const ABOUT_STATS_RETRY_MS = 60 * 1000;
+let aboutStatsCache = { data: null, expiresAt: 0, pending: null };
+
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+async function loadAboutStats() {
+  const [users, listings] = await Promise.all([
+    db.collection("userProfiles").select().get(),
+    db.collection("listings").where("status", "==", "active").select("brand").get(),
+  ]);
+  const brands = new Set(
+    listings.docs
+      .map((doc) => String(doc.get("brand") || "").trim().toLowerCase())
+      .filter(Boolean)
+  );
+  return { users: users.size, listings: listings.size, brands: brands.size };
+}
+
+const sendAboutStats = (res) =>
+  aboutStatsCache.data
+    ? res.json(aboutStatsCache.data)
+    : res.status(503).json({ success: false, message: "Stats unavailable" });
+
+app.get("/api/about-stats", async (req, res) => {
+  // Fresh data, or a recent failure still inside its retry window.
+  if (Date.now() < aboutStatsCache.expiresAt) return sendAboutStats(res);
+
+  try {
+    if (!aboutStatsCache.pending) {
+      aboutStatsCache.pending = withTimeout(loadAboutStats(), ABOUT_STATS_TIMEOUT_MS);
+    }
+    const data = await aboutStatsCache.pending;
+    aboutStatsCache = { data, expiresAt: Date.now() + ABOUT_STATS_TTL_MS, pending: null };
+  } catch (error) {
+    // Every request awaiting this refresh lands here; only log/back off once.
+    if (aboutStatsCache.pending) {
+      console.error("About stats failed:", error.message);
+      aboutStatsCache = {
+        data: aboutStatsCache.data, // serve the last good numbers meanwhile
+        expiresAt: Date.now() + ABOUT_STATS_RETRY_MS,
+        pending: null,
+      };
+    }
+  }
+  sendAboutStats(res);
+});
+
 // authentication route
 app.get("/authenticate", (req, res) => {
   res.sendFile(path.join(staticPth, "authenticator/authenticate.html"));
@@ -888,6 +1563,12 @@ app.get("/admin/delivery-confirmation-review", (req, res) => {
 // POST /api/admin/order-authentications/:orderId/decision's isAdmin checks.
 app.get("/admin/order-authentication-review", (req, res) => {
   res.sendFile(path.join(staticPth, "admin/order-authentication-review.html"));
+});
+
+// Same UX-only client-side gate pattern as authentication-review above.
+// Real enforcement is the admin check on every /api/admin/brand-applications route.
+app.get("/admin/brand-review", (req, res) => {
+  res.sendFile(path.join(staticPth, "admin/brand-review.html"));
 });
 
 // login route
@@ -1107,6 +1788,10 @@ app.get("/api/sellers/:id/public-profile", async (req, res) => {
     return res.json({
       username: profile.username || "",
       profileImage: profile.profileImage || "",
+      // The banner the seller set on their account page, shown on their public
+      // profile. Seller-writable, and the page calls .replace() on it, so only
+      // a string gets through -- anything else would break the whole page.
+      backgroundImage: typeof profile.backgroundImage === "string" ? profile.backgroundImage : "",
       // Two distinct badges: Verified Seller (badge-verified-solid-shield.svg)
       // reflects identity verification at signup; Trusted Seller (shield-logo.svg)
       // is earned via a track record and is derived from cleanSalesCount, which
@@ -2117,9 +2802,12 @@ function calculateSellerPayoutCents(order) {
   const shippingCents = toCents(order.shippingCost);
   const salesTaxCents = toCents(order.item?.salesTax);
   const marketplaceFeeCents = toCents(order.item?.marketplaceFee);
+  // Orders from before the buyer/seller fee split have no sellerFee -- the
+  // seller paid the same fee as the buyer.
+  const sellerFeeCents = toCents(order.item?.sellerFee ?? order.item?.marketplaceFee);
 
   const listingPriceCents = subtotalCents - shippingCents - salesTaxCents - marketplaceFeeCents;
-  return listingPriceCents - marketplaceFeeCents;
+  return listingPriceCents - sellerFeeCents;
 }
 
 // Reads a seller's outstanding debts (e.g. return-shipping costs charged
@@ -3619,10 +4307,19 @@ app.get('/checkout/session', async (req, res) => {
 // Called from both /order-summary (the buyer's preview) and /tax/calculate
 // (the call that actually sets the PaymentIntent's charged amount) so the
 // quoted total and the charged total can't drift apart.
+//
+// marketplaceFee is the buyer-side fee; sellerFee is what comes out of the
+// seller's payout. They're equal except under the 2027 promo, which only
+// waives the seller side -- on the first capCents of a seller's 2027 sales,
+// with the fee still charged on any part of a sale past the cap.
 async function computePromoPricing(listing, buyerId) {
-  const [sellerProfileSnap, buyerProfileSnap] = await Promise.all([
+  const now = Date.now();
+  const in2027 = now >= ZERO_FEE_2027_START_MS && now < ZERO_FEE_2027_END_MS;
+
+  const [sellerProfileSnap, buyerProfileSnap, sellerPromoSnap] = await Promise.all([
     db.collection('userProfiles').doc(listing.userId).get(),
-    db.collection('userProfiles').doc(buyerId).get()
+    db.collection('userProfiles').doc(buyerId).get(),
+    in2027 ? db.collection('sellerPromos').doc(listing.userId).get() : null
   ]);
 
   const sellerProfile = sellerProfileSnap.exists ? sellerProfileSnap.data() : null;
@@ -3636,8 +4333,18 @@ async function computePromoPricing(listing, buyerId) {
     : listing.listingPrice;
 
   const marketplaceFee = promoFeeWaived ? 0 : MARKETPLACE_FEE_RATE * listingPrice;
+  let sellerFee = marketplaceFee;
+  let zeroFee2027WaivedCents = 0;
 
-  return { listingPrice, marketplaceFee, promoFeeWaived, promoDiscountApplied };
+  // The old code waiver (both sides, 0 fee) goes first if a seller still has one.
+  if (!promoFeeWaived && sellerPromoSnap?.exists) {
+    const { capCents, waivedSalesCents } = sellerPromoSnap.data();
+    const priceCents = Math.round(listingPrice * 100);
+    zeroFee2027WaivedCents = Math.min(priceCents, Math.max(0, capCents - waivedSalesCents));
+    sellerFee = MARKETPLACE_FEE_RATE * (priceCents - zeroFee2027WaivedCents) / 100;
+  }
+
+  return { listingPrice, marketplaceFee, sellerFee, zeroFee2027WaivedCents, promoFeeWaived, promoDiscountApplied };
 }
 
 app.post("/order-summary", verifyAuth, async(req, res) => {
@@ -3746,7 +4453,7 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
       return res.status(400).json({ success: false, message: "You can't purchase your own listing" });
     }
 
-    const { listingPrice, marketplaceFee, promoFeeWaived, promoDiscountApplied } = await computePromoPricing(listing, req.token.uid);
+    const { listingPrice, marketplaceFee, sellerFee, zeroFee2027WaivedCents, promoFeeWaived, promoDiscountApplied } = await computePromoPricing(listing, req.token.uid);
 
     // Same reasoning as /order-summary -- the buyer never pays the courier
     // rate, so this stays 0 regardless of shipping method.
@@ -3785,6 +4492,7 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
     // what the order record (and its buyer/seller-facing breakdown) ends
     // up showing, matching what total actually charges.
     currentItem.marketplaceFee = parseFloat(marketplaceFee.toFixed(2));
+    currentItem.sellerFee = parseFloat(sellerFee.toFixed(2));
     // listingPrice was never persisted onto the order before -- confirm.js
     // fell back to a stale sessionStorage snapshot taken before checkout,
     // which doesn't reflect a promo discount applied here. originalPrice +
@@ -3810,7 +4518,8 @@ app.post("/tax/calculate", verifyAuth, async (req, res) => {
         // re-checking eligibility again at capture time (which could have
         // changed in between).
         promo_fee_waived: String(promoFeeWaived),
-        promo_discount_applied: String(promoDiscountApplied)
+        promo_discount_applied: String(promoDiscountApplied),
+        zero_fee_2027_waived_cents: String(zeroFee2027WaivedCents)
       }
     });
 
@@ -4450,8 +5159,8 @@ app.post("/api/authentication-requests/:id/resubmit", verifyAuth, async (req, re
 });
 
 // Validates a signup promo code against the codes collection and, only on a
-// real match, grants the referral perks (seller fee waivers + buyer discount
-// uses) on the caller's own profile. Trusted step -- req.token.uid comes from
+// real match, grants the referral perk (buyer discount uses) on the
+// caller's own profile. Trusted step -- req.token.uid comes from
 // verifyAuth, not anything the client sends, since userProfiles is otherwise
 // client-writable and a forged payload there could self-grant these for free.
 app.post('/promo-code/redeem', verifyAuth, async (req, res) => {
@@ -4480,7 +5189,6 @@ app.post('/promo-code/redeem', verifyAuth, async (req, res) => {
     await profileRef.set({
       promoCode: code,
       promoCodeValid: true,
-      sellerFeeWaiversRemaining: PROMO_SELLER_FEE_WAIVER_COUNT,
       buyerDiscountRemaining: PROMO_BUYER_DISCOUNT_COUNT
     }, { merge: true });
 
@@ -4851,11 +5559,11 @@ async function handlePaymentIntentSucceeded(paymentData){
     }
 
     const salePrice = paymentData.amount / 100;
-    const existingOrder = await db.collection('orders').where('id', '==', paymentData.id).limit(1).get();
 
-    // Waived orders have no marketplaceFee for Hexxo to absorb Stripe's cut
-    // from, so the fee has to come out of the seller's payout instead (see
-    // calculateSellerPayoutCents). Captured once here, at the only point
+    // On promo orders Stripe's processing fee comes out of the seller's
+    // payout instead of Hexxo's fee revenue (see releasePayoutToSeller) --
+    // code-waived orders have no marketplaceFee to absorb it from, and the
+    // 2027 promo terms say processing fees still apply. Captured once here, at the only point
     // this is knowable without a live Stripe call, rather than looked up
     // again on every payout attempt/retry.
     //
@@ -4864,7 +5572,11 @@ async function handlePaymentIntentSucceeded(paymentData){
     // needs this to avoid attempting a transfer before the money has
     // actually cleared, and a plain field comparison there is cheaper than
     // a live Stripe lookup on every payout attempt/retry.
-    const feeWaived = paymentData.metadata.promo_fee_waived === 'true';
+    const codeFeeWaived = paymentData.metadata.promo_fee_waived === 'true';
+    const zeroFee2027WaivedCents = parseInt(paymentData.metadata.zero_fee_2027_waived_cents || '0', 10);
+    // Either promo puts Stripe's processing fee on the seller ("payment
+    // processing fees apply" in the 2027 terms).
+    const feeWaived = codeFeeWaived || zeroFee2027WaivedCents > 0;
     let stripeFeeCents = null;
     let availableAt = null;
 
@@ -4883,49 +5595,43 @@ async function handlePaymentIntentSucceeded(paymentData){
       console.error(`Failed to retrieve balance transaction for payment intent ${paymentData.id}:`, err.message);
     }
 
-    let data;
-    let orderRef;
-
-    if (!existingOrder.empty) {
+    // Commit the order transition and allowance together: a failed write leaves
+    // both retriable, and concurrent deliveries can only claim the sale once.
+    const outcome = await db.runTransaction(async (tx) => {
+      const existingOrder = await tx.get(db.collection('orders').where('id', '==', paymentData.id).limit(1));
       const orderDoc = existingOrder.docs[0];
-      data = orderDoc.data();
-      orderRef = orderDoc.ref;
-
-      // Every state this handler (or a later step) moves an order into.
-      // Checking for just "processing" let a redelivered event rewind a
-      // shipped/delivered/refunded order -- now also reached automatically
-      // by carrier scans -- and re-run everything below (promo spend, sale
-      // stats, a second label purchase + debt). "cancelled" is left out on
-      // purpose: an order cancelled while still pending can see its payment
-      // succeed afterwards, and that existing behavior isn't changed here.
+      const data = orderDoc ? orderDoc.data() : buildOrderDataFromPaymentIntent(paymentData);
       if (['processing', 'shipped', 'delivered', 'refunded'].includes(data.fulfillmentStatus)) {
-        console.log(`order for payment intent ${paymentData.id} already ${data.fulfillmentStatus}, skipping duplicate webhook delivery`);
-        return;
+        return null;
       }
 
-      await orderRef.update({
-        status: paymentData.status,
-        fulfillmentStatus: 'processing',
-        promoFeeWaived: feeWaived,
-        stripeFeeCents,
-        availableAt,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    } else {
-      // No pending order found -- /orders/init either never fired or
-      // failed. Build the order now off the PaymentIntent's own metadata
-      // rather than silently losing a captured payment.
-      data = buildOrderDataFromPaymentIntent(paymentData);
-
-      orderRef = await db.collection('orders').add({
-        ...data,
+      const orderRef = orderDoc ? orderDoc.ref : db.collection('orders').doc();
+      const paymentFields = {
         status: paymentData.status,
         fulfillmentStatus: 'processing',
         promoFeeWaived: feeWaived,
         stripeFeeCents,
         availableAt
-      });
-    }
+      };
+      if (orderDoc) {
+        tx.update(orderRef, {
+          ...paymentFields,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      } else {
+        tx.create(orderRef, { ...data, ...paymentFields });
+      }
+      // shortcut: different checkouts can exceed the cap; reserve at checkout
+      // if a strict cap is needed. Duplicate events for one sale count once.
+      if (zeroFee2027WaivedCents > 0 && data.sellerId) {
+        tx.update(db.collection('sellerPromos').doc(data.sellerId), {
+          waivedSalesCents: admin.firestore.FieldValue.increment(zeroFee2027WaivedCents)
+        });
+      }
+      return { data, orderRef };
+    });
+    if (!outcome) return;
+    const { data, orderRef } = outcome;
 
     console.log(`order for payment intent ${paymentData.id} now processing`);
 
@@ -4934,7 +5640,7 @@ async function handlePaymentIntentSucceeded(paymentData){
     // charged), not re-checked here. This only runs on the same "first time
     // marking this order processing" path as everything below, so a
     // redelivered webhook for an already-processed order can't double-spend.
-    if (feeWaived && data.sellerId) {
+    if (codeFeeWaived && data.sellerId) {
       try {
         await db.collection('userProfiles').doc(data.sellerId).update({
           sellerFeeWaiversRemaining: admin.firestore.FieldValue.increment(-1)
@@ -5112,7 +5818,8 @@ async function handlePaymentIntentSucceeded(paymentData){
     return JSON.stringify({status: "order processing"})
 
   } catch (err) {
-    console.error(err)
+    console.error(err);
+    throw err;
   }
 }
 

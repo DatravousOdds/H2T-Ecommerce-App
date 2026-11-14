@@ -64,7 +64,24 @@ const removeVideoBtn = videoContainer.querySelector('.remove-image-btn');
 
 const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50MB
 const MAX_VIDEO_DURATION = 30; // seconds
-const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm'];
+// video/3gpp is what some Android camcorder apps record to.
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm', 'video/3gpp'];
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Some Android pickers (Files app, cloud providers like Google Photos/Drive)
+// hand back a File with an empty .type, so fall back to the extension.
+const EXTENSION_TYPES = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',
+    heic: 'image/heic', heif: 'image/heif',
+    mp4: 'video/mp4', m4v: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm',
+    '3gp': 'video/3gpp', '3gpp': 'video/3gpp'
+};
+
+function getFileType(file) {
+    if (file.type) return file.type;
+    const ext = file.name.split('.').pop().toLowerCase();
+    return EXTENSION_TYPES[ext] || '';
+}
 
 const productTitle = document.getElementById('title');
 const listingTypeSection = document.getElementById('listingTypeSection');
@@ -378,6 +395,10 @@ shippingContainers.forEach(container => {
 });
 
 imageGridContainer.addEventListener('click', (e) => {
+    // input.click() below dispatches a click on the (hidden) file input that
+    // bubbles back up here -- ignore it so the picker isn't opened twice.
+    if (e.target.matches('input[type="file"]')) return;
+
     const imageContainer = e.target.closest('.image-container');
     if (!imageContainer) { return null;}
 
@@ -1466,7 +1487,7 @@ function imageSlotHTML(angle, index) {
     const isOptional = angle.type !== 'required';
     return `
         <article class="image-container" draggable="false" data-angle-id="${angle.id}">
-            <input type="file" name="image-${index + 1}" id="image-${index + 1}" multiple accept="image/jpeg,image/png">
+            <input type="file" name="image-${index + 1}" id="image-${index + 1}" multiple accept="image/*">
             <i class="fa-solid ${isOptional ? 'fa-plus' : 'fa-camera'}"></i>
             <span>${angle.label}</span>
             <img src="" alt="Preview" class="image-preview" style="display: none;">
@@ -1517,11 +1538,12 @@ function handleImageUpload(input) {
 
     input.click();
 
-    // { once: true } so re-clicking to open the picker again doesn't stack
-    // duplicate change listeners on the same input.
-    input.addEventListener('change', (e) => {
+    // Assigned (not addEventListener) so re-opening the picker replaces the
+    // handler -- { once: true } still leaked one when the user backed out of
+    // the Android camera/gallery chooser without picking, since 'change'
+    // never fired.
+    input.onchange = (e) => {
         const MAX_SIZE = 10 * 1024 * 1024;
-        const allowedFileTypes = ['image/jpeg', 'image/png'];
         const files = [...e.target.files];
         input.value = '';
 
@@ -1536,9 +1558,14 @@ function handleImageUpload(input) {
             return;
         }
 
-        const invalidFile = files.find(f => !allowedFileTypes.includes(f.type));
+        // accept="image/*" lets Android offer the camera, so the format
+        // check lives here instead of in the accept attribute.
+        const invalidFile = files.find(f => !ALLOWED_IMAGE_TYPES.includes(getFileType(f)));
         if (invalidFile) {
-            showImagesError(`Invalid file type: ${invalidFile.type || 'unknown'} is not a valid type.`);
+            const type = getFileType(invalidFile);
+            showImagesError(type === 'image/heic' || type === 'image/heif'
+                ? `"${invalidFile.name}" is a HEIC photo. Please use JPG, PNG, or WebP (set your camera to "Most compatible").`
+                : `Invalid file type: ${type || 'unknown'} is not a valid type. Use JPG, PNG, or WebP.`);
             return;
         }
 
@@ -1579,7 +1606,7 @@ function handleImageUpload(input) {
             }
             reader.readAsDataURL(uploadFile);
         });
-    }, { once: true })
+    };
 }
 
 function handleImageRemove(input, preview, removeBtn) {
@@ -1598,12 +1625,16 @@ function handleImageRemove(input, preview, removeBtn) {
 function handleVideoUpload(input, preview, removeBtn) {
     input.click();
 
-    input.addEventListener('change', (e) => {
+    // Assigned for the same reason as handleImageUpload.
+    input.onchange = (e) => {
         const selectedFile = e.target.files[0];
+        // Cleared so picking the same video again still fires 'change'.
+        input.value = '';
         if (!selectedFile) return;
 
-        if (!ALLOWED_VIDEO_TYPES.includes(selectedFile.type)) {
-            alert(`Invalid file type: ${selectedFile.type} is not a valid video type.`);
+        const fileType = getFileType(selectedFile);
+        if (!ALLOWED_VIDEO_TYPES.includes(fileType)) {
+            alert(`Invalid file type: ${fileType || 'unknown'} is not a valid video type. Use MP4, MOV, WebM, or 3GP.`);
             handleImageRemove(input, preview, removeBtn);
             return;
         }
@@ -1617,11 +1648,14 @@ function handleVideoUpload(input, preview, removeBtn) {
         const objectUrl = URL.createObjectURL(selectedFile);
         const probe = document.createElement('video');
         probe.preload = 'metadata';
+        probe.muted = true;
 
         probe.onloadedmetadata = () => {
             URL.revokeObjectURL(objectUrl);
 
-            if (probe.duration > MAX_VIDEO_DURATION) {
+            // Some recordings (e.g. MediaRecorder webm) report Infinity until
+            // fully read -- only reject a duration we actually know is too long.
+            if (Number.isFinite(probe.duration) && probe.duration > MAX_VIDEO_DURATION) {
                 alert(`Video is too long! Keep it under ${MAX_VIDEO_DURATION} seconds.`);
                 handleImageRemove(input, preview, removeBtn);
                 return;
@@ -1636,8 +1670,15 @@ function handleVideoUpload(input, preview, removeBtn) {
             reader.readAsDataURL(selectedFile);
         };
 
+        // Without this a video the browser can't decode would silently do nothing.
+        probe.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            alert("We couldn't read that video. Try recording again or choose an MP4.");
+            handleImageRemove(input, preview, removeBtn);
+        };
+
         probe.src = objectUrl;
-    });
+    };
 }
 
 
