@@ -68,7 +68,9 @@ async function run() {
       from: "noreply@hexxo.store", to: email, replyTo: adminEmail, subject, html,
       // Lets Gmail/Yahoo show their own unsubscribe control.
       headers: { "List-Unsubscribe": `<mailto:${adminEmail}?subject=Unsubscribe>` },
-    });
+      // Covers the gap the stamp can't: if a stamp fails after its send, or two
+      // runs overlap, Resend drops the repeat (keys last 24 hours).
+    }, { idempotencyKey: `outreach-firstListing2026/${ref.id}` });
     if (error) {
       console.error(`✗ ${email}: ${error.message}`);
       process.exitCode = 1;
