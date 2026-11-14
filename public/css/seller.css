@@ -53,11 +53,33 @@ section {
 }
 
 .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
     margin-bottom: 1rem;
 }
 
+.step-num {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #f3f2f2;
+    color: #666;
+    font-family: var(--primary-font);
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+
+.done .step-num {
+    background: var(--color-status-success-light);
+    color: var(--color-status-success);
+}
+
 section h4 {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: bold;
     color: #333;
     margin-bottom: 0.5rem;
@@ -70,17 +92,44 @@ section p {
     margin-bottom: 1rem;
 }
 
-.images-grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    padding: 1rem 0 ;
+.section-header p {
+    font-size: 0.875rem;
 }
 
-.images-grid-container .image-container {
+.field-hint {
+    margin-top: 6px !important;
+    min-height: 1.2em;
+    font-size: 0.8125rem;
+    color: #666;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    column-gap: 1rem;
+}
+
+.field-row > .input-container {
+    min-width: 0;
+}
+
+.images-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    gap: 12px;
+}
+
+.images-grid-container.error {
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.images-grid-container .image-container,
+.photo-placeholder {
     position: relative;
     width: 100%;
-    height: 200px;
+    aspect-ratio: 1;
+    padding: 10px;
     background-color: #fff;
     border: 2px dashed rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -88,8 +137,36 @@ section p {
     align-items: center;
     flex-direction: column;
     justify-content: center;
+    text-align: center;
     overflow: hidden;
     cursor: pointer;
+}
+
+.images-grid-container .image-container:hover {
+    border-color: #dc2626;
+}
+
+.photo-placeholder {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.photo-placeholder span {
+    font-size: 0.8125rem;
+    color: #666;
+}
+
+.image-container.is-cover::after {
+    content: "Cover";
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 0.6875rem;
+    pointer-events: none;
 }
 
 .images-grid-container .image-container.drag-over {
@@ -99,6 +176,8 @@ section p {
 
 .image-container img,
 .image-container video {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -117,9 +196,17 @@ section p {
 }
 
 .image-container .remove-image-btn i {
+    margin: 0;
     font-size: 1rem;
     color: #fff;
     
+}
+
+@media (pointer: coarse) {
+    .image-container .remove-image-btn {
+        width: 36px;
+        height: 36px;
+    }
 }
 
 .image-container .remove-image-btn:hover  {
@@ -136,15 +223,16 @@ section p {
     display: none;
 }
 
-.image-container i {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+.image-container i,
+.photo-placeholder i {
+    font-size: 1.4rem;
+    margin-bottom: 0.25rem;
     color: #ff6464;
     transition: transform ease-out 0.3s;
 }
 
 .image-container span {
-    font-size: 0.9rem;
+    font-size: 0.8125rem;
     color: #666;
 }
 
@@ -199,7 +287,7 @@ section p {
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
-    
+    margin-bottom: 6px;
 }
 
 #sizeInfo {
@@ -208,9 +296,22 @@ section p {
 
 .input-container select {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    /* Same height as the bordered text inputs beside it in .field-row. */
+    min-height: 46px;
+    padding: 10px 16px;
+    background-color: #f5f5f5;
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
+}
+
+.input-container :is(input, select, textarea):focus {
+    background-color: #fff;
+}
+
+/* Not a red border: that's the .error state, so an errored field would show no focus. */
+.input-container :is(input, select, textarea):focus-visible {
+    outline: 2px solid var(--color-text-primary);
+    outline-offset: 2px;
 }
 
 .input-container select option {
@@ -220,8 +321,16 @@ section p {
 
 .input-container label, .char-counter {
     font-size: 0.875rem;
-    color: #747474;
-    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.input-container > label {
+    display: block;
+    margin-bottom: 6px !important;
+}
+
+.char-counter {
+    font-variant-numeric: tabular-nums;
 }
 
 .optional-label {
@@ -243,16 +352,15 @@ section p {
 
 textarea {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    padding: 10px 16px;
+    border: 1px solid var(--color-border-primary);
+    border-radius: 8px;
     resize: none;
 }
 
 .description {
-    height: 14.63rem;
-    resize: none;
-    
+    height: 9rem;
+    resize: vertical;
 }
 
 .input-header {
@@ -262,7 +370,8 @@ textarea {
 .input-header i {
     position: absolute;
     left: 10px;
-    top: 200%;
+    /* header bottom + its 6px margin + half the price input's height */
+    top: calc(100% + 29px);
     transform: translateY(-50%);
     color: #333;
     pointer-events: none;
@@ -270,6 +379,48 @@ textarea {
 
 .item-price {
     padding-left: 1.5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.promo-banner {
+    margin-bottom: 1rem;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #333;
+    font-size: 0.875rem;
+}
+
+.promo-banner strong {
+    font-family: var(--primary-font);
+}
+
+.price-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border: 1px solid #ebe7e7;
+    border-radius: 8px;
+    color: #333;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.price-breakdown div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.price-breakdown .price-breakdown-total {
+    padding-top: 8px;
+    border-top: 1px solid #ebe7e7;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.price-breakdown small {
+    color: #666;
 }
 
 .input-grid-wrapper {
@@ -308,6 +459,19 @@ textarea {
 .container-header input {
     padding: 0;
     width: auto;
+    accent-color: #dc2626;
+}
+
+.shipping-pill {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .shipping-note {
@@ -340,8 +504,9 @@ textarea {
 }
 
 .cta-wrapper {
-    display: flex;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
 }
 
 button {
@@ -379,6 +544,304 @@ button {
 .post-btn:hover {
     background-color: #d10a17 !important;
     transform: translateY(-1px);
+}
+
+/* Form column + sticky summary panel. */
+.listing-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 40px;
+    align-items: start;
+}
+
+.listing-form {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    min-width: 0;
+}
+
+.listing-form section {
+    padding: 0;
+    scroll-margin-top: 1rem;
+}
+
+/* The header isn't sticky, so 1rem clears nothing but the viewport edge.
+   max-height keeps List it reachable on short laptop screens. */
+.listing-summary {
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+}
+
+.listing-summary h3 {
+    margin-bottom: 8px !important;
+    color: #666;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase;
+}
+
+.summary-item {
+    border: 1px solid #ebe7e7;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.summary-image {
+    position: relative;
+    height: 320px;
+    display: grid;
+    place-items: center;
+    background: #faf8f8;
+    color: #666;
+    font-size: 0.8125rem;
+}
+
+#summaryCover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.summary-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px 12px;
+    color: #333;
+}
+
+#summaryBrand {
+    color: #666;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+#summaryTitle {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#summaryMeta {
+    color: #666;
+    font-size: 0.8125rem;
+}
+
+#summaryPrice {
+    font-size: 1.125rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+.summary-takehome {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--color-status-success-light);
+    color: var(--color-status-success);
+    font-variant-numeric: tabular-nums;
+}
+
+.summary-takehome.empty {
+    background: #faf8f8;
+    color: #666;
+}
+
+#summaryTakeHome {
+    font-family: var(--primary-font);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.summary-checklist ul {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.summary-checklist button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 4px;
+    border-radius: 6px;
+    background: none;
+    color: #333;
+    text-align: left;
+    cursor: pointer;
+}
+
+.summary-checklist button:hover {
+    background: #faf8f8;
+}
+
+.summary-checklist .done button {
+    color: #666;
+}
+
+.summary-dot {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid #ebe7e7;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 0.6875rem;
+}
+
+.summary-checklist .done .summary-dot {
+    background: var(--color-status-success);
+    border-color: var(--color-status-success);
+}
+
+.summary-checklist .done .summary-dot::before {
+    content: "\2713";
+}
+
+.listing-summary .btn {
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
+    white-space: nowrap;
+}
+
+/* Inset: the desktop panel's overflow clips outlines drawn outside. */
+.listing-summary button:focus-visible {
+    outline: 2px solid var(--color-text-primary);
+    outline-offset: -4px;
+}
+
+/* Under 900px tall the full card pushes List it below the fold at scroll top
+   (the page header sits above the panel), so the preview becomes a thumbnail row. */
+@media (min-width: 961px) and (max-height: 899px) {
+    .summary-item {
+        display: grid;
+        grid-template-columns: 88px minmax(0, 1fr);
+    }
+
+    .summary-image {
+        height: auto;
+        padding: 6px;
+        font-size: 0.6875rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 960px) {
+    .listing-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    /* Room for the fixed bar so it never covers the Shipping section. */
+    .listing-form {
+        padding-bottom: 88px;
+    }
+
+    /* Browsers scroll a focused field above the bar instead of under it. */
+    html {
+        scroll-padding-bottom: 88px;
+    }
+
+    /* z-index: below .brand-options (20) so a dropdown opened near the bottom
+       isn't hidden behind the bar, and below .modal-overlay (99999). */
+    .listing-summary {
+        position: fixed;
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0 10px;
+        align-items: center;
+        max-height: none;
+        overflow: visible;
+        padding: 10px 16px;
+        background: #fff;
+        border-top: 1px solid #ebe7e7;
+    }
+
+    .summary-preview,
+    .summary-checklist ul,
+    .draft-btn-save {
+        display: none;
+    }
+
+    .summary-checklist {
+        grid-area: 1 / 1;
+    }
+
+    .listing-summary h3 {
+        margin: 0 !important;
+        font-family: var(--ui-font);
+        font-weight: 400 !important;
+        letter-spacing: normal !important;
+        text-transform: none;
+    }
+
+    .summary-takehome,
+    .summary-takehome.empty {
+        grid-area: 2 / 1;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 0 6px;
+        padding: 0;
+        background: none;
+        font-size: 0.75rem;
+    }
+
+    #summaryTakeHome {
+        font-size: 0.9375rem;
+    }
+
+    .cta-wrapper {
+        grid-area: 1 / 2 / 3 / 3;
+        grid-template-columns: auto auto;
+        gap: 8px;
+    }
+
+    .listing-summary .btn {
+        padding: 0.625rem 0.875rem !important;
+    }
+
+    .draft-btn {
+        text-transform: capitalize;
+    }
+}
+
+@media (max-width: 560px) {
+    .images-grid-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .images-grid-container .image-container,
+    .photo-placeholder {
+        padding: 6px;
+    }
+
+    .images-grid-container .image-container span,
+    .photo-placeholder span {
+        font-size: 0.75rem;
+    }
 }
 
 .brand-combobox {
@@ -981,16 +1444,8 @@ button {
     width: 100%;
   }
 
-  .images-grid-container {
-      grid-template-columns: 1fr;
-  }
-
   .input-grid-wrapper {
       grid-template-columns: 1fr;
-  }
-
-  .cta-wrapper {
-      flex-direction: column;
   }
 
   .courier-rates-modal {

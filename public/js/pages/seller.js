@@ -4,6 +4,7 @@ import { collection, setDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { ANGLE_REQUIREMENTS, getRequiredAngleCount } from '../core/angleRequirements.js';
+import { estimateTakeHome, initListingSummary } from './sellerSummary.js';
 
 // Maps this page's seller-listing categories onto the 5 categories
 // angleRequirements.js actually defines angle sets for. Sneakers/Shoes both
@@ -22,7 +23,7 @@ const ANGLE_CATEGORY_BY_NORMALIZED_CATEGORY = {
 // Same normalization seller.js already uses everywhere else (category.value
 // is gender-prefixed, e.g. "men-sneakers"). Collectibles' Trading-Cards-vs-
 // other-subtype split isn't knowable yet at this point in the flow -- the
-// "Type" field that captures it lives in Product Info, which now comes
+// "Type" field that captures it lives in the Details section, which now comes
 // *after* the photo step -- so Collectibles falls back to Apparel here too.
 function resolveAngleCategory(rawCategoryValue) {
     const normalized = (rawCategoryValue || '').trim().split('-')[1] || 'other';
@@ -399,6 +400,12 @@ imageGridContainer.addEventListener('click', (e) => {
     // bubbles back up here -- ignore it so the picker isn't opened twice.
     if (e.target.matches('input[type="file"]')) return;
 
+    if (e.target.closest('.photo-placeholder')) {
+        showImagesError('Pick a category first to add photos.');
+        productCategory.focus();
+        return;
+    }
+
     const imageContainer = e.target.closest('.image-container');
     if (!imageContainer) { return null;}
 
@@ -495,6 +502,10 @@ productCategory.addEventListener("change", () => {
     pendingAuthSize = null;
 })
 
+// Last, so a panel error can't stop List it or Save draft from being wired. After
+// this the panel repaints only on input/change/click and photo src changes.
+initListingSummary(readListingDraft, imageGridContainer);
+
 
 
 
@@ -536,7 +547,7 @@ function charCounter() {
         titleCharCounter.textContent = `${current}/80`;
         if (current >= charLimit) {
             // Show error
-            showError('title', 'Title must be less then 80 characters')
+            showError('title', 'Title must be less than 80 characters')
             return;
         }
         
@@ -560,8 +571,8 @@ function wordCounter() {
 
         descriptionWordCounter.textContent = `${current}/100`;
 
-        if (current >= limit) {
-            showError('description', 'Description must be 1000 words or less!');
+        if (current > limit) {
+            showError('description', 'Description must be 100 words or less!');
             return;
         }
     })
@@ -1291,22 +1302,11 @@ function validateProductInfo() {
         isValid = false;
         return;
     };
-    if (currentUser.isAdmin && productListingType?.value === 'release') {
-        const releaseDateValue = productReleaseDate.value;
-        if (!releaseDateValue) {
-            showError('releaseDate', "Please pick a release date");
-            isValid = false;
-            return;
-        }
-        const [year, month, day] = releaseDateValue.split('-').map(Number);
-        const releaseDate = new Date(year, month - 1, day);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (releaseDate <= today) {
-            showError('releaseDate', "Release date must be in the future");
-            isValid = false;
-            return;
-        }
+    const releaseError = releaseDateError();
+    if (releaseError) {
+        showError('releaseDate', releaseError);
+        isValid = false;
+        return;
     }
     if (!brand) {
         showError('brand', "Please enter a brand");
@@ -1319,7 +1319,7 @@ function validateProductInfo() {
         return;
     };
     if (!description) { 
-        showError('description', "Please enter at least five word to describe product");
+        showError('description', "Add a short description");
         isValid = false;
         return;
     };
@@ -1363,6 +1363,59 @@ function validateImages() {
 
     removeImagesError();
     return true;
+}
+
+// Shared with readListingDraft so the checklist can't drift from the validator.
+// Returns the error message, or '' when no release date is needed or it's valid.
+function releaseDateError() {
+    if (!(currentUser.isAdmin && productListingType?.value === 'release')) return '';
+    const releaseDateValue = productReleaseDate.value;
+    if (!releaseDateValue) return 'Please pick a release date';
+    const [year, month, day] = releaseDateValue.split('-').map(Number);
+    const releaseDate = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return releaseDate <= today ? 'Release date must be in the future' : '';
+}
+
+// `done` may be stricter than the validators, never looser, so 5 of 5 means
+// List it passes.
+function readListingDraft() {
+    // getAttribute, as in validateImages: the .src property of an empty <img> is the page URL.
+    const coverImage = [...document.querySelectorAll('.image-preview')].find(image => image.getAttribute('src'));
+    const coverUrl = coverImage?.getAttribute('src') ?? '';
+
+    // Only an explicit 'block' counts: seller.css hides #sizeInfo with no inline
+    // style, and #size keeps a stale value after switching to a size-less category.
+    const sizeLabel = document.querySelector('label[for="size"]').textContent;
+    const sizeValue = sizeInfo.style.display === 'block' ? productSize.value : '';
+    const size = sizeValue && sizeLabel === 'Size' ? `Size ${sizeValue}` : sizeValue;
+
+    const condition = productCondition.value ? productCondition.selectedOptions[0] : null;
+    const brand = productBrand.value.trim();
+    const title = productTitle.value.trim();
+    const shippingRadio = document.querySelector('input[name="shipping-method"]:checked');
+
+    return {
+        coverUrl,
+        coverSlot: coverImage?.closest('.image-container') ?? null,
+        brand,
+        title,
+        size,
+        conditionLabel: condition?.text ?? '',
+        conditionHint: condition?.dataset.hint ?? '',
+        priceText: productPrice.value,
+        prepaid: shippingRadio?.value === 'prepaid',
+        done: {
+            category: productCategory.value !== '',
+            photos: Boolean(coverImage),
+            // Size excluded because the validator excludes it.
+            details: Boolean(title && brand && condition && productDescription.value.trim() && !releaseDateError()),
+            // Stricter than the validator, which accepts "0".
+            price: estimateTakeHome(productPrice.value) !== null,
+            shipping: Boolean(shippingRadio)
+        }
+    };
 }
 
 
@@ -1503,20 +1556,21 @@ function imageSlotHTML(angle, index) {
 // angle count/labels vary a lot per category, same as the standalone
 // authentication-request flow's photo step. The static video slot is left
 // alone (category-independent, stays put as the grid's last child); only
-// the image-angle slots ahead of it get discarded and rebuilt. The existing
-// click/drag listeners are delegated on imageGridContainer itself (see
-// below), so newly-inserted slots pick those up automatically -- nothing
-// else needs re-wiring after a rebuild.
+// the image-angle slots (or pre-category placeholders) ahead of it get
+// discarded and rebuilt. The existing click/drag listeners are delegated on
+// imageGridContainer itself (see below), so newly-inserted slots pick those
+// up automatically -- nothing else needs re-wiring after a rebuild.
 function renderImageSlots(angleCategory) {
     const angles = ANGLE_REQUIREMENTS[angleCategory];
     if (!angles || !videoContainer) return;
 
-    imageGridContainer.querySelectorAll('.image-container:not(.video-container)').forEach(el => el.remove());
+    imageGridContainer.querySelectorAll('.image-container:not(.video-container), .photo-placeholder').forEach(el => el.remove());
+    removeImagesError();
     videoContainer.insertAdjacentHTML('beforebegin', angles.map((angle, i) => imageSlotHTML(angle, i)).join(''));
 
     if (photosSubheader) {
         const requiredCount = getRequiredAngleCount(angleCategory);
-        photosSubheader.textContent = `Recommended: ${requiredCount} photo${requiredCount === 1 ? '' : 's'} for this category -- not required to list, but having them ready helps your item pass authentication faster if it's selected.`;
+        photosSubheader.textContent = `Recommended: ${requiredCount} photo${requiredCount === 1 ? '' : 's'}. Only 1 is required to list, but the full set helps your item pass authentication faster if it's selected.`;
     }
 }
 
