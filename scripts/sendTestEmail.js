@@ -31,6 +31,8 @@ const SAMPLE_DATA = {
     subject: "Question about authentication",
     message: "Hey! How long does Tier 1 authentication usually take?\n\nThanks!",
   },
+  FIRST_LISTING_NUDGE: { firstName: "Datravous", unsubscribeEmail: process.env.ADMIN_EMAIL || "test@example.com" },
+  SELLER_FEEDBACK: { firstName: "Datravous", unsubscribeEmail: process.env.ADMIN_EMAIL || "test@example.com" },
 };
 
 async function main() {
