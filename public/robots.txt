@@ -8,4 +8,4 @@ Allow: /
 # clean route as the backup signal.
 Disallow: /*.html$
 
-Sitemap: https://hexxo.store/sitemap.xml
+Sitemap: https://www.hexxo.store/sitemap.xml
