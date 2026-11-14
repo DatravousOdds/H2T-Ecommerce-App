@@ -183,7 +183,7 @@
                     <div class="input-header">
                         <label for="condition">Condition</label>
                     </div>
-                    <select class="condition" name="conditionInput" id="condition">
+                    <select class="condition" name="conditionInput" id="condition" aria-describedby="conditionHint">
                         <option value="">Select condition</option>
                         <option value="new" data-hint="Never worn. Original box or tags.">New</option>
                         <option value="like new" data-hint="Worn once or twice. No visible flaws.">Like new</option>
@@ -226,7 +226,7 @@
                 <input type="number" name="price" id="price" class="item-price input-width-full input-bordered " style="padding-left: 24px;" inputmode="decimal" placeholder="0">
                 <p class="errorText" id="error-price"></p>
             </div>
-            <div class="price-breakdown" aria-live="polite">
+            <div class="price-breakdown">
                 <div><span>Item price</span><span id="breakdownPrice">$0.00</span></div>
                 <div><span>Seller fee (7%)</span><span id="breakdownFee">−$0.00</span></div>
                 <div class="price-breakdown-total"><span>Est. take-home</span><span id="breakdownTakeHome">$0.00</span></div>
@@ -297,7 +297,7 @@
                 </ul>
             </div>
             <div class="cta-wrapper">
-                <button class="btn draft-btn" id="draftBtn"><span class="draft-btn-save">Save </span>draft</button>
+                <button class="btn draft-btn" id="draftBtn" aria-label="Save draft"><span class="draft-btn-save">Save </span>draft</button>
                 <button class="btn post-btn" id="postBtn">List it</button>
             </div>
         </aside>
