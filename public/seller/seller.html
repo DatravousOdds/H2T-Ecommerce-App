@@ -82,13 +82,8 @@
             </div>
 
             <div class="images-grid-container">
-                <!-- Until a category is picked the grid shows locked .photo-placeholder
-                     slots. Recommended-angle photo slots then replace them, populated
-                     per-category by renderImageSlots() in seller.js -- same data source
-                     as the standalone authentication-request flow (angleRequirements.js),
-                     but advisory only here: seller.js's validateImages() only
-                     requires at least one photo to list, not the full set.
-                     The video slot below stays static/category-independent. -->
+                <!-- Locked placeholders until a category is picked; renderImageSlots() in seller.js
+                     then swaps in that category's recommended angles (advisory: 1 photo is required). -->
                 <div class="photo-placeholder" aria-hidden="true"><i class="fa-solid fa-plus"></i><span>Photo</span></div>
                 <div class="photo-placeholder" aria-hidden="true"><i class="fa-solid fa-plus"></i><span>Photo</span></div>
                 <div class="photo-placeholder" aria-hidden="true"><i class="fa-solid fa-plus"></i><span>Photo</span></div>

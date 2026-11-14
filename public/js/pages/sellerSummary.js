@@ -1,4 +1,4 @@
-// Mirrors server.js MARKETPLACE_FEE_RATE.
+// Mirrors server.js MARKETPLACE_FEE_RATE; seller.html's "Seller fee (7%)" label repeats it.
 // shortcut: hand-copied rate, serve it from the server if it ever varies per seller.
 const SELLER_FEE_RATE = 0.07;
 
@@ -102,5 +102,4 @@ export function initListingSummary(readDraft, photoGrid) {
     });
 
     refresh();
-    return refresh;
 }

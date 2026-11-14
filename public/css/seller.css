@@ -74,8 +74,8 @@ section {
 }
 
 .done .step-num {
-    background: #f0fdf4;
-    color: #16803c;
+    background: var(--color-status-success-light);
+    color: var(--color-status-success);
 }
 
 section h4 {
@@ -300,7 +300,7 @@ section p {
     min-height: 46px;
     padding: 10px 16px;
     background-color: #f5f5f5;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-border-primary);
     border-radius: 8px;
 }
 
@@ -353,7 +353,7 @@ section p {
 textarea {
     width: 100%;
     padding: 10px 16px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-border-primary);
     border-radius: 8px;
     resize: none;
 }
@@ -649,8 +649,8 @@ button {
     align-items: baseline;
     padding: 10px 12px;
     border-radius: 8px;
-    background: #f0fdf4;
-    color: #16803c;
+    background: var(--color-status-success-light);
+    color: var(--color-status-success);
     font-variant-numeric: tabular-nums;
 }
 
@@ -707,8 +707,8 @@ button {
 }
 
 .summary-checklist .done .summary-dot {
-    background: #16803c;
-    border-color: #16803c;
+    background: var(--color-status-success);
+    border-color: var(--color-status-success);
 }
 
 .summary-checklist .done .summary-dot::before {

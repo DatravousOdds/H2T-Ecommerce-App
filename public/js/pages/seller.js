@@ -341,9 +341,8 @@ if (isEditing) {
     await prefillFromAuthRequest(authRequestId);
 }
 
-// The panel stays correct because every form write happens in a user
-// input/change/click task, before this line, or as a photo src change. A future
-// async write outside those must call the refresh this returns.
+// Edit and auth-prefill writes finish above; after this the panel repaints only
+// on input/change/click and photo src changes.
 initListingSummary(readListingDraft, imageGridContainer);
 
 postBtn.addEventListener('click', async () => {
@@ -1377,9 +1376,8 @@ function validateImages() {
     return true;
 }
 
-// `done` mirrors validateImages/validateProductInfo and may be stricter, never
-// looser, so 5 of 5 means List it passes. Accepted exception: the admin-only
-// release date isn't covered.
+// `done` may be stricter than the validators, never looser, so 5 of 5 means
+// List it passes (except the admin-only release date).
 function readListingDraft() {
     // getAttribute, as in validateImages: the .src property of an empty <img> is the page URL.
     const coverImage = [...document.querySelectorAll('.image-preview')].find(image => image.getAttribute('src'));
@@ -1557,10 +1555,9 @@ function imageSlotHTML(angle, index) {
 // authentication-request flow's photo step. The static video slot is left
 // alone (category-independent, stays put as the grid's last child); only
 // the image-angle slots (or pre-category placeholders) ahead of it get
-// discarded and rebuilt. The existing
-// click/drag listeners are delegated on imageGridContainer itself (see
-// below), so newly-inserted slots pick those up automatically -- nothing
-// else needs re-wiring after a rebuild.
+// discarded and rebuilt. The existing click/drag listeners are delegated on
+// imageGridContainer itself (see below), so newly-inserted slots pick those
+// up automatically -- nothing else needs re-wiring after a rebuild.
 function renderImageSlots(angleCategory) {
     const angles = ANGLE_REQUIREMENTS[angleCategory];
     if (!angles || !videoContainer) return;
