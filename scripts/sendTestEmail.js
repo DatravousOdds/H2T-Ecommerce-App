@@ -7,7 +7,7 @@
 // Needs RESEND_API_KEY in .env (same key server.js uses).
 require("dotenv").config();
 const { Resend } = require("resend");
-const { notificationTemplates } = require("../services/emailTemplates");
+const { notificationTemplates, marketingTemplates } = require("../services/emailTemplates");
 
 const SAMPLE_DATA = {
   ACCOUNT_CREATED: { firstName: "Datravous" },
@@ -31,6 +31,8 @@ const SAMPLE_DATA = {
     subject: "Question about authentication",
     message: "Hey! How long does Tier 1 authentication usually take?\n\nThanks!",
   },
+  FIRST_LISTING_NUDGE: { firstName: "Datravous", unsubscribeEmail: process.env.ADMIN_EMAIL || "test@example.com" },
+  SELLER_FEEDBACK: { firstName: "Datravous", unsubscribeEmail: process.env.ADMIN_EMAIL || "test@example.com" },
 };
 
 async function main() {
@@ -48,7 +50,7 @@ async function main() {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   for (const type of types) {
-    const build = notificationTemplates[type];
+    const build = notificationTemplates[type] || marketingTemplates[type];
     if (!build) {
       console.error(`Unknown template type: ${type}`);
       process.exitCode = 1;

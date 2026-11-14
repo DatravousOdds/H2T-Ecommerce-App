@@ -70,12 +70,17 @@ function paragraph(html, { muted = false, small = false } = {}) {
 }
 
 // Table-based so it keeps its padding and colour in Outlook.
-function button(label, href) {
+// block: full-width with a larger label, for the single main action of a
+// marketing email (19px bold keeps white-on-red above the large-text contrast bar).
+function button(label, href, { block = false } = {}) {
+  const link = block
+    ? 'display:block; padding:16px 28px; text-align:center; font:700 19px/1'
+    : 'display:inline-block; padding:14px 28px; font:700 16px/1';
   return `
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+    <table role="presentation"${block ? ' width="100%"' : ''} cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
       <tr>
         <td class="btn" bgcolor="${BRAND.red}" style="border-radius:6px; background:${BRAND.red};">
-          <a href="${href}" target="_blank" style="display:inline-block; padding:14px 28px; font:700 16px/1 ${BRAND.uiFont}; color:#ffffff; text-decoration:none; border-radius:6px;">${label}&nbsp;&rarr;</a>
+          <a href="${href}" target="_blank" style="${link} ${BRAND.uiFont}; color:#ffffff; text-decoration:none; border-radius:6px;">${label}&nbsp;&rarr;</a>
         </td>
       </tr>
     </table>`;
@@ -144,13 +149,54 @@ function supportNote() {
   );
 }
 
+// Black band under the header for marketing emails: red tag, big headline,
+// one line of support, and an optional strip of [value, label] stats.
+function hero({ tag, title, sub, stats = [] }) {
+  const cells = stats.map(([value, label], i) => `
+        <td align="center" width="${Math.floor(100 / stats.length)}%" style="padding:16px 4px 0; ${i ? 'border-left:1px solid #2a2a2e;' : ''}">
+          <div style="font:700 24px/1.1 ${BRAND.font}; color:#ffffff;">${value}</div>
+          <div style="margin-top:6px; font:600 11px/1.2 ${BRAND.uiFont}; letter-spacing:0.08em; text-transform:uppercase; color:#b9b9c0;">${label}</div>
+        </td>`).join('');
+  return `
+    <span style="display:inline-block; padding:6px 10px; background:${BRAND.red}; font:700 11px/1 ${BRAND.uiFont}; letter-spacing:0.12em; text-transform:uppercase; color:#ffffff;">${tag}</span>
+    <h1 class="hero-h1" style="margin:16px 0 12px; font:700 38px/1.05 ${BRAND.font}; letter-spacing:-0.02em; color:#ffffff;">${title}</h1>
+    <p style="margin:0; font:400 16px/1.5 ${BRAND.uiFont}; color:#b9b9c0;">${sub}</p>${stats.length ? `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px; border-top:1px solid #2a2a2e;">
+      <tr>${cells}
+      </tr>
+    </table>` : ''}`;
+}
+
+// Numbered [title, detail] rows. The number sits in its own fixed-size cell
+// because mail clients ignore flexbox.
+function steps(items) {
+  const rows = items.map(([title, detail], i) => `
+      <tr>
+        <td width="34" valign="top" style="padding:0 14px 16px 0;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="34" height="34" align="center" bgcolor="${BRAND.ink}" style="background:${BRAND.ink}; font:700 15px/34px ${BRAND.font}; color:#ffffff;">${i + 1}</td></tr></table>
+        </td>
+        <td valign="top" style="padding:0 0 16px; font:400 14px/1.5 ${BRAND.uiFont}; color:${BRAND.muted};"><strong style="display:block; font:700 16px/1.4 ${BRAND.uiFont}; color:${BRAND.ink};">${title}</strong>${detail}</td>
+      </tr>`).join('');
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;">${rows}
+    </table>`;
+}
+
 // ---------- Shell ----------
+
+// CAN-SPAM needs a postal address in promotional email; same one as privacy.html.
+const POSTAL_ADDRESS = 'Hexxo LLC, 9112 Saddlehorn Drive, Apt 201, Fort Worth, TX 76116';
 
 // preheader: the preview line inbox lists show next to the subject.
 // audience: 'customer' gets the social row (inside the white card -- the icon
 // JPGs have a white background baked in) + "why you got this" line;
-// 'admin' gets a compact internal footer.
-function baseTemplate(innerHtml, { preheader = '', audience = 'customer' } = {}) {
+// 'admin' gets a compact internal footer; 'marketing' swaps the "why you got
+// this" line for the postal address + unsubscribe link (use marketingTemplate).
+// heroHtml: optional black band that replaces the red stripe under the header.
+function baseTemplate(innerHtml, { preheader = '', audience = 'customer', heroHtml = '', unsubscribeHref = '' } = {}) {
+  const reason = audience === 'marketing'
+    ? `${POSTAL_ADDRESS}<br>You're getting this because you opted in to Hexxo emails.<br><a href="${unsubscribeHref}" style="display:inline-block; padding:12px 16px; font-size:14px; color:${BRAND.muted};">Unsubscribe</a>`
+    : `You're receiving this because you have a Hexxo account.<br>&copy; ${new Date().getFullYear()} Hexxo. All rights reserved.`;
   const social = [
     ['https://x.com/hexxostore?s=11', 'email-icon-x.jpg', 'X'],
     ['https://www.instagram.com/hexxo.store', 'email-icon-instagram.jpg', 'Instagram'],
@@ -168,7 +214,7 @@ function baseTemplate(innerHtml, { preheader = '', audience = 'customer' } = {})
               <a href="${SITE_URL}/track-order" style="color:${BRAND.muted};">Track an order</a> &nbsp;&middot;&nbsp;
               <a href="${SITE_URL}/contact" style="color:${BRAND.muted};">Help</a>
             </p>
-            <p style="margin:0; font:400 12px/1.6 ${BRAND.uiFont}; color:${BRAND.muted};">You're receiving this because you have a Hexxo account.<br>&copy; ${new Date().getFullYear()} Hexxo. All rights reserved.</p>`;
+            <p style="margin:0; font:400 12px/1.6 ${BRAND.uiFont}; color:${BRAND.muted};">${reason}</p>`;
 
   return `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -185,6 +231,7 @@ function baseTemplate(innerHtml, { preheader = '', audience = 'customer' } = {})
       .container { width: 100% !important; }
       .px { padding-left: 24px !important; padding-right: 24px !important; }
       .h1 { font-size: 24px !important; }
+      .hero-h1 { font-size: 30px !important; }
     }
     .btn a:hover { background: #b91c1c !important; }
   </style>
@@ -212,7 +259,9 @@ function baseTemplate(innerHtml, { preheader = '', audience = 'customer' } = {})
               </table>
             </td>
           </tr>
-          <tr><td bgcolor="${BRAND.red}" style="background:${BRAND.red}; height:4px; line-height:4px; font-size:4px;">&nbsp;</td></tr>
+          ${heroHtml
+            ? `<tr><td bgcolor="${BRAND.ink}" class="px" style="background:${BRAND.ink}; padding:8px 40px 28px;">${heroHtml}</td></tr>`
+            : `<tr><td bgcolor="${BRAND.red}" style="background:${BRAND.red}; height:4px; line-height:4px; font-size:4px;">&nbsp;</td></tr>`}
           <!-- Body -->
           <tr>
             <td bgcolor="#ffffff" class="px" style="background:#ffffff; padding:40px 40px 24px; border-radius:0 0 12px 12px;">
@@ -237,6 +286,18 @@ function baseTemplate(innerHtml, { preheader = '', audience = 'customer' } = {})
   </table>
 </body>
 </html>`;
+}
+
+// Marketing email is opt-in only and must always carry an unsubscribe link
+// (privacy.html), so this throws rather than build one without it.
+// shortcut: unsubscribe is a mailto the admin actions by hand, swap for a signed one-click /unsubscribe route once the list passes ~100.
+function marketingTemplate(innerHtml, { unsubscribeEmail, ...options }) {
+  if (!unsubscribeEmail) throw new Error('Marketing emails need unsubscribeEmail');
+  return baseTemplate(innerHtml, {
+    ...options,
+    audience: 'marketing',
+    unsubscribeHref: `mailto:${escapeHtml(unsubscribeEmail)}?subject=Unsubscribe`,
+  });
 }
 
 // ---------- Templates ----------
@@ -465,10 +526,76 @@ const notificationTemplates = {
   })
 };
 
+// Marketing emails go to opted-in users only, sent by scripts/sendOutreach.js.
+// Kept out of notificationTemplates on purpose: POST /send/update lets a
+// client pick any type templateBuilder() serves, and these must not be
+// reachable that way.
+const marketingTemplates = {
+
+  // To opted-in users with no published listing. Fee claims mirror the
+  // homepage promo wording, including the processing-fee fine print.
+  FIRST_LISTING_NUDGE: ({ firstName, unsubscribeEmail }) => ({
+    subject: 'List by Dec 31, sell fee-free in 2027',
+    html: marketingTemplate(`
+      ${paragraph(`Hey ${escapeHtml(firstName || 'there')},`)}
+      ${paragraph("Thanks for joining Hexxo. You haven't listed yet, and one published listing by Dec 31 locks this in. Here's how:")}
+      ${eyebrow('Three steps')}
+      ${steps([
+        ['Add a photo', 'One is enough to start.'],
+        ['Fill in the details', 'Brand, size, condition, price.'],
+        ['Pick shipping and hit &ldquo;List it&rdquo;', "Use our prepaid label (add your address in your profile first) or ship it yourself. Saved drafts don't count toward the promo."],
+      ])}
+      ${button('List your first item', `${SITE_URL}/seller`, { block: true })}
+      <p style="margin:-12px 0 24px; text-align:center; font:400 13px/1.5 ${BRAND.uiFont}; color:${BRAND.muted};">Asked to log in? Log in, then tap this button again.</p>
+      <div style="margin:0 0 24px; padding:16px 20px; border-left:4px solid ${BRAND.red}; background:${BRAND.panel}; font:400 14px/1.6 ${BRAND.uiFont}; color:${BRAND.body};">
+        <strong style="display:block; margin-bottom:6px; font:700 18px/1.25 ${BRAND.font}; color:${BRAND.ink};">What would make Hexxo better for you?</strong>
+        Hit reply and tell us. A real person reads every one. Stuck on a listing? Reply and we'll help you get it posted.
+      </div>
+      ${paragraph('The Hexxo team')}
+      ${paragraph('*On your first $10K of 2027 sales. Payment processing fees apply.', { muted: true, small: true })}
+    `, {
+      unsubscribeEmail,
+      preheader: 'One listing by Dec 31 gets you 0% seller fees on your first $10K of 2027 sales.',
+      heroHtml: hero({
+        tag: 'Ends Dec 31, 2026',
+        title: `Sell <span style="color:${BRAND.red};">fee-free</span> all of 2027.`,
+        sub: 'Publish one listing before the deadline and keep more of every sale next year.',
+        stats: [['0%', 'Seller fees*'], ['$0', 'Listing fees'], ['90 sec', 'To list']],
+      }),
+    })
+  }),
+
+  // To opted-in users who have published a listing: feedback by reply.
+  SELLER_FEEDBACK: ({ firstName, unsubscribeEmail }) => ({
+    subject: '3 quick questions about selling on Hexxo',
+    html: marketingTemplate(`
+      ${paragraph(`Hey ${escapeHtml(firstName || 'there')},`)}
+      ${paragraph("Thanks for listing on Hexxo. You've used the selling side for real, so you know what works and what doesn't. Hit reply and answer these:")}
+      ${[
+        'What do you like most about Hexxo so far?',
+        'What was confusing or annoying when you listed?',
+        "What's the one thing we should build next?",
+      ].map((question, i) => `
+      <div style="margin:0 0 10px; padding:14px 16px; background:${BRAND.panel}; font:600 15px/1.5 ${BRAND.uiFont}; color:${BRAND.ink};"><span style="color:${BRAND.red}; font:700 18px/1 ${BRAND.font};">${i + 1}</span>&nbsp;&nbsp;${question}</div>`).join('')}
+      <div style="height:14px; line-height:14px; font-size:14px;">&nbsp;</div>
+      ${paragraph('Short answers are perfect. A real person reads every reply.')}
+      ${paragraph('The Hexxo team')}
+    `, {
+      unsubscribeEmail,
+      preheader: 'Three quick questions. Your answers decide what we build next.',
+      heroHtml: hero({
+        tag: '3 questions, 2 minutes',
+        title: `You're one of our <span style="color:${BRAND.red};">first sellers.</span>`,
+        sub: 'Your answers decide what we build next.',
+      }),
+    })
+  })
+};
+
 function templateBuilder(notificationType, data) {
   const build = notificationTemplates[notificationType];
   if (!build) return null;
   return build(data || {});
 }
 
-module.exports = { templateBuilder, notificationTemplates };
+module.exports = { templateBuilder, notificationTemplates, marketingTemplates };
