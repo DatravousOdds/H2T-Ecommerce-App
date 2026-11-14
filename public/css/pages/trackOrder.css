@@ -216,6 +216,32 @@
     color: var(--to-color-primary);
 }
 
+.order-summary-card .tracking-events summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.order-summary-card .tracking-events ol {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0 0 0 0.75rem;
+    border-left: 2px solid var(--to-color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.order-summary-card .tracking-events li {
+    display: flex;
+    flex-direction: column;
+    overflow-wrap: anywhere;
+}
+
+.order-summary-card .tracking-event-when {
+    font-size: 0.8rem;
+    color: #666;
+}
+
 /* ===== Message Seller ===== */
 .message-seller-link {
     display: flex;

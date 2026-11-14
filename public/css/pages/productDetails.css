@@ -300,42 +300,145 @@
 }
 
 .detail-container {
-    padding-bottom: 0.25rem;
-    border-bottom: 1px solid #dedede;
-}
-
-.detail-container h3 {
-    font-size: var(--fs-h4);
-    font-weight: 400 !important;
+    border-bottom: 1px solid var(--color-border-primary);
 }
 
 .details-container {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-}
-
-.detail-text {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
-    color: var(--color-text-muted);
-    font-size: var(--font-sm);
-  }
-
-.detail-text.active {
-    max-height: 1000px;
 }
 
 .detail-trigger {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    border: none;
+    min-height: 44px;
+    padding: 0.75rem 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: var(--fs-h4);
     font-weight: 600;
-    background: transparent;
     color: var(--color-text-primary);
+}
+
+.detail-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.detail-trigger:focus-visible {
+    outline: 2px solid var(--color-text-primary);
+    outline-offset: 2px;
+}
+
+.detail-trigger i {
+    font-size: 0.875rem;
+    transition: transform 0.2s ease;
+}
+
+/* Plus rotates into an "x" when open */
+.detail-container[open] > .detail-trigger i {
+    transform: rotate(45deg);
+}
+
+/* Padding on the panel, not margins on children -- global.css forces
+   p { margin-bottom: 0 !important }. */
+.detail-container[open] {
+    padding-bottom: 1rem;
+}
+
+.detail-list,
+.payment-icons {
+    margin: 0;
+}
+
+.detail-text {
+    color: var(--color-text-muted);
+    font-size: var(--fs-body-sm);
+}
+
+.detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 0;
+    list-style: none;
+}
+
+.detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.detail-row-icon {
+    flex: 0 0 1.25rem;
+    margin-top: 0.2rem;
+    text-align: center;
+    color: var(--color-text-primary);
+}
+
+.detail-row-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: var(--fs-body-sm);
+    color: var(--color-text-primary);
+}
+
+.detail-row-sub {
+    margin: 0.125rem 0 0;
+    font-size: var(--fs-body-sm);
+    line-height: 1.45;
+    color: var(--color-text-muted);
+}
+
+.detail-row-sub a {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+}
+
+.payment-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0;
+    list-style: none;
+    font-size: 2rem;
+    color: var(--color-text-primary);
+}
+
+.payment-secure {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Authenticity states */
+.auth-detail {
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: #f6f6f6;
+}
+
+.auth-detail--authenticated .detail-row-icon,
+.auth-detail--eligible .detail-row-icon {
+    color: #1a8a4a;
+}
+
+/* Amber, not red: this is a disclosure, not an error, and red is the CTA colour. */
+.auth-detail--none .detail-row-icon {
+    color: #b45309;
+}
+
+/* Keeps the sticky nav from covering the panel when #authNote jumps here. */
+#authDetail {
+    scroll-margin-top: 100px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .detail-trigger i {
+        transition: none;
+    }
 }
 
 /* CTA buttons */
@@ -892,6 +995,27 @@
     font-weight: 700;
     width: fit-content;
     margin-bottom: 0.75rem;
+}
+
+.auth-note {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: fit-content;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.auth-note[hidden] {
+    display: none;
+}
+
+.auth-note i {
+    color: #b45309;
 }
 
 .auth-badge img {
