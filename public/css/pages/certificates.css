@@ -1,0 +1,242 @@
+/* My Certificates profile tab (#certificates in account/profile.html). */
+
+/* .tab centers its children, so the section would otherwise shrink to fit. */
+#certificates .certificates-section {
+  width: 100%;
+  display: grid;
+  /* minmax(0, 1fr), not the implicit auto track: auto sizes to the widest
+     child's min-content and pushed the page 7px wide at 375px. */
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 18px;
+  align-content: start;
+}
+
+/* Unscoped on purpose: under #certificates it would outrank .purchase-type-item.active and hide the underline. */
+button.purchase-type-item {
+  background: none;
+  border: 0;
+  font-family: inherit;
+}
+
+#certificates .purchase-type-item:focus-visible {
+  outline: 2px solid var(--color-button-primary);
+  outline-offset: 2px;
+}
+
+#certificates .cert-count {
+  margin-left: 3px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The filter list is empty while loading; hide its bare bottom border. */
+#certificates .purchase-type-nav:has(.purchase-type-list:empty) {
+  visibility: hidden;
+}
+
+/* Reserves the filter row's height so the cards don't jump down when the
+   filters fill in after loading. */
+#certificates .purchase-type-list {
+  min-height: 38px;
+}
+
+#certificates .cert-errors {
+  display: grid;
+  gap: 8px;
+}
+
+/* An empty container would still take a row gap in the section grid. */
+#certificates .cert-errors:empty,
+#certificates .cert-grid:empty {
+  display: none;
+}
+
+#certificates .cert-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+#certificates .cert-card {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 12px 14px;
+  padding: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  background: #fff;
+  font-family: var(--ui-font);
+  transition: box-shadow 0.2s ease;
+}
+
+#certificates .cert-card:not(.skeleton-item):hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* background-color, not the shorthand, so the skeleton shimmer gradient survives. */
+#certificates .cert-thumb {
+  width: 112px;
+  height: 112px;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+}
+
+#certificates .cert-info {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  min-width: 0;
+}
+
+#certificates .cert-source {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+#certificates .cert-title {
+  margin: 0;
+  font: 600 15px/1.25 var(--primary-font);
+  overflow-wrap: anywhere;
+}
+
+#certificates .cert-subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+#certificates .cert-type {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  justify-self: start;
+  max-width: 100%;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border-primary);
+  border-radius: 6px;
+  background: #f4f4f5;
+  color: #070707;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#certificates .cert-type i {
+  color: var(--color-button-primary);
+}
+
+#certificates .cert-tier {
+  font-weight: 500;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+#certificates .cert-date {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+#certificates .cert-link {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--color-button-primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#certificates .cert-link:hover {
+  background: var(--color-text-primary-hover);
+}
+
+#certificates .cert-link:focus-visible {
+  outline: 2px solid var(--color-button-primary);
+  outline-offset: 2px;
+}
+
+#certificates .cert-error {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px dashed #f3b4b9;
+  border-radius: 8px;
+  background: #fff6f7;
+  font-size: 13px;
+}
+
+#certificates .cert-error p {
+  margin: 0;
+  color: #b00915;
+}
+
+#certificates .cert-retry {
+  justify-self: start;
+  padding: 8px 12px;
+  border: 1px solid #070707;
+  border-radius: 6px;
+  background: #fff;
+  font: 500 12px var(--ui-font);
+  cursor: pointer;
+}
+
+#certificates .cert-retry:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+#certificates .cert-filter-empty {
+  grid-column: 1 / -1;
+  padding: 24px 0;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* .icon-background draws the Favorites heart as a background-image. */
+#certificates .icon-background {
+  background-image: none;
+  background-color: #fdecee;
+  color: var(--color-button-primary);
+  font-size: 28px;
+}
+
+#certificates .btn-wrapper {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+@media (max-width: 575.98px) {
+  #certificates .cert-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #certificates .cert-card {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  #certificates .cert-thumb {
+    width: 84px;
+    height: 84px;
+  }
+}
+
+/* Same guard as adminDashboard.css: .cert-grid's display: grid would
+   otherwise defeat the hidden attribute. */
+#certificates [hidden] {
+  display: none;
+}
