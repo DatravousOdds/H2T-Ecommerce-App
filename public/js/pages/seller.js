@@ -235,8 +235,8 @@ let pendingAuthSize = null;
 
 // Set by setDimensionsListeners()'s defaultsBtn handler right before it
 // requests rates. courierConfirmBtn (setCourierListeners) needs the same
-// parcel later to persist onto listing.shipping -- EasyShip's shipment-create
-// call needs these dimensions again to re-book the exact rate the seller
+// parcel later to persist onto listing.shipping -- ShipStation's label
+// purchase needs these dimensions again to re-book the exact rate the seller
 // picked here, and nothing else in this file keeps them around that long.
 let selectedParcel = null;
 
@@ -598,8 +598,8 @@ function setCourierListeners() {
             service_name: selectedRate.dataset.serviceName,
             estimateRate: parseFloat(selectedRate.value),
             // ShipStation's label-purchase call re-books by passing
-            // carrierCode + serviceCode directly -- no separate reservation
-            // id like EasyShip's courierServiceId -- see selectedParcel.
+            // carrierCode + serviceCode directly -- there's no separate
+            // rate reservation id -- see selectedParcel.
             parcel: selectedParcel
         };
 
