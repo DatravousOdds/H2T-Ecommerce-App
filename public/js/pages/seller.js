@@ -4,6 +4,7 @@ import { collection, setDoc } from '../api/firebase-client.js';
 import { serverTimestamp } from '../api/firebase-client.js';
 import { showLoader, hideLoader } from '../components/pageLoader.js';
 import { ANGLE_REQUIREMENTS, getRequiredAngleCount } from '../core/angleRequirements.js';
+import { estimateTakeHome, initListingSummary } from './sellerSummary.js';
 
 // Maps this page's seller-listing categories onto the 5 categories
 // angleRequirements.js actually defines angle sets for. Sneakers/Shoes both
@@ -339,6 +340,11 @@ if (isEditing) {
 } else if (authRequestId) {
     await prefillFromAuthRequest(authRequestId);
 }
+
+// The panel stays correct because every form write happens in a user
+// input/change/click task, before this line, or as a photo src change. A future
+// async write outside those must call the refresh this returns.
+initListingSummary(readListingDraft, imageGridContainer);
 
 postBtn.addEventListener('click', async () => {
     // Step 1: Validate basic information
@@ -1369,6 +1375,47 @@ function validateImages() {
 
     removeImagesError();
     return true;
+}
+
+// `done` mirrors validateImages/validateProductInfo and may be stricter, never
+// looser, so 5 of 5 means List it passes. Accepted exception: the admin-only
+// release date isn't covered.
+function readListingDraft() {
+    // getAttribute, as in validateImages: the .src property of an empty <img> is the page URL.
+    const coverImage = [...document.querySelectorAll('.image-preview')].find(image => image.getAttribute('src'));
+    const coverUrl = coverImage?.getAttribute('src') ?? '';
+
+    // Only an explicit 'block' counts: seller.css hides #sizeInfo with no inline
+    // style, and #size keeps a stale value after switching to a size-less category.
+    const sizeLabel = document.querySelector('label[for="size"]').textContent;
+    const sizeValue = sizeInfo.style.display === 'block' ? productSize.value : '';
+    const size = sizeValue && sizeLabel === 'Size' ? `Size ${sizeValue}` : sizeValue;
+
+    const condition = productCondition.value ? productCondition.selectedOptions[0] : null;
+    const brand = productBrand.value.trim();
+    const title = productTitle.value.trim();
+    const shippingRadio = document.querySelector('input[name="shipping-method"]:checked');
+
+    return {
+        coverUrl,
+        coverSlot: coverImage?.closest('.image-container') ?? null,
+        brand,
+        title,
+        size,
+        conditionLabel: condition?.text ?? '',
+        conditionHint: condition?.dataset.hint ?? '',
+        priceText: productPrice.value,
+        prepaid: shippingRadio?.value === 'prepaid',
+        done: {
+            category: productCategory.value !== '',
+            photos: Boolean(coverImage),
+            // Size excluded because the validator excludes it.
+            details: Boolean(title && brand && condition && productDescription.value.trim()),
+            // Stricter than the validator, which accepts "0".
+            price: estimateTakeHome(productPrice.value) !== null,
+            shipping: Boolean(shippingRadio)
+        }
+    };
 }
 
 
