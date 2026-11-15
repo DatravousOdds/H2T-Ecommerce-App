@@ -774,11 +774,11 @@
     position: relative;
     top: 0;
     left: 0;
-    overflow-y: auto;
+    overflow: hidden;
     width: 500px;
     display: none;
-    height: 100%;
-    max-height: 540px;
+    flex-direction: column;
+    max-height: 90vh;
     background-color: var(--color-background-primary);
     border-radius: 0.25rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
@@ -786,7 +786,24 @@
 }
 
 .offer-modal.active {
-    display: block;
+    display: flex;
+}
+
+/* Only the body scrolls, so the header and Send button stay in view. */
+#offerBody {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+#offerBody .send-offer-btn {
+    position: sticky;
+    bottom: 0;
+}
+
+/* Solid when disabled, or scrolled content shows through the pinned button. */
+#offerBody .send-offer-btn:disabled {
+    opacity: 1;
 }
 
 .offer-sent {
@@ -1232,10 +1249,43 @@
     margin-bottom: 0.25rem;
 }
 
-.offer-input input {
-    padding: 1rem;
-    border-radius: 0.24rem;
+.offer-input-field {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0 1rem;
+    border-radius: 0.25rem;
     border: 1px solid rgba(0,0,0,0.12);
+}
+
+/* The input has no border of its own, so the wrapper shows focus. */
+.offer-input-field:focus-within {
+    border-color: var(--color-text-primary);
+}
+
+.offer-input-field span {
+    font-weight: 700;
+    color: var(--color-text-muted);
+}
+
+.offer-input-field input {
+    flex: 1;
+    min-width: 0;
+    padding: 1rem 0;
+    border: none;
+    outline: none;
+    font-weight: 700;
+}
+
+.offer-help {
+    margin: 0.375rem 0 0;
+    font-size: var(--font-sm);
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+.offer-help.error {
+    color: #B3261E;
 }
 
 /* offer suggestions */
@@ -1250,14 +1300,18 @@
 }
 
 .offer-suggestion {
-    gap: 0.25rem;
-    border-radius: 4px;
-    padding: 0.875rem 1.5rem;
+    gap: 0.125rem;
+    border-radius: 8px;
+    padding: 0.625rem 0.5rem;
+    min-height: 64px;
     display: flex;
-    flex-direction: column;
+    /* Price reads first; the markup keeps label-then-price for screen readers. */
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: center;
     background-color: #fff;
-    border: 2px solid rgba(0,0,0,0.12);
-    transition: 0.5s ease;
+    border: 2px solid rgba(0,0,0,0.14);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
     cursor: pointer;
 }
 
@@ -1274,31 +1328,38 @@
 }
 
 .offer-suggestion:hover {
-    border: 1px solid #D13023;
-    background-color: rgba(248, 45, 45, 0.1);
+    border-color: var(--color-text-primary);
    
 }
 
 .offer-suggestion.active {
-    border: 1px solid #D13023;
-    background-color: rgba(248, 45, 45, 0.1);
-    color: #D13023;
+    border-color: var(--color-text-primary);
+    background-color: var(--color-text-primary);
 }
 
 .offer-suggestion.active span {
-    color: #D13023;
+    color: #fff;
 }
 
 /* offer tooltip */
 
 .offer-tooltip {
+    display: flex;
+    gap: 0.625rem;
     margin-bottom: 1.25rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: 8px;
+    background-color: #F5F5F5;
+}
+
+.offer-tooltip i {
+    margin-top: 0.2rem;
 }
 
 .offer-tooltip p {
-    color: var(--color-text-muted);
+    margin: 0;
+    color: #444;
     font-size: var(--font-sm);
-    font-weight: 500;
 }
 
 .send-offer-btn {
@@ -1424,7 +1485,13 @@
 @media (max-width: 768px) {
 
     .offer-suggestions {
-        grid-template-columns: repeat(1, 1fr);
+        gap: 0.5rem;
+    }
+
+    /* Offer popups become bottom sheets. :has() scopes this to them, since
+       the review modal shares the same overlay and should stay centred. */
+    .modal-overlay:has(.offer-modal.active, .offer-sent.active) {
+        align-items: flex-end;
     }
 
     .cart-drawer-footer {
@@ -1432,10 +1499,13 @@
        padding: 1rem;
     }
 
-    .offer-modal {
-        overflow-y: auto;
-        width: 90vw;
-        max-height: 70vh;
+    .offer-modal,
+    .offer-sent {
+        width: 100%;
+        max-height: 90vh;
+        border-radius: 16px 16px 0 0;
+        /* Keeps the button clear of the iPhone home bar. */
+        padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
     }
     .product-details-wrapper {
         flex-direction: column;

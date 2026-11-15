@@ -564,24 +564,25 @@ async function setOfferModalData() {
         </div>
         <div class="offer-input">
           <label for="offerInput">Your offer</label>
-          <input class="input-bordered" type="number" id="offerInput" value="">
+          <div class="offer-input-field">
+            <span aria-hidden="true">$</span>
+            <input type="number" inputmode="decimal" min="0" step="0.01" id="offerInput" placeholder="0" aria-describedby="offerHelp">
+          </div>
+          <p class="offer-help" id="offerHelp" aria-live="polite"></p>
         </div>
         <div class="offer-suggestions" aria-label="Quick offer suggestion">
-          <button type="button" class="offer-suggestion" data-value="">
-            <span>10% Off</span>
-            <span>$${calculateDiscountPrice(10,data.listingPrice)}</span>
-          </button>
-          <button type="button" class="offer-suggestion" data-value="">
-            <span>20% Off</span>
-            <span>$${calculateDiscountPrice(20, data.listingPrice)}</span>
-          </button>
-          <button type="button" class="offer-suggestion" data-value="">
-            <span>15% Off</span>
-            <span>$${calculateDiscountPrice(30, data.listingPrice)}</span>
-          </button>
+          ${[10, 15, 20].map((percent) => {
+            const price = calculateDiscountPrice(percent, data.listingPrice);
+            return `
+          <button type="button" class="offer-suggestion" data-value="${price}">
+            <span>${percent}% Off</span>
+            <span>$${price}</span>
+          </button>`;
+          }).join('')}
         </div>
         <div class="offer-tooltip" id="offerTooltip">
-          <p>An offer accepted is not a purchase. If the seller accepts, you’ll have 24  hours to buy item at offer price</p>
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          <p>The seller has 24 hours to respond. If they accept, you get 24 hours to check out at your offer price. An accepted offer is not a purchase.</p>
         </div>
         <button class="send-offer-btn" id="sendOfferBtn" type="button">Send Offer</button>
     `;
@@ -592,16 +593,23 @@ async function setOfferModalData() {
     const offerSuggestions = document.querySelectorAll('.offer-suggestion');
     
     const offerInput = document.getElementById('offerInput');
+    const offerHelp = document.getElementById('offerHelp');
 
-    offerInput.addEventListener('input', (e) => {
-        const event = e.target.value;
-        if(!event) {
-            sendOfferBtn.disabled = true;
-        } else {
-            sendOfferBtn.disabled = false;
-            offerSuggestions.forEach(s => s.classList.remove('active'))
+    // The one place that sets the button state and helper line, so typing
+    // and chip clicks can't disagree about whether an offer is sendable.
+    function refreshOffer() {
+        const amount = Number(offerInput.value);
+        const { valid, error, text } = describeOffer(amount, Number(data.listingPrice));
+        sendOfferBtn.disabled = !valid;
+        sendOfferBtn.textContent = valid ? `Send offer · $${amount.toFixed(2)}` : 'Send offer';
+        offerHelp.classList.toggle('error', error);
+        offerHelp.textContent = text;
+    }
+    refreshOffer();
 
-        }
+    offerInput.addEventListener('input', () => {
+        offerSuggestions.forEach(s => s.classList.remove('active'));
+        refreshOffer();
     });
 
     sendOfferBtn.addEventListener('click', async () => {
@@ -613,22 +621,20 @@ async function setOfferModalData() {
             offerSent.classList.add('active');
             await renderBuyerOfferStatus();
         } catch (error) {
-            alert(error.message);
+            offerHelp.classList.add('error');
+            offerHelp.textContent = error.message;
             sendOfferBtn.disabled = false;
         }
     });
 
     offerSuggestions.forEach(suggestion => {
         suggestion.addEventListener('click', () => {
-            const discount = suggestion.lastElementChild.textContent.split('$')[1];
-            offerInput.value = discount;
+            offerInput.value = suggestion.dataset.value;
 
             offerSuggestions.forEach(s => s.classList.remove('active'))
             suggestion.classList.add('active');
             
-            if (suggestion.classList.contains('active')) {
-                sendOfferBtn.disabled = false; 
-            }
+            refreshOffer();
         })
     });
 }
@@ -945,6 +951,18 @@ function ratingStars(maxRatings = 5) {
     }
 
     return ratingHTML;
+}
+
+// Decides whether an offer can be sent and what the helper line says.
+function describeOffer(amount, price) {
+    if (!(amount > 0)) {
+        return { valid: false, error: false, text: 'Pick a quick offer or type your own.' };
+    }
+    if (amount >= price) {
+        return { valid: false, error: true, text: `Offers need to be below the $${price} listing price.` };
+    }
+    const percent = Math.round((1 - amount / price) * 100);
+    return { valid: true, error: false, text: `$${(price - amount).toFixed(2)} below asking, ${percent}% off` };
 }
 
 function calculateDiscountPrice(discountAmount, price) {
