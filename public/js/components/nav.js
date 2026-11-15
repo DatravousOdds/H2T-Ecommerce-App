@@ -608,7 +608,9 @@ const setupEventListeners = (nav) => {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") setMenuOpen(false);
+    // Only when the menu is open: closing clears the body scroll lock, and
+    // page modals (product, reviews, trade request) hold that same lock.
+    if (e.key === "Escape" && slideMenu.classList.contains("active")) setMenuOpen(false);
   });
 
   // Mark the row for the page the user is on. Links in a dropdown also mark
