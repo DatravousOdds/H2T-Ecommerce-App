@@ -2175,6 +2175,7 @@ app.get("/api/sellers/:sellerId/offers", verifyAuth, async (req, res) => {
       const listing = listingsById[offer.productId];
       return {
         ...offer,
+        listingExists: Boolean(listing),
         productName: listing?.productName || "Listing removed",
         productImage: listing?.images?.find((img) => img.isPrimary)?.url || listing?.images?.[0]?.url || "",
       };
