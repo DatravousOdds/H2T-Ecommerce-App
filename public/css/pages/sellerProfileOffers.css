@@ -32,6 +32,12 @@
   gap: 1rem;
 }
 
+.offers-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .offers-conversation-empty {
   color: var(--color-text-muted, #747474);
   text-align: center;
@@ -121,6 +127,13 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s;
+}
+
+/* The next-step links reuse the button classes on <a> tags. */
+a.offer-reject-btn,
+a.offer-counter-btn {
+  display: inline-block;
+  text-decoration: none;
 }
 
 .offer-accept-btn {
