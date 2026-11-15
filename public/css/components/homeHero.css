@@ -173,7 +173,7 @@
   outline-offset: 2px;
 }
 
-/* ---------- Slide A: photo hero ---------- */
+/* ---------- Photo hero slide ---------- */
 
 .home-hero__slide--photo {
   display: flex;
@@ -237,7 +237,7 @@
   color: #fff;
 }
 
-/* ---------- Slide B: split hero ---------- */
+/* ---------- Split hero slide ---------- */
 
 .home-hero__slide--split {
   display: grid;
@@ -307,7 +307,7 @@
   );
 }
 
-/* ---------- Slide C: seller offer ---------- */
+/* ---------- Seller offer slide (lead) ---------- */
 
 .home-hero__slide--offer {
   display: flex;
@@ -353,51 +353,6 @@
   gap: 22px;
 }
 
-/* .home-hero__signup is a class selector, so it beats the bare `form`
-   width rules in style2.css's mobile media queries. */
-.home-hero__signup {
-  display: flex;
-  gap: 12px;
-  align-items: stretch;
-  width: 100%;
-  max-width: 560px;
-  margin-top: 6px;
-}
-
-.home-hero__input {
-  flex: 1;
-  min-width: 0;
-  box-sizing: border-box;
-  padding: 12px 15px;
-  border: 1px solid #e1e1e1;
-  border-radius: 8px;
-  background: #fff;
-  color: var(--hero-black);
-  font: 400 16px Inter, sans-serif;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.home-hero__input:focus,
-.home-hero__input[aria-invalid="true"] {
-  border-color: var(--hero-red);
-}
-
-.home-hero__error {
-  margin: -10px 0 0;
-  font: 500 14px Inter, sans-serif;
-  color: #ff5a66;
-}
-
-.home-hero__login-link {
-  color: #fff;
-}
-
-.home-hero__login-link:hover {
-  color: #fff;
-  opacity: 0.8;
-}
-
 .home-hero__offer-card {
   display: flex;
   flex-direction: column;
@@ -407,6 +362,23 @@
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25), 0 32px 64px rgba(0, 0, 0, 0.35);
+}
+
+.home-hero__offer-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.home-hero__countdown {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--hero-black);
+  font: 600 13px Inter, sans-serif;
+  white-space: nowrap;
 }
 
 .home-hero__offer-label {
@@ -435,6 +407,32 @@
   max-width: 200px;
   font: 600 18px/1.3 Inter, sans-serif;
   color: #fff;
+}
+
+/* What the offer is worth: $700 = the 7% seller fee on the $10K cap */
+.home-hero__savings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.home-hero__savings li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  font: 400 12px/1.35 Inter, sans-serif;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.home-hero__savings s {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .home-hero__steps {
@@ -512,7 +510,6 @@
   background: var(--hero-red);
 }
 
-
 /* Bigger tap target for the 6px-tall dots without changing how they look */
 .home-hero__dot {
   position: relative;
@@ -571,13 +568,6 @@
     padding-bottom: 72px;
   }
 
-  .home-hero__signup {
-    flex-wrap: wrap;
-  }
-
-  .home-hero__input {
-    flex: 1 1 200px;
-  }
 }
 
 /* ---------- Mobile: below 768px (designed at 402px, mocks 3a/3b/3c) ---------- */
@@ -783,21 +773,6 @@
     gap: 18px;
   }
 
-  .home-hero__signup {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 0;
-  }
-
-  .home-hero__input {
-    flex: none;
-    min-height: 48px;
-  }
-
-  .home-hero__error {
-    margin-top: -8px;
-  }
-
   .home-hero__offer-card {
     gap: 18px;
     padding: 22px;
@@ -819,6 +794,14 @@
   .home-hero__offer-caption {
     max-width: none;
     font-size: 16px;
+  }
+
+  .home-hero__savings {
+    gap: 8px;
+  }
+
+  .home-hero__savings li {
+    padding: 10px;
   }
 
   .home-hero__steps {
