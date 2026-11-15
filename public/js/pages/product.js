@@ -17,7 +17,7 @@ const AUTH_DETAIL_COPY = {
         text: 'This exact item has already passed Hexxo authentication.'
     },
     eligible: {
-        badge: 'Authentication included',
+        badge: 'Authenticity Check',
         icon: 'fa-shield-halved',
         title: 'Hexxo Tier 1 authentication included',
         text: "After you buy, Hexxo reviews the seller's photos of this item before it ships. If it fails, your order is cancelled and your card is never charged."
@@ -1111,7 +1111,7 @@ function displayProducts(products) {
         : isAuthenticationEligible(productData)
         ? `<div class="auth-badge auth-badge--card">
             <img src="/images/hexxo_auth_badge.png" alt="">
-            <span>Authentication included</span>
+            <span>Authenticity Check</span>
           </div>`
         : '';
 
