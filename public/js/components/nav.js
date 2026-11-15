@@ -123,7 +123,17 @@ const mobileHelpItem = `
   </li>
 `;
 
-const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuContent) => `
+// Notifications belong to an account, so the bell is only passed in by the
+// logged-in nav. Logged-out visitors get no bell at all.
+const desktopBellItem = `
+        <li>
+          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notification-badge" aria-label="Unread notifications">0</span>
+          </a>
+        </li>`;
+
+const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuContent, desktopBell = "") => `
   <nav class="navbar" aria-label="main navigation">
     <!-- Left section with search and logo -->
     
@@ -203,12 +213,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuConten
         <li><a href="/collectibles" class="nav-link">Collectibles</a></li>
         <li><a href="/accessories" class="nav-link">Accessories</a></li>
         <li><a href="/seller" class="nav-link">Sell</a></li>
-        <li>
-          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notification-badge" aria-label="Unread notifications">0</span>
-          </a>
-        </li>
+        ${desktopBell}
         <li>
           <a href="#" class="nav-link cart-link" id="cartBtn" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
@@ -249,13 +254,7 @@ const LoggedOutNav = () => ({
     <div class="small-screen-nav-container">
       <ul class="small-screen-nav">
         <li>
-          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notification-badge" aria-label="Unread notifications">0</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile" class="nav-link" aria-label="User profile">
+          <a href="/login" class="nav-link" aria-label="Log in">
             <i class="fa-solid fa-user"></i>
           </a>
         </li>
@@ -500,7 +499,8 @@ const newNav =  async () => {
     nav.innerHTML = getSharedNavHTML(
       content.rightSide,
       content.desktop,
-      content.mobile
+      content.mobile,
+      desktopBellItem
     );
 
     setupEventListeners(nav);
