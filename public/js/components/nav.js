@@ -253,6 +253,8 @@ const LoggedOutNav = () => ({
   rightSide: `
     <div class="small-screen-nav-container">
       <ul class="small-screen-nav">
+        <!-- Keep this label different from "User profile": style2.css hides
+             that label's <li> at 430px and below, which would hide login on phones. -->
         <li>
           <a href="/login" class="nav-link" aria-label="Log in">
             <i class="fa-solid fa-user"></i>
