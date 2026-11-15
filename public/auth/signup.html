@@ -8,19 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/images/Hexxo_Bg_Removed.png" />
     <title>Hexxo : Create Account</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/login.css" />
     <link rel="stylesheet" href="css/signup.css" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <main class="login-page-layout">
+    <main class="login-page-layout auth-page">
       <img src="images/loader.gif" class="loader" alt="" />
 
       <div class="alert-box">
@@ -28,43 +23,55 @@
         <p class="alert-msg">Error message</p>
       </div>
 
-      <div class="content-block login-form">
-        <a class="content-header" href="/"><img src="../images/image1.svg" class="logo" alt="" /></a>
-        <div class="signup-form">
-          <input type="text" autocomplete="off" id="name" placeholder="Enter your name" />
-          <input type="email" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" id="email" placeholder="Enter your email" />
+      <div class="content-block login-form login-card">
+        <div class="login-header">
+          <a href="/"><img src="../images/Hexxo_Bg_Removed.png" class="logo" alt="Hexxo home" /></a>
+          <h1>Create your account</h1>
+          <!-- class="link" + href="/login" is what auth.js matches to carry ?returnTo across -->
+          <p class="login-sub">Already have an account? <a href="/login" class="link">Log in</a></p>
+        </div>
+        <!-- .signup-form is the container auth.js puts the loader on -->
+        <div class="signup-form login-fields">
+          <label for="name">Name</label>
+          <input type="text" autocomplete="name" id="name" placeholder="Your name" />
+          <label for="email">Email</label>
+          <input type="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" id="email" placeholder="you@example.com" />
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input
+              type="password"
+              autocomplete="new-password"
+              id="password"
+              placeholder="At least 8 characters"
+            />
+            <button type="button" class="password-toggle" id="togglePassword" aria-pressed="false">Show</button>
+          </div>
+          <label for="number">Phone number</label>
           <input
-            type="password"
-            autocomplete="off"
-            id="password"
-            placeholder="Enter password"
-          />
-          <input
-            type="text"
-            autocomplete="off"
+            type="tel"
+            autocomplete="tel"
             id="number"
-            placeholder="Enter your phone number"
+            placeholder="(555) 555-5555"
           />
+          <label for="promo-code">Promo code (optional)</label>
           <input
             type="text"
             autocomplete="off"
             id="promo-code"
-            placeholder="Promo code (optional)"
+            placeholder="Enter a code"
           />
-          <input type="checkbox" checked class="checkbox" id="terms-and-cond" />
-          <label for="terms-and-cond"
-            >agree to our <a href="/terms">terms and conditions</a> and acknowledge our <a href="/privacy">privacy policy</a></label
-          >
-          <br />
-          <input type="checkbox" class="checkbox" id="notification" />
-          <label for="notification"
-            >receive upcoming offers and events mails</label
-          >
-          <button class="btn btn-primary input-width-full" id="submitBtn">Register</button>
+          <div class="auth-check">
+            <input type="checkbox" checked class="checkbox" id="terms-and-cond" />
+            <label for="terms-and-cond"
+              >I agree to the <a href="/terms">Terms and Conditions</a> and acknowledge the <a href="/privacy">Privacy Policy</a></label
+            >
+          </div>
+          <div class="auth-check">
+            <input type="checkbox" class="checkbox" id="notification" />
+            <label for="notification">Email me about upcoming offers and events</label>
+          </div>
+          <button class="btn btn-primary btn-width-full" id="submitBtn">Create account</button>
         </div>
-        <a href="/login" class="link">Already have an account?
-          <span class="login-link">Log in here</span></a>
-
       </div>
     </main>
 

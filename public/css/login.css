@@ -233,3 +233,236 @@ input[type="password"] {
 
   
 }
+
+/* ============================================================
+   Auth pages (login, signup, forgot password). Everything is scoped
+   under .auth-page, set on <main> in those three files, because
+   .logo, .link, label and the global input rule in signup.css are
+   also used elsewhere -- unscoped changes would restyle other pages.
+   ============================================================ */
+.login-page-layout.auth-page {
+  max-width: none;
+  flex-direction: column;
+  gap: 20px;
+  padding: 48px 16px;
+  background: #f4f3f1;
+}
+
+.auth-page .login-card {
+  max-width: 400px;
+  padding: 40px 32px 32px;
+  align-items: stretch;
+  gap: 28px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.05),
+    0 16px 40px rgba(0, 0, 0, 0.06);
+}
+
+.auth-page .login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.auth-page .logo {
+  width: 48px;
+  height: 48px;
+}
+
+/* !important only because the older .login-form h1 rule above uses it */
+.auth-page h1 {
+  font-size: 1.75rem !important;
+  line-height: 1.2;
+}
+
+.auth-page .login-sub {
+  font-size: var(--font-size-med);
+  color: #4a4a4a;
+}
+
+/* #b91c1c, not brand red: #f30c1e on white is ~4.3:1, under the 4.5:1 AA minimum for small text */
+.auth-page .login-sub .link,
+.auth-page .forgot-password-link {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+  color: #b91c1c;
+  text-transform: none;
+}
+
+.auth-page .login-sub .link {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Two columns so the Password label and "Forgot password?" can share a row.
+   Everything else spans both. Spacing is done with margins because the gap
+   between a label and its input (6px) differs from the gap between fields (18px). */
+.auth-page .login-fields {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+}
+
+.auth-page .login-fields > * {
+  grid-column: 1 / -1;
+}
+
+.auth-page .login-fields label {
+  margin-bottom: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-transform: none;
+}
+
+.auth-page .login-fields .password-label {
+  grid-column: 1;
+}
+
+.auth-page .forgot-password-link {
+  grid-column: 2;
+  grid-row: 3;
+  font-size: 0.8125rem;
+}
+
+.auth-page .login-fields input:not(.checkbox) {
+  height: 48px;
+  max-width: none;
+  margin: 0 0 18px;
+  padding: 0 14px;
+  background: #fff;
+  border: 1px solid #8f8f8f; /* 3:1 against white, the minimum for a control border */
+  font-size: 1rem; /* 16px stops iOS Safari zooming the page on focus */
+  color: var(--color-text-primary);
+  text-transform: none;
+}
+
+.auth-page .login-fields input::placeholder {
+  color: #6b6b6b;
+  text-transform: none;
+}
+
+/* The shared input rule sets outline: none, so focus needs its own ring */
+.auth-page input:focus-visible,
+.auth-page button:focus-visible,
+.auth-page a:focus-visible {
+  outline: 2px solid #070707;
+  outline-offset: 2px;
+}
+
+.auth-page .password-wrap {
+  position: relative;
+}
+
+/* .login-fields in the selector so this outranks the padding shorthand above */
+.auth-page .login-fields .password-wrap input {
+  padding-right: 68px;
+}
+
+.auth-page .password-toggle {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  height: 44px;
+  min-width: 56px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font-family: var(--ui-font);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.auth-page .login-fields .btn {
+  min-height: 48px;
+  margin-top: 6px;
+  font-weight: 600 !important;
+}
+
+.auth-page .login-legal {
+  max-width: 400px;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: #5a5a5a;
+}
+
+.auth-page .login-legal a {
+  color: inherit;
+}
+
+/* Signup consent rows: checkbox beside wrapping label text */
+.auth-page .auth-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.auth-page .auth-check .checkbox {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border-color: #8f8f8f;
+}
+
+.auth-page .auth-check label {
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #4a4a4a;
+}
+
+.auth-page .auth-check a {
+  color: #b91c1c;
+}
+
+/* Forgot password: way back to login, sized as a tap target */
+.auth-page .auth-back-link {
+  justify-self: center;
+  margin-top: 4px;
+  padding: 13px 16px;
+  font-size: var(--font-size-med);
+  color: #b91c1c;
+  text-decoration: none;
+}
+
+/* Phone: drop the card chrome so the form uses the full width, and move
+   "Forgot password?" under the button as a full-size tap target. */
+@media (max-width: 480px) {
+  .login-page-layout.auth-page {
+    justify-content: flex-start;
+    padding: 64px 24px 32px;
+    background: #fff;
+  }
+
+  .auth-page .login-card {
+    max-width: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .auth-page .forgot-password-link {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    justify-self: center;
+    padding: 13px 16px;
+    font-size: var(--font-size-med);
+  }
+
+  .auth-page .login-fields .btn {
+    min-height: 52px;
+  }
+
+  .auth-page .login-legal {
+    margin-top: auto;
+  }
+}
