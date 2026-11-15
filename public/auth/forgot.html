@@ -3,6 +3,7 @@
   <head>
   <!-- Google tag (gtag.js), skipped when the browser sends Global Privacy Control -->
   <script type="module" src="/js/core/analytics.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
@@ -17,15 +18,18 @@
     <title>Hexxo : Reset Password</title>
   </head>
   <body>
-    <main class="login-page-layout">
-      <div class="content-block login-form">
-        <a href="/"><img src="./images/Hexxo_Bg_Removed.png" class="logo" alt="" /></a>
-        <form class="login-form" id="forgot-form">
-          <h1>Forgot Password?</h1>
-          <input type="email" autocomplete="email" id="email" placeholder="email Address" required/>
-
-          <button class="btn btn-primary" id="submitBtn" type="submit">Reset Password</button>
-
+    <main class="login-page-layout auth-page">
+      <div class="content-block login-form login-card">
+        <div class="login-header">
+          <a href="/"><img src="./images/Hexxo_Bg_Removed.png" class="logo" alt="Hexxo home" /></a>
+          <h1>Reset your password</h1>
+          <p class="login-sub">Enter your email and we'll send you a reset link.</p>
+        </div>
+        <form class="login-fields" id="forgot-form">
+          <label for="email">Email</label>
+          <input type="email" autocomplete="email" id="email" placeholder="you@example.com" required/>
+          <button class="btn btn-primary btn-width-full" id="submitBtn" type="submit">Send reset link</button>
+          <a href="/login" class="auth-back-link">Back to log in</a>
         </form>
       </div>
     </main>
