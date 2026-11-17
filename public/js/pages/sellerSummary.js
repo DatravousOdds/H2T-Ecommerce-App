@@ -1,4 +1,4 @@
-// Mirrors server.js MARKETPLACE_FEE_RATE; seller.html's "Seller fee (7%)" label repeats it.
+// Mirrors server.js MARKETPLACE_FEE_RATE.
 // shortcut: hand-copied rate, serve it from the server if it ever varies per seller.
 const SELLER_FEE_RATE = 0.07;
 
@@ -42,10 +42,9 @@ export function initListingSummary(readDraft, photoGrid) {
         setText('summaryProgress', `${Object.values(draft.done).filter(Boolean).length} of 5 done`);
 
         const estimate = estimateTakeHome(draft.priceText);
-        const { priceCents = 0, feeCents = 0, netCents = 0 } = estimate ?? {};
+        const { priceCents = 0, netCents = 0 } = estimate ?? {};
         setText('summaryTakeHome', formatCents(netCents));
         setText('breakdownPrice', formatCents(priceCents));
-        setText('breakdownFee', `−${formatCents(feeCents)}`);
         setText('breakdownTakeHome', formatCents(netCents));
         takeHome.classList.toggle('empty', !estimate);
         labelNote.hidden = !draft.prepaid;
