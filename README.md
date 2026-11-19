@@ -6,6 +6,7 @@ A full-stack e-commerce platform built with JavaScript, Node.js, Express.js, and
 
 - [Overview](#overview)
 - [Built With](#built-with)
+- [Architecture](#architecture)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -23,6 +24,74 @@ Hexxo is a modern e-commerce platform designed specifically for sneaker and stre
 * Node.js
 * Express.js
 * Firebase
+
+## Architecture
+
+Three layers: the browser, the Express server, and outside services. Data moves two ways only: through the server's API, or straight from the browser to Firebase.
+
+```mermaid
+flowchart TD
+  subgraph Browser["Browser (public/)"]
+    HTML["HTML pages<br/>storefront, auth, cart and checkout,<br/>seller, account, certificate, admin"]
+    Pages["js/pages<br/>one script per page"]
+    Components["js/components<br/>nav, cartDrawer, pageLoader, qrScanner"]
+    Commerce["js/commerce<br/>cart, checkout, list-product, trackOrder"]
+    FeServices["js/services<br/>authenticate, follow, trade-request"]
+    FeAuth["js/auth<br/>checkUserStatus, logout"]
+    Core["js/core<br/>config, token, escapeHtml"]
+    Client["js/api/firebase-client"]
+    HTML --> Pages
+    Pages --> Components
+    Pages --> Commerce
+    Pages --> FeServices
+    Pages --> FeAuth
+    Pages --> Core
+    Pages --> Client
+  end
+
+  subgraph Server["Server (server.js, Express)"]
+    Guard["middleware/auth.js<br/>verifyAuth"]
+    Routes["Routes<br/>/api/orders, /api/products, /api/admin,<br/>/api/authentication-requests, /api/brand-onboarding,<br/>/api/payment-methods, /api/connect, /send/*"]
+    Hooks["Webhooks<br/>/webhook (Stripe), /webhooks/shipstation"]
+    Shipping["services: shipstation,<br/>shipstationTracking, shipstationWebhookAuth"]
+    Email["services: emailTemplates"]
+    Logic["services: adminStats, brandReview, businessDays"]
+    Matching["services: matching, embeddings"]
+    Catalog["services: catalogModels, kicksdb"]
+    Admin["firebase.js<br/>Admin SDK"]
+    Guard --> Routes
+    Routes --> Shipping
+    Routes --> Email
+    Routes --> Logic
+    Routes --> Matching
+    Routes --> Catalog
+    Routes --> Admin
+    Hooks --> Shipping
+    Hooks --> Admin
+    Matching --> Admin
+    Catalog --> Admin
+  end
+
+  subgraph External["Outside services"]
+    Stripe["Stripe<br/>payments and Connect payouts"]
+    ShipStation["ShipStation<br/>rates, labels, tracking"]
+    Resend["Resend<br/>email"]
+    KicksDB["KicksDB<br/>market prices"]
+    Vertex["Vertex AI<br/>embeddings"]
+    Firebase["Firebase<br/>Auth, Storage, Firestore<br/>(userProfiles, orders, listings,<br/>authenticationRequests, offers, payouts, disputes)"]
+  end
+
+  Pages -- "fetch + Firebase ID token" --> Guard
+  Client -- "client SDK" --> Firebase
+  Admin --> Firebase
+  Routes --> Stripe
+  Stripe --> Hooks
+  Shipping --> ShipStation
+  ShipStation --> Hooks
+  Email --> Resend
+  Catalog --> KicksDB
+  Matching --> Vertex
+```
 
 ## Features
 

@@ -2175,6 +2175,7 @@ app.get("/api/sellers/:sellerId/offers", verifyAuth, async (req, res) => {
       const listing = listingsById[offer.productId];
       return {
         ...offer,
+        listingExists: Boolean(listing),
         productName: listing?.productName || "Listing removed",
         productImage: listing?.images?.find((img) => img.isPrimary)?.url || listing?.images?.[0]?.url || "",
       };
@@ -5605,12 +5606,36 @@ async function handlePaymentIntentSucceeded(paymentData){
         return null;
       }
 
+      let allocatedCents = 0;
+      let promoRef;
+      if (zeroFee2027WaivedCents > 0) {
+        if (!data.sellerId) throw new Error('Promo payment has no seller');
+        promoRef = db.collection('sellerPromos').doc(data.sellerId);
+        const promo = await tx.get(promoRef);
+        if (!promo.exists) throw new Error('Promo eligibility record is missing');
+        const { capCents, waivedSalesCents } = promo.data();
+        if (!Number.isSafeInteger(capCents) || capCents < 0 ||
+            !Number.isSafeInteger(waivedSalesCents) || waivedSalesCents < 0) {
+          throw new Error('Invalid promo allowance');
+        }
+        allocatedCents = Math.min(zeroFee2027WaivedCents, Math.max(0, capCents - waivedSalesCents));
+        const quotedItem = JSON.parse(paymentData.metadata.item);
+        const priceCents = Math.round(Number(quotedItem.listingPrice) * 100);
+        if (!Number.isSafeInteger(priceCents) || priceCents < zeroFee2027WaivedCents) {
+          throw new Error('Invalid promo sale amount');
+        }
+        // Only the seller fee changes; the buyer's paid total stays unchanged.
+        data.item = { ...data.item,
+          sellerFee: Math.round((priceCents - allocatedCents) * MARKETPLACE_FEE_RATE) / 100 };
+      }
+      const appliedWaiver = codeFeeWaived || allocatedCents > 0;
       const orderRef = orderDoc ? orderDoc.ref : db.collection('orders').doc();
       const paymentFields = {
         status: paymentData.status,
         fulfillmentStatus: 'processing',
-        promoFeeWaived: feeWaived,
-        stripeFeeCents,
+        promoFeeWaived: appliedWaiver,
+        stripeFeeCents: appliedWaiver ? stripeFeeCents : null,
+        ...(promoRef ? { item: data.item, zeroFee2027WaivedCents: allocatedCents } : {}),
         availableAt
       };
       if (orderDoc) {
@@ -5621,11 +5646,9 @@ async function handlePaymentIntentSucceeded(paymentData){
       } else {
         tx.create(orderRef, { ...data, ...paymentFields });
       }
-      // shortcut: different checkouts can exceed the cap; reserve at checkout
-      // if a strict cap is needed. Duplicate events for one sale count once.
-      if (zeroFee2027WaivedCents > 0 && data.sellerId) {
-        tx.update(db.collection('sellerPromos').doc(data.sellerId), {
-          waivedSalesCents: admin.firestore.FieldValue.increment(zeroFee2027WaivedCents)
+      if (allocatedCents > 0) {
+        tx.update(promoRef, {
+          waivedSalesCents: admin.firestore.FieldValue.increment(allocatedCents)
         });
       }
       return { data, orderRef };

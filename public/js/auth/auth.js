@@ -235,6 +235,18 @@ function initAuthForm() {
     });
   }
 
+  // Show/Hide on the login password field. type="button" on the toggle keeps
+  // it from ever acting as a submit.
+  const togglePassword = document.querySelector("#togglePassword");
+  if (togglePassword && password) {
+    togglePassword.addEventListener("click", () => {
+      const show = password.type === "password";
+      password.type = show ? "text" : "password";
+      togglePassword.textContent = show ? "Hide" : "Show";
+      togglePassword.setAttribute("aria-pressed", String(show));
+    });
+  }
+
   // Let Enter submit the form from any text input, since these are plain
   // divs (not <form> elements) and get none of the native Enter-to-submit
   // behavior for free.

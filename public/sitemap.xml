@@ -8,67 +8,77 @@
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://hexxo.store/</loc>
+    <loc>https://www.hexxo.store/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/shop</loc>
+    <loc>https://www.hexxo.store/shop/</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/mens</loc>
+    <loc>https://www.hexxo.store/mens</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/women</loc>
+    <loc>https://www.hexxo.store/women</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/accessories</loc>
+    <loc>https://www.hexxo.store/accessories</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/brands</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://hexxo.store/releases</loc>
+    <loc>https://www.hexxo.store/collectibles</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/authenticate</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://hexxo.store/sell-to-us</loc>
+    <loc>https://www.hexxo.store/brand-onboarding</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/about</loc>
+    <loc>https://www.hexxo.store/brands</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.hexxo.store/releases</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.hexxo.store/authenticate</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.hexxo.store/sell-to-us/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.hexxo.store/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/contact</loc>
+    <loc>https://www.hexxo.store/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/terms</loc>
+    <loc>https://www.hexxo.store/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
   <url>
-    <loc>https://hexxo.store/privacy</loc>
+    <loc>https://www.hexxo.store/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>

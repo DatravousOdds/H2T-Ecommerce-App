@@ -85,7 +85,7 @@ const mobileShopItem = `
 const mobileServicesItem = `
   <li class="menu-dropdown">
     <button class="menu-item dropdown-trigger">
-      <i class="fa-solid fa-screwdriver"></i>
+      <i class="fa-solid fa-shield-alt"></i>
       <span>Services</span>
       <i class="fa-solid fa-chevron-right"></i>
     </button>
@@ -117,13 +117,26 @@ const mobileSellItem = `
 const mobileHelpItem = `
   <li>
     <a href="/help" class="menu-item">
-      <i class="fa-solid fa-question"></i>
+      <i class="fa-solid fa-question-circle"></i>
       <span>Help</span>
     </a>
   </li>
 `;
 
-const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuContent) => `
+// Thin rule between menu groups (account / browse / admin / help).
+const mobileDivider = `<li class="menu-divider" role="separator"></li>`;
+
+// Notifications belong to an account, so the bell is only passed in by the
+// logged-in nav. Logged-out visitors get no bell at all.
+const desktopBellItem = `
+        <li>
+          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notification-badge" aria-label="Unread notifications">0</span>
+          </a>
+        </li>`;
+
+const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuContent, desktopBell = "") => `
   <nav class="navbar" aria-label="main navigation">
     <!-- Left section with search and logo -->
     
@@ -203,12 +216,7 @@ const getSharedNavHTML = (rightSideContent, desktopAuthContent, mobileMenuConten
         <li><a href="/collectibles" class="nav-link">Collectibles</a></li>
         <li><a href="/accessories" class="nav-link">Accessories</a></li>
         <li><a href="/seller" class="nav-link">Sell</a></li>
-        <li>
-          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notification-badge" aria-label="Unread notifications">0</span>
-          </a>
-        </li>
+        ${desktopBell}
         <li>
           <a href="#" class="nav-link cart-link" id="cartBtn" aria-label="Shopping cart">
             <i class="fa-solid fa-bag-shopping"></i>
@@ -248,14 +256,10 @@ const LoggedOutNav = () => ({
   rightSide: `
     <div class="small-screen-nav-container">
       <ul class="small-screen-nav">
+        <!-- Keep this label different from "User profile": style2.css hides
+             that label's <li> at 430px and below, which would hide login on phones. -->
         <li>
-          <a href="#notifications" class="nav-link notification-link" aria-label="Notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="notification-badge" aria-label="Unread notifications">0</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile" class="nav-link" aria-label="User profile">
+          <a href="/login" class="nav-link" aria-label="Log in">
             <i class="fa-solid fa-user"></i>
           </a>
         </li>
@@ -289,10 +293,12 @@ const LoggedOutNav = () => ({
         <span>Login</span>
       </a>
     </li>
+    ${mobileDivider}
     ${mobileHomeItem}
     ${mobileShopItem}
-    ${mobileServicesItem}
     ${mobileSellItem}
+    ${mobileServicesItem}
+    ${mobileDivider}
     ${mobileHelpItem}
   `
 });
@@ -416,67 +422,47 @@ const LoggedInNav = (user) => ({
       </li>
     `;
 
+    // Review queues collapsed into one row (same dropdown Shop/Profile use)
+    // so four long labels don't crowd out everything else in the menu.
     const adminItems = `
-      <li>
-        <a href="/admin/authentication-review.html" class="menu-item">
-          <i class="fa-solid fa-user-shield"></i>
-          <span>Authentication Review</span>
-        </a>
+      <li class="menu-dropdown">
+        <button class="menu-item dropdown-trigger">
+          <i class="fa-solid fa-clipboard-check"></i>
+          <span>Admin Reviews</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <ul class="submenu">
+          <li><a href="/admin/authentication-review.html">Authentication</a></li>
+          <li><a href="/admin/delivery-confirmation-review.html">Delivery Confirmation</a></li>
+          <li><a href="/admin/order-authentication-review.html">Order Authentication</a></li>
+          <li><a href="/admin/brand-review.html">Brands</a></li>
+        </ul>
       </li>
-      <li>
-        <a href="/admin/delivery-confirmation-review.html" class="menu-item">
-          <i class="fa-solid fa-truck-ramp-box"></i>
-          <span>Delivery Confirmation Review</span>
-        </a>
-      </li>
-      <li>
-        <a href="/admin/order-authentication-review.html" class="menu-item">
-          <i class="fa-solid fa-magnifying-glass-chart"></i>
-          <span>Order Authentication Review</span>
-        </a>
-      </li>
-      <li>
-        <a href="/admin/brand-review.html" class="menu-item">
-          <i class="fa-solid fa-store"></i>
-          <span>Brand Review</span>
-        </a>
-      </li>
+      ${mobileDivider}
     `;
 
     const logoutItem = `
       <li>
         <a href="#" class="menu-item" id="mobileLogoutLink">
-          <i class="fa-solid fa-sign-in-alt"></i>
+          <i class="fa-solid fa-sign-out-alt"></i>
           <span>Logout</span>
         </a>
       </li>
     `;
 
-    // Admins get a purpose-built order (Shop/Sell/Services grouped up top,
-    // the three review queues together, Profile pushed down) instead of the
-    // regular Profile-first layout -- requested explicitly so admin's daily
-    // review workflow isn't buried under account-settings links.
-    if (user.isAdmin) {
-      return `
-        ${mobileHomeItem}
-        ${mobileShopItem}
-        ${mobileSellItem}
-        ${mobileServicesItem}
-        ${adminItems}
-        ${profileDropdown}
-        ${mobileHelpItem}
-        ${logoutItem}
-      `;
-    }
-
+    // One order for everyone: account, browse, (admin), then Help and
+    // Logout last so Logout is never next to a frequently tapped row.
     return `
       ${profileDropdown}
-      ${logoutItem}
+      ${mobileDivider}
       ${mobileHomeItem}
       ${mobileShopItem}
-      ${mobileServicesItem}
       ${mobileSellItem}
+      ${mobileServicesItem}
+      ${mobileDivider}
+      ${user.isAdmin ? adminItems : ""}
       ${mobileHelpItem}
+      ${logoutItem}
     `;
   })()
 });
@@ -500,7 +486,8 @@ const newNav =  async () => {
     nav.innerHTML = getSharedNavHTML(
       content.rightSide,
       content.desktop,
-      content.mobile
+      content.mobile,
+      desktopBellItem
     );
 
     setupEventListeners(nav);
@@ -599,15 +586,45 @@ const setupEventListeners = (nav) => {
   });
   
 
-  // Mobile menu button
+  // Single place that opens/closes the menu, so every way of closing it
+  // (X, tap outside, Escape, picking a link) also releases the scroll lock.
+  const setMenuOpen = (open) => {
+    slideMenu.classList.toggle("active", open);
+    slideMenuOverlay.classList.toggle("active", open);
+    // Stop the page behind the menu from scrolling under the user's finger.
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+
   menuButton.addEventListener("click", () => {
-    slideMenu.classList.toggle("active");
-    slideMenuOverlay.classList.toggle("active");
+    setMenuOpen(!slideMenu.classList.contains("active"));
   });
 
-  closeSlideMenu.addEventListener("click", () => {
-    slideMenu.classList.remove("active");
-    slideMenuOverlay.classList.remove("active");
+  closeSlideMenu.addEventListener("click", () => setMenuOpen(false));
+
+  // The menu is a child of the overlay, so only close when the tap landed
+  // on the dark area itself, not on something inside the menu.
+  slideMenuOverlay.addEventListener("click", (e) => {
+    if (e.target === slideMenuOverlay) setMenuOpen(false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    // Only when the menu is open: closing clears the body scroll lock, and
+    // page modals (product, reviews, trade request) hold that same lock.
+    if (e.key === "Escape" && slideMenu.classList.contains("active")) setMenuOpen(false);
+  });
+
+  // Mark the row for the page the user is on. Links in a dropdown also mark
+  // their parent row, since the dropdown starts collapsed.
+  const normalizePath = (path) => path.replace(/\/index\.html$/, "/");
+  slideMenu.querySelectorAll('a[href]:not([href^="#"])').forEach((link) => {
+    const samePage =
+      normalizePath(link.pathname) === normalizePath(window.location.pathname) &&
+      (!link.search || link.search === window.location.search);
+    if (!samePage) return;
+
+    link.classList.add("is-current");
+    link.setAttribute("aria-current", "page");
+    link.closest(".menu-dropdown")?.querySelector(".dropdown-trigger")?.classList.add("is-current");
   });
 
   // Dropdown triggers
@@ -618,6 +635,14 @@ const setupEventListeners = (nav) => {
 
       const submenu = menuItem.querySelector(".submenu");
       if (!submenu) return;
+
+      // Accordion: opening one dropdown closes the others so the list
+      // never grows past a screen.
+      dropdownTrigger.forEach((other) => {
+        if (other === trigger) return;
+        other.classList.remove("expanded");
+        other.closest(".menu-dropdown")?.querySelector(".submenu")?.classList.remove("active");
+      });
 
       trigger.classList.toggle("expanded");
       submenu.classList.toggle("active");
@@ -651,8 +676,7 @@ const setupEventListeners = (nav) => {
           switchTabs(section);
         }
 
-        slideMenu.classList.remove("active");
-        slideMenuOverlay.classList.remove("active");
+        setMenuOpen(false);
       });
     });
   } catch (error) {

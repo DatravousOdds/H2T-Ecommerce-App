@@ -56,6 +56,53 @@ function canRespond(offer, viewerRole) {
   return offer.status === "active" && offer.turn === viewerRole;
 }
 
+// "closed" is the fallthrough so an unrecognised status never looks actionable.
+function offerGroup(offer, viewerRole) {
+  if (canRespond(offer, viewerRole)) return "needsResponse";
+  if (offer.status === "active") return "waiting";
+  return "closed";
+}
+
+// Display order: what needs the viewer's action comes first.
+const GROUP_ORDER = ["needsResponse", "waiting", "closed"];
+
+function groupTitle(group, viewerRole) {
+  if (group === "needsResponse") return "Needs your response";
+  if (group === "waiting") return viewerRole === "buyer" ? "Waiting on seller" : "Waiting on buyer";
+  return "Closed";
+}
+
+function offerGroupsTemplate(offers, viewerRole) {
+  return GROUP_ORDER.map((group) => {
+    const inGroup = offers.filter((offer) => offerGroup(offer, viewerRole) === group);
+    if (!inGroup.length) return "";
+
+    const title = groupTitle(group, viewerRole);
+    return `
+      <section class="offers-group" aria-label="${title}">
+        <p class="offers-conversation-label">${title}</p>
+        ${inGroup.map((offer) => offerCardTemplate(offer, viewerRole)).join("")}
+      </section>
+    `;
+  }).join("");
+}
+
+// Links shown on a closed offer. None if the listing is gone (they'd lead to
+// a dead page); only a buyer can restart a declined negotiation.
+function nextStepsTemplate(offer, viewerRole) {
+  if (offerGroup(offer, viewerRole) !== "closed" || !offer.listingExists) return "";
+
+  const listingUrl = `/shop/product.html?id=${encodeURIComponent(offer.productId)}`;
+  const canReoffer = offer.status === "rejected" && viewerRole === "buyer";
+
+  return `
+    <div class="offer-status-actions">
+      ${canReoffer ? `<a class="offer-counter-btn" href="${listingUrl}">Make a new offer</a>` : ""}
+      <a class="offer-reject-btn" href="${listingUrl}">View listing</a>
+    </div>
+  `;
+}
+
 function offerCardTemplate(offer, viewerRole) {
   const respondable = canRespond(offer, viewerRole);
 
@@ -74,6 +121,7 @@ function offerCardTemplate(offer, viewerRole) {
             <button type="button" class="offer-counter-btn" data-action="counter">Counter</button>
           </div>
         ` : ''}
+        ${nextStepsTemplate(offer, viewerRole)}
       </div>
     </div>
   `;
@@ -115,7 +163,7 @@ async function loadOffers(user, listEl) {
     return;
   }
 
-  listEl.innerHTML = offers.map((offer) => offerCardTemplate(offer, viewerRole)).join("");
+  listEl.innerHTML = offerGroupsTemplate(offers, viewerRole);
   wireOfferCards(listEl, user, viewerRole, () => loadOffers(user, listEl));
 }
 
