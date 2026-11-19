@@ -1,10 +1,10 @@
 // Homepage hero carousel: crossfades between .home-hero__slide elements,
-// auto-advances, pauses on hover/focus, and handles the seller sign-up form.
+// auto-advances, and pauses on hover/focus.
+
+import { promoCountdownLabel } from "../core/promoCountdown.js";
 
 const AUTO_ADVANCE_MS = 6000;
 const SWIPE_MIN_PX = 50;
-const SIGNUP_EMAIL_KEY = "hexxoSignupEmail";
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function initHeroCarousel(root) {
   const slides = [...root.querySelectorAll(".home-hero__slide")];
@@ -18,7 +18,7 @@ function initHeroCarousel(root) {
   let index = 0;
   let timerId = null;
   // Separate flags so leaving with the mouse doesn't resume while the
-  // keyboard focus (e.g. typing in the email field) is still inside.
+  // keyboard focus is still inside.
   let hovered = false;
   let focused = false;
 
@@ -129,48 +129,14 @@ function initHeroCarousel(root) {
   start();
 }
 
-function initSignupForm(form) {
-  const input = form.querySelector("input[type='email']");
-  const error = document.getElementById("heroSignupError");
-  if (!input || !error) return;
-
-  function showError(message) {
-    input.setAttribute("aria-invalid", "true");
-    error.textContent = message;
-    error.hidden = false;
-  }
-
-  function clearError() {
-    input.removeAttribute("aria-invalid");
-    error.hidden = true;
-  }
-
-  input.addEventListener("input", clearError);
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const email = input.value.trim();
-
-    if (!EMAIL_RE.test(email)) {
-      showError("Enter a valid email address.");
-      input.focus();
-      return;
-    }
-
-    // Handed to the signup page through sessionStorage rather than a query
-    // string, so the address never lands in URLs, server logs or analytics.
-    try {
-      sessionStorage.setItem(SIGNUP_EMAIL_KEY, email);
-    } catch {
-      // Storage can be blocked (private mode); signup still works without it.
-    }
-    window.location.href = "/signup";
-  });
-}
-
 const hero = document.querySelector(".home-hero");
 if (hero) {
   initHeroCarousel(hero);
-  const signupForm = hero.querySelector(".home-hero__signup");
-  if (signupForm) initSignupForm(signupForm);
+
+  const countdown = hero.querySelector("[data-promo-countdown]");
+  const label = promoCountdownLabel();
+  if (countdown && label) {
+    countdown.textContent = label;
+    countdown.hidden = false;
+  }
 }
